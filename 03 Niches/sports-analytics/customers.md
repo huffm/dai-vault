@@ -19,5 +19,6 @@ recreational bettors who take it seriously — people betting $500–$5000/week 
 
 ## acquisition assumption
 communities: r/sportsbook, x betting accounts, discord betting servers
-give away full NFL briefs for free, convert on NBA expansion + alerts
+free tier covers one NFL game brief per week — NFL is the sample sport because it is the most recognizable and highest-trust entry point
+NBA requires starter or pro — used as a conversion lever for users who want year-round coverage
 first paid conversion is someone already spending money on picks who wants something more transparent

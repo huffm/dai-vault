@@ -11,7 +11,8 @@ format the assembled brief for the tenant's delivery channel and dispatch it. th
 ## rendering rules by channel
 
 **email**
-- subject line: `[NFL] {Away} @ {Home} — Game Brief — {Kickoff Time}`
+- subject line: `[NFL] {Away} @ {Home} — Game Brief — {Kickoff Time}` for football
+- subject line: `[NBA] {Away} @ {Home} — Game Brief — {Tip-Off Time}` for basketball
 - for threshold-alert: prepend `[UPDATE]` to subject line
 - render signal table as a plain html table or clean markdown table
 - narrative rendered as a paragraph block

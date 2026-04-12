@@ -1,105 +1,88 @@
 # week 01: sports-v1
 
-**dates:** week of 2026-04-09
-**phase:** 1 — research and foundation
-**goal:** data sources confirmed, tenant model implemented, collector working for one game
+**dates:** 2026-04-13 — 2026-04-18
+**goal:** produce one complete NFL brief end-to-end without manual intervention
+**scope:** NFL only this week — NBA added in week 02 after the NFL pipeline is stable
+
+do not start on platform infrastructure (billing, scheduling, tier enforcement) until the brief itself is worth delivering.
 
 ---
 
-## focus for this week
-do not write application logic until the data is confirmed. the most common early mistake is building the pipeline before knowing what the sources actually return. this week is about reading before writing.
+## monday — data source access and NFL baseline
+
+- sign up for the odds api; confirm `americanfootball_nfl` endpoint returns games, spread, and opening line for a live week
+- confirm actionnetwork returns sharp % and public % for at least one current NFL game
+- sign up for rotowire; confirm NFL injury report endpoint returns at least one team's data and check the timestamp
+- confirm open-meteo returns an hourly forecast for at least one outdoor NFL stadium lat/lon (e.g., Lambeau Field: 44.5013, -88.0622)
+- document rate limits, endpoint shapes, and any concerns per source
+
+**end of day check:** do all four sources return usable data for the same NFL game? if not, identify which source is the blocker before moving on.
 
 ---
 
-## monday — data source audit
+## tuesday — collector: NFL single game
 
-**morning**
-- [ ] sign up for the odds api, run the NFL odds endpoint, inspect the response shape
-- [ ] document: which books are returned, what movement history looks like, what the update frequency is
-- [ ] confirm the `historical/odds` endpoint is accessible on your tier
+- build the collector to call all four sources for a single NFL game
+- return a structured data object with a field per signal category
+- flag stale or missing fields explicitly — a missing injury report is `data_freshness: missing`, not a null passed downstream
+- run the collector against one live NFL game and print the output
 
-**afternoon**
-- [ ] test open-meteo with 3 NFL outdoor stadium lat/lon coordinates (e.g. Arrowhead, Lambeau, MetLife)
-- [ ] confirm hourly forecast returns wind speed, wind direction, precipitation, and temperature
-- [ ] start a `data-source-notes.md` scratch file: one section per source, what it returns and what it doesn't
+**end of day check:** does the collector return a complete object for one real NFL game, with all fields present or explicitly flagged? if weather is missing for an outdoor game, that is a blocker.
 
 ---
 
-## tuesday — data source audit continued
+## wednesday — evaluator and aggregate score: NFL
 
-**morning**
-- [ ] test actionnetwork: confirm which page or endpoint returns sharp/public split per game
-- [ ] note whether this is a scrape or an api — document the approach and fragility risk
-- [ ] spot check 3 recent games: do the percentages look plausible?
+- build the evaluator to score all five signal categories against the collector output
+- scoring: +1 (favorable), 0 (neutral), -1 (unfavorable), null (missing data — not scored)
+- platform computes aggregate score (sum of non-null) and confidence flag (% of signals scored and in agreement)
+- run the evaluator against the same game used on Tuesday
+- spot-check the scores manually against what you know about the game
 
-**afternoon**
-- [ ] sign up for rotowire, pull the NFL injury report for the current week
-- [ ] confirm: player name, team, position, injury status, last update timestamp are all present
-- [ ] compare one team's rotowire injury report against the official NFL injury report for the same week — confirm freshness
-
-**end of day**
-- [ ] data-source-notes.md complete with confirmed field shapes and any gaps or risks noted
+**end of day check:** does the evaluator return a scored table with an aggregate and confidence flag? are the scores defensible against the actual game context?
 
 ---
 
-## wednesday — platform primitives
+## thursday — synthesizer and brief output
 
-**morning**
-- [ ] implement the tenant record: tenant_id, niche, tier, stripe fields, delivery config, niche config
-- [ ] implement niche config for sports-analytics: sport list, delivery timing hours, alert threshold
-- [ ] write a simple test: create a tenant, read it back, confirm fields persist
+- build the synthesizer to produce a brief from the evaluator output: header, signal table, narrative (3–5 sentences), confidence flag
+- validate the output against the brief envelope schema
+- run the synthesizer for 3 NFL games and read each brief manually
+- check for: accuracy, no hallucinated details, readable in under 90 seconds, no picks or outcome predictions
 
-**afternoon**
-- [ ] implement the brief envelope schema: brief_id, sections[], trigger, generated_at, delivery_status
-- [ ] confirm the schema accepts the section types defined in output-brief-schema.md
-- [ ] set up stripe: create the three products (free, starter $29, pro $79) in test mode
+**end of day check:** are all three briefs readable and accurate? if any brief hallucinates a player name or makes a pick, fix the prompt before Friday.
 
 ---
 
-## thursday — collector first pass
+## friday — delivery and end-to-end integration test
 
-**morning**
-- [ ] write the collector for the odds api: fetch one specific NFL game, return structured lines object
-- [ ] add line movement: opening spread, current spread, delta
-- [ ] confirm structured output matches the game data object spec in collector-prompt.md
+- wire collector → evaluator → synthesizer → delivery into a single pipeline run
+- email the brief to a test inbox; confirm formatting and readability
+- send the brief as JSON to a test webhook endpoint; confirm the payload is valid
+- record delivery status on the brief envelope
+- run the full pipeline for one NFL game with zero manual steps
 
-**afternoon**
-- [ ] add rotowire collector: fetch injury report for both teams in the test game
-- [ ] add open-meteo collector: fetch forecast for the venue (outdoor only, skip if indoor)
-- [ ] add actionnetwork collector: fetch sharp/public split for the same game
-- [ ] write stale data detection: flag any field where the source timestamp is older than threshold
-
-**end of day**
-- [ ] collector returns a complete, well-structured game data object for one known NFL game
-- [ ] all four sources integrated and returning data
-
----
-
-## friday — integration test and review
-
-**morning**
-- [ ] run the collector end-to-end on 3 different NFL games from the current or most recent week
-- [ ] inspect output: are all fields present? are stale flags firing correctly?
-- [ ] identify any source that returned unexpected nulls or malformed data — fix or flag
-
-**afternoon**
-- [ ] review the evaluator prompt doc (prompts/evaluator-prompt.md) against actual collector output
-- [ ] note any signal categories where the collector output doesn't give the evaluator enough to score
-- [ ] update collector output fields if gaps are found (do not change the prompt yet — note the gap)
-- [ ] write up a brief end-of-week note: what's confirmed, what needs follow-up before building the evaluator
+**end of day check:** does one complete NFL brief produce and deliver without manual intervention? if yes, week 01 is done. if not, identify the specific failure and log it.
 
 ---
 
 ## week 01 exit criteria
-- [ ] all four data sources confirmed working with real data
-- [ ] tenant record and niche config implemented and tested
-- [ ] brief envelope schema implemented
-- [ ] stripe products created in test mode
-- [ ] collector produces complete structured output for at least 3 NFL games
+
+- [ ] four data sources return data for the same NFL game
+- [ ] collector produces a complete structured object for a live NFL game
+- [ ] evaluator scores all five signal categories; aggregate and confidence flag compute correctly
+- [ ] synthesizer produces a readable brief for 3 NFL games — no hallucinations, no picks
+- [ ] brief delivers via email and webhook without manual intervention
+- [ ] delivery status recorded on the brief envelope
 
 ---
 
-## not doing this week
-- evaluator, synthesizer, delivery — do not start until collector output is stable
-- prompt finalization — review and note gaps, finalize next week
-- billing gate — stripe is set up but not wired into the pipeline yet
+## what is explicitly out of scope this week
+
+- NBA (week 02)
+- tenant records, billing, stripe integration (phase 3)
+- scheduled triggers and cron logic (phase 3)
+- line movement poller and re-alert (phase 3)
+- slack delivery (phase 3)
+- compliance agent (phase 3)
+- free-tier best-game selector (phase 3)

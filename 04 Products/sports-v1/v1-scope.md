@@ -1,7 +1,9 @@
 # v1 scope: sports-v1
 
 ## in scope
-- NFL games only (regular season + playoffs)
+- NFL games (regular season + playoffs)
+- NBA games (regular season + playoffs)
+- MLB games (regular season + playoffs)
 - pre-game brief per game, covering:
   - current spread and total
   - line movement summary (opening vs current)
@@ -16,7 +18,7 @@
 - line movement re-alert if spread moves 2+ points post-delivery (pro only)
 
 ## out of scope for v1
-- NBA, MLB, college sports
+- soccer, NHL, college sports (NCAAF, NCAAB)
 - player prop coverage
 - in-game or live betting signals
 - outcome tracking or model calibration
@@ -29,5 +31,6 @@
 
 ## definition of done for v1
 - brief produces correctly for all games in a test NFL week
-- delivery works via email and webhook
-- at least one paying subscriber before expanding to NBA
+- brief produces correctly for all games in a test NBA week
+- delivery works via email and webhook for both sports
+- at least one paying subscriber before expanding to soccer or other sports

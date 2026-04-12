@@ -1,4 +1,4 @@
-﻿# canonical agent roles
+# canonical agent roles
 
 ## collector
 gathers raw data

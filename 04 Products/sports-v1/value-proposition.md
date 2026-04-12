@@ -1,7 +1,7 @@
 # value proposition: sports-v1
 
 ## core value
-get the signal picture on every NFL game before the line settles — in two minutes, not two hours.
+get the signal picture on every NFL and NBA game before the line settles — in two minutes, not two hours.
 
 ## what it replaces
 - manually checking odds sites, injury wires, and weather forecasts before each game

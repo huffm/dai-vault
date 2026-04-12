@@ -1,4 +1,4 @@
-﻿# collector
+# collector
 
 The collector agent gathers raw data needed for downstream evaluation.
 
