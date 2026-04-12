@@ -1,7 +1,8 @@
 # implementation plan: sports analysis — stub to first-pass real flow
 
 **date:** 2026-04-10
-**scope:** NFL and NBA
+**scope:** NFL, NBA, and MLB
+**update 2026-04-12:** milestone 1 is complete. the FastAPI stub has been replaced with real `gpt-4o-mini` analysis. `app/routes/sports.py`, `app/models/sports.py`, and `app/services/sports_analyzer.py` are all real implementations. MLB was added alongside NFL and NBA. the "what is stubbed" section below reflects the state at the time this plan was written — see `02 Platform/architecture/current-sports-analysis-flow.md` for current reality.
 **starting point:** current real request path in the dai monorepo
 
 ---

@@ -2,8 +2,9 @@
 
 **date:** 2026-04-10
 **app:** `apps/sports-app/` in the dai monorepo
-**current state:** single root component, empty routes array, no auth, signals-based state, `useStubApi: true` in production
-**scope:** NFL and NBA pre-game brief UI
+**current state:** single root component, no routing, no auth, signals-based state with computed-driven UI. `useStubApi: true` in production. the dev surface has grown significantly since this plan was written — see `02 Platform/architecture/current-sports-analysis-flow.md` for the current Angular implementation reality.
+**scope:** NFL, NBA, and MLB pre-game brief UI
+**note:** this document describes the future product UI (game list, brief view, routing). the current working surface is the matchup analyzer dev app. milestones below describe the path from dev tool to full product.
 
 ---
 
