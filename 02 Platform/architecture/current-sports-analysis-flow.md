@@ -1,6 +1,6 @@
 # current sports analysis flow
 
-**date:** 2026-04-13
+**date:** 2026-04-14
 **derived from:** actual code in `apps/sports-app/`, `platform/dotnet/`, and `services/agent-service/`
 **status:** reflects what is implemented today — not a design target
 
@@ -12,28 +12,45 @@ NFL, NBA, and MLB. each sport has its own system prompt in `sports_analyzer.py`.
 
 ---
 
+## selection model: three states
+
+the Angular selection flow is intentionally divided into three distinct states. keeping them separate is the reason the UX can be order-independent while the analysis payload remains correctly oriented.
+
+| state | what it holds | where it lives |
+|---|---|---|
+| **neutral selection** | `teamA`, `teamB` — the user's chosen pair, no orientation implied | `app.ts` form controls + `teamAValue`/`teamBValue` signals |
+| **selected event** | `MatchupEventDto { date, homeTeam, awayTeam }` — the real scheduled event from the provider, with correct orientation | `selectedEvent` signal, set when a date pill is clicked |
+| **analysis payload** | `SportsMatchupInput { sport, homeTeam, awayTeam, gameDate }` — fully resolved, passed to the backend | built in `analyze()` from `selectedEvent()` |
+
+`homeTeam`/`awayTeam` appear only at the analysis payload step. everything before that uses `teamA`/`teamB`.
+
+---
+
 ## end-to-end request path
 
 ```
 Angular sports-app
-  → GET /api/sports                          (load active sport list from SQL)
-  → GET /api/sports/{slug}/teams             (load teams for selected sport from SQL)
-  → GET /api/sports/{slug}/matchup-dates     (real dates from Odds API via OddsScheduleClient; empty array if no scheduled game)
-  → POST /api/agent-runs
+  → GET /api/sports                                  (load active sport list from SQL)
+  → GET /api/sports/{slug}/teams                     (load teams for selected sport from SQL)
+  → GET /api/sports/{slug}/matchup-dates             (non-directional: ?teamA=X&teamB=Y)
+      → OddsScheduleClient.GetEventsAsync()          (matches either home/away orientation)
+      ← MatchupEventDto[] { date, homeTeam, awayTeam } (real orientation from provider)
+  [user selects a date pill → selectedEvent resolved from matchupEvents]
+  → POST /api/agent-runs                             (payload uses selectedEvent.homeTeam/awayTeam)
     → AgentRunsController.Create()
       → IdentityResolver (dev bypass: TenantKey=1, UserKey=1)
       → AppDbContext: INSERT AgentRun (status=pending)
       → AgentRunService.ExecuteAsync()
         → FastApiClient.AnalyzeSportsMatchupAsync()
           → POST http://127.0.0.1:8000/api/sports/analyze  (X-Correlation-Id header attached)
-            → app/routes/sports.py: validates sport, logs correlation_id + matchup details, dispatches to analyzer
+            → app/routes/sports.py: validates sport, logs correlation_id + matchup details
             → app/services/sports_analyzer.py: calls gpt-4o-mini with sport-specific prompt
           ← SportsAnalysisResponse { summary, confidence, factors }
         ← AgentRunExecutionResult { Summary, Confidence, Factors }
       → AppDbContext: UPDATE AgentRun (status=completed, OutputJson, CompletedUtc, DurationMs)
       ← AgentRunResultDto { agentRunId, status, summary, confidence, factors, createdUtc }
     ← HTTP 200
-  ← render summary, confidence (percent), factors (chips)
+  ← render summary, confidence (percent), factors (chips with formatted category labels)
 ```
 
 ---
@@ -42,47 +59,62 @@ Angular sports-app
 
 ### Angular: `apps/sports-app/`
 
-files: `app.ts`, `app.html`, `sports-api.service.ts`, `core/models/agent-run.model.ts`
+files: `app.ts`, `app.html`, `sports-api.service.ts`, `core/models/agent-run.model.ts`, `team-picker/team-picker.component.ts`
 
-- on init: calls `GET /api/sports` and populates sport selector; no default selection — user must pick the sport explicitly
-- on sport change: calls `GET /api/sports/{slug}/teams`, resets team selectors, populates dropdowns; cascades clear to dates, gameDate, and result; clears `error` signal
-- team selection is pre-populated from SQL reference data — not free text
-- home and away team dropdowns filter each other: the opposing team is excluded from each list
-- on both-teams-set: calls `getMatchupDates(sport, home, away)`; in real mode calls `GET /api/sports/{slug}/matchup-dates?home=X&away=Y` which returns real scheduled dates from the Odds API; empty array means no game found in the 60-day window (shown as "no upcoming matchups found"); `useStubSchedule` is `false` in development
-- game date is a dropdown populated from the dates response
-- on submit: disables the form with `{ emitEvent: false }`; shows an inline button spinner; calls `SportsApiService.createMatchupAnalysis()` → `POST http://localhost:5007/api/agent-runs`; re-enables with `{ emitEvent: false }` on success or error; clears `error` signal at start of each selection change
-- after analysis succeeds: form stays fully populated; result panel shows an "Analyzed Matchup" section (sport, matchup, date) above the summary content
-- result panel shows an animated skeleton while the request is in flight; replaced by real content on completion
-- **utility area (dual-mode):** the space below the Analyze button is driven by an `@if / @else` block keyed on the `analysisDetails` computed. before analysis: a two-line narration + context strip (`narration` computed for phase status, `contextLine` computed for subordinate context — date source or matchup preview). after analysis: a compact Analysis Details block with four rows — Analysis mode, Team source, Date mode, Signal quality — all derived from `result()`, `analyzedMatchup()`, and `isStubSchedule`. clears back to the strip automatically when any upstream field change wipes the result.
-- **result diagnostics:** a `resultDiagnostics` computed below the confidence tile in the result panel interprets `result().confidence` as a plain-language sentence. the Signal quality row in the Analysis Details block shows a one-word form of the same confidence band; the two are consistent but serve different reading depths.
-- **observable seam for progress events:** in-flight message cycling is driven by `interval(2500)` writing into `analysisPhase` signal; `narration` computed reads `analysisPhase()`. to wire backend progress events: replace `interval(2500)` with an event stream observable, map payloads to phase indices — `narration` computed and the rest of the utility area are unaffected.
-- **UI trust constraints:** error states show fixed strings — backend error detail is not forwarded to the UI. no raw run types, agent output, prompts, tool traces, or chain of thought is exposed in any UI surface.
-- **no bearer token is attached** — no MSAL configuration or HTTP interceptor
+**selection model — teamA / teamB:**
+- the matchup selection stage uses a neutral pair model: `teamA` and `teamB` — not home/away
+- `homeTeam`/`awayTeam` exist only in the final analysis payload (`SportsMatchupInput`), populated from the resolved event after date selection
+- form controls: `sport`, `teamA`, `teamB`, `gameDate` — all required for the Analyze button to enable
+- `teamAValue` and `teamBValue` are signals that mirror the form control values; computed properties depend on these for reactivity
+
+**team pickers (`TeamPickerComponent`):**
+- thin standalone component; `@Input()` for `options`, `label`, `exclude`, `disabled`, `value`; `@Output()` for `selected` (emits team name) and `cleared`
+- parent (`app.ts`) owns form controls and calls `setValue()` in picker event handlers
+- internal state: `filterText` signal, `open` signal, `filteredOptions` computed
+- selected state: shows name chip with × clear button; unselected: text input with filtered dropdown
+- each picker excludes the other's current value from its option list
+
+**matchup events and date resolution:**
+- on both teams set: calls `SportsApiService.getMatchupEvents(sport, teamA, teamB)` → `GET /api/sports/{slug}/matchup-dates?teamA=X&teamB=Y`
+- response is `MatchupEventDto[]` — each item carries `{ date, homeTeam, awayTeam }` with the resolved home/away orientation from the schedule provider
+- `matchupEvents` signal stores the events; `dates` computed derives the date list from them for the pill display
+- `selectedEvent` signal is set when a date pill is clicked; it holds the full event including resolved orientation
+- `contextLine` computed shows `awayTeam @ homeTeam` using the resolved event orientation (not the user's selection order)
+
+**analysis call:**
+- `analyze()` reads `selectedEvent()` for `homeTeam`, `awayTeam`, and `gameDate` — the user's Team A/B order is irrelevant here
+- `SportsMatchupInput` is unchanged: `{ sport, homeTeam, awayTeam, gameDate }`
+
+**factor label casing:**
+- `formatCategory(raw: string)` method capitalizes the first letter after each space or `/`: `"rest/fatigue"` → `"Rest/Fatigue"`, `"injury report"` → `"Injury Report"`
+- factor chips split on the first `: ` in the template; the left side (category) is rendered through `formatCategory()`; the right side (observation) is rendered as plain text
+- fallback: factors without `: ` render as a single unsplit chip (maintains backward compatibility)
+
+**other:**
+- on submit: form disabled with `{ emitEvent: false }`; re-enabled on success or error
+- `useStubSchedule = false` — stub path still works: generates `MatchupEventDto[]` with teamA as home
 - `environment.useStubApi = false` in development — real API is called
-- `environment.useStubSchedule = false` in development — real Odds API schedule is used
+- **no bearer token is attached** — no MSAL configuration or HTTP interceptor
 
 ### .NET: `DevCore.Api/Controllers/SportsReferenceController.cs`
 
 - `GET /api/sports` — returns active sports ordered by SportKey (NFL first): `[{ slug, displayName }]`
 - `GET /api/sports/{slug}/teams` — returns 404 if slug is unknown or inactive; returns 200 with `[]` if sport has no active teams; otherwise returns `[{ name }]` ordered alphabetically
-- `GET /api/sports/{slug}/matchup-dates?home=X&away=Y` — validates sport (404), validates both teams exist and are active for that sport (400), validates home ≠ away (400); calls `OddsScheduleClient.GetDatesAsync()` and returns real scheduled dates; empty array means no game in the 60-day window
+- `GET /api/sports/{slug}/matchup-dates?teamA=X&teamB=Y` — validates sport (404), validates both teams exist and are active for that sport (400), validates teamA ≠ teamB (400); calls `OddsScheduleClient.GetEventsAsync()` and returns `MatchupEventDto[]`; empty array means no game in the 60-day window
 - no auth, no tenant scope — platform-level reference data
+- `MatchupEventDto(string Date, string HomeTeam, string AwayTeam)` is defined in `DevCore.Api.Sports` namespace (`OddsScheduleClient.cs`)
 
 ### .NET: `DevCore.Api/Sports/OddsScheduleClient.cs`
 
-typed `HttpClient` that calls `api.the-odds-api.com` to look up scheduled game dates. owned by .NET because schedule data is reference data — it does not feed into prompts and does not require AI processing.
+typed `HttpClient` that calls `api.the-odds-api.com` to look up scheduled matchup events. owned by .NET because schedule data is reference data — it does not feed into prompts and does not require AI processing.
 
-- `GetDatesAsync(sport, home, away)` — cache key: `schedule:{sport}:{home_lower}:{away_lower}`; 30-minute TTL; empty results are cached to avoid redundant API calls
-- on cache miss: calls Odds API `GET /v4/sports/{oddsKey}/events` with 60-day window; filters by exact home/away team name match
-- dates are extracted in Eastern timezone (not UTC) — a 10pm ET game is 2am UTC the next calendar day; UTC extraction gives the wrong date
-- `apiKey` read from `OddsApi:ApiKey` config (development: user secrets); logs `LogError` and returns `[]` if absent
+- `GetEventsAsync(sport, teamA, teamB)` — non-directional: matches events in either orientation; cache key uses alphabetically sorted team names so `(A,B)` and `(B,A)` share a cache entry; 30-minute TTL; empty results are cached
+- on cache miss: calls Odds API `GET /v4/sports/{oddsKey}/events` with 60-day window; matches `(home==teamA && away==teamB) || (home==teamB && away==teamA)`
+- returns `MatchupEventDto[]` — each item carries the real home/away orientation from the provider, not the caller's input order
+- dates extracted in Eastern timezone (not UTC)
 - sport slug → Odds API key map: `nfl→americanfootball_nfl`, `nba→basketball_nba`, `mlb→baseball_mlb`
-- **team name normalization:** `_nameMap` maps DB team names to Odds API names when they differ. verified mismatches as of 2026-04-13:
-  - `"Oakland Athletics"` → `"Athletics"` (current DB name; `RenameOaklandToSacramento` migration exists but not yet applied)
-  - `"Sacramento Athletics"` → `"Athletics"` (post-migration name; covered defensively)
-  - Odds API uses `"Athletics"` regardless of franchise relocation branding
+- **team name normalization:** verified mismatches as of 2026-04-13: `"Oakland Athletics"` / `"Sacramento Athletics"` → `"Athletics"`
 - on network failure or non-2xx: logs error body at `LogError`, returns `[]`
-- on zero matches: logs warning to check team name alignment
 
 ### .NET: `DevCore.Api/Controllers/AgentRunsController.cs`
 
@@ -171,6 +203,18 @@ agent service is started with `python -m uvicorn main:app --host 127.0.0.1 --por
 smoke tests are part of the normal workflow. run `test-sports-dev.ps1` after starting the stack to confirm all five checks pass before doing further dev work.
 
 `OddsApi:ApiKey` must be set in user secrets for matchup-dates to return real data: `dotnet user-secrets set "OddsApi:ApiKey" "your-key-here"` from `platform/dotnet/DevCore.Api/`.
+
+---
+
+## product rule: outward-facing UI text must be properly cased
+
+raw values from the backend (factor categories, sport slugs, status strings) are lowercase by convention for internal consistency. before rendering in the UI, outward-facing text is formatted:
+
+- **factor categories:** `formatCategory()` in `app.ts` capitalizes the first letter after each space or `/`. `"rest/fatigue"` → `"Rest/Fatigue"`. `"injury report"` → `"Injury Report"`. applied to the category portion of factor chips only.
+- **status:** Angular `titlecase` pipe applied to `r.status` in the result panel tile.
+- **team names and sport names:** stored with correct casing in SQL; rendered as-is.
+
+this rule applies to all outward-facing product text. internal code, logs, API contracts, and config values stay lowercase.
 
 ---
 

@@ -1,6 +1,6 @@
 # platform execution sequence
 
-**date:** 2026-04-13
+**date:** 2026-04-14
 **companion to:** `02 Platform/architecture/next-platform-architecture-plan.md`
 **scope:** auth, identity, service communication, streaming, observability — sequenced for the next few milestones
 **not covered here:** sports analysis pipeline milestones (see `sports-v1-roadmap.md`)
@@ -21,10 +21,13 @@ All users of a given deployment share one platform tenant. There is no per-user 
 - **`useStubApi`** — leave `true` in `environment.ts` (production) until milestone 1 of the sports analysis plan is validated in a real deployment; do not flip it prematurely
 - **RenameOaklandToSacramento migration** — apply to the running Docker DB before any real deployment; the `OddsScheduleClient._nameMap` covers both names in the meantime
 
-**completed in this session (2026-04-13):**
+**completed (2026-04-13):**
 - ~~sports analysis milestone 2~~ — structured factor output (`"category: observation"` shape) verified for NBA and MLB
 - ~~observability baseline~~ — `ILogger<T>` in `FastApiClient` and `AgentRunService`, `X-Correlation-Id` header flow .NET → FastAPI, FastAPI logs correlation ID + matchup details on every request, FastAPI error body logged before throw
 - ~~Odds API schedule integration~~ — `OddsScheduleClient` live; NBA and MLB real matchup dates verified; Athletics normalization confirmed (`"Athletics"` regardless of franchise name); `useStubSchedule` flipped to `false` in development
+
+**completed (2026-04-14):**
+- ~~matchup selection redesign~~ — neutral teamA/teamB pair model; non-directional schedule lookup (`GetEventsAsync`); enriched `MatchupEventDto` response with resolved home/away; `selectedEvent` drives analysis payload; `TeamPickerComponent` with typeahead and clear; factor category labels properly cased in UI
 
 ---
 
