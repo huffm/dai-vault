@@ -1,5 +1,9 @@
 # v1 scope: sports-v1
 
+## current dev slice note
+- the live `apps/sports-app/` matchup analyzer currently supports NFL, NBA, and MLB in the thin frontend
+- this does not change the commercial v1 priority: NFL and NBA remain the first product focus until brief quality and delivery prove out
+
 ## in scope
 - NFL games (regular season + playoffs)
 - NBA games (regular season + playoffs)

@@ -1,6 +1,6 @@
 # current sports analysis flow
 
-**date:** 2026-04-14
+**date:** 2026-04-16
 **derived from:** actual code in `apps/sports-app/`, `platform/dotnet/`, and `services/agent-service/`
 **status:** reflects what is implemented today — not a design target
 
@@ -8,7 +8,7 @@
 
 ## supported sports
 
-NFL, NBA, and MLB. each sport has its own system prompt in `sports_analyzer.py`. the response contract is identical across all three: `{ summary, confidence, factors[] }`.
+NFL, NBA, and MLB. each sport has its own system prompt in `sports_analyzer.py`. the live backend response is still `{ summary, confidence, factors[] }`. the frontend result model now also reserves an optional `lean?: string | null` field for future contract growth, but the backend does not populate it yet.
 
 ---
 
@@ -42,15 +42,18 @@ Angular sports-app
       → AppDbContext: INSERT AgentRun (status=pending)
       → AgentRunService.ExecuteAsync()
         → FastApiClient.AnalyzeSportsMatchupAsync()
-          → POST http://127.0.0.1:8000/api/sports/analyze  (X-Correlation-Id header attached)
-            → app/routes/sports.py: validates sport, logs correlation_id + matchup details
+          → POST http://127.0.0.1:8000/api/sports/analyze  (X-Correlation-Id + X-Agent-Run-Id headers attached)
+            → app/routes/sports.py: validates sport, logs agent_run_id + correlation_id + matchup details
             → app/services/sports_analyzer.py: calls gpt-4o-mini with sport-specific prompt
           ← SportsAnalysisResponse { summary, confidence, factors }
         ← AgentRunExecutionResult { Summary, Confidence, Factors }
       → AppDbContext: UPDATE AgentRun (status=completed, OutputJson, CompletedUtc, DurationMs)
-      ← AgentRunResultDto { agentRunId, status, summary, confidence, factors, createdUtc }
+      ← AgentRunResultDto { agentRunId, status, summary, confidence, factors, createdUtc, durationMs }
     ← HTTP 200
-  ← render summary, confidence (percent), factors (chips with formatted category labels)
+  ← render page surfaces:
+      hero shell
+      top row = Configure Matchup (left) + Matchup Read (right)
+      below row = Factor Breakdown (full-width supporting reasoning)
 ```
 
 ---
@@ -59,7 +62,7 @@ Angular sports-app
 
 ### Angular: `apps/sports-app/`
 
-files: `app.ts`, `app.html`, `sports-api.service.ts`, `core/models/agent-run.model.ts`, `team-picker/team-picker.component.ts`
+files: `app.ts`, `app.html`, `sports-api.service.ts`, `core/models/agent-run.model.ts`, `team-picker/team-picker.component.ts`, `team-picker/team-picker.component.scss`
 
 **selection model — teamA / teamB:**
 - the matchup selection stage uses a neutral pair model: `teamA` and `teamB` — not home/away
@@ -67,12 +70,17 @@ files: `app.ts`, `app.html`, `sports-api.service.ts`, `core/models/agent-run.mod
 - form controls: `sport`, `teamA`, `teamB`, `gameDate` — all required for the Analyze button to enable
 - `teamAValue` and `teamBValue` are signals that mirror the form control values; computed properties depend on these for reactivity
 
-**team pickers (`TeamPickerComponent`):**
-- thin standalone component; `@Input()` for `options`, `label`, `exclude`, `disabled`, `value`; `@Output()` for `selected` (emits team name) and `cleared`
+**picker family (`TeamPickerComponent`):**
+- single standalone picker component used for all three controls: sport, team a, and team b
+- `sport` uses the picker with `searchable=false`; `teamA` and `teamB` use `searchable=true`
+- `@Input()` surface: `options`, `label`, `exclude`, `disabled`, `value`, `searchable`, `placeholder`, `searchPlaceholder`
+- `@Output()` surface: `selected` (emits option value) and `cleared`
 - parent (`app.ts`) owns form controls and calls `setValue()` in picker event handlers
 - internal state: `filterText` signal, `open` signal, `filteredOptions` computed
-- selected state: shows name chip with × clear button; unselected: text input with filtered dropdown
-- each picker excludes the other's current value from its option list
+- selected state: shows a chip-style selected shell with a clear button; unselected state is either a searchable input or a plain trigger button depending on `searchable`
+- dropdowns expose listbox semantics and keyboard-friendly button options; escape closes the open menu
+- each team picker excludes the other's current value from its option list
+- `team-picker.component.scss` sets `:host { display: block }` so the custom element participates in block layout and `space-y-4` spacing is consistent with adjacent `<div>` field groups
 
 **matchup events and date resolution:**
 - on both teams set: calls `SportsApiService.getMatchupEvents(sport, teamA, teamB)` → `GET /api/sports/{slug}/matchup-dates?teamA=X&teamB=Y`
@@ -85,10 +93,40 @@ files: `app.ts`, `app.html`, `sports-api.service.ts`, `core/models/agent-run.mod
 - `analyze()` reads `selectedEvent()` for `homeTeam`, `awayTeam`, and `gameDate` — the user's Team A/B order is irrelevant here
 - `SportsMatchupInput` is unchanged: `{ sport, homeTeam, awayTeam, gameDate }`
 
+**page structure:**
+- hero shell sits above the working area
+- main row uses a left control rail and a right answer card
+- `Matchup Read` is the primary answer card: analyzed matchup, current lean slot, summary, status, confidence
+- `Factor Breakdown` is a full-width supporting reasoning section below the row
+- the page is intentionally single-page scroll; the app does not hide answer/reasoning behind tabs
+- no filler cards are added just to make the page look more square
+- sticky behavior is confined to the control rail row so pills and dropdown surfaces do not overlap lower sections during scroll
+- the atmospheric background is now owned by a fixed `body::before` layer so longer populated pages do not show seams or darker restart bands
+
+**state model:**
+- `resultTone()` drives the inner analysis shell across idle, loading, error, and completed states
+- idle state renders an anchored inner empty-state panel inside `Matchup Read`
+- loading state renders skeleton blocks inside the same shell
+- error state stays in-place with fixed product copy
+- completed state renders analyzed matchup, current lean, summary, status/confidence, diagnostics, and factor tiles
+- hero chips are computed from selected sport, teams, and resolved event/date; the `dev` chip appears only when stub schedule mode is active
+
+**current lean slot:**
+- the frontend reserves a `Current Lean` module in `Matchup Read`
+- `AgentRunResultDto` in the frontend includes optional `lean?: string | null`
+- the current backend contract does **not** provide a structured lean/pick/winner field yet
+- when no lean field exists, the UI renders a neutral fallback (`Lean unavailable`)
+- the UI does not infer a pick from `summary` or `factors`
+
+**sport display rule:**
+- internal sport values remain lowercase slugs (`nfl`, `nba`, `mlb`)
+- outward-facing UI paths resolve the label from `SportDto.displayName`
+- if lookup fails unexpectedly, the fallback still avoids leaking a raw lowercase slug into the UI
+
 **factor label casing:**
 - `formatCategory(raw: string)` method capitalizes the first letter after each space or `/`: `"rest/fatigue"` → `"Rest/Fatigue"`, `"injury report"` → `"Injury Report"`
-- factor chips split on the first `: ` in the template; the left side (category) is rendered through `formatCategory()`; the right side (observation) is rendered as plain text
-- fallback: factors without `: ` render as a single unsplit chip (maintains backward compatibility)
+- factor cards split on the first `: ` in the template; the title uses `formatCategory()` and the body renders the remaining observation text
+- fallback: factors without `: ` render with a generic label and the full factor as body copy
 
 **other:**
 - on submit: form disabled with `{ emitEvent: false }`; re-enabled on success or error
@@ -138,6 +176,7 @@ typed `HttpClient` that calls `api.the-odds-api.com` to look up scheduled matchu
 - timeout: 90 seconds
 - uses `HttpRequestMessage` / `SendAsync` per call (not `DefaultRequestHeaders`) — required because typed HttpClient instances are singletons; per-request headers must not be shared state
 - attaches `X-Correlation-Id` header on every call: `Activity.Current?.Id ?? Guid.NewGuid().ToString()`
+- attaches `X-Agent-Run-Id` header on sports calls: the stable `AgentRun.AgentRunId` GUID — this is the primary cross-layer tracing anchor; FastAPI logs it so any log entry can be tied back to the db row
 - on non-2xx response: logs response body at `LogError` (truncated to 500 chars) before throwing
 - `ILogger<FastApiClient>` injected via constructor
 
@@ -145,7 +184,7 @@ typed `HttpClient` that calls `api.the-odds-api.com` to look up scheduled matchu
 
 app module lives under `services/agent-service/app/`. entry point is `services/agent-service/main.py` (not inside `app/`), which mounts the sports router at `/api`.
 
-- `app/routes/sports.py`: validates sport against `{"nfl", "nba", "mlb"}`; returns 400 with message for any other value; logs `correlation_id`, `sport`, `homeTeam`, `awayTeam`, `gameDate` at INFO on every request; dispatches to the correct analyzer function
+- `app/routes/sports.py`: validates sport against `{"nfl", "nba", "mlb"}`; returns 400 with message for any other value; logs `agent_run_id` (from `X-Agent-Run-Id`), `correlation_id`, `sport`, `homeTeam`, `awayTeam`, `gameDate` at INFO on every request; dispatches to the correct analyzer function
 - `app/services/sports_analyzer.py`: one async function per sport (`analyze_nfl`, `analyze_nba`, `analyze_mlb`); each uses a sport-specific system prompt; all call `gpt-4o-mini` with `response_format=json_object` and `temperature=0.3`; shared `_call_model` and `_parse_response` helpers avoid duplication; confidence is clamped 0.0–1.0 in `_parse_response`
 - `app/models/sports.py`: Pydantic models `SportsAnalysisRequest` and `SportsAnalysisResponse`
 
@@ -184,7 +223,7 @@ team names are the source of truth for what reaches the analyzer. the UI cannot 
 | OutputJson | `{"summary":"...","confidence":0.72,"factors":["category: observation","..."]}` |
 | AgentProfileKey | null (not used in this slice) |
 | CorrelationId | ASP.NET trace identifier |
-| DurationMs | real elapsed time from .NET's perspective |
+| DurationMs | real elapsed time from .NET's perspective — now included in the API response DTO |
 
 ---
 
@@ -210,7 +249,7 @@ smoke tests are part of the normal workflow. run `test-sports-dev.ps1` after sta
 
 raw values from the backend (factor categories, sport slugs, status strings) are lowercase by convention for internal consistency. before rendering in the UI, outward-facing text is formatted:
 
-- **factor categories:** `formatCategory()` in `app.ts` capitalizes the first letter after each space or `/`. `"rest/fatigue"` → `"Rest/Fatigue"`. `"injury report"` → `"Injury Report"`. applied to the category portion of factor chips only.
+- **factor categories:** `formatCategory()` in `app.ts` capitalizes the first letter after each space or `/`. `"rest/fatigue"` → `"Rest/Fatigue"`. `"injury report"` → `"Injury Report"`. applied to the category portion of factor cards only.
 - **status:** Angular `titlecase` pipe applied to `r.status` in the result panel tile.
 - **team names and sport names:** stored with correct casing in SQL; rendered as-is.
 

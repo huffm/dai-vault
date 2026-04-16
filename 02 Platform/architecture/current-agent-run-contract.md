@@ -1,6 +1,6 @@
 # current agent run contract
 
-**date:** 2026-04-10
+**date:** 2026-04-16
 **derived from:** actual code in `platform/dotnet/` and `apps/sports-app/`
 **status:** reflects what is implemented today — not a design target
 
@@ -24,7 +24,7 @@ migration added: `20260311223224_AddAgentRuns`
 | InputJson | string | raw JSON of the request input — no schema enforced |
 | OutputJson | string | raw JSON of the AI service response — no schema enforced |
 | ErrorMessage | string? | populated on failure |
-| CorrelationId | string? | not currently set by any caller |
+| CorrelationId | string? | set by `AgentRunsController` to `HttpContext.TraceIdentifier` (ASP.NET short request trace id) |
 | StartedUtc | datetime | set when row is created |
 | CompletedUtc | datetime? | set after ExecuteAsync returns |
 | DurationMs | long? | computed from StartedUtc/CompletedUtc |
@@ -77,7 +77,8 @@ it is an unstructured string. there is no `sections[]`, no `brief_id`, no `deliv
   "summary": "...",
   "confidence": 0.64,
   "factors": ["...", "...", "..."],
-  "createdUtc": "..."
+  "createdUtc": "...",
+  "durationMs": 1842
 }
 ```
 
@@ -116,10 +117,24 @@ these are the only contracts exchanged between .NET and FastAPI. .NET does not p
 
 ---
 
+## cross-layer correlation note
+
+two ids exist in the flow today. they are different values and should not be confused:
+
+| id | value | stored where |
+|---|---|---|
+| `AgentRun.CorrelationId` | `HttpContext.TraceIdentifier` — ASP.NET short trace id (e.g. `0HNCK4FSIM14L:00000001`) | `AgentRuns` table |
+| `X-Correlation-Id` header to FastAPI | `Activity.Current?.Id` — W3C trace format (e.g. `00-abc...def-01`) | FastAPI logs only |
+| `X-Agent-Run-Id` header to FastAPI | `AgentRun.AgentRunId` — stable public GUID | FastAPI logs only |
+
+`X-Agent-Run-Id` is the recommended cross-layer tracing anchor. it links a FastAPI log entry directly to the `AgentRuns` table row with no format mismatch.
+
+---
+
 ## what is not enforced today
 
 - `AgentProfileKey` — accepted in the request, stored as nullable on the row, but no profile is loaded or used during execution
 - `RunType` — free-form string with no registry or validation; anything can be passed
 - `OutputJson` schema — no validation; any JSON string FastAPI returns is stored and returned
-- `CorrelationId` — field exists on the entity, never set
 - auth on `AgentRunsController` — no `[Authorize]` attribute; production enforcement would require adding it and removing the dev bypass
+- `AgentRunService` has no dispatch by `RunType` — it hardcodes sports analysis; any non-sports run type would silently call the sports endpoint

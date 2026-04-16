@@ -2,9 +2,23 @@
 
 **product:** NFL and NBA pre-game brief
 **goal:** one paying subscriber before expanding to soccer or other sports
-**date:** 2026-04-10
+**date:** 2026-04-16
 
 strategy: build the thinnest vertical slice that produces a real brief for a real game. validate each layer before adding the next. do not build scheduling, billing, or alerts until the brief itself is worth delivering.
+
+---
+
+## current thin frontend status
+
+the live `apps/sports-app/` slice is no longer hypothetical:
+
+- real Angular -> .NET -> FastAPI sports analysis flow is working
+- the dev surface supports NFL, NBA, and MLB matchup reads
+- the current page architecture is stable: hero shell, left control rail, right `Matchup Read`, full-width `Factor Breakdown`
+- the page is intentionally single-page scroll with no answer/reasoning tabs
+- the atmospheric background now belongs to a fixed page-level layer, not a scroll-sized wrapper
+
+this means the next product-facing work should prioritize better structured analysis output and browser verification, not more shell churn.
 
 ---
 

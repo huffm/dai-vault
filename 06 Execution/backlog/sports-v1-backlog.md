@@ -1,11 +1,29 @@
 # backlog: sports-v1
 
 **product:** NFL and NBA pre-game brief
-**date:** 2026-04-10
+**date:** 2026-04-16
 
 items are grouped by layer: platform work (reusable across niches) vs sports-specific work (owned by sports-analytics). build platform primitives only when the sports-specific work requires them — not speculatively.
 
 items marked `stretch` are in scope but lower priority.
+
+---
+
+## current matchup analyzer refinements
+
+near-term work for the live `apps/sports-app/` dev slice. these items are narrower than the full sports-v1 product backlog and should be handled before larger frontend changes.
+
+| task | notes | priority |
+|---|---|---|
+| validate shared picker behavior in browser | sport stays non-searchable; team pickers stay searchable; confirm mouse, keyboard, and mobile behavior | high |
+| validate fixed atmospheric background on long pages | confirm empty, populated, and long-scroll states stay continuous with no seam or darker restart band | high |
+| preserve display-value rule for sport labels | lowercase slugs stay internal only; all outward-facing sport labels resolve from `displayName` | high |
+| keep hero shell / main-row rails / full-width factor breakdown pattern stable | preserve single-page scroll, no tabs, answer first / reasoning second | high |
+| add a real structured lean field only when the contract supports it | do not infer a pick from summary text; use neutral fallback until the backend exposes a lean | high |
+| improve backend result quality before more frontend chrome | richer structured answer output beats adding more surface area or filler modules | high |
+| replace stale frontend tests and stale docs as the slice changes | do not leave scaffold-era assertions or vault drift behind | high |
+| validate sticky scroll behavior across pills, dropdowns, and lower sections | control rail can stay sticky, but it must not overlap factor breakdown or later content during scroll | high |
+| defer generic picker renaming until reuse pressure exists | current shared component surface is generic enough; avoid churn-only renames in this slice | medium |
 
 ---
 

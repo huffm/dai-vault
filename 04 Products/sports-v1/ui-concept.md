@@ -1,6 +1,6 @@
 # ui concept: sports-v1
 
-**date:** 2026-04-11 (updated)
+**date:** 2026-04-16 (ui/visual slice completed)
 **product:** NFL, NBA, and MLB pre-game brief
 **target:** recreational bettors who research their own picks and want signal context, not a conclusion
 
@@ -10,33 +10,137 @@
 
 the matchup analyzer at `apps/sports-app/` (port 4201) is the working dev surface for this product. it is not the full product concept described below — it is the thin input/output tool used during development.
 
-**current design direction:** layered light theme. app shell `#E6ECF3` (cool blue-gray), white card surfaces with a two-layer diffuse shadow (no border), deep navy primary button and anchor color (`#1E3A5F`, hover `#16314F`), dark slate typography (`#0F172A` headings, `#334155` body), blue-gray focus accent (`#5B84B1`), blue-gray factor chips (`#EAF1F8` bg / `#274060` text). not a dark theme. not bright white. result panel has thin dividers between summary, stat tiles, and factors.
+**current page architecture:** the live page is a single-page scroll surface with four coordinated layers.
 
-**reactive polish in place:** the form disables during analysis submission and re-enables on completion or error (`emitEvent: false` is used to prevent the disable/enable cycle from triggering downstream reactive subscriptions). the analyze button shows an inline spinner while in flight. the result panel shows an animated skeleton during flight. team dropdowns show "loading teams..." while fetching. the game date dropdown shows "loading dates..." or "no upcoming matchups found" depending on state.
+- **hero shell**: product label, `Matchup Analyzer` heading, setup copy, and a metadata chip row that appears after sport and both teams are selected.
+- **left control rail**: sticky on desktop, stacked in normal flow on mobile. holds sport/team/date selection, the primary action, and the supporting utility block below it.
+- **right primary card**: `Matchup Read` is the answer surface. it owns the empty state, loading state, error state, analyzed matchup metadata, current lean slot, summary, status, confidence, and diagnostics.
+- **full-width supporting section**: `Factor Breakdown` sits below the main row as a wider reasoning layer so factor text can breathe horizontally.
 
-**utility area below the Analyze button — dual-mode:** the space below the Analyze button switches between two states using Angular's `@if / @else` control flow, driven by the `analysisDetails` computed signal.
+this pattern should remain stable. future game-list and brief surfaces can reuse the same surface language even if the information architecture changes.
 
-- **before analyze** (pre-submit, analyzing, error): a lightweight two-line strip. line 1 is the `narration` computed — phase-aware status covering idle guidance, in-flight cycling messages, and error state. line 2 is the `contextLine` computed — subordinate context shown only when useful: date source label when both teams are set but no date is picked (`Date source: live schedule` or `Date source: synthetic (dev)`), compact matchup preview when all fields are complete or analysis is in flight. line 2 renders only when non-null; no placeholder space.
+**hierarchy decision:** do not add filler cards just to make the page feel more square. do not move the control rail into a full-width section for visual symmetry. do not hide the answer and reasoning behind true tabs. the correct reading model is still:
 
-- **after analyze** (result present, no error): a compact **Analysis Details** block replaces the strip. four label/value rows: Analysis mode (`Pre-game read`), Team source (`{Sport} team list`), Date mode (`Live schedule` or `Synthetic (dev)`), Signal quality (`Strong` / `Mixed` / `Weak`). same visual language as the result panel section labels — `text-xs`, muted label, medium-weight value, no card or border. on any upstream field change that clears the result, the strip returns automatically.
+- `Configure Matchup` = left control rail
+- `Matchup Read` = primary answer card in the right column
+- `Factor Breakdown` = wider supporting reasoning section below the row
+- single-page scroll = default interaction model on both desktop and mobile
+- future modules are allowed only if they add real product value, not layout filler or geometry
 
-- **in-flight messages** are advanced by an `interval` observable writing into an `analysisPhase` signal; this is the designed seam for future backend progress events — replace `interval()` with a backend event stream observable, map payloads to phase indices, and `narration` computed works unchanged.
+**current visual system:** premium editorial sports-intelligence feel. warm off-white cards sit on a cooler atmospheric page field with restrained navy accents.
 
-copy throughout is product-friendly and high-level: no raw run types, no agent internals, no chain of thought, no prompt content. error states show a fixed string; backend error detail is not forwarded to the UI.
+- page field: fixed atmospheric background owned by `body::before`. the field uses a 135° diagonal gradient — darker cool-steel at the top-left, opening to a lighter airy tone at the bottom-right. a soft support radial at the bottom-right corner reinforces the lighter end. the `fixed` positioning means the field stays continuous on long pages with no seams or restart bands.
+- background tokens (current `styles.css`):
+  - html fallback: `#b8c4cd`
+  - body::before base: `#b8c4cd`
+  - main diagonal: `linear-gradient(135deg, #8a9aae 0%, #b0becb 14%, #dce5ed 100%)`
+  - support radial: `radial-gradient(ellipse 75% 65% at 90% 88%, rgba(230,238,244,0.38) 0%, transparent 100%)`
+- panel surface: `#f6f3ee`
+- supporting section surface: `#f4f0e9`
+- inner surface: `#ebe6df`
+- control surface: `#fcfbf8`
+- anchor navy: `#0d2745`
+- navy hover: `#12345b`
+- border: `#b8c2cf`
+- label/body text family: `#46586d` through `#405267`
+- helper text family: `#74879d` through `#5c6e82`
+- premium-control shadow: `0 1px 3px rgba(10,18,36,0.10), 0 4px 14px rgba(10,18,36,0.07)`
 
-**result panel diagnostics:** a separate `resultDiagnostics` computed below the confidence tile interprets the confidence band as a plain-language sentence (`Clean signal. The factors lined up.` / `Mixed picture. Some signals lined up, others pulled against each other.` / `Weak signal. Thin data to work with.`). complements the one-word Signal quality label in the utility area without duplicating it.
+system font stack is inherited from `styles.css`. hierarchy is built through weight, spacing, tone, and shell definition rather than mixed font families.
 
-**dependent field flow:** sport → home team → away team → available game dates. each upstream change cascades: sport change clears teams, dates, gameDate, and result; team change clears dates, gameDate, and result; date change clears result. dates are fetched from the backend only when both teams are set.
+**gradient direction rule:** the page background direction is darker top-left, lighter bottom-right. do not revert to a vertical gradient or flip the diagonal axis. this is stable visual direction.
 
-**game date stub mode:** in dev (`useStubSchedule: true` in `environment.development.ts`), `SportsApiService.getMatchupDates()` returns a synthetic 14-day window locally without calling the backend. the narration strip shows `Ready to analyze. Using synthetic dates in dev mode.` when this mode is active — no separate label is rendered. in production (`useStubSchedule: false`), the real endpoint is called and returns `[]` until a schedule data source is connected — no synthetic dates are ever returned by the backend.
+**current interaction language:** subtle, shared, and restrained.
 
-**post-analyze state:** after analysis completes, all form selections stay populated. the result panel shows a compact "Analyzed Matchup" section at the top with sport, matchup (away @ home), and date — so the user knows exactly what the result corresponds to. this section clears alongside the result if any upstream field changes.
+- shared control family uses `premium-interactive`, `premium-control`, `premium-button`, and `premium-surface`
+- real controls get slight lift, richer shadow, and clearer focus treatment
+- informational chips and section markers stay non-interactive
+- active states can fill strongly; passive metadata chips should stay restrained
+- do not turn the page into a marketing-gradient or brightly filled badge system
 
-**team selection:** sport and team inputs are pre-populated dropdowns backed by SQL reference data — not free text. sport has no default — user must select explicitly on each session. each team dropdown excludes the value selected in the other to prevent same-team matchups.
+**control-system decision:** sport, team a, and team b now use the same picker family. this is the correct direction and should remain the default unless a future product surface proves it insufficient.
 
-**Angular patterns in use:** signals and `computed()` for reactive state and all derived presentation; `toSignal()` to bridge `valueChanges` observables into the signal graph; `@if` / `@for` control flow blocks. observables remain the path for async and event sources — they are bridged into signals at the rendering boundary, not replaced by signals. latest Angular features are used where they add real value; no unnecessary abstraction is introduced.
+- sport uses the shared picker in non-searchable mode
+- team a and team b use the shared picker in searchable mode
+- all three controls share the same shell, border, spacing, selected-chip treatment, clear affordance, and dropdown styling
+- do not split sport back out into a one-off native select or a different custom control
 
-this design direction should carry forward into the product UI. the game list and brief view described below should follow the same palette.
+the implementation class is still named `TeamPickerComponent`, but its input surface is already generic. renaming it is not required in this slice and would be churn without product value.
+
+**display-value rule:** internal values may stay lowercase (`nfl`, `nba`, `mlb`) for contracts and routing. outward-facing UI must always use display labels from the sports reference data. if a display label lookup ever fails, the fallback should still avoid showing a raw lowercase slug.
+
+current outward-facing sport paths:
+
+- sport picker selected chip
+- hero metadata chip row
+- analyzed matchup metadata
+- analysis details block (`{Sport} team list`)
+
+this rule should remain stable across the later game list and brief views.
+
+**lean module pattern:** the top of `Matchup Read` now reserves a compact answer module for the current lean.
+
+- it sits below `Analyzed Matchup` and above `Summary`
+- it is a compact highlight module, not a hero banner
+- if a structured lean field exists later, it should render there directly
+- if no lean field exists, the module must stay neutral and explicit (`Lean unavailable`)
+- do not infer a pick from summary text or factor language
+
+**hero metadata behavior:**
+
+- sport chip appears once sport is selected
+- matchup chip appears once both teams are selected
+- date chip appears once a specific event/date is selected
+- `dev` chip appears only when the schedule source is synthetic
+
+**current state model:** the app already handles the important phase changes cleanly.
+
+- idle guidance before a sport is selected
+- team loading after sport selection
+- date loading after both teams are selected
+- ready state once date is selected
+- in-flight analysis with rotating narration messages
+- error state with fixed product copy
+- idle `Matchup Read` uses an anchored inner empty-state panel rather than a loose placeholder
+- completed state resolves into an answer-first flow: analyzed matchup, current lean, summary, status/confidence, diagnostics, then factor tiles below the row
+- factor tiles are supporting reasoning cards: stronger title, calmer body copy, two-column on larger screens, one-column on smaller screens
+
+the form disables during submission and re-enables on success or error using `emitEvent: false`. upstream changes clear downstream selections and any stale result content. selected matchup context persists after analyze so the user can verify what the result belongs to.
+
+**scroll and background constraints:**
+
+- the sticky control rail must stay structurally confined to the top row
+- lower sections like `Factor Breakdown` must live outside that sticky row so date pills, chips, and picker surfaces do not paint over later content during scroll
+- the atmospheric page field must belong to a dedicated page-level layer, not a scroll-sized content wrapper, so long populated pages do not show seams or darker restart bands
+
+**utility area below the primary action:** this area intentionally has two modes.
+
+- before analyze: a two-line status strip driven by `narration` and `contextLine`
+- after analyze: a compact `Analysis Details` block driven by `analysisDetails`
+
+this split is correct. it keeps the control rail informative before submission and concise after submission without introducing another card or panel.
+
+**accessibility and resilience:** the shared picker family should keep improving, but only in ways that preserve the current interaction model. current direction:
+
+- keep explicit labels on each control
+- keep clear buttons on selected chips
+- keep keyboard- and screen-reader-friendly dropdown semantics
+- keep placeholder text instructional, not decorative
+
+**visual direction is stable.** the current gradient system, card palette, and interaction language should not be casually reopened. the diagonal background direction, shadow values, and warm/cool contrast are resolved.
+
+**near-term UI refinements (open):**
+
+- validate the picker family in browser across keyboard, mobile, and loading states
+- browser-check the fixed atmospheric background across empty, populated, and long-scroll states
+- keep outward-facing sport labels display-safe everywhere as the app grows
+- preserve the hero shell / main-row rails / full-width factor breakdown pattern while the backend output gets richer
+- add a real structured lean field only when the backend contract actually supports it
+- improve backend result quality and structure before inventing more frontend chrome
+- consider future modules only if they add real user value to the read, not because the page needs another box
+- surface `durationMs` from the response in the UI analysis details block (data is now in the response; UI still derives this client-side)
+
+this design direction should carry forward into the product UI. the game list and brief view described below should reuse the same sense of hierarchy and restraint even if their layouts differ.
 
 ---
 

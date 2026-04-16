@@ -12,10 +12,10 @@ a signal-scored game brief for NFL and NBA that tells a sharp recreational betto
 - not a real-time in-game product
 
 ## v1 sports
-NFL and NBA. soccer, MLB, NHL, and college sports are later expansion — not part of v1.
+commercial v1 remains NFL and NBA first. the current dev slice also supports MLB so the live frontend/reference-data path is exercised across three leagues.
 
 ## delivery
 email (starter), slack/webhook (pro). brief arrives morning of game day for same-week games, 24 hours before kickoff for early-week scheduling.
 
 ## status
-pre-build. niche thesis validated. data sources identified. workflow design ready.
+thin frontend slice is live and the end-to-end sports analysis path is real. paid-product scope, richer data coverage, and delivery quality are still in progress.
