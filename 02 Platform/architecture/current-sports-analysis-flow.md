@@ -1,6 +1,6 @@
 # current sports analysis flow
 
-**date:** 2026-04-16
+**date:** 2026-04-18
 **derived from:** actual code in `apps/sports-app/`, `platform/dotnet/`, and `services/agent-service/`
 **status:** reflects what is implemented today — not a design target
 
@@ -8,7 +8,7 @@
 
 ## supported sports
 
-NFL, NBA, and MLB. each sport has its own system prompt in `sports_analyzer.py`. the live backend response is still `{ summary, confidence, factors[] }`. the frontend result model now also reserves an optional `lean?: string | null` field for future contract growth, but the backend does not populate it yet.
+NFL, NBA, and MLB. each sport has its own system prompt in `sports_analyzer.py`. the backend response is `{ lean, summary, confidence, factors[] }`. lean is an optional string — `"edge toward [team] based on [reason]"` or `"signals are split"` — emitted by the model and propagated through all contract layers to the Angular `Current Lean` module.
 
 ---
 
@@ -41,14 +41,21 @@ Angular sports-app
       → IdentityResolver (dev bypass: TenantKey=1, UserKey=1)
       → AppDbContext: INSERT AgentRun (status=pending)
       → AgentRunService.ExecuteAsync()
-        → FastApiClient.AnalyzeSportsMatchupAsync()
+          [nfl only] → OddsMarketClient.GetNflSpreadAsync()
+                         → GET /v4/sports/americanfootball_nfl/odds?regions=us&markets=spreads&...
+                         ← NflMarketContext { HomeTeam, AwayTeam, HomeSpread, AwaySpread, Bookmaker, UpdatedAt }
+                            or null (offseason, api error, no matching event)
+        → FastApiClient.AnalyzeSportsMatchupAsync(req with NflMarket?)
           → POST http://127.0.0.1:8000/api/sports/analyze  (X-Correlation-Id + X-Agent-Run-Id headers attached)
             → app/routes/sports.py: validates sport, logs agent_run_id + correlation_id + matchup details
-            → app/services/sports_analyzer.py: calls gpt-4o-mini with sport-specific prompt
-          ← SportsAnalysisResponse { summary, confidence, factors }
-        ← AgentRunExecutionResult { Summary, Confidence, Factors }
+            → app/services/sports_analyzer.py:
+                [nfl] builds user message with [market data] block if NflMarketContext present
+                      injects "omit market factor" instruction if no context
+                calls gpt-4o-mini with sport-specific system prompt + user message
+          ← SportsAnalysisResponse { lean, summary, confidence, factors }
+        ← AgentRunExecutionResult { Lean, Summary, Confidence, Factors }
       → AppDbContext: UPDATE AgentRun (status=completed, OutputJson, CompletedUtc, DurationMs)
-      ← AgentRunResultDto { agentRunId, status, summary, confidence, factors, createdUtc, durationMs }
+      ← AgentRunResultDto { agentRunId, status, lean, summary, confidence, factors, createdUtc, durationMs }
     ← HTTP 200
   ← render page surfaces:
       hero shell
@@ -111,12 +118,19 @@ files: `app.ts`, `app.html`, `sports-api.service.ts`, `core/models/agent-run.mod
 - completed state renders analyzed matchup, current lean, summary, status/confidence, diagnostics, and factor tiles
 - hero chips are computed from selected sport, teams, and resolved event/date; the `dev` chip appears only when stub schedule mode is active
 
+**run metadata visibility:**
+- `agentRunId` is now surfaced in the Analysis Details block (left control rail) as the first 8 characters in monospace, with the full UUID on hover via `title` attribute
+- `durationMs` is now surfaced as a formatted "Run time" row (e.g., `1.2s` or `850ms`); conditional — only shown when the backend provides a non-null value
+- these appear in the Analysis Details block below Signal quality, using the same label: value row pattern
+- the correlation path `agentRunId` → `AgentRun.AgentRunId` → `X-Agent-Run-Id` in FastAPI logs is now usable without DevTools
+
 **current lean slot:**
-- the frontend reserves a `Current Lean` module in `Matchup Read`
-- `AgentRunResultDto` in the frontend includes optional `lean?: string | null`
-- the current backend contract does **not** provide a structured lean/pick/winner field yet
-- when no lean field exists, the UI renders a neutral fallback (`Lean unavailable`)
-- the UI does not infer a pick from `summary` or `factors`
+- the `Current Lean` module in `Matchup Read` is now populated from the backend
+- FastAPI emits `lean` as a one-sentence directional signal: `"edge toward [team] based on [reason]"` or `"signals are split"`
+- lean flows through `SportsAnalysisResponse → AgentRunExecutionResult → AgentRunResultDto` at every layer
+- `AgentRunResultDto` in the frontend has `lean?: string | null`; the `currentLean()` computed renders it as the primary text in the lean module
+- lean is optional throughout — if the model omits it or returns an empty string, `_parse_response` normalizes to `None` and the frontend falls back to "Lean unavailable"
+- the UI does not infer a pick from `summary` or `factors`; lean is the only directional output
 
 **sport display rule:**
 - internal sport values remain lowercase slugs (`nfl`, `nba`, `mlb`)
@@ -164,12 +178,36 @@ typed `HttpClient` that calls `api.the-odds-api.com` to look up scheduled matchu
 - on exception: updates row to `failed`, sets `ErrorMessage`
 - returns `AgentRunResultDto`
 
+### .NET: `DevCore.Api/Sports/OddsMarketClient.cs`
+
+typed `HttpClient` that fetches current nfl spread data from the odds api before each nfl analysis. owned in .NET for the same reason as `OddsScheduleClient`: the api key is in .net user secrets, and deterministic data retrieval belongs in the platform layer, not the ai reasoning layer.
+
+- `GetNflSpreadAsync(homeTeam, awayTeam, gameDate, ct)` — returns `NflMarketContext?`
+- calls `/v4/sports/americanfootball_nfl/odds?regions=us&markets=spreads&commenceTimeFrom=...&commenceTimeTo=...` bracketed to the game date in eastern time
+- bookmaker preference: `draftkings > fanduel > betmgm > caesars > pinnacle > first available`
+- spread values formatted as signed strings: `"-3.5"` (favorite) or `"+3.5"` (underdog)
+- result cached for 15 minutes per team/date combination
+- returns `null` on any failure: network error, api non-2xx, offseason empty response, team name mismatch
+- uses same team name normalization map as `OddsScheduleClient` — keep in sync when entries change
+- **line movement is not available** via the standard `/odds` endpoint. the historical endpoint (`/v4/historical/sports/.../odds`) would require premium access and snapshot timestamps — explicitly deferred.
+
+### .NET: `DevCore.AiClient/NflMarketContext.cs`
+
+record that carries market spread data from .NET to FastAPI as part of `SportsAnalysisRequest`:
+```
+NflMarketContext { HomeTeam, AwayTeam, HomeSpread, AwaySpread, Bookmaker, UpdatedAt }
+```
+defined in `DevCore.AiClient` because it is part of the ai service contract, not a domain type. serialized as `nflMarketContext` (camelCase) by `JsonContent.Create` web defaults.
+
 ### .NET: `DevCore.Api/AgentRuns/AgentRunService.cs`
 
 - `ExecuteAsync` dispatches by `req.RunType` using a switch expression
 - `RunTypes.SportsMatchupAnalysis` (`"sports.matchup.analysis"`) routes to `ExecuteSportsMatchupAsync`
 - unknown run types throw `NotSupportedException` — the controller persists the run as `failed`
-- `ExecuteSportsMatchupAsync` maps `SportsMatchupInput` to `SportsAnalysisRequest { Sport, HomeTeam, AwayTeam, GameDate }` and calls `FastApiClient.AnalyzeSportsMatchupAsync()`
+- `ExecuteSportsMatchupAsync` now:
+  1. if sport is `nfl`: calls `OddsMarketClient.GetNflSpreadAsync()` before building the ai request
+  2. builds `SportsAnalysisRequest { Sport, HomeTeam, AwayTeam, GameDate, NflMarket? }` and calls `FastApiClient.AnalyzeSportsMatchupAsync()`
+  3. `NflMarket` is null if the odds call failed or returned no data — fastapi falls back gracefully
 - known run type strings live in `RunTypes` static class in `AgentRunContracts.cs` — add new entries there when new run types are introduced
 - no sport validation at this layer — FastAPI enforces the supported sport list and returns 400 for unknowns
 
@@ -191,8 +229,15 @@ app module lives under `services/agent-service/app/`. entry point is `services/a
 - `app/services/sports_analyzer.py`: one async function per sport (`analyze_nfl`, `analyze_nba`, `analyze_mlb`); each uses a sport-specific system prompt; all call `gpt-4o-mini` with `response_format=json_object` and `temperature=0.3`; shared `_call_model` and `_parse_response` helpers avoid duplication; confidence is clamped 0.0–1.0 in `_parse_response`
 - `app/models/sports.py`: Pydantic models `SportsAnalysisRequest` and `SportsAnalysisResponse`
 
+**nfl market enrichment:**
+- `analyze_nfl` receives optional `market_context: NflMarketContext | None` from the route handler
+- when present: builds a `[market data]` block in the user message — home team, spread, bookmaker, timestamp — and instructs the model to use it for the `market` factor. model cites the real spread without fabricating movement.
+- when absent: appends `[no market data available]` to the user message and explicitly instructs the model to omit the market factor and not fabricate spread or line direction.
+- the nfl system prompt no longer instructs the model to "note direction, magnitude, and timing" (which caused fabrication). it now says: use only what is in the `[market data]` block.
+
 **factor format:** factors are structured as `"category: brief observation"` — not freeform phrases. sport-specific categories:
-- NFL: line movement, injury report, situational, weather (outdoor only), sharp/public
+- NFL (when market data present): market, injury report, situational, weather (outdoor only)
+- NFL (when no market data): injury report, situational, weather (outdoor only) — market factor omitted
 - NBA: rest/fatigue, injury report, matchup style, home court — weather never mentioned
 - MLB: starting pitching, bullpen, lineup form, ballpark
 
@@ -279,7 +324,11 @@ these concepts appear in vault docs but have no implementation in this path toda
 
 - signal scoring (+1 / 0 / -1 / null)
 - collector, evaluator, synthesizer, compliance stages
-- external data sources beyond schedule dates (actionnetwork, rotowire, open-meteo)
+- nfl line movement (opening vs current) — standard /odds endpoint does not provide it. requires historical snapshot endpoint (premium) — explicitly deferred
+- nba/mlb market enrichment — nfl is the only sport with market context in this slice; nba/mlb prompts are unchanged
+- injury data (rotowire) — no integration; model uses prior knowledge only
+- sharp/public split (actionnetwork) — no integration; removed from nfl system prompt in this slice to reduce fabrication surface
+- weather (open-meteo) — no integration; still mentioned in nfl system prompt as a structural category (model uses general knowledge)
 - delivery (email, webhook, slack)
 - scheduled triggers
 - tier enforcement

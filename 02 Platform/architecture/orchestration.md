@@ -1,13 +1,30 @@
 # orchestration
 
 **date:** 2026-04-18
-**status:** near-empty today. this document describes the target model. see `decision-intelligence-model.md` for full context on each layer.
+**status:** seam established. compose step named in code. agent/tool doctrine documented. see `decision-intelligence-model.md` for full context.
 
 ---
 
 ## current truth
 
 there is no orchestration layer today. `AgentRunService` calls FastAPI directly via `FastApiClient.AnalyzeSportsMatchupAsync`. the call is one step: analyze. the RunType dispatch switch in `AgentRunService` is the only routing logic that exists.
+
+**the orchestrator seam exists in code today:** `AgentRunService.ComposeDecisionArtifact` is a private static method in `DevCore.Api/AgentRuns/AgentRunService.cs`. it currently maps the analyzer output 1:1 to the decision artifact. when signal scoring exists, this method grows inputs and applies the orchestrator's composition logic — without changing the call signature from the controller's perspective.
+
+```csharp
+// today: trivial pass-through
+private static AgentRunExecutionResult ComposeDecisionArtifact(SportsAnalysisResponse analyzerOutput)
+    => new(Lean: ..., Summary: ..., Confidence: ..., Factors: ..., GroundedSignals: ...);
+
+// future: receives scored signals, applies weights, produces final lean + confidence
+private static AgentRunExecutionResult ComposeDecisionArtifact(
+    SportsAnalysisResponse analyzerOutput,
+    EvaluatorOutput evaluatorOutput,
+    CollectorOutput collectorOutput)
+    => ...;
+```
+
+**evidence quality is tracked in `OutputJson` today:** `AgentRunExecutionResult.GroundedSignals` carries which signal categories had real retrieved data (vs model priors). stored in `AgentRun.OutputJson`. not surfaced to the UI yet. the learning loop will use this to weight accuracy measurements per signal category.
 
 ---
 
@@ -84,13 +101,44 @@ SynthesizerOutput  =  DecisionArtifact  (see decision-intelligence-model.md §4)
 
 ---
 
+## agent/tool design doctrine
+
+**agents differ by role, not by exclusive tool ownership.** the same external API (e.g., The Odds API) may be called by a collector agent and by a signal-scorer agent using the same underlying client. what differs is the agent's objective, interpretation, and output contract — not which tools it can call.
+
+**tools are shared platform infrastructure.** `OddsMarketClient`, future `InjuryClient`, `WeatherClient` are tools. they belong to the platform, not to a specific agent. an agent profile declares which tools it uses; the tools themselves stay sport-agnostic.
+
+**profiles inject behavior.** the same collector role behaves differently for NFL vs NBA because the profile specifies different tools, different signal categories, and different null-handling rules. the role code stays stable; the profile drives variation.
+
+**do not hardcode niche rules into shared role code.** a collector should not contain an if-statement that says "if NFL, also fetch weather." that rule belongs in the niche config or agent profile. the collector calls whatever tools the profile authorizes.
+
+**current exception:** `AgentRunService.ExecuteSportsMatchupAsync` currently has a hard-coded `if (sport == "nfl")` check for market data. this is the correct deferral for now — there is only one sport with market enrichment. when a second sport uses market data, the if-statement moves into the niche config. do not generalize it prematurely.
+
+---
+
+## confidence ownership
+
+**analyzer confidence is provisional.** the model emits confidence based on the inputs in the prompt. it is not calibrated against signal scoring rules, cross-source weighting, or completeness metrics. it reflects what the model believes, not what the evidence objectively supports.
+
+**final confidence belongs to the orchestrator.** when the evaluate step exists:
+- the evaluator scores each signal category against thresholds
+- the scored signals produce an `aggregate_confidence` (high / medium / low or a calibrated float)
+- `ComposeDecisionArtifact` uses this to compute the final confidence
+- the analyzer's provisional value becomes one input, not the final answer
+
+**current contract:** `SportsAnalysisResponse.Confidence` is labeled "analyzer-local confidence" in its comments. `AgentRunExecutionResult.Confidence` is labeled "final confidence (today: passes through from analyzer)." the comment on `ComposeDecisionArtifact` makes the seam explicit. no behavioral change.
+
+---
+
 ## transition path
 
 the current single-step analysis does not need to be replaced immediately. the path is:
 
-1. RunType dispatch is done — `AgentRunService` routes by run type
-2. next: split the FastAPI call into typed collector input + analyzer output (begin structuring the handoff)
-3. then: promote collect / evaluate / synthesize to discrete service steps
-4. then: introduce the orchestrator as the coordinator of those steps
+1. RunType dispatch — done. `AgentRunService` routes by run type.
+2. collect step started — `OddsMarketClient` fetches market data before the analyzer call. `GroundedSignals` tracks what was retrieved.
+3. compose seam named — `ComposeDecisionArtifact` is the explicit seam in code. trivial today, grows when scoring exists.
+4. next: promote the collect step to a typed `CollectorOutput` — structured, nullable fields, source statuses
+5. then: add evaluate step — score signals against thresholds, produce `EvaluatorOutput`
+6. then: `ComposeDecisionArtifact` consumes evaluator output and produces final lean + confidence
+7. then: introduce the orchestrator as coordinator when two meaningfully different pipeline configurations exist
 
-do not introduce the orchestrator layer until there are at least two meaningfully different pipeline configurations that justify the abstraction.
+do not introduce the orchestrator coordinator until there are at least two meaningfully different pipeline configurations that justify the abstraction.

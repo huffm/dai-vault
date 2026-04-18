@@ -70,9 +70,11 @@ those concerns belong in the agents and niche config.
 
 ## 4. decision artifact design
 
-**current truth:** the API returns `{ summary, confidence, factors[] }`. there is no lean field, no signal table, no counter-signals, no source citations, no provenance.
+**current truth:** the API returns `{ lean, summary, confidence, factors[], groundedSignals[] }`. lean is present. `groundedSignals` tracks which signal categories had real retrieved data. `confidence` is the analyzer's provisional local estimate — it is NOT the final decision confidence. there is no signal table, no counter-signals, no source citations, no provenance yet.
 
-**near-term direction:** add `lean` to the backend response. lean is a compact directional signal — which side the evidence favors and how strongly — distinct from the narrative summary. this is the smallest meaningful step toward a structured decision artifact.
+**what `AgentRunExecutionResult` is today:** a proxy decision artifact. it carries the fields of the decision artifact shape, but confidence and lean are taken directly from the single analyzer output — not from an orchestrated scoring pass. the seam for changing this is `AgentRunService.ComposeDecisionArtifact`. when signal scoring exists, that method computes final lean and confidence from evaluator output, not from the analyzer directly.
+
+**near-term direction:** add `lean` to the backend response — done. next: promote the collect step to a typed `CollectorOutput` with nullable fields and source statuses so the evaluate step has something to score against.
 
 **longer-term target:** the full decision artifact is the platform's primary output unit. it is what the UI renders, what delivery formats, and what the learning loop stores as the baseline for outcome comparison.
 

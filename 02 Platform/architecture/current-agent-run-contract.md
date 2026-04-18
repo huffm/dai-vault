@@ -1,6 +1,6 @@
 # current agent run contract
 
-**date:** 2026-04-16 (RunType dispatch slice completed)
+**date:** 2026-04-18 (structured lean slice completed)
 **derived from:** actual code in `platform/dotnet/` and `apps/sports-app/`
 **status:** reflects what is implemented today — not a design target
 
@@ -31,17 +31,20 @@ migration added: `20260311223224_AddAgentRuns`
 
 ### what OutputJson currently contains
 
-OutputJson is written as the raw serialized `SportsAnalysisResponse` from FastAPI:
+OutputJson is written as the raw serialized `AgentRunExecutionResult` (which now includes lean):
 
 ```json
 {
+  "lean": "edge toward Chiefs based on rest advantage and line movement since open.",
   "summary": "...",
   "confidence": 0.64,
   "factors": ["...", "...", "..."]
 }
 ```
 
-it is an unstructured string. there is no `sections[]`, no `brief_id`, no `delivery_status`, and no sport identifier in the stored output. the shape is whatever FastAPI returns — the .NET layer does not validate or enforce it.
+it is an unstructured string. there is no `sections[]`, no `brief_id`, no `delivery_status`, and no sport identifier in the stored output. the shape is whatever FastAPI returns mapped through the service layer — the .NET layer does not validate or enforce the content.
+
+**lean field:** optional (`string? / null`). present when the model successfully emits a directional signal. absent (null) when the model does not include it or the value is empty. stored as-is in OutputJson and returned in the response DTO.
 
 ---
 
@@ -74,6 +77,7 @@ it is an unstructured string. there is no `sections[]`, no `brief_id`, no `deliv
 {
   "agentRunId": "...",
   "status": "completed",
+  "lean": "edge toward Chiefs based on rest advantage and line movement since open.",
   "summary": "...",
   "confidence": 0.64,
   "factors": ["...", "...", "..."],
@@ -81,6 +85,8 @@ it is an unstructured string. there is no `sections[]`, no `brief_id`, no `deliv
   "durationMs": 1842
 }
 ```
+
+`lean` is positioned before `summary` to reflect decision-first ordering: the directional signal leads, the fuller explanation follows. `lean` may be null if the model response did not include it.
 
 ### response body (failure)
 
@@ -110,10 +116,10 @@ SportsAnalysisRequest { Sport, HomeTeam, AwayTeam, GameDate }
 response received from FastAPI:
 
 ```
-SportsAnalysisResponse { Summary, Confidence, Factors[] }
+SportsAnalysisResponse { Lean?, Summary, Confidence, Factors[] }
 ```
 
-these are the only contracts exchanged between .NET and FastAPI. .NET does not parse or validate the content of `Summary` or `Factors` — it stores them as-is and returns them in the DTO.
+these are the only contracts exchanged between .NET and FastAPI. .NET does not parse or validate the content of `Lean`, `Summary`, or `Factors` — it stores them as-is and returns them in the DTO. `Lean` is optional (`string?`); null is a valid value when the model does not emit a lean.
 
 ---
 
