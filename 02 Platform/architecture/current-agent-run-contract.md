@@ -1,6 +1,6 @@
 # current agent run contract
 
-**date:** 2026-04-16
+**date:** 2026-04-16 (RunType dispatch slice completed)
 **derived from:** actual code in `platform/dotnet/` and `apps/sports-app/`
 **status:** reflects what is implemented today — not a design target
 
@@ -131,10 +131,25 @@ two ids exist in the flow today. they are different values and should not be con
 
 ---
 
+## RunType dispatch
+
+`AgentRunService.ExecuteAsync` now dispatches by `RunType` using a switch expression.
+
+**known run types** are defined in `RunTypes` (static class in `AgentRunContracts.cs`):
+
+| constant | string value | handler |
+|---|---|---|
+| `RunTypes.SportsMatchupAnalysis` | `"sports.matchup.analysis"` | `ExecuteSportsMatchupAsync` (private method) |
+
+**unknown run types** throw `NotSupportedException("run type '...' is not supported")`. the controller catches this as an unhandled exception, marks the `AgentRun` row `failed`, stores the message in `ErrorMessage`, and re-throws (resulting in a 500 response to the client).
+
+**input contract note:** `CreateAgentRunRequest.Input` is currently typed as `SportsMatchupInput` — sports-specific fields only. when a second run type is introduced, `Input` will need to become a generic envelope (e.g. `JsonElement`) and each run type will own its own input shape. this is documented in a comment on the record.
+
+---
+
 ## what is not enforced today
 
 - `AgentProfileKey` — accepted in the request, stored as nullable on the row, but no profile is loaded or used during execution
-- `RunType` — free-form string with no registry or validation; anything can be passed
 - `OutputJson` schema — no validation; any JSON string FastAPI returns is stored and returned
 - auth on `AgentRunsController` — no `[Authorize]` attribute; production enforcement would require adding it and removing the dev bypass
-- `AgentRunService` has no dispatch by `RunType` — it hardcodes sports analysis; any non-sports run type would silently call the sports endpoint
+- `CreateAgentRunRequest.Input` typed as `SportsMatchupInput` — will need generalization before a second run type can be added

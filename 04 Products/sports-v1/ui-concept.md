@@ -1,6 +1,6 @@
 # ui concept: sports-v1
 
-**date:** 2026-04-16 (ui/visual slice completed)
+**date:** 2026-04-18 (dark mode redesign completed)
 **product:** NFL, NBA, and MLB pre-game brief
 **target:** recreational bettors who research their own picks and want signal context, not a conclusion
 
@@ -19,7 +19,11 @@ the matchup analyzer at `apps/sports-app/` (port 4201) is the working dev surfac
 
 this pattern should remain stable. future game-list and brief surfaces can reuse the same surface language even if the information architecture changes.
 
-**hierarchy decision:** do not add filler cards just to make the page feel more square. do not move the control rail into a full-width section for visual symmetry. do not hide the answer and reasoning behind true tabs. the correct reading model is still:
+**hierarchy decisions:**
+
+- eyebrow pill labels (`PRIMARY READ`, `CONTRIBUTING FACTORS`) are removed. section titles stand on their own. pill labels added unnecessary UI chrome and felt like internal system language rather than product-facing copy.
+- unified divider system: `border-b border-[#22344a] pb-4 lg:pb-5` wraps the heading in all four main section headers — hero block, configure matchup, matchup read, factor breakdown. same class, same values, no variants.
+- do not add filler cards just to make the page feel more square. do not move the control rail into a full-width section for visual symmetry. do not hide the answer and reasoning behind true tabs. the correct reading model is still:
 
 - `Configure Matchup` = left control rail
 - `Matchup Read` = primary answer card in the right column
@@ -27,36 +31,48 @@ this pattern should remain stable. future game-list and brief surfaces can reuse
 - single-page scroll = default interaction model on both desktop and mobile
 - future modules are allowed only if they add real product value, not layout filler or geometry
 
-**current visual system:** premium editorial sports-intelligence feel. warm off-white cards sit on a cooler atmospheric page field with restrained navy accents.
+**current visual system:** dark navy workspace. near-black base field, layered card surfaces with subtle tonal gradients, restrained cobalt accent. visual language influenced by premium desktop product software — clean, dark, and dimensionally hierarchical.
 
-- page field: fixed atmospheric background owned by `body::before`. the field uses a 135° diagonal gradient — darker cool-steel at the top-left, opening to a lighter airy tone at the bottom-right. a soft support radial at the bottom-right corner reinforces the lighter end. the `fixed` positioning means the field stays continuous on long pages with no seams or restart bands.
+- page field: fixed atmospheric background owned by `body::before`. single smooth `150deg` diagonal linear gradient from deepest near-black at the corners to slightly warmer dark navy toward the lower-right. `fixed` positioning keeps the field continuous on long pages with no seams.
 - background tokens (current `styles.css`):
-  - html fallback: `#b8c4cd`
-  - body::before base: `#b8c4cd`
-  - main diagonal: `linear-gradient(135deg, #8a9aae 0%, #b0becb 14%, #dce5ed 100%)`
-  - support radial: `radial-gradient(ellipse 75% 65% at 90% 88%, rgba(230,238,244,0.38) 0%, transparent 100%)`
-- panel surface: `#f6f3ee`
-- supporting section surface: `#f4f0e9`
-- inner surface: `#ebe6df`
-- control surface: `#fcfbf8`
-- anchor navy: `#0d2745`
-- navy hover: `#12345b`
-- border: `#b8c2cf`
-- label/body text family: `#46586d` through `#405267`
-- helper text family: `#74879d` through `#5c6e82`
-- premium-control shadow: `0 1px 3px rgba(10,18,36,0.10), 0 4px 14px rgba(10,18,36,0.07)`
+  - html fallback: `#060e18`
+  - body::before base: `#060e18`
+  - main diagonal: `linear-gradient(150deg, #04080e 0%, #060e18 40%, #091623 100%)`
+  - no radial layers — the previous atmospheric radial was removed because its center at `50% -5%` produced a visible blue glow band at the viewport top edge
+- card surface classes (defined in `styles.css`):
+  - `.card-surface` — hero, control rail, result card: `linear-gradient(160deg, #142238 0%, #0f1b2e 55%, #0c1829 100%)`
+  - `.card-surface-deep` — factor breakdown section: `linear-gradient(160deg, #0f1b2e 0%, #0c1829 55%, #091422 100%)`
+- inset layer: `#0c1628` — stat cells, empty-state containers, disabled fields
+- raised inner surface: `#122033` — lean card, factor cards, empty-state icon chip
+- card ring: `ring-1 ring-[#2a3f5a]/80`
+- accent: `#2b74ff` — primary button, active date pills, focus rings, empty-state icon tint
+- accent hover: `#3b82ff`
+- border subtle: `#22344a` — section dividers, control borders, card rings
+- border mid: `#29415c` — hover borders, stronger separators
+- text primary: `#eef4fb`
+- text secondary: `#9eb0c8` — form labels, body copy
+- text muted: `#7688a3` — helper text, metadata, placeholders
+- focus ring: `rgba(59,130,255,0.35)`
 
-system font stack is inherited from `styles.css`. hierarchy is built through weight, spacing, tone, and shell definition rather than mixed font families.
+**card depth hierarchy:** four tiers from outermost to most recessed:
+1. page field — near-black gradient, no card chrome
+2. `.card-surface` — main cards; subtle lighter top-left, deeper bottom-right gradient; `inset 0 1px 0 rgba(255,255,255,0.06)` top edge highlight; `ring-1 ring-[#2a3f5a]/80` border definition
+3. `.card-surface-deep` — factor section; one step darker; `inset 0 1px 0 rgba(255,255,255,0.04)` top edge
+4. `#0c1628` inset — stat cells and empty-state containers; deepest layer; `inset 0 2px 4px rgba(0,0,0,0.25)` recessed shadow
 
-**gradient direction rule:** the page background direction is darker top-left, lighter bottom-right. do not revert to a vertical gradient or flip the diagonal axis. this is stable visual direction.
+system font stack is inherited from `styles.css`. hierarchy is built through weight, spacing, tone, and surface tier rather than mixed font families.
+
+**visual direction is locked:** dark navy direction, card surface gradient system, cobalt accent, and hover interaction family are stable. do not reintroduce any light or warm-toned surfaces. do not add radial glow layers to the page background.
 
 **current interaction language:** subtle, shared, and restrained.
 
-- shared control family uses `premium-interactive`, `premium-control`, `premium-button`, and `premium-surface`
-- real controls get slight lift, richer shadow, and clearer focus treatment
-- informational chips and section markers stay non-interactive
-- active states can fill strongly; passive metadata chips should stay restrained
-- do not turn the page into a marketing-gradient or brightly filled badge system
+- shared control family uses `premium-interactive`, `premium-control`, `premium-button`, `premium-surface`, and `inset-surface`
+- real controls get slight lift, richer shadow, and clear cobalt focus ring (`rgba(59,130,255,0.35)`)
+- `.premium-surface` hover: border `#29415c`, bg `#16263c`, subtle drop shadow — factor cards and lean card
+- `.inset-surface` hover: border `#29415c`, bg `#111e2e`, slight inset reduction + small drop shadow — stat cells (Status, Confidence); more restrained because these start from the deepest base layer (`#0c1628`)
+- informational chips and metadata tags stay non-interactive
+- active states fill with cobalt (`#2b74ff`); passive metadata chips stay at `#122033`
+- do not add extra glows, over-brighten borders, or make informational tiles feel like primary buttons
 
 **control-system decision:** sport, team a, and team b now use the same picker family. this is the correct direction and should remain the default unless a future product surface proves it insufficient.
 
@@ -127,7 +143,7 @@ this split is correct. it keeps the control rail informative before submission a
 - keep keyboard- and screen-reader-friendly dropdown semantics
 - keep placeholder text instructional, not decorative
 
-**visual direction is stable.** the current gradient system, card palette, and interaction language should not be casually reopened. the diagonal background direction, shadow values, and warm/cool contrast are resolved.
+**visual direction is locked.** the dark navy direction, card surface gradient system, cobalt accent, and hover interaction family are stable. do not reopen the visual direction without a clear product reason. do not reintroduce light or warm-toned surfaces.
 
 **near-term UI refinements (open):**
 
@@ -252,7 +268,7 @@ the aggregate signal indicator on the game card is the one piece of analysis vis
 | historical brief archive | useful once trust is established; not needed to convert a first user |
 | signal trend charts | visualizing line movement over time adds build time and clutters the first-use experience |
 | notification settings UI | delivery is configured at account creation in v1; no in-app preference center needed |
-| dark/light mode toggle | the app uses a light theme with dark anchors — no toggle in v1 |
+| dark/light mode toggle | the app uses a dark theme — no toggle in v1 |
 | sport filter tabs | NFL and NBA have different schedules — the list is inherently sparse enough that mixing them creates no confusion |
 | multi-game comparison view | not aligned with the user job; they evaluate one game at a time |
 | onboarding flow or tutorial | the brief format is self-explanatory; if it requires explanation, fix the brief |

@@ -166,9 +166,12 @@ typed `HttpClient` that calls `api.the-odds-api.com` to look up scheduled matchu
 
 ### .NET: `DevCore.Api/AgentRuns/AgentRunService.cs`
 
-- maps `SportsMatchupInput` to `SportsAnalysisRequest { Sport, HomeTeam, AwayTeam, GameDate }`
-- calls `FastApiClient.AnalyzeSportsMatchupAsync()`
-- no sport validation — FastAPI enforces the supported sport list and returns 400 for unknowns
+- `ExecuteAsync` dispatches by `req.RunType` using a switch expression
+- `RunTypes.SportsMatchupAnalysis` (`"sports.matchup.analysis"`) routes to `ExecuteSportsMatchupAsync`
+- unknown run types throw `NotSupportedException` — the controller persists the run as `failed`
+- `ExecuteSportsMatchupAsync` maps `SportsMatchupInput` to `SportsAnalysisRequest { Sport, HomeTeam, AwayTeam, GameDate }` and calls `FastApiClient.AnalyzeSportsMatchupAsync()`
+- known run type strings live in `RunTypes` static class in `AgentRunContracts.cs` — add new entries there when new run types are introduced
+- no sport validation at this layer — FastAPI enforces the supported sport list and returns 400 for unknowns
 
 ### .NET: `DevCore.AiClient/FastApiClient.cs`
 

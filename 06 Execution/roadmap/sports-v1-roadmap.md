@@ -2,9 +2,27 @@
 
 **product:** NFL and NBA pre-game brief
 **goal:** one paying subscriber before expanding to soccer or other sports
-**date:** 2026-04-16
+**date:** 2026-04-18
 
 strategy: build the thinnest vertical slice that produces a real brief for a real game. validate each layer before adding the next. do not build scheduling, billing, or alerts until the brief itself is worth delivering.
+
+---
+
+## long-term product direction
+
+this product is a decision intelligence system, not a report generator. the full architectural vision is documented in `02 Platform/architecture/decision-intelligence-model.md`. the roadmap phases below represent the concrete near-term path. the longer-term target is a system that:
+
+- collects real evidence from external sources (odds api, actionnetwork, rotowire, weather) instead of relying on model training weights
+- evaluates each signal category explicitly against sport-specific thresholds
+- produces a structured decision artifact with lean, confidence, signal table, counter-signals, and source provenance
+- tracks outcomes against decision artifacts to calibrate signal accuracy over time
+
+these capabilities come after the brief is worth delivering. the current priority is quality and structure of the output, not pipeline complexity. do not build the collector/evaluator/synthesizer pipeline until the synthesizer's output quality has been validated manually.
+
+**immediate next steps (in order):**
+1. run metadata visibility — surface `durationMs` in UI, expose `agentRunId`, wire `GET /api/agent-runs/{id}`
+2. structured lean — add `lean` to the backend response; smallest step toward a real decision artifact
+3. real signal inputs — attach retrieved signal data to the FastAPI prompt instead of relying on model memory
 
 ---
 
