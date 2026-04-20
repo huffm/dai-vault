@@ -1,66 +1,94 @@
 # current sports analysis flow
 
-**date:** 2026-04-18
-**derived from:** actual code in `apps/sports-app/`, `platform/dotnet/`, and `services/agent-service/`
+**date:** 2026-04-20  
+**derived from:** actual code in `apps/sports-app/`, `platform/dotnet/`, and `services/agent-service/`  
 **status:** reflects what is implemented today — not a design target
 
 ---
 
-## supported sports
+## supported competitions
 
-NFL, NBA, and MLB. each sport has its own system prompt in `sports_analyzer.py`. the backend response is `{ lean, summary, confidence, factors[] }`. lean is an optional string — `"edge toward [team] based on [reason]"` or `"signals are split"` — emitted by the model and propagated through all contract layers to the Angular `Current Lean` module.
+the product is no longer modeled internally as "sport only". the internal routing key is now an explicit **competition code**.
+
+the current visible matrix is:
+
+| sport family | level | competition code | status |
+|---|---|---|---|
+| football | pro | `nfl` | supported |
+| football | college | `ncaaf` | supported |
+| basketball | pro | `nba` | supported |
+| basketball | college | `ncaamb` | supported |
+| baseball | pro | `mlb` | supported |
+| baseball | college | none | shown as unavailable |
+
+user-facing flow stays clearer than raw codes:
+- the UI asks for `sport`
+- then `level`
+- then teams
+- then date
+- then analyze
+
+the platform resolves that selection to a competition code before teams, dates, collector routing, or analyzer dispatch happen.
 
 ---
 
-## selection model: three states
+## selection model: four states
 
-the Angular selection flow is intentionally divided into three distinct states. keeping them separate is the reason the UX can be order-independent while the analysis payload remains correctly oriented.
+the Angular selection flow is intentionally split so the UX stays familiar while the backend gets explicit competition identity.
 
 | state | what it holds | where it lives |
 |---|---|---|
-| **neutral selection** | `teamA`, `teamB` — the user's chosen pair, no orientation implied | `app.ts` form controls + `teamAValue`/`teamBValue` signals |
-| **selected event** | `MatchupEventDto { date, homeTeam, awayTeam }` — the real scheduled event from the provider, with correct orientation | `selectedEvent` signal, set when a date pill is clicked |
-| **analysis payload** | `SportsMatchupInput { sport, homeTeam, awayTeam, gameDate }` — fully resolved, passed to the backend | built in `analyze()` from `selectedEvent()` |
+| **competition selection** | `sportFamily`, `competition` | `AnalyzerComponent` form controls + signals |
+| **neutral team selection** | `teamA`, `teamB` — user-selected pair, no orientation implied | `AnalyzerComponent` form controls + `teamAValue`/`teamBValue` |
+| **selected event** | `MatchupEventDto { date, homeTeam, awayTeam }` — real scheduled event with resolved orientation | `selectedEvent` signal |
+| **analysis payload** | `CompetitionMatchupInput { competition, homeTeam, awayTeam, gameDate }` | built in `analyze()` from `selectedEvent()` |
 
-`homeTeam`/`awayTeam` appear only at the analysis payload step. everything before that uses `teamA`/`teamB`.
+`homeTeam` and `awayTeam` still appear only at the final payload step. everything before that uses the neutral team pair.
 
 ---
 
 ## end-to-end request path
 
-```
+```text
 Angular sports-app
-  → GET /api/sports                                  (load active sport list from SQL)
-  → GET /api/sports/{slug}/teams                     (load teams for selected sport from SQL)
-  → GET /api/sports/{slug}/matchup-dates             (non-directional: ?teamA=X&teamB=Y)
-      → OddsScheduleClient.GetEventsAsync()          (matches either home/away orientation)
-      ← MatchupEventDto[] { date, homeTeam, awayTeam } (real orientation from provider)
-  [user selects a date pill → selectedEvent resolved from matchupEvents]
-  → POST /api/agent-runs                             (payload uses selectedEvent.homeTeam/awayTeam)
+  → GET /api/competitions
+      ← CompetitionReferenceDto[] {
+           code, displayName, sportFamily, sportFamilyDisplayName,
+           level, levelDisplayName, isSupported, availabilityNote
+         }
+  [user picks sport family + level]
+  → GET /api/competitions/{code}/teams
+  → GET /api/competitions/{code}/matchup-dates?teamA=X&teamB=Y
+      → OddsScheduleClient.GetEventsAsync()          (non-directional, cached 30min)
+      ← MatchupEventDto[] { date, homeTeam, awayTeam }
+  [user selects date pill → selectedEvent resolved]
+  → POST /api/agent-runs
+    payload.input = { competition, homeTeam, awayTeam, gameDate }
     → AgentRunsController.Create()
       → IdentityResolver (dev bypass: TenantKey=1, UserKey=1)
-      → AppDbContext: INSERT AgentRun (status=pending)
-      → AgentRunService.ExecuteAsync()
-          [nfl only] → OddsMarketClient.GetNflSpreadAsync()
-                         → GET /v4/sports/americanfootball_nfl/odds?regions=us&markets=spreads&...
-                         ← NflMarketContext { HomeTeam, AwayTeam, HomeSpread, AwaySpread, Bookmaker, UpdatedAt }
-                            or null (offseason, api error, no matching event)
-        → FastApiClient.AnalyzeSportsMatchupAsync(req with NflMarket?)
-          → POST http://127.0.0.1:8000/api/sports/analyze  (X-Correlation-Id + X-Agent-Run-Id headers attached)
-            → app/routes/sports.py: validates sport, logs agent_run_id + correlation_id + matchup details
-            → app/services/sports_analyzer.py:
-                [nfl] builds user message with [market data] block if NflMarketContext present
-                      injects "omit market factor" instruction if no context
-                calls gpt-4o-mini with sport-specific system prompt + user message
-          ← SportsAnalysisResponse { lean, summary, confidence, factors }
-        ← AgentRunExecutionResult { Lean, Summary, Confidence, Factors }
-      → AppDbContext: UPDATE AgentRun (status=completed, OutputJson, CompletedUtc, DurationMs)
+      → INSERT AgentRun (status=pending, CorrelationId=TraceIdentifier)
+      → AgentRunService.ExecuteAsync(req, run.AgentRunId, ct)
+        → ExecuteSportsMatchupAsync()
+          → CollectAsync()
+            [nfl only]  OddsMarketClient.GetNflSpreadAsync()
+            [mlb only]  MlbStarterClient.GetStartersAsync()
+            [nba / ncaamb] EspnBasketballScheduleClient.GetRestContextAsync()
+            [ncaaf] no grounded collector yet
+          ← SportsCollectorOutput { NflMarketContext?, MlbStarterContext?, BasketballScheduleContext?, GroundedSignals[] }
+          → FastApiClient.AnalyzeSportsMatchupAsync()
+            → POST http://127.0.0.1:8001/api/sports/analyze
+                X-Correlation-Id: Activity.Current?.Id
+                X-Agent-Run-Id: AgentRun.AgentRunId
+              → sports.py validates competition code
+              → sports.py dispatches by competition family:
+                  nfl / ncaaf    → football analyzer
+                  nba / ncaamb   → basketball analyzer
+                  mlb            → mlb analyzer
+          ← SportsAnalysisResponse { lean, summary, confidence, factors[] }
+          → Evaluate(analyzerOutput, collector, competition)
+          ← EvaluatorOutput { aggregateConfidence, analyzerConfidence, confidenceBand }
+      → UPDATE AgentRun (completed, OutputJson, DurationMs)
       ← AgentRunResultDto { agentRunId, status, lean, summary, confidence, factors, createdUtc, durationMs }
-    ← HTTP 200
-  ← render page surfaces:
-      hero shell
-      top row = Configure Matchup (left) + Matchup Read (right)
-      below row = Factor Breakdown (full-width supporting reasoning)
 ```
 
 ---
@@ -69,193 +97,198 @@ Angular sports-app
 
 ### Angular: `apps/sports-app/`
 
-files: `app.ts`, `app.html`, `sports-api.service.ts`, `core/models/agent-run.model.ts`, `team-picker/team-picker.component.ts`, `team-picker/team-picker.component.scss`
+files: `analyzer/analyzer.component.*`, `sports-api.service.ts`, `core/models/agent-run.model.ts`, `team-picker/team-picker.component.*`
 
-**selection model — teamA / teamB:**
-- the matchup selection stage uses a neutral pair model: `teamA` and `teamB` — not home/away
-- `homeTeam`/`awayTeam` exist only in the final analysis payload (`SportsMatchupInput`), populated from the resolved event after date selection
-- form controls: `sport`, `teamA`, `teamB`, `gameDate` — all required for the Analyze button to enable
-- `teamAValue` and `teamBValue` are signals that mirror the form control values; computed properties depend on these for reactivity
+**selection model:**
+- form controls are now `sportFamily`, `competition`, `teamA`, `teamB`, `gameDate`
+- sport family is the first user-facing choice
+- level is the second user-facing choice, but internally it selects a concrete competition code
+- team pickers stay disabled until a supported competition is selected
+- baseball + college is visible as unavailable through the level step, not faked as a working path
 
-**picker family (`TeamPickerComponent`):**
-- single standalone picker component used for all three controls: sport, team a, and team b
-- `sport` uses the picker with `searchable=false`; `teamA` and `teamB` use `searchable=true`
-- `@Input()` surface: `options`, `label`, `exclude`, `disabled`, `value`, `searchable`, `placeholder`, `searchPlaceholder`
-- `@Output()` surface: `selected` (emits option value) and `cleared`
-- parent (`app.ts`) owns form controls and calls `setValue()` in picker event handlers
-- internal state: `filterText` signal, `open` signal, `filteredOptions` computed
-- selected state: shows a chip-style selected shell with a clear button; unselected state is either a searchable input or a plain trigger button depending on `searchable`
-- dropdowns expose listbox semantics and keyboard-friendly button options; escape closes the open menu
-- each team picker excludes the other's current value from its option list
-- `team-picker.component.scss` sets `:host { display: block }` so the custom element participates in block layout and `space-y-4` spacing is consistent with adjacent `<div>` field groups
+**reference data shape:**
+- `CompetitionReferenceDto` is now the frontend reference model
+- each visible row carries both user-facing labels and internal routing values:
+  - `code`
+  - `displayName`
+  - `sportFamily`
+  - `sportFamilyDisplayName`
+  - `level`
+  - `levelDisplayName`
+  - `isSupported`
+  - `availabilityNote`
 
-**matchup events and date resolution:**
-- on both teams set: calls `SportsApiService.getMatchupEvents(sport, teamA, teamB)` → `GET /api/sports/{slug}/matchup-dates?teamA=X&teamB=Y`
-- response is `MatchupEventDto[]` — each item carries `{ date, homeTeam, awayTeam }` with the resolved home/away orientation from the schedule provider
-- `matchupEvents` signal stores the events; `dates` computed derives the date list from them for the pill display
-- `selectedEvent` signal is set when a date pill is clicked; it holds the full event including resolved orientation
-- `contextLine` computed shows `awayTeam @ homeTeam` using the resolved event orientation (not the user's selection order)
+**picker behavior:**
+- the same picker family is still used for sport, level, team a, and team b
+- `sport` picker uses sport family options in non-searchable mode
+- `level` picker uses competition-backed options in non-searchable mode
+- unsupported options can render disabled inside the picker
+- team pickers remain searchable and exclude the opposite team choice
+
+**date resolution:**
+- once both teams are selected, the app calls `GET /api/competitions/{code}/matchup-dates`
+- the response is still `MatchupEventDto[]`
+- `selectedEvent` still carries the resolved provider orientation
+- the user's Team A / Team B ordering still does not control the final `homeTeam` / `awayTeam`
 
 **analysis call:**
-- `analyze()` reads `selectedEvent()` for `homeTeam`, `awayTeam`, and `gameDate` — the user's Team A/B order is irrelevant here
-- `SportsMatchupInput` is unchanged: `{ sport, homeTeam, awayTeam, gameDate }`
+- `analyze()` now posts `CompetitionMatchupInput`
+- payload shape:
 
-**page structure:**
-- hero shell sits above the working area
-- main row uses a left control rail and a right answer card
-- `Matchup Read` is the primary answer card: analyzed matchup, current lean slot, summary, status, confidence
-- `Factor Breakdown` is a full-width supporting reasoning section below the row
-- the page is intentionally single-page scroll; the app does not hide answer/reasoning behind tabs
-- no filler cards are added just to make the page look more square
-- sticky behavior is confined to the control rail row so pills and dropdown surfaces do not overlap lower sections during scroll
-- the atmospheric background is now owned by a fixed `body::before` layer so longer populated pages do not show seams or darker restart bands
+```json
+{
+  "competition": "ncaaf",
+  "homeTeam": "Boston College Eagles",
+  "awayTeam": "Syracuse Orange",
+  "gameDate": "2026-09-12"
+}
+```
 
-**state model:**
-- `resultTone()` drives the inner analysis shell across idle, loading, error, and completed states
-- idle state renders an anchored inner empty-state panel inside `Matchup Read`
-- loading state renders skeleton blocks inside the same shell
-- error state stays in-place with fixed product copy
-- completed state renders analyzed matchup, current lean, summary, status/confidence, diagnostics, and factor tiles
-- hero chips are computed from selected sport, teams, and resolved event/date; the `dev` chip appears only when stub schedule mode is active
-
-**run metadata visibility:**
-- `agentRunId` is now surfaced in the Analysis Details block (left control rail) as the first 8 characters in monospace, with the full UUID on hover via `title` attribute
-- `durationMs` is now surfaced as a formatted "Run time" row (e.g., `1.2s` or `850ms`); conditional — only shown when the backend provides a non-null value
-- these appear in the Analysis Details block below Signal quality, using the same label: value row pattern
-- the correlation path `agentRunId` → `AgentRun.AgentRunId` → `X-Agent-Run-Id` in FastAPI logs is now usable without DevTools
-
-**current lean slot:**
-- the `Current Lean` module in `Matchup Read` is now populated from the backend
-- FastAPI emits `lean` as a one-sentence directional signal: `"edge toward [team] based on [reason]"` or `"signals are split"`
-- lean flows through `SportsAnalysisResponse → AgentRunExecutionResult → AgentRunResultDto` at every layer
-- `AgentRunResultDto` in the frontend has `lean?: string | null`; the `currentLean()` computed renders it as the primary text in the lean module
-- lean is optional throughout — if the model omits it or returns an empty string, `_parse_response` normalizes to `None` and the frontend falls back to "Lean unavailable"
-- the UI does not infer a pick from `summary` or `factors`; lean is the only directional output
-
-**sport display rule:**
-- internal sport values remain lowercase slugs (`nfl`, `nba`, `mlb`)
-- outward-facing UI paths resolve the label from `SportDto.displayName`
-- if lookup fails unexpectedly, the fallback still avoids leaking a raw lowercase slug into the UI
-
-**factor label casing:**
-- `formatCategory(raw: string)` method capitalizes the first letter after each space or `/`: `"rest/fatigue"` → `"Rest/Fatigue"`, `"injury report"` → `"Injury Report"`
-- factor cards split on the first `: ` in the template; the title uses `formatCategory()` and the body renders the remaining observation text
-- fallback: factors without `: ` render with a generic label and the full factor as body copy
-
-**other:**
-- on submit: form disabled with `{ emitEvent: false }`; re-enabled on success or error
-- `useStubSchedule = false` — stub path still works: generates `MatchupEventDto[]` with teamA as home
-- `environment.useStubApi = false` in development — real API is called
-- **no bearer token is attached** — no MSAL configuration or HTTP interceptor
+**hero and result metadata:**
+- hero chips now show `sport`, `level`, `matchup`, `date`
+- the result card shows sport family and level as separate user-facing rows
+- the internal competition code does not leak into the UI unless a fallback is ever needed
 
 ### .NET: `DevCore.Api/Controllers/SportsReferenceController.cs`
 
-- `GET /api/sports` — returns active sports ordered by SportKey (NFL first): `[{ slug, displayName }]`
-- `GET /api/sports/{slug}/teams` — returns 404 if slug is unknown or inactive; returns 200 with `[]` if sport has no active teams; otherwise returns `[{ name }]` ordered alphabetically
-- `GET /api/sports/{slug}/matchup-dates?teamA=X&teamB=Y` — validates sport (404), validates both teams exist and are active for that sport (400), validates teamA ≠ teamB (400); calls `OddsScheduleClient.GetEventsAsync()` and returns `MatchupEventDto[]`; empty array means no game in the 60-day window
-- no auth, no tenant scope — platform-level reference data
-- `MatchupEventDto(string Date, string HomeTeam, string AwayTeam)` is defined in `DevCore.Api.Sports` namespace (`OddsScheduleClient.cs`)
+- `GET /api/competitions`
+  - returns the visible competition matrix used by the frontend
+  - supported competitions come from active SQL rows
+  - unsupported college baseball is appended from `CompetitionCatalog` with `Code = null`, `IsSupported = false`, and `AvailabilityNote = "College baseball is not available yet."`
+- `GET /api/competitions/{code}/teams`
+  - validates that the competition exists and is active
+  - returns active teams for that competition
+- `GET /api/competitions/{code}/matchup-dates?teamA=X&teamB=Y`
+  - validates both teams against that competition
+  - returns real scheduled events with resolved home/away orientation
+
+### .NET: `DevCore.Api/Sports/CompetitionCatalog.cs`
+
+this is the current platform registry for competition-aware routing.
+
+it defines:
+- supported competition codes: `nfl`, `ncaaf`, `nba`, `ncaamb`, `mlb`
+- user-facing labels for sport family and level
+- odds api key mapping where schedule lookup is supported
+- `MaxGroundedSignals` per competition for confidence calibration
+- visible-but-unsupported college baseball metadata
+
+this is intentionally thin. it is not a giant league framework.
 
 ### .NET: `DevCore.Api/Sports/OddsScheduleClient.cs`
 
-typed `HttpClient` that calls `api.the-odds-api.com` to look up scheduled matchup events. owned by .NET because schedule data is reference data — it does not feed into prompts and does not require AI processing.
+typed `HttpClient` that looks up scheduled matchup events from the odds api.
 
-- `GetEventsAsync(sport, teamA, teamB)` — non-directional: matches events in either orientation; cache key uses alphabetically sorted team names so `(A,B)` and `(B,A)` share a cache entry; 30-minute TTL; empty results are cached
-- on cache miss: calls Odds API `GET /v4/sports/{oddsKey}/events` with 60-day window; matches `(home==teamA && away==teamB) || (home==teamB && away==teamA)`
-- returns `MatchupEventDto[]` — each item carries the real home/away orientation from the provider, not the caller's input order
-- dates extracted in Eastern timezone (not UTC)
-- sport slug → Odds API key map: `nfl→americanfootball_nfl`, `nba→basketball_nba`, `mlb→baseball_mlb`
-- **team name normalization:** verified mismatches as of 2026-04-13: `"Oakland Athletics"` / `"Sacramento Athletics"` → `"Athletics"`
-- on network failure or non-2xx: logs error body at `LogError`, returns `[]`
+- `GetEventsAsync(competition, teamA, teamB)`
+- competition code maps to odds api key via `CompetitionCatalog`
+- supported schedule keys:
+  - `nfl` → `americanfootball_nfl`
+  - `ncaaf` → `americanfootball_ncaaf`
+  - `nba` → `basketball_nba`
+  - `ncaamb` → `basketball_ncaab`
+  - `mlb` → `baseball_mlb`
+- cache is still non-directional by team pair
+- provider orientation is still preserved in `MatchupEventDto`
+- light fuzzy team matching was added to reduce college-name drift between the reference table and the odds provider
 
-### .NET: `DevCore.Api/Controllers/AgentRunsController.cs`
+### .NET: `DevCore.Api/Sports/EspnBasketballScheduleClient.cs`
 
-- no `[Authorize]` attribute
-- `IdentityResolver` runs on every request — dev bypass: TenantKey=1, UserKey=1
-- creates an `AgentRun` row with status `pending`, `InputJson` = serialized `SportsMatchupInput`, `StartedUtc` = now
-- calls `IAgentRunService.ExecuteAsync()`
-- on success: updates row to `completed`, sets `OutputJson`, `CompletedUtc`, `DurationMs`
-- on exception: updates row to `failed`, sets `ErrorMessage`
-- returns `AgentRunResultDto`
+typed `HttpClient` that derives a thin rest/schedule signal for `nba` and `ncaamb` from public espn scoreboard data.
 
-### .NET: `DevCore.Api/Sports/OddsMarketClient.cs`
-
-typed `HttpClient` that fetches current nfl spread data from the odds api before each nfl analysis. owned in .NET for the same reason as `OddsScheduleClient`: the api key is in .net user secrets, and deterministic data retrieval belongs in the platform layer, not the ai reasoning layer.
-
-- `GetNflSpreadAsync(homeTeam, awayTeam, gameDate, ct)` — returns `NflMarketContext?`
-- calls `/v4/sports/americanfootball_nfl/odds?regions=us&markets=spreads&commenceTimeFrom=...&commenceTimeTo=...` bracketed to the game date in eastern time
-- bookmaker preference: `draftkings > fanduel > betmgm > caesars > pinnacle > first available`
-- spread values formatted as signed strings: `"-3.5"` (favorite) or `"+3.5"` (underdog)
-- result cached for 15 minutes per team/date combination
-- returns `null` on any failure: network error, api non-2xx, offseason empty response, team name mismatch
-- uses same team name normalization map as `OddsScheduleClient` — keep in sync when entries change
-- **line movement is not available** via the standard `/odds` endpoint. the historical endpoint (`/v4/historical/sports/.../odds`) would require premium access and snapshot timestamps — explicitly deferred.
-
-### .NET: `DevCore.AiClient/NflMarketContext.cs`
-
-record that carries market spread data from .NET to FastAPI as part of `SportsAnalysisRequest`:
-```
-NflMarketContext { HomeTeam, AwayTeam, HomeSpread, AwaySpread, Bookmaker, UpdatedAt }
-```
-defined in `DevCore.AiClient` because it is part of the ai service contract, not a domain type. serialized as `nflMarketContext` (camelCase) by `JsonContent.Create` web defaults.
+- `GetRestContextAsync(competition, homeTeam, awayTeam, gameDate)`
+- source coverage:
+  - `nba` → `site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard`
+  - `ncaamb` → `site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?groups=50&limit=500`
+- looks back up to 14 days before the target game date
+- finds each team's most recent prior game date
+- computes:
+  - `HomeLastGameDate`
+  - `HomeDaysRest`
+  - `HomeIsBackToBack`
+  - `AwayLastGameDate`
+  - `AwayDaysRest`
+  - `AwayIsBackToBack`
+- returns `null` unless both teams can be grounded from real schedule data
+- cache is per competition + date for 30 minutes to avoid repeated scoreboard fetches
+- fuzzy name matching is intentionally conservative and exists only to bridge odds-provider team names to espn scoreboard names
 
 ### .NET: `DevCore.Api/AgentRuns/AgentRunService.cs`
 
-- `ExecuteAsync` dispatches by `req.RunType` using a switch expression
-- `RunTypes.SportsMatchupAnalysis` (`"sports.matchup.analysis"`) routes to `ExecuteSportsMatchupAsync`
-- unknown run types throw `NotSupportedException` — the controller persists the run as `failed`
-- `ExecuteSportsMatchupAsync` now:
-  1. if sport is `nfl`: calls `OddsMarketClient.GetNflSpreadAsync()` before building the ai request
-  2. builds `SportsAnalysisRequest { Sport, HomeTeam, AwayTeam, GameDate, NflMarket? }` and calls `FastApiClient.AnalyzeSportsMatchupAsync()`
-  3. `NflMarket` is null if the odds call failed or returned no data — fastapi falls back gracefully
-- known run type strings live in `RunTypes` static class in `AgentRunContracts.cs` — add new entries there when new run types are introduced
-- no sport validation at this layer — FastAPI enforces the supported sport list and returns 400 for unknowns
+- `ExecuteAsync` still dispatches by `RunType`
+- `ExecuteSportsMatchupAsync` now receives `CompetitionMatchupInput`
+- collect, analyze, and evaluate all key off `competition`, not `sport`
+- collector routing is still intentionally thin:
+  - `nfl` → fetch market spread
+  - `mlb` → fetch probable starters
+  - `nba`, `ncaamb` → fetch rest/schedule grounding
+  - `ncaaf` → no grounded collector yet
+- confidence calibration now uses `CompetitionMaxGroundedSignals(competition)`
 
-### .NET: `DevCore.AiClient/FastApiClient.cs`
+### .NET: `DevCore.AiClient/SportAnalysisContracts.cs`
 
-- typed `HttpClient` with base URL from `AiService:BaseUrl` (development: `http://127.0.0.1:8000`)
-- timeout: 90 seconds
-- uses `HttpRequestMessage` / `SendAsync` per call (not `DefaultRequestHeaders`) — required because typed HttpClient instances are singletons; per-request headers must not be shared state
-- attaches `X-Correlation-Id` header on every call: `Activity.Current?.Id ?? Guid.NewGuid().ToString()`
-- attaches `X-Agent-Run-Id` header on sports calls: the stable `AgentRun.AgentRunId` GUID — this is the primary cross-layer tracing anchor; FastAPI logs it so any log entry can be tied back to the db row
-- on non-2xx response: logs response body at `LogError` (truncated to 500 chars) before throwing
-- `ILogger<FastApiClient>` injected via constructor
+request to FastAPI:
+
+```text
+SportsAnalysisRequest {
+  Competition,
+  HomeTeam,
+  AwayTeam,
+  GameDate,
+  NflMarketContext?,
+  MlbStarterContext?,
+  BasketballScheduleContext?
+}
+```
+
+response from FastAPI:
+
+```text
+SportsAnalysisResponse { Lean?, Summary, Confidence, Factors[] }
+```
 
 ### FastAPI: `services/agent-service/`
 
-app module lives under `services/agent-service/app/`. entry point is `services/agent-service/main.py` (not inside `app/`), which mounts the sports router at `/api`.
-
-- `app/routes/sports.py`: validates sport against `{"nfl", "nba", "mlb"}`; returns 400 with message for any other value; logs `agent_run_id` (from `X-Agent-Run-Id`), `correlation_id`, `sport`, `homeTeam`, `awayTeam`, `gameDate` at INFO on every request; dispatches to the correct analyzer function
-- `app/services/sports_analyzer.py`: one async function per sport (`analyze_nfl`, `analyze_nba`, `analyze_mlb`); each uses a sport-specific system prompt; all call `gpt-4o-mini` with `response_format=json_object` and `temperature=0.3`; shared `_call_model` and `_parse_response` helpers avoid duplication; confidence is clamped 0.0–1.0 in `_parse_response`
-- `app/models/sports.py`: Pydantic models `SportsAnalysisRequest` and `SportsAnalysisResponse`
-
-**nfl market enrichment:**
-- `analyze_nfl` receives optional `market_context: NflMarketContext | None` from the route handler
-- when present: builds a `[market data]` block in the user message — home team, spread, bookmaker, timestamp — and instructs the model to use it for the `market` factor. model cites the real spread without fabricating movement.
-- when absent: appends `[no market data available]` to the user message and explicitly instructs the model to omit the market factor and not fabricate spread or line direction.
-- the nfl system prompt no longer instructs the model to "note direction, magnitude, and timing" (which caused fabrication). it now says: use only what is in the `[market data]` block.
-
-**factor format:** factors are structured as `"category: brief observation"` — not freeform phrases. sport-specific categories:
-- NFL (when market data present): market, injury report, situational, weather (outdoor only)
-- NFL (when no market data): injury report, situational, weather (outdoor only) — market factor omitted
-- NBA: rest/fatigue, injury report, matchup style, home court — weather never mentioned
-- MLB: starting pitching, bullpen, lineup form, ballpark
-
-example verified output (NBA): `["rest/fatigue: Miami on second night of back-to-back", "injury report: no significant injuries for either team", "matchup style: Miami plays slower pace than Charlotte", "home court: Charlotte has a strong home record"]`
+- `app/routes/sports.py`
+  - validates competition against `{"nfl", "ncaaf", "nba", "ncaamb", "mlb"}`
+  - logs `competition=...`
+  - dispatches by sport family:
+    - football analyzer for `nfl` and `ncaaf`
+    - basketball analyzer for `nba` and `ncaamb`
+    - mlb analyzer for `mlb`
+- `app/services/sports_analyzer.py`
+  - prompts are now family-aware instead of pro-only where possible
+  - college football and college basketball reuse the football and basketball analyzer families
+  - basketball uses an explicit `[schedule data]` block when real rest context is present
+  - basketball uses an explicit no-data fallback when schedule grounding is unavailable
+  - nfl still gets market context when available
+  - mlb still gets starting-pitcher context when available
 
 ---
 
 ## SQL reference data
 
-two platform-level tables, not tenant-scoped:
+two platform-level tables still back the reference layer:
 
-**Sports** — 3 rows: NFL (key=1), NBA (key=2), MLB (key=3). `IsActive` flag controls visibility.
+**Sports** — now effectively a competition table in current usage.
 
-**Teams** — 92 rows: 32 NFL, 30 NBA, 30 MLB. `Name` is the display label and the value sent to the analyzer. `IsActive` flag controls visibility.
+active rows:
+- `nfl`
+- `nba`
+- `mlb`
+- `ncaaf`
+- `ncaamb`
 
-team names are the source of truth for what reaches the analyzer. the UI cannot submit a team name that is not in the database.
+**Teams** — active team rows per competition.
 
-**note on Athletics:** the DB currently stores `"Oakland Athletics"` (the `RenameOaklandToSacramento` migration has not been applied to the running instance). `OddsScheduleClient._nameMap` covers both names defensively.
+current seeded counts:
+- NFL: 32
+- NBA: 30
+- MLB: 30
+- NCAAF: 138
+- NCAAMB: 365
+- total active teams: 595
+
+college baseball is not seeded. it is only represented in the visible competition matrix as unsupported product inventory.
 
 ---
 
@@ -267,11 +300,11 @@ team names are the source of truth for what reaches the analyzer. the UI cannot 
 |---|---|
 | RunType | `"sports.matchup.analysis"` |
 | Status | `"completed"` |
-| InputJson | `{"sport":"nfl","homeTeam":"...","awayTeam":"...","gameDate":"..."}` |
-| OutputJson | `{"summary":"...","confidence":0.72,"factors":["category: observation","..."]}` |
-| AgentProfileKey | null (not used in this slice) |
+| InputJson | `{"competition":"ncaaf","homeTeam":"...","awayTeam":"...","gameDate":"..."}` |
+| OutputJson | includes `lean`, `summary`, calibrated `confidence`, `factors`, `groundedSignals`, `analyzerConfidence` |
+| AgentProfileKey | null |
 | CorrelationId | ASP.NET trace identifier |
-| DurationMs | real elapsed time from .NET's perspective — now included in the API response DTO |
+| DurationMs | server-side elapsed time |
 
 ---
 
@@ -281,27 +314,29 @@ scripts live under `scripts/dev/sports/`:
 
 | script | purpose |
 |---|---|
-| `start-sports-dev.ps1` | launches agent service (port 8000), platform API (port 5007), and sports app (port 4201) in separate terminals |
-| `stop-sports-dev.ps1` | stops all three processes by port; does not touch the prompt portal |
-| `test-sports-dev.ps1` | five smoke checks: health ping, NFL analysis, stub detection, unsupported sport gate, full .NET chain |
+| `start-sports-dev.ps1` | launches agent service, platform api, and sports app in separate terminals |
+| `stop-sports-dev.ps1` | stops the three dev processes by port |
+| `test-sports-dev.ps1` | smoke checks: health ping, nfl analysis, stub detection, unsupported competition gate, full .net chain |
 
-agent service is started with `python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload`. the `.venv/Scripts/uvicorn.exe` launcher is not used because it contains hardcoded absolute paths that break after a repo move.
-
-smoke tests are part of the normal workflow. run `test-sports-dev.ps1` after starting the stack to confirm all five checks pass before doing further dev work.
-
-`OddsApi:ApiKey` must be set in user secrets for matchup-dates to return real data: `dotnet user-secrets set "OddsApi:ApiKey" "your-key-here"` from `platform/dotnet/DevCore.Api/`.
+the smoke scripts now use `competition` in the request payloads.
 
 ---
 
-## product rule: outward-facing UI text must be properly cased
+## product rule: outward-facing text stays display-safe
 
-raw values from the backend (factor categories, sport slugs, status strings) are lowercase by convention for internal consistency. before rendering in the UI, outward-facing text is formatted:
+internal routing values stay lowercase:
+- `nfl`
+- `ncaaf`
+- `nba`
+- `ncaamb`
+- `mlb`
 
-- **factor categories:** `formatCategory()` in `app.ts` capitalizes the first letter after each space or `/`. `"rest/fatigue"` → `"Rest/Fatigue"`. `"injury report"` → `"Injury Report"`. applied to the category portion of factor cards only.
-- **status:** Angular `titlecase` pipe applied to `r.status` in the result panel tile.
-- **team names and sport names:** stored with correct casing in SQL; rendered as-is.
+outward-facing UI text uses display labels:
+- sport family chip uses `Football`, `Basketball`, `Baseball`
+- level chip uses `Pro`, `College`
+- team names and competition display names come from reference data
 
-this rule applies to all outward-facing product text. internal code, logs, API contracts, and config values stay lowercase.
+the UI should not leak raw internal codes unless there is a true fallback case.
 
 ---
 
@@ -310,27 +345,22 @@ this rule applies to all outward-facing product text. internal code, logs, API c
 | limitation | location | impact |
 |---|---|---|
 | no auth on sports path | `AgentRunsController`, `SportsApiService` | any caller can create runs; no tenant scoping in production |
-| production `useStubApi` | `apps/sports-app/environment.ts` (`useStubApi: true`) | `createMatchupAnalysis()` returns a hardcoded stub response in production; real API is only called when `useStubApi: false` (dev) |
-| OutputJson has no schema | `AgentRun.OutputJson` | stored content cannot be queried or validated structurally |
-| AgentProfileId accepted but ignored | `AgentRunService` | profile-level prompt configuration is not applied |
-| no .NET sport gate | `AgentRunService` | invalid sports are caught at FastAPI (400), not at the .NET layer; failed runs still write an AgentRun row |
-| RenameOaklandToSacramento migration not applied | running Docker DB | DB has "Oakland Athletics"; normalization map covers both names but migration should be applied before a real deployment |
+| production `useStubApi` | `apps/sports-app/environment.ts` | production build still uses stub analysis unless changed |
+| OutputJson has no schema | `AgentRun.OutputJson` | stored content cannot be queried structurally |
+| `ncaaf` still has no grounded collector | `AgentRunService.CollectAsync` | college football still falls back to prompt-only analysis and stays in the dampened confidence path |
+| basketball rest signal is intentionally thin | `EspnBasketballScheduleClient`, `sports_analyzer.py` | grounds back-to-back / days-rest claims only; no travel, injury, or broader schedule-load intelligence yet |
+| no college baseball support | `CompetitionCatalog`, frontend level picker | user can see the concept but cannot select a working competition |
+| espn schedule source is public but unofficial | `EspnBasketballScheduleClient` | shape can drift over time; collector must fail closed to the no-data prompt path |
 
 ---
 
 ## what is not in this flow
 
-these concepts appear in vault docs but have no implementation in this path today:
+these concepts appear in vault docs but are not implemented in this path today:
 
-- signal scoring (+1 / 0 / -1 / null)
-- collector, evaluator, synthesizer, compliance stages
-- nfl line movement (opening vs current) — standard /odds endpoint does not provide it. requires historical snapshot endpoint (premium) — explicitly deferred
-- nba/mlb market enrichment — nfl is the only sport with market context in this slice; nba/mlb prompts are unchanged
-- injury data (rotowire) — no integration; model uses prior knowledge only
-- sharp/public split (actionnetwork) — no integration; removed from nfl system prompt in this slice to reduce fabrication surface
-- weather (open-meteo) — no integration; still mentioned in nfl system prompt as a structural category (model uses general knowledge)
-- delivery (email, webhook, slack)
-- scheduled triggers
-- tier enforcement
-- stripe
-- brief envelope with sections[]
+- competition-specific collector packages for college sports
+- competition-specific evaluator rules beyond `MaxGroundedSignals`
+- competition-specific prompt families beyond football / basketball / mlb
+- college baseball support
+- outcome tracking or calibration tuning from real results
+- delivery, scheduling, billing, or tier enforcement

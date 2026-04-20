@@ -1,8 +1,8 @@
 # roadmap: sports-v1
 
-**product:** NFL and NBA pre-game brief
-**goal:** one paying subscriber before expanding to soccer or other sports
-**date:** 2026-04-18
+**product:** competition-aware pre-game brief
+**goal:** one paying subscriber before expanding beyond the current supported competition set
+**date:** 2026-04-19
 
 strategy: build the thinnest vertical slice that produces a real brief for a real game. validate each layer before adding the next. do not build scheduling, billing, or alerts until the brief itself is worth delivering.
 
@@ -20,9 +20,9 @@ this product is a decision intelligence system, not a report generator. the full
 these capabilities come after the brief is worth delivering. the current priority is quality and structure of the output, not pipeline complexity. do not build the collector/evaluator/synthesizer pipeline until the synthesizer's output quality has been validated manually.
 
 **immediate next steps (in order):**
-1. run metadata visibility — surface `durationMs` in UI, expose `agentRunId`, wire `GET /api/agent-runs/{id}`
-2. structured lean — add `lean` to the backend response; smallest step toward a real decision artifact
-3. real signal inputs — attach retrieved signal data to the FastAPI prompt instead of relying on model memory
+1. first grounded collector for a zero-grounded competition (`nba`, `ncaaf`, or `ncaamb`)
+2. outcome tracking foundation so confidence tuning can become evidence-based
+3. history wiring (`GET /api/agent-runs`) only after the brief quality is worth preserving
 
 ---
 
@@ -31,7 +31,13 @@ these capabilities come after the brief is worth delivering. the current priorit
 the live `apps/sports-app/` slice is no longer hypothetical:
 
 - real Angular -> .NET -> FastAPI sports analysis flow is working
-- the dev surface supports NFL, NBA, and MLB matchup reads
+- the dev surface supports these competition combinations:
+  - football + pro → NFL
+  - football + college → NCAAF
+  - basketball + pro → NBA
+  - basketball + college → NCAAMB
+  - baseball + pro → MLB
+- baseball + college is intentionally visible as unavailable
 - the current page architecture is stable: hero shell, left control rail, right `Matchup Read`, full-width `Factor Breakdown`
 - the page is intentionally single-page scroll with no answer/reasoning tabs
 - the atmospheric background now belongs to a fixed page-level layer, not a scroll-sized wrapper
@@ -41,7 +47,7 @@ this means the next product-facing work should prioritize better structured anal
 ---
 
 ## phase 1 — one brief, one game, no billing gate
-*prove the pipeline end-to-end on a single NFL game before touching NBA or platform infrastructure*
+*prove the pipeline end-to-end on a single competition before touching billing infrastructure*
 
 ### 1.1 data sources — NFL only
 - [ ] sign up for the odds api — confirm `americanfootball_nfl` endpoint returns games, current spread, and opening line
@@ -74,8 +80,8 @@ this means the next product-facing work should prioritize better structured anal
 
 ---
 
-## phase 2 — expand to NBA
-*add basketball using the same pipeline; confirm sport-specific differences are handled correctly*
+## phase 2 — expand grounded evidence across supported competitions
+*add real signals to the competitions that still rely on prompt-only reasoning; confirm competition-specific differences are handled correctly*
 
 ### 2.1 data sources — NBA
 - [ ] confirm the odds api `basketball_nba` endpoint returns games and current lines
@@ -148,8 +154,8 @@ this means the next product-facing work should prioritize better structured anal
 
 ## post-v1 (do not build yet)
 - soccer (MLS, EPL, Champions League)
-- MLB, NHL
-- NCAAF / NCAAB
+- college baseball
+- NHL
 - outcome tracking and signal accuracy scoring
 - player prop coverage
 - live / in-game signals

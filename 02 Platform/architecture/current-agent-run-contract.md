@@ -1,6 +1,6 @@
 # current agent run contract
 
-**date:** 2026-04-18 (structured lean slice completed)
+**date:** 2026-04-19 (competition-first slice completed)
 **derived from:** actual code in `platform/dotnet/` and `apps/sports-app/`
 **status:** reflects what is implemented today — not a design target
 
@@ -31,18 +31,20 @@ migration added: `20260311223224_AddAgentRuns`
 
 ### what OutputJson currently contains
 
-OutputJson is written as the raw serialized `AgentRunExecutionResult` (which now includes lean):
+OutputJson is written as the raw serialized `AgentRunExecutionResult`:
 
 ```json
 {
-  "lean": "edge toward Chiefs based on rest advantage and line movement since open.",
+  "lean": "edge toward chiefs based on rest advantage and line movement since open.",
   "summary": "...",
   "confidence": 0.64,
+  "groundedSignals": ["market"],
+  "analyzerConfidence": 0.76,
   "factors": ["...", "...", "..."]
 }
 ```
 
-it is an unstructured string. there is no `sections[]`, no `brief_id`, no `delivery_status`, and no sport identifier in the stored output. the shape is whatever FastAPI returns mapped through the service layer — the .NET layer does not validate or enforce the content.
+it is an unstructured string. there is no `sections[]`, no `brief_id`, no `delivery_status`, and no stored competition metadata inside the output payload itself. the shape is whatever the service layer composes and serializes — the .NET layer does not enforce a schema at the database column level.
 
 **lean field:** optional (`string? / null`). present when the model successfully emits a directional signal. absent (null) when the model does not include it or the value is empty. stored as-is in OutputJson and returned in the response DTO.
 
@@ -61,7 +63,7 @@ it is an unstructured string. there is no `sections[]`, no `brief_id`, no `deliv
   "runType": "sports.matchup.analysis",
   "agentProfileId": null,
   "input": {
-    "sport": "nfl",
+    "competition": "nfl",
     "homeTeam": "Kansas City Chiefs",
     "awayTeam": "Buffalo Bills",
     "gameDate": "2026-04-13"
@@ -110,7 +112,14 @@ response is `AgentRunDetailDto` — includes all fields from the result DTO plus
 request sent to FastAPI:
 
 ```
-SportsAnalysisRequest { Sport, HomeTeam, AwayTeam, GameDate }
+SportsAnalysisRequest {
+  Competition,
+  HomeTeam,
+  AwayTeam,
+  GameDate,
+  NflMarketContext?,
+  MlbStarterContext?
+}
 ```
 
 response received from FastAPI:
@@ -149,7 +158,7 @@ two ids exist in the flow today. they are different values and should not be con
 
 **unknown run types** throw `NotSupportedException("run type '...' is not supported")`. the controller catches this as an unhandled exception, marks the `AgentRun` row `failed`, stores the message in `ErrorMessage`, and re-throws (resulting in a 500 response to the client).
 
-**input contract note:** `CreateAgentRunRequest.Input` is currently typed as `SportsMatchupInput` — sports-specific fields only. when a second run type is introduced, `Input` will need to become a generic envelope (e.g. `JsonElement`) and each run type will own its own input shape. this is documented in a comment on the record.
+**input contract note:** `CreateAgentRunRequest.Input` is currently typed as `CompetitionMatchupInput` — still matchup-analysis-specific, but no longer overloaded as a generic "sport" input. when a second run type is introduced, `Input` will still need to become a generic envelope (for example `JsonElement`) and each run type will own its own input shape.
 
 ---
 
@@ -158,4 +167,4 @@ two ids exist in the flow today. they are different values and should not be con
 - `AgentProfileKey` — accepted in the request, stored as nullable on the row, but no profile is loaded or used during execution
 - `OutputJson` schema — no validation; any JSON string FastAPI returns is stored and returned
 - auth on `AgentRunsController` — no `[Authorize]` attribute; production enforcement would require adding it and removing the dev bypass
-- `CreateAgentRunRequest.Input` typed as `SportsMatchupInput` — will need generalization before a second run type can be added
+- `CreateAgentRunRequest.Input` typed as `CompetitionMatchupInput` — still run-type-specific and will need generalization before a second run type can be added

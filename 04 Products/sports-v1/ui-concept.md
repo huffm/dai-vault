@@ -1,19 +1,63 @@
 # ui concept: sports-v1
 
-**date:** 2026-04-18 (dark mode redesign completed)
-**product:** NFL, NBA, and MLB pre-game brief
+**date:** 2026-04-19 (competition-first selector slice added)
+**product:** football, basketball, and baseball pre-game brief with competition-aware routing
 **target:** recreational bettors who research their own picks and want signal context, not a conclusion
 
 ---
 
 ## current dev app
 
-the matchup analyzer at `apps/sports-app/` (port 4201) is the working dev surface for this product. it is not the full product concept described below — it is the thin input/output tool used during development.
+the matchup analyzer at `apps/sports-app/` (port 4201) is the working dev surface for this product. it now has a thin app shell with a persistent header and three routed pages. it is not the full product concept described below — the product concept describes the future brief/game-list surface; the dev app is the thin input/output tool used during development.
 
-**current page architecture:** the live page is a single-page scroll surface with four coordinated layers.
+the analyzer is now **competition-aware**:
+- user-facing flow: `sport` → `level` → `team a` / `team b` → `game date` → `analyze`
+- internal routing: explicit competition code
+- currently supported combinations:
+  - football + pro → NFL
+  - football + college → NCAAF
+  - basketball + pro → NBA
+  - basketball + college → NCAAMB
+  - baseball + pro → MLB
+- baseball + college is visible as unavailable, not hidden and not faked
+
+---
+
+## app shell (implemented 2026-04-19)
+
+the dev app has a lightweight angular shell with route-based navigation.
+
+**root shell:** `App` component owns the sticky header and a `<router-outlet>`. all page components are lazy-loaded standalone components. the shell persists across all routes; page content swaps below it.
+
+**route structure:**
+- `/` → redirect to `/analyzer`
+- `/analyzer` → `AnalyzerComponent` — the matchup analyzer page; default route
+- `/history` → `HistoryComponent` — prior reads list; client-side mock data only
+- `/account` → `AccountComponent` — plan, delivery, security shell; static mock only
+
+**top nav (3 items):**
+- `Matchup Analyzer` — always the primary action path
+- `History` — prior reads with Saved Reads filter inside the page
+- `Account` — plan and preferences
+
+**Saved Reads placement decision:** Saved Reads is not a top-level nav item. it lives inside the History page as a filter tab (`All reads` / `Saved reads`). the top nav stays at three items.
+
+**header:** sticky glass nav bar, 64px mobile / 68px desktop. brand ("Sports Analytics") links to `/analyzer`. nav active state is driven by `routerLinkActive` — no hardcoded boolean. mobile: hamburger opens a slide-down drawer; tapping a link closes it automatically. responsive: full nav visible at `lg` breakpoint; hamburger below it.
+
+**History page (mock):** styled using the same card surface system as the analyzer. shows six realistic sample reads with sport badge, matchup, game date, lean, confidence band, and grounded signal chips. Saved Reads is a filter tab within this page. save/unsave toggle is client-side only — no backend persistence.
+
+**Account page (mock):** styled as a natural sibling of the analyzer. sections: Profile, Plan, Delivery, Security. all data is static placeholder — no backend wiring, no real auth, no real billing integration.
+
+**what is NOT wired in history and account:** there is no backend read history. saved reads are not persisted. account data is not real. both pages exist to establish the UI structure and design language before the backend surfaces are built.
+
+---
+
+## current page architecture (analyzer)
+
+the live analyzer page is a single-page scroll surface with four coordinated layers.
 
 - **hero shell**: product label, `Matchup Analyzer` heading, setup copy, and a metadata chip row that appears after sport and both teams are selected.
-- **left control rail**: sticky on desktop, stacked in normal flow on mobile. holds sport/team/date selection, the primary action, and the supporting utility block below it.
+- **left control rail**: sticky on desktop, stacked in normal flow on mobile. holds sport/level/team/date selection, the primary action, and the supporting utility block below it.
 - **right primary card**: `Matchup Read` is the answer surface. it owns the empty state, loading state, error state, analyzed matchup metadata, current lean slot, summary, status, confidence, and diagnostics.
 - **full-width supporting section**: `Factor Breakdown` sits below the main row as a wider reasoning layer so factor text can breathe horizontally.
 
@@ -74,23 +118,25 @@ system font stack is inherited from `styles.css`. hierarchy is built through wei
 - active states fill with cobalt (`#2b74ff`); passive metadata chips stay at `#122033`
 - do not add extra glows, over-brighten borders, or make informational tiles feel like primary buttons
 
-**control-system decision:** sport, team a, and team b now use the same picker family. this is the correct direction and should remain the default unless a future product surface proves it insufficient.
+**control-system decision:** sport, level, team a, and team b now use the same picker family. this is the correct direction and should remain the default unless a future product surface proves it insufficient.
 
 - sport uses the shared picker in non-searchable mode
+- level uses the shared picker in non-searchable mode
 - team a and team b use the shared picker in searchable mode
-- all three controls share the same shell, border, spacing, selected-chip treatment, clear affordance, and dropdown styling
-- do not split sport back out into a one-off native select or a different custom control
+- all four controls share the same shell, border, spacing, selected-chip treatment, clear affordance, and dropdown styling
+- do not split sport or level back out into one-off native selects or a different custom control
 
 the implementation class is still named `TeamPickerComponent`, but its input surface is already generic. renaming it is not required in this slice and would be churn without product value.
 
-**display-value rule:** internal values may stay lowercase (`nfl`, `nba`, `mlb`) for contracts and routing. outward-facing UI must always use display labels from the sports reference data. if a display label lookup ever fails, the fallback should still avoid showing a raw lowercase slug.
+**display-value rule:** internal values may stay lowercase (`nfl`, `ncaaf`, `nba`, `ncaamb`, `mlb`) for contracts and routing. outward-facing UI must always use display labels from the reference data. if a display label lookup ever fails, the fallback should still avoid showing a raw lowercase code.
 
-current outward-facing sport paths:
+current outward-facing selection paths:
 
 - sport picker selected chip
+- level picker selected chip
 - hero metadata chip row
 - analyzed matchup metadata
-- analysis details block (`{Sport} team list`)
+- analysis details block (`{Competition} team list`)
 
 this rule should remain stable across the later game list and brief views.
 
@@ -105,6 +151,7 @@ this rule should remain stable across the later game list and brief views.
 **hero metadata behavior:**
 
 - sport chip appears once sport is selected
+- level chip appears once level is selected
 - matchup chip appears once both teams are selected
 - date chip appears once a specific event/date is selected
 - `dev` chip appears only when the schedule source is synthetic
@@ -112,7 +159,8 @@ this rule should remain stable across the later game list and brief views.
 **current state model:** the app already handles the important phase changes cleanly.
 
 - idle guidance before a sport is selected
-- team loading after sport selection
+- level selection after sport selection
+- team loading after level selection
 - date loading after both teams are selected
 - ready state once date is selected
 - in-flight analysis with rotating narration messages
@@ -149,12 +197,12 @@ this split is correct. it keeps the control rail informative before submission a
 
 - validate the picker family in browser across keyboard, mobile, and loading states
 - browser-check the fixed atmospheric background across empty, populated, and long-scroll states
-- keep outward-facing sport labels display-safe everywhere as the app grows
+- keep outward-facing sport family, level, and competition labels display-safe everywhere as the app grows
 - preserve the hero shell / main-row rails / full-width factor breakdown pattern while the backend output gets richer
 - add a real structured lean field only when the backend contract actually supports it
 - improve backend result quality and structure before inventing more frontend chrome
 - consider future modules only if they add real user value to the read, not because the page needs another box
-- surface `durationMs` from the response in the UI analysis details block (data is now in the response; UI still derives this client-side)
+- browser-verify the analysis details block across supported competitions, including run time and team-source labeling
 
 this design direction should carry forward into the product UI. the game list and brief view described below should reuse the same sense of hierarchy and restraint even if their layouts differ.
 
@@ -225,14 +273,16 @@ no pricing table, no comparison grid in v1. those belong on a marketing page, no
 
 ---
 
-### 4. settings / account (minimal)
+### 4. account
 
-accessible from a persistent but unobtrusive control (avatar or icon, top right). contains:
+accessible from the top nav (`Account`). in the current dev shell this is a styled mock page. the production surface should include:
+- profile summary (email, workspace, member since)
 - current plan and renewal date
 - delivery preferences (email address, webhook URL for pro)
+- line movement alert toggle (pro)
 - sign out
 
-nothing else in v1. no notification preferences, no sport toggles, no theme switcher.
+no notification center, no sport toggles, no theme switcher in v1. the dev mock page reflects this scope — it is a static shell, not a wired account system.
 
 ---
 
@@ -265,7 +315,7 @@ the aggregate signal indicator on the game card is the one piece of analysis vis
 | feature | why |
 |---|---|
 | search and filtering | the game list is short enough in v1 that filtering adds no value — NFL has at most 16 games on a Sunday, NBA has at most 13 per night |
-| historical brief archive | useful once trust is established; not needed to convert a first user |
+| historical brief archive (backend) | the History page shell exists as a client-side mock. real persistence — storing completed runs and surfacing them in History — is deferred until the brief itself is worth archiving |
 | signal trend charts | visualizing line movement over time adds build time and clutters the first-use experience |
 | notification settings UI | delivery is configured at account creation in v1; no in-app preference center needed |
 | dark/light mode toggle | the app uses a dark theme — no toggle in v1 |
