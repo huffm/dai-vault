@@ -1,11 +1,48 @@
 # current handoff: sports matchup analyzer
 
 **date:** 2026-04-20
-**status:** dark mode redesign completed. architecture audit completed. RunType dispatch slice completed. strategic vault update completed. run metadata visibility slice completed. structured lean slice completed. output-quality evaluation gate completed. NFL market enrichment slice completed. orchestrator-ready foundation slice completed. MLB starting pitcher injection slice completed. typed SportsCollectorOutput slice completed. typed EvaluatorOutput + calibrated confidence slice completed — three-step pipeline (collect → analyze → evaluate) now fully established; calibrated confidence comes from the evaluator, not the analyzer; both confidence values stored in OutputJson for the learning loop. app shell + nav slice completed — persistent header, three-route nav (Matchup Analyzer / History / Account), lazy-loaded page components; Saved Reads moved inside History as a filter tab. competition-first slice completed — selection flow is now sport family + level → explicit competition code; supported competitions are NFL, NCAAF, NBA, NCAAMB, and MLB; college baseball is visible as unavailable. basketball rest / schedule grounding slice completed — `nba` and `ncaamb` now ground back-to-back and days-rest claims before the model call.
+**status:** dark mode redesign completed. architecture audit completed. RunType dispatch slice completed. strategic vault update completed. run metadata visibility slice completed. structured lean slice completed. output-quality evaluation gate completed. NFL market enrichment slice completed. orchestrator-ready foundation slice completed. MLB starting pitcher injection slice completed. typed SportsCollectorOutput slice completed. typed EvaluatorOutput + calibrated confidence slice completed — three-step pipeline (collect → analyze → evaluate) now fully established; calibrated confidence comes from the evaluator, not the analyzer; both confidence values stored in OutputJson for the learning loop. app shell + nav slice completed — persistent header, three-route nav (Matchup Analyzer / History / Account), lazy-loaded page components; Saved Reads moved inside History as a filter tab. competition-first slice completed — selection flow is now sport family + level → explicit competition code; supported competitions are NFL, NCAAF, NBA, NCAAMB, and MLB; college baseball is visible as unavailable. basketball rest / schedule grounding slice completed — `nba` and `ncaamb` now ground back-to-back and days-rest claims before the model call. NCAAF market grounding slice completed — `ncaaf` now shares the football market collector path and no supported competition remains permanently zero-grounded by design.
 
 ---
 
 ## what was completed in this session
+
+### 16. NCAAF market grounding slice
+
+added the thinnest grounded evidence source for `ncaaf` by extending the existing football market path already proven for `nfl`.
+
+**what was implemented:**
+
+- **football market context is now shared at the contract seam:** renamed the typed market payload from `NflMarketContext` to `FootballMarketContext` in the .NET ↔ FastAPI contract so both `nfl` and `ncaaf` can use the same explicit shape cleanly.
+- **deterministic retrieval stays in the platform layer:** `OddsMarketClient` now exposes `GetFootballSpreadAsync(competition, homeTeam, awayTeam, gameDate)` and resolves the correct Odds API sport key from `CompetitionCatalog` for `nfl` and `ncaaf`.
+- **collector ownership preserved:** `AgentRunService.CollectAsync` now branches for both football competitions, retrieves current spread context before the model call, and stores it in `SportsCollectorOutput`.
+- **grounded signal ownership preserved:** `SportsCollectorOutput` now computes `groundedSignals=["market"]` when `FootballMarketContext` is non-null. FastAPI still does not set this.
+- **football analyzer prompt stays conditional on real data:** `analyze_football` already had the right pattern and now receives shared football market context for both `nfl` and `ncaaf`. when grounded data exists it gets a `[market data]` block; when not it gets `[no market data available for this game]` and an explicit no-fabrication instruction.
+- **confidence seam now matters for NCAAF:** `CompetitionCatalog.MaxGroundedSignals` for `ncaaf` is now `1`, so grounded `ncaaf` runs can now pass through the evaluator's grounded path instead of being permanently dampened by design.
+
+**what was intentionally NOT built:**
+
+- no ui changes
+- no line movement since open
+- no injuries, rankings, recruiting, weather, or split data
+- no new broad college-football collector framework
+- no change to evaluator shape or compose seam
+
+**files changed in this slice:**
+- `dai/platform/dotnet/DevCore.AiClient/FootballMarketContext.cs` (renamed from `NflMarketContext.cs`)
+- `dai/platform/dotnet/DevCore.AiClient/SportAnalysisContracts.cs`
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/AgentRunService.cs`
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/SportsCollectorOutput.cs`
+- `dai/platform/dotnet/DevCore.Api/Program.cs`
+- `dai/platform/dotnet/DevCore.Api/Sports/CompetitionCatalog.cs`
+- `dai/platform/dotnet/DevCore.Api/Sports/OddsMarketClient.cs`
+- `dai/services/agent-service/app/models/sports.py`
+- `dai/services/agent-service/app/routes/sports.py`
+- `dai/services/agent-service/app/services/sports_analyzer.py`
+
+**vault docs changed in this slice:**
+- `02 Platform/architecture/current-sports-analysis-flow.md`
+- this handoff
 
 ### 15. basketball rest / schedule grounding slice
 
@@ -615,11 +652,10 @@ Angular sports-app
       → INSERT AgentRun (status=pending, CorrelationId=TraceIdentifier)
         → AgentRunService.ExecuteAsync(req, run.AgentRunId, ct)
         → CollectAsync(input, gameDate, ct)
-            [nfl only] → OddsMarketClient.GetNflSpreadAsync()
+            [nfl / ncaaf] → OddsMarketClient.GetFootballSpreadAsync()
             [mlb only] → MlbStarterClient.GetStartersAsync()
             [nba / ncaamb] → EspnBasketballScheduleClient.GetRestContextAsync()
-            [ncaaf] → no grounded collector yet
-          ← SportsCollectorOutput { NflMarketContext?, MlbStarterContext?, BasketballScheduleContext?, GroundedSignals[] }
+          ← SportsCollectorOutput { FootballMarketContext?, MlbStarterContext?, BasketballScheduleContext?, GroundedSignals[] }
         → FastApiClient.AnalyzeSportsMatchupAsync(req, agentRunId, ct)
           → POST http://127.0.0.1:8001/api/sports/analyze  ← port 8001 (fresh); port 8000 is a stale process that cannot be killed from a different terminal session
               X-Correlation-Id: Activity.Current?.Id
@@ -647,7 +683,7 @@ Angular sports-app
 - selector flow is now `sport` → `level` → teams → date → analyze
 - OddsAPI schedule lookup with non-directional cache
 - college football and college basketball schedule lookup via odds api competition keys
-- **NFL market enrichment:** `OddsMarketClient` fetches current spread before each NFL analysis; result injected into the user message as a `[market data]` block; null result triggers no-market fallback that explicitly prevents fabrication
+- **football market enrichment:** `OddsMarketClient` fetches current spread before each `nfl` and `ncaaf` analysis; result injected into the user message as a `[market data]` block; null result triggers no-market fallback that explicitly prevents fabrication
 - **basketball rest / schedule enrichment:** `EspnBasketballScheduleClient` fetches recent prior-game dates from public espn scoreboard data for `nba` and `ncaamb`; when both teams are grounded, the analyzer receives a `[schedule data]` block with days rest and back-to-back flags; when not, it receives an explicit no-data fallback and must omit rest claims
 - **MLB starter enrichment:** `MlbStarterClient` fetches probable starter names and handedness from `statsapi.mlb.com` before each MLB analysis; result injected as a `[starter data]` block; null result triggers no-starter fallback that omits the starting pitching category and prevents fabrication of pitcher names, ERA, or form
 - **typed collect step:** both retrieval calls flow through `SportsCollectorOutput`. `GroundedSignals` computed from context availability, not by the model.
@@ -692,7 +728,7 @@ Angular sports-app
 4. `useStubApi = true` in `environment.ts` production build — real API only called in dev
 5. `GET /api/agent-runs/{id}` — endpoint exists and works; UI still never calls it; wiring it up is the next natural step for making individual runs inspectable
 6. no run history in UI — runs accumulate in DB with no visibility surface. the History page shell now exists as a client-side mock; wiring it to real api data (GET /api/agent-runs) is the natural follow-on.
-7. `ncaaf` still has no grounded collector — it routes cleanly, but it remains permanently zero-grounded until a real evidence source is added
+7. football market grounding is still intentionally thin — `nfl` and `ncaaf` now ground current spread, but line movement history and additional football evidence sources are still absent
 
 ---
 
@@ -700,17 +736,17 @@ Angular sports-app
 
 orchestrator-ready foundation is in place. seam named. evidence quality tracked. agent/tool doctrine written. competition is now first-class in the selector flow and request path.
 
-**recommended next: remove the last permanently zero-grounded supported competition.**
+**recommended next: add a second grounded source to a family that already has its first.**
 
-the three-step pipeline (collect → analyze → evaluate) is now fully established. all three typed contracts exist. calibrated confidence is in place with an honest proxy model. the cleanest follow-on is to make the new competition seam matter for evidence quality, not just routing.
+the three-step pipeline (collect → analyze → evaluate) is now fully established. all three typed contracts exist. calibrated confidence is in place with an honest proxy model. all supported competitions now have at least one grounded source, so the cleanest follow-on is depth, not coverage.
 
-**option A: college-football market grounding for `ncaaf`.** this extends the existing NFL market pattern to the only supported competition that still has no grounded source at all. it is the cleanest way to stop every `ncaaf` run from being evaluator-dampened by design.
+**option A: basketball injury grounding for `nba` and `ncaamb`.** rest/schedule is now grounded, but basketball still has no deterministic availability signal. this would add a second signal category without reopening the UI or changing the three-step seam.
 
-**option B: basketball injury grounding for `nba` and `ncaamb`.** rest/schedule is now grounded, but basketball still has no deterministic injury input. this would add a second signal category without reopening the UI or changing the three-step seam.
+**option B: football line movement history.** strategically valuable, but it requires a grounded historical market endpoint or snapshot path. do not build it until that source is actually wired and cheap.
 
-**option C: outcome tracking foundation.** the calibration parameters (0.75 dampening, clamp ranges) are still conservative estimates. the learning loop needs game outcomes to compare against stored `Confidence` and `AnalyzerConfidence`. this is strategically important, but it is broader and less aligned to the just-finished collector slice.
+**option C: outcome tracking foundation.** the calibration parameters (0.75 dampening, clamp ranges) are still conservative estimates. the learning loop needs game outcomes to compare against stored `Confidence` and `AnalyzerConfidence`. this is strategically important, but it is broader than another thin collector slice.
 
-**recommendation: option A (`ncaaf` market grounding).** it removes the final always-zero-grounded supported competition, reuses an already-proven collector pattern, and keeps the competition seam doing real platform work instead of only selection/routing work.
+**recommendation: option A (`nba` + `ncaamb` injury grounding).** it extends the existing basketball family pattern, adds a second grounded source without reopening the UI, and avoids jumping into a broader football data platform or speculative historical market infrastructure.
 
 **do not build:**
 - static confidence-counting rule pinned to signal quantity (rejected: wrong seam, wrong level)
@@ -805,7 +841,7 @@ the sports matchup analyzer is the first expression of a decision intelligence s
 - `dai/platform/dotnet/DevCore.AiClient/FastApiClient.cs`
 - `dai/platform/dotnet/DevCore.AiClient/BasketballScheduleContext.cs`
 - `dai/platform/dotnet/DevCore.AiClient/SportAnalysisContracts.cs`
-- `dai/platform/dotnet/DevCore.AiClient/NflMarketContext.cs`
+- `dai/platform/dotnet/DevCore.AiClient/FootballMarketContext.cs`
 - `dai/platform/dotnet/DevCore.AiClient/MlbStarterContext.cs`
 - `dai/platform/dotnet/DevCore.Api/Sports/CompetitionCatalog.cs`
 - `dai/platform/dotnet/DevCore.Api/Sports/OddsScheduleClient.cs`

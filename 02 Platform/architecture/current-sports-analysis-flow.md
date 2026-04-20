@@ -70,11 +70,10 @@ Angular sports-app
       → AgentRunService.ExecuteAsync(req, run.AgentRunId, ct)
         → ExecuteSportsMatchupAsync()
           → CollectAsync()
-            [nfl only]  OddsMarketClient.GetNflSpreadAsync()
+            [nfl / ncaaf] OddsMarketClient.GetFootballSpreadAsync()
             [mlb only]  MlbStarterClient.GetStartersAsync()
             [nba / ncaamb] EspnBasketballScheduleClient.GetRestContextAsync()
-            [ncaaf] no grounded collector yet
-          ← SportsCollectorOutput { NflMarketContext?, MlbStarterContext?, BasketballScheduleContext?, GroundedSignals[] }
+          ← SportsCollectorOutput { FootballMarketContext?, MlbStarterContext?, BasketballScheduleContext?, GroundedSignals[] }
           → FastApiClient.AnalyzeSportsMatchupAsync()
             → POST http://127.0.0.1:8001/api/sports/analyze
                 X-Correlation-Id: Activity.Current?.Id
@@ -218,10 +217,10 @@ typed `HttpClient` that derives a thin rest/schedule signal for `nba` and `ncaam
 - `ExecuteSportsMatchupAsync` now receives `CompetitionMatchupInput`
 - collect, analyze, and evaluate all key off `competition`, not `sport`
 - collector routing is still intentionally thin:
-  - `nfl` → fetch market spread
+  - `nfl`, `ncaaf` → fetch market spread
   - `mlb` → fetch probable starters
   - `nba`, `ncaamb` → fetch rest/schedule grounding
-  - `ncaaf` → no grounded collector yet
+  - all other supported competition-specific sources remain deferred
 - confidence calibration now uses `CompetitionMaxGroundedSignals(competition)`
 
 ### .NET: `DevCore.AiClient/SportAnalysisContracts.cs`
@@ -234,7 +233,7 @@ SportsAnalysisRequest {
   HomeTeam,
   AwayTeam,
   GameDate,
-  NflMarketContext?,
+  FootballMarketContext?,
   MlbStarterContext?,
   BasketballScheduleContext?
 }
@@ -260,7 +259,7 @@ SportsAnalysisResponse { Lean?, Summary, Confidence, Factors[] }
   - college football and college basketball reuse the football and basketball analyzer families
   - basketball uses an explicit `[schedule data]` block when real rest context is present
   - basketball uses an explicit no-data fallback when schedule grounding is unavailable
-  - nfl still gets market context when available
+  - football gets market context when available
   - mlb still gets starting-pitcher context when available
 
 ---
@@ -347,7 +346,7 @@ the UI should not leak raw internal codes unless there is a true fallback case.
 | no auth on sports path | `AgentRunsController`, `SportsApiService` | any caller can create runs; no tenant scoping in production |
 | production `useStubApi` | `apps/sports-app/environment.ts` | production build still uses stub analysis unless changed |
 | OutputJson has no schema | `AgentRun.OutputJson` | stored content cannot be queried structurally |
-| `ncaaf` still has no grounded collector | `AgentRunService.CollectAsync` | college football still falls back to prompt-only analysis and stays in the dampened confidence path |
+| football market grounding is intentionally thin | `OddsMarketClient`, `sports_analyzer.py` | only current spread is grounded; no line movement history, injury feed, or broader football evidence set yet |
 | basketball rest signal is intentionally thin | `EspnBasketballScheduleClient`, `sports_analyzer.py` | grounds back-to-back / days-rest claims only; no travel, injury, or broader schedule-load intelligence yet |
 | no college baseball support | `CompetitionCatalog`, frontend level picker | user can see the concept but cannot select a working competition |
 | espn schedule source is public but unofficial | `EspnBasketballScheduleClient` | shape can drift over time; collector must fail closed to the no-data prompt path |

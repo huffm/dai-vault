@@ -36,11 +36,11 @@ private static AgentRunExecutionResult ComposeDecisionArtifact(
 **confidence ownership is now established:** `SportsAnalysisResponse.Confidence` is the analyzer's local estimate — used as one input to `Evaluate`, not stored as the final value. `AgentRunExecutionResult.Confidence` is now `EvaluatorOutput.AggregateConfidence`. both are stored in `OutputJson` for the learning loop.
 
 **current calibration model (honest proxy):**
-- zero grounded signals (`ncaaf`; or any competition when its collector fails): dampen analyzer confidence by 0.75; clamp to [0.30, 0.60]. the model reasoned from priors — high claimed confidence is narrative quality, not signal quality.
-- one or more grounded signals (NFL with spread, MLB with starters, NBA/NCAAMB with rest_schedule): clamp analyzer confidence to [0.35, 0.85]. model had real data; its confidence reading is more trustworthy for grounded categories.
+- zero grounded signals (any competition when its collector fails): dampen analyzer confidence by 0.75; clamp to [0.30, 0.60]. the model reasoned from priors — high claimed confidence is narrative quality, not signal quality.
+- one or more grounded signals (NFL/NCAAF with market, MLB with starters, NBA/NCAAMB with rest_schedule): clamp analyzer confidence to [0.35, 0.85]. model had real data; its confidence reading is more trustworthy for grounded categories.
 - `CompetitionMaxGroundedSignals(competition)` defines the current maximum grounded signals possible per supported competition. update the competition catalog when a new grounded source is added.
 
-**`SportsCollectorOutput` is the typed collect step contract:** defined in `DevCore.Api/AgentRuns/SportsCollectorOutput.cs`. contains `NflMarketContext?`, `MlbStarterContext?`, `BasketballScheduleContext?`, and `GroundedSignals` (computed from non-null fields). the single source of truth for which signals had real retrieved data.
+**`SportsCollectorOutput` is the typed collect step contract:** defined in `DevCore.Api/AgentRuns/SportsCollectorOutput.cs`. contains `FootballMarketContext?`, `MlbStarterContext?`, `BasketballScheduleContext?`, and `GroundedSignals` (computed from non-null fields). the single source of truth for which signals had real retrieved data.
 
 **evidence quality is stored in `OutputJson`:** `AgentRunExecutionResult.GroundedSignals` and `AgentRunExecutionResult.AnalyzerConfidence` are both stored for the future learning loop.
 
@@ -129,7 +129,7 @@ SynthesizerOutput  =  DecisionArtifact  (see decision-intelligence-model.md §4)
 
 **do not hardcode niche rules into shared role code.** a collector should not contain an if-statement that says "if football, also fetch weather." that rule belongs in the niche config or agent profile. the collector calls whatever tools the profile authorizes.
 
-**current exception:** `AgentRunService.CollectAsync` contains competition-specific branches for `nfl`, `mlb`, `nba`, and `ncaamb` data retrieval. this is the correct deferral — there is no profile system yet to inject competition-specific tool lists. when additional competition-specific sources are added, this logic should move into niche config. do not generalize prematurely.
+**current exception:** `AgentRunService.CollectAsync` contains competition-specific branches for `nfl`, `ncaaf`, `mlb`, `nba`, and `ncaamb` data retrieval. this is the correct deferral — there is no profile system yet to inject competition-specific tool lists. when additional competition-specific sources are added, this logic should move into niche config. do not generalize prematurely.
 
 ---
 
@@ -160,7 +160,7 @@ the current single-step analysis does not need to be replaced immediately. the p
 5. evaluate step added — done. `EvaluatorOutput` is the typed contract. `Evaluate` produces calibrated confidence from evidence richness + analyzer input. `ComposeDecisionArtifact` now receives all three pipeline outputs.
 6. competition-first routing slice added — done. internal analysis now keys off explicit competition codes (`nfl`, `ncaaf`, `nba`, `ncaamb`, `mlb`) while the UI stays at sport family + level.
 7. basketball rest/schedule grounding added — done. `nba` and `ncaamb` now send explicit `BasketballScheduleContext` into the analyzer when the collector grounds both teams' recent schedule context.
-8. next: add the first grounded source for `ncaaf` so no supported competition remains permanently zero-grounded
+8. next: add a second grounded source to one family without widening the ui or orchestration surface
 9. then: when calibration parameters are outcome-validated, `Evaluate` can grow into a real scoring pass with per-category weights
 10. then: introduce the orchestrator as coordinator when two meaningfully different pipeline configurations exist
 
