@@ -1,7 +1,7 @@
 # orchestration
 
 **date:** 2026-04-20
-**status:** three explicit pipeline steps in place — collect, analyze, evaluate. typed SportsCollectorOutput and EvaluatorOutput exist. calibrated confidence now comes from the evaluator, not the analyzer. ComposeDecisionArtifact receives all three outputs. competition is now the internal routing key for the sports slice. nba + ncaamb now have a grounded `rest_schedule` collector. agent/tool doctrine documented. see `decision-intelligence-model.md` for full context.
+**status:** three explicit pipeline steps in place — collect, analyze, evaluate. typed SportsCollectorOutput and EvaluatorOutput exist. calibrated confidence now comes from the evaluator, not the analyzer. ComposeDecisionArtifact receives all three outputs. competition is now the internal routing key for the sports slice. nba + ncaamb now have grounded `rest_schedule` and `market` collectors, and the evaluator now distinguishes partial vs full basketball grounding richness. agent/tool doctrine documented. see `decision-intelligence-model.md` for full context.
 
 ---
 
@@ -37,10 +37,11 @@ private static AgentRunExecutionResult ComposeDecisionArtifact(
 
 **current calibration model (honest proxy):**
 - zero grounded signals (any competition when its collector fails): dampen analyzer confidence by 0.75; clamp to [0.30, 0.60]. the model reasoned from priors — high claimed confidence is narrative quality, not signal quality.
-- one or more grounded signals (NFL/NCAAF with market, MLB with starters, NBA/NCAAMB with rest_schedule): clamp analyzer confidence to [0.35, 0.85]. model had real data; its confidence reading is more trustworthy for grounded categories.
+- partial grounding richness (`0 < groundedCount < CompetitionMaxGroundedSignals(competition)`): dampen analyzer confidence by 0.90; clamp to [0.35, 0.75]. this is a conservative interim path for runs that have some real data but not the full grounded set the current platform can support. today this mainly means basketball `1 of 2`.
+- full grounding richness (`groundedCount == CompetitionMaxGroundedSignals(competition)`): clamp analyzer confidence to [0.35, 0.85]. the model had the full currently supported grounded set for that competition, but the ceiling still stays conservative because this is not outcome-validated scoring yet.
 - `CompetitionMaxGroundedSignals(competition)` defines the current maximum grounded signals possible per supported competition. update the competition catalog when a new grounded source is added.
 
-**`SportsCollectorOutput` is the typed collect step contract:** defined in `DevCore.Api/AgentRuns/SportsCollectorOutput.cs`. contains `FootballMarketContext?`, `MlbStarterContext?`, `BasketballScheduleContext?`, and `GroundedSignals` (computed from non-null fields). the single source of truth for which signals had real retrieved data.
+**`SportsCollectorOutput` is the typed collect step contract:** defined in `DevCore.Api/AgentRuns/SportsCollectorOutput.cs`. contains `FootballMarketContext?`, `MlbStarterContext?`, `BasketballScheduleContext?`, `BasketballMarketContext?`, and `GroundedSignals` (computed from non-null fields). the single source of truth for which signals had real retrieved data.
 
 **evidence quality is stored in `OutputJson`:** `AgentRunExecutionResult.GroundedSignals` and `AgentRunExecutionResult.AnalyzerConfidence` are both stored for the future learning loop.
 
@@ -160,8 +161,9 @@ the current single-step analysis does not need to be replaced immediately. the p
 5. evaluate step added — done. `EvaluatorOutput` is the typed contract. `Evaluate` produces calibrated confidence from evidence richness + analyzer input. `ComposeDecisionArtifact` now receives all three pipeline outputs.
 6. competition-first routing slice added — done. internal analysis now keys off explicit competition codes (`nfl`, `ncaaf`, `nba`, `ncaamb`, `mlb`) while the UI stays at sport family + level.
 7. basketball rest/schedule grounding added — done. `nba` and `ncaamb` now send explicit `BasketballScheduleContext` into the analyzer when the collector grounds both teams' recent schedule context.
-8. next: add a second grounded source to one family without widening the ui or orchestration surface
-9. then: when calibration parameters are outcome-validated, `Evaluate` can grow into a real scoring pass with per-category weights
-10. then: introduce the orchestrator as coordinator when two meaningfully different pipeline configurations exist
+8. basketball market grounding added — done. `nba` and `ncaamb` now also send explicit `BasketballMarketContext` into the analyzer when current spreads are available.
+9. evaluator richness distinction added — done. `Evaluate` now uses current grounded count plus `CompetitionMaxGroundedSignals(competition)` to distinguish zero grounded, partially grounded, and fully grounded runs. today that mainly changes basketball `0 of 2`, `1 of 2`, and `2 of 2`.
+10. next: when calibration parameters are outcome-validated, `Evaluate` can grow into a real scoring pass with per-category weights
+11. then: introduce the orchestrator as coordinator when two meaningfully different pipeline configurations exist
 
 do not introduce the orchestrator coordinator until there are at least two meaningfully different pipeline configurations that justify the abstraction.

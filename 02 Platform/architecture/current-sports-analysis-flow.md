@@ -73,7 +73,8 @@ Angular sports-app
             [nfl / ncaaf] OddsMarketClient.GetFootballSpreadAsync()
             [mlb only]  MlbStarterClient.GetStartersAsync()
             [nba / ncaamb] EspnBasketballScheduleClient.GetRestContextAsync()
-          ← SportsCollectorOutput { FootballMarketContext?, MlbStarterContext?, BasketballScheduleContext?, GroundedSignals[] }
+            [nba / ncaamb] OddsMarketClient.GetBasketballSpreadAsync()
+          ← SportsCollectorOutput { FootballMarketContext?, MlbStarterContext?, BasketballScheduleContext?, BasketballMarketContext?, GroundedSignals[] }
           → FastApiClient.AnalyzeSportsMatchupAsync()
             → POST http://127.0.0.1:8001/api/sports/analyze
                 X-Correlation-Id: Activity.Current?.Id
@@ -211,6 +212,22 @@ typed `HttpClient` that derives a thin rest/schedule signal for `nba` and `ncaam
 - cache is per competition + date for 30 minutes to avoid repeated scoreboard fetches
 - fuzzy name matching is intentionally conservative and exists only to bridge odds-provider team names to espn scoreboard names
 
+### .NET: `DevCore.Api/Sports/OddsMarketClient.cs`
+
+typed `HttpClient` that retrieves the thinnest possible market signal: current spread only.
+
+- football path still supports:
+  - `GetFootballSpreadAsync(competition, homeTeam, awayTeam, gameDate)` for `nfl` and `ncaaf`
+- basketball path now supports:
+  - `GetBasketballSpreadAsync(competition, homeTeam, awayTeam, gameDate)` for `nba` and `ncaamb`
+- both paths use the same odds api provider and competition key mapping from `CompetitionCatalog`
+- retrieval stays intentionally thin:
+  - current spread only
+  - preferred bookmaker selection from the existing bookmaker priority list
+  - 15-minute cache
+- no line movement history is retrieved here
+- because the analyzer payload uses provider-resolved home/away names from schedule lookup, spread matching stays deterministic without a broader team-resolution framework
+
 ### .NET: `DevCore.Api/AgentRuns/AgentRunService.cs`
 
 - `ExecuteAsync` still dispatches by `RunType`
@@ -219,9 +236,9 @@ typed `HttpClient` that derives a thin rest/schedule signal for `nba` and `ncaam
 - collector routing is still intentionally thin:
   - `nfl`, `ncaaf` → fetch market spread
   - `mlb` → fetch probable starters
-  - `nba`, `ncaamb` → fetch rest/schedule grounding
+  - `nba`, `ncaamb` → fetch rest/schedule grounding and current spread
   - all other supported competition-specific sources remain deferred
-- confidence calibration now uses `CompetitionMaxGroundedSignals(competition)`
+- confidence calibration now uses `CompetitionMaxGroundedSignals(competition)` plus current grounded count to distinguish zero-grounded, partially grounded, and fully grounded runs. today that mainly changes basketball: `0 of 2`, `1 of 2`, and `2 of 2` no longer calibrate the same.
 
 ### .NET: `DevCore.AiClient/SportAnalysisContracts.cs`
 
@@ -235,7 +252,8 @@ SportsAnalysisRequest {
   GameDate,
   FootballMarketContext?,
   MlbStarterContext?,
-  BasketballScheduleContext?
+  BasketballScheduleContext?,
+  BasketballMarketContext?
 }
 ```
 
@@ -258,7 +276,8 @@ SportsAnalysisResponse { Lean?, Summary, Confidence, Factors[] }
   - prompts are now family-aware instead of pro-only where possible
   - college football and college basketball reuse the football and basketball analyzer families
   - basketball uses an explicit `[schedule data]` block when real rest context is present
-  - basketball uses an explicit no-data fallback when schedule grounding is unavailable
+  - basketball uses an explicit `[market data]` block when real spread context is present
+  - basketball uses explicit no-data fallbacks when schedule or market grounding is unavailable
   - football gets market context when available
   - mlb still gets starting-pitcher context when available
 
@@ -348,6 +367,8 @@ the UI should not leak raw internal codes unless there is a true fallback case.
 | OutputJson has no schema | `AgentRun.OutputJson` | stored content cannot be queried structurally |
 | football market grounding is intentionally thin | `OddsMarketClient`, `sports_analyzer.py` | only current spread is grounded; no line movement history, injury feed, or broader football evidence set yet |
 | basketball rest signal is intentionally thin | `EspnBasketballScheduleClient`, `sports_analyzer.py` | grounds back-to-back / days-rest claims only; no travel, injury, or broader schedule-load intelligence yet |
+| basketball market grounding is intentionally thin | `OddsMarketClient`, `sports_analyzer.py` | grounds current spread only; no totals, line movement history, or availability feed |
+| no reliable shared season-long basketball injury source | collector layer (deferred) | nba has official injury reporting, but ncaamb still lacks a season-wide shared availability feed; do not force cross-competition injury grounding until a real source exists |
 | no college baseball support | `CompetitionCatalog`, frontend level picker | user can see the concept but cannot select a working competition |
 | espn schedule source is public but unofficial | `EspnBasketballScheduleClient` | shape can drift over time; collector must fail closed to the no-data prompt path |
 
@@ -360,6 +381,7 @@ these concepts appear in vault docs but are not implemented in this path today:
 - competition-specific collector packages for college sports
 - competition-specific evaluator rules beyond `MaxGroundedSignals`
 - competition-specific prompt families beyond football / basketball / mlb
+- shared basketball injury/availability grounding across `nba` and `ncaamb`
 - college baseball support
 - outcome tracking or calibration tuning from real results
 - delivery, scheduling, billing, or tier enforcement
