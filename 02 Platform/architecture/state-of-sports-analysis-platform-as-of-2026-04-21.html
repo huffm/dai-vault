@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>state of sports analysis platform as of 2026-04-21</title>
+<style>
+:root {
+  --bg: #f5f2ea;
+  --paper: #fffdf8;
+  --ink: #17212b;
+  --muted: #5e6a73;
+  --line: #d8d1c4;
+  --accent: #183b5b;
+  --accent-soft: #e9f0f6;
+  --code-bg: #101820;
+  --code-ink: #f3f6f9;
+  --callout: #f2efe8;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  color: var(--ink);
+  background: linear-gradient(180deg, #ece7dd 0%, #f5f2ea 22%, #f5f2ea 100%);
+  font-family: Georgia, 'Times New Roman', serif;
+  line-height: 1.6;
+}
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 24px 72px;
+}
+.article {
+  background: var(--paper);
+  border: 1px solid rgba(24, 59, 91, 0.10);
+  box-shadow: 0 18px 50px rgba(34, 38, 42, 0.10);
+}
+.cover {
+  padding: 56px 56px 36px;
+  border-bottom: 1px solid var(--line);
+  background:
+    radial-gradient(circle at top right, rgba(24, 59, 91, 0.10), transparent 34%),
+    linear-gradient(180deg, #fffdf8 0%, #fbf8f1 100%);
+}
+.kicker {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid rgba(24, 59, 91, 0.18);
+  border-radius: 999px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(24, 59, 91, 0.05);
+}
+.cover h1 {
+  margin: 18px 0 14px;
+  font-size: 42px;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+.subtitle {
+  max-width: 760px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 18px;
+}
+.meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  font-family: Arial, Helvetica, sans-serif;
+}
+.meta div {
+  padding: 14px 16px;
+  background: rgba(24, 59, 91, 0.04);
+  border: 1px solid rgba(24, 59, 91, 0.08);
+}
+.meta .label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.toc {
+  padding: 28px 56px 18px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(24, 59, 91, 0.035), transparent 100%);
+}
+.toc h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.toc ol {
+  margin: 0;
+  padding-left: 22px;
+  columns: 2;
+  column-gap: 32px;
+}
+.toc li { margin: 0 0 6px; }
+.toc a { color: var(--ink); text-decoration: none; border-bottom: 1px solid transparent; }
+.toc a:hover { border-color: rgba(23, 33, 43, 0.35); }
+.content { padding: 24px 56px 56px; }
+.content h1 { display: none; }
+.content h2 {
+  margin: 34px 0 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  font-size: 30px;
+  line-height: 1.2;
+}
+.content h3 {
+  margin: 24px 0 10px;
+  font-size: 22px;
+  line-height: 1.25;
+  color: var(--accent);
+}
+.content p { margin: 0 0 14px; }
+.content ul, .content ol { margin: 0 0 18px; padding-left: 24px; }
+.content li { margin: 0 0 8px; }
+.content hr { border: 0; border-top: 1px solid var(--line); margin: 28px 0; }
+.content code {
+  padding: 0.12em 0.35em;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 0.93em;
+}
+.content pre {
+  margin: 18px 0 24px;
+  padding: 18px 20px;
+  overflow-x: auto;
+  border-radius: 12px;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.content pre code {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  border-radius: 0;
+  font-size: 14px;
+}
+.footer-note {
+  margin-top: 36px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  background: var(--callout);
+  color: var(--muted);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+}
+@media (max-width: 820px) {
+  main { padding: 16px 12px 40px; }
+  .cover, .toc, .content { padding-left: 22px; padding-right: 22px; }
+  .cover h1 { font-size: 34px; }
+  .meta { grid-template-columns: 1fr; }
+  .toc ol { columns: 1; }
+}
+@media print {
+  @page { size: letter; margin: 0.55in; }
+  html, body { background: #ffffff; }
+  main { max-width: none; margin: 0; padding: 0; }
+  .article { box-shadow: none; border: 0; }
+  .cover { padding-top: 0; }
+  a { color: inherit; text-decoration: none; }
+  .toc a { border: 0; }
+  .content h2, .content h3, pre { break-inside: avoid; }
+  pre { white-space: pre-wrap; word-break: break-word; }
+}
+</style>
+</head>
+<body>
+<main>
+  <article class="article">
+    <section class="cover">
+      <span class="kicker">Current State Study Guide</span>
+      <h1>state of sports analysis platform as of 2026-04-21</h1>
+      <p class="subtitle">A founder and principal engineer reading document built from the vault and the live code path. This captures the implemented state at the end of 2026-04-21.</p>
+      <div class="meta">
+        <div><span class="label">State Boundary</span>2026-04-21</div>
+        <div><span class="label">Primary Audience</span>Founder / Principal Engineer</div>
+        <div><span class="label">Source Types</span>Vault docs plus live Angular, .NET, and Python code</div>
+      </div>
+    </section>
+    <nav class="toc">
+      <h2>Contents</h2>
+      <ol><li><a href="#executive-summary">executive summary</a></li><li><a href="#current-product-stance-after-analyze">current product stance after analyze</a></li><li><a href="#supported-competitions-and-grounded-evidence">supported competitions and grounded evidence</a></li><li><a href="#the-simplest-mental-model">the simplest mental model</a></li><li><a href="#what-moves-where">what moves where</a></li><li><a href="#major-moving-parts-and-ownership">major moving parts and ownership</a></li><li><a href="#major-architectural-decisions-made-so-far">major architectural decisions made so far</a></li><li><a href="#what-the-system-stores-and-returns-after-analyze">what the system stores and returns after analyze</a></li><li><a href="#important-caveats-and-risks">important caveats and risks</a></li><li><a href="#recommended-study-order">recommended study order</a></li><li><a href="#the-current-state-story-in-one-paragraph">the current-state story in one paragraph</a></li><li><a href="#appendix-key-questions-this-document-should-help-you-answer">appendix: key questions this document should help you answer</a></li></ol>
+    </nav>
+    <section class="content">
+      <h1 id="state-of-sports-analysis-platform-as-of-2026-04-21">state of sports analysis platform as of 2026-04-21</h1><p>derived from:</p><ul><li>vault docs in <code>dai-vault/02 Platform/architecture/</code>, <code>dai-vault/04 Products/sports-v1/</code>, and <code>dai-vault/06 Execution/</code></li><li>live code in <code>dai/apps/sports-app/</code>, <code>dai/platform/dotnet/</code>, and <code>dai/services/agent-service/</code></li></ul><p>purpose:</p><ul><li>give a founder / principal engineer study guide for the sports analysis stack</li><li>explain the current state at the end of 2026-04-21, not the future target state</li><li>show both the high-level flow and the specific architectural decisions that matter</li></ul><p>boundary note:</p><ul><li>this document intentionally describes the implemented state as of 2026-04-21</li><li>later work should be compared against this baseline, not mixed into it</li></ul><hr /><h2 id="executive-summary">executive summary</h2><p>as of 2026-04-21, the sports product is a real on-demand, competition-aware pregame analysis engine with a thin angular shell around it.</p><p>the system is no longer &quot;frontend calls model and gets a summary.&quot; it now has a clearer platform shape:</p><ol><li>angular collects the matchup selection and sends a typed analysis request</li><li>.net stores an <code>AgentRun</code>, collects grounded evidence, calls python, then calibrates the final confidence</li><li>python receives only the data the platform actually retrieved, writes the <code>lean</code>, <code>summary</code>, and <code>factors</code>, and returns a provisional confidence</li><li>.net persists the output and returns a trimmed user-facing response</li></ol><p>the most important architectural change so far is that the model is no longer treated as the source of truth for everything. the platform is starting to own:</p><ul><li>competition routing</li><li>grounded signal provenance</li><li>confidence calibration</li><li>cross-layer traceability</li><li>durable run records</li></ul><p>that is the right direction if the long-term product is decision intelligence rather than report generation.</p><hr /><h2 id="current-product-stance-after-analyze">current product stance after analyze</h2><p>today&#x27;s product stance is narrower than the long-term vault vision.</p><p>what is real now:</p><ul><li>the analyzer page is real and wired end to end</li><li>the app is competition-aware, not just sport-aware</li><li>analysis requests travel through angular -&gt; .net -&gt; python -&gt; .net -&gt; angular</li><li>collector evidence is attached before the model call</li><li>final confidence is calibrated in .net after the model call</li><li>every run is stored in SQL as an <code>AgentRun</code></li></ul><p>what the user gets after clicking <code>Analyze</code>:</p><ul><li>a <code>lean</code></li><li>a <code>summary</code></li><li>a calibrated <code>confidence</code></li><li>a list of <code>factors</code></li><li>an <code>agentRunId</code></li><li>server-side runtime metadata</li></ul><p>what it is not yet:</p><ul><li>not yet a scheduled delivery product</li><li>not yet a billing-gated product</li><li>not yet a full history product</li><li>not yet a learning-loop product</li><li>not yet a structured signal-table product with source provenance shown in the UI</li></ul><p>practical reading:</p><ul><li>this is a working analysis engine and dev surface</li><li>it is not yet the full commercial sports business system</li></ul><hr /><h2 id="supported-competitions-and-grounded-evidence">supported competitions and grounded evidence</h2><p>the internal routing key is now an explicit competition code.</p><p>current supported competitions:</p><ul><li><code>nfl</code></li><p>- family: football - level: pro - grounded evidence today: current market spread</p><li><code>ncaaf</code></li><p>- family: football - level: college - grounded evidence today: current market spread</p><li><code>nba</code></li><p>- family: basketball - level: pro - grounded evidence today: rest / schedule context plus current market spread</p><li><code>ncaamb</code></li><p>- family: basketball - level: college - grounded evidence today: rest / schedule context plus current market spread</p><li><code>mlb</code></li><p>- family: baseball - level: pro - grounded evidence today: probable starters</p><li>college baseball</li><p>- visible in the UI as unavailable - intentionally not implemented</p></ul><p>live code excerpt from <code>CompetitionCatalog.cs</code>:</p><pre><code class="language-csharp">public static class CompetitionCatalog
+{
+    private static readonly CompetitionDefinition[] _all =
+    [
+        new(
+            Code: CompetitionCodes.Nfl,
+            DisplayName: &quot;NFL&quot;,
+            SportFamily: &quot;football&quot;,
+            Level: &quot;pro&quot;,
+            OddsApiKey: &quot;americanfootball_nfl&quot;,
+            MaxGroundedSignals: 1),
+        new(
+            Code: CompetitionCodes.Ncaaf,
+            DisplayName: &quot;NCAAF&quot;,
+            SportFamily: &quot;football&quot;,
+            Level: &quot;college&quot;,
+            OddsApiKey: &quot;americanfootball_ncaaf&quot;,
+            MaxGroundedSignals: 1),
+        new(
+            Code: CompetitionCodes.Nba,
+            DisplayName: &quot;NBA&quot;,
+            SportFamily: &quot;basketball&quot;,
+            Level: &quot;pro&quot;,
+            OddsApiKey: &quot;basketball_nba&quot;,
+            MaxGroundedSignals: 2),
+        new(
+            Code: CompetitionCodes.Ncaamb,
+            DisplayName: &quot;NCAAMB&quot;,
+            SportFamily: &quot;basketball&quot;,
+            Level: &quot;college&quot;,
+            OddsApiKey: &quot;basketball_ncaab&quot;,
+            MaxGroundedSignals: 2),
+        new(
+            Code: CompetitionCodes.Mlb,
+            DisplayName: &quot;MLB&quot;,
+            SportFamily: &quot;baseball&quot;,
+            Level: &quot;pro&quot;,
+            OddsApiKey: &quot;baseball_mlb&quot;,
+            MaxGroundedSignals: 1),
+        new(
+            Code: null,
+            DisplayName: &quot;College Baseball&quot;,
+            SportFamily: &quot;baseball&quot;,
+            Level: &quot;college&quot;,
+            AvailabilityNote: &quot;College baseball is not available yet.&quot;,
+            OddsApiKey: null,
+            MaxGroundedSignals: 0)
+    ];</code></pre><p>why this matters:</p><ul><li>the UI stays friendly with sport + level selection</li><li>the platform gets explicit routing identity</li><li>collector logic, evaluator logic, and seed data can now stay honest</li></ul><hr /><h2 id="the-simplest-mental-model">the simplest mental model</h2><p>if you want a founder-level shorthand, use this:</p><ul><li>angular is the packaging layer</li><li>.net is the factory floor and traffic cop</li><li>python is the writer / synthesizer</li><li>SQL is the memory</li><li>external sports APIs are the raw materials</li></ul><p>another useful framing:</p><ul><li>platform = factory</li><li>agents = workers</li><li>frontends = packaging</li><li>stripe = truth</li></ul><p>in the sports slice, .net is currently acting as the factory coordinator. python is one worker in that factory, not the whole factory.</p><hr /><h2 id="what-moves-where">what moves where</h2><h3 id="before-analyze">before analyze</h3><p>before the user clicks <code>Analyze</code>, the UI is still building context.</p><p>the sequence is:</p><ol><li>angular loads visible competitions from <code>GET /api/competitions</code></li><li>angular loads teams from <code>GET /api/competitions/{code}/teams</code></li><li>angular loads real matchup dates from <code>GET /api/competitions/{code}/matchup-dates?teamA=...&amp;teamB=...</code></li><li>.net resolves the real event orientation and returns <code>homeTeam</code> / <code>awayTeam</code> for the selected date</li></ol><p>important boundary:</p><ul><li>this part does <strong>not</strong> go through python</li><li>python is only used for the actual analysis call</li></ul><p>the reference endpoint is validating competition and team selection inside <code>.NET</code>, not inside the model path.</p><p>live code excerpt from <code>SportsReferenceController.cs</code>:</p><pre><code class="language-csharp">public async Task&lt;ActionResult&lt;IReadOnlyList&lt;CompetitionReferenceDto&gt;&gt;&gt; GetCompetitions(CancellationToken ct)
+{
+    var activeCodes = await db.Sports
+        .Where(s =&gt; s.IsActive)
+        .Select(s =&gt; s.Slug)
+        .ToListAsync(ct);
+
+    var activeSet = activeCodes.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+    var competitions = CompetitionCatalog.All
+        .Where(c =&gt; c.Code is null || activeSet.Contains(c.Code))
+        .Select(c =&gt; new CompetitionReferenceDto(</code></pre><p>and the matchup-date path is explicitly validated:</p><pre><code class="language-csharp">public async Task&lt;ActionResult&lt;IReadOnlyList&lt;MatchupEventDto&gt;&gt;&gt; GetMatchupDates(
+    string code,
+    [FromQuery] string? teamA,
+    [FromQuery] string? teamB,
+    CancellationToken ct)
+{
+    var normalized = code.ToLowerInvariant();
+
+    if (!CompetitionCatalog.TryGetSupported(normalized, out _))
+    {
+        return NotFound();
+    }
+
+    if (string.IsNullOrWhiteSpace(teamA) || string.IsNullOrWhiteSpace(teamB))
+    {
+        return BadRequest(&quot;teamA and teamB are required&quot;);
+    }</code></pre><h3 id="when-analyze-is-clicked">when analyze is clicked</h3><p>once a user has selected a real event, the actual analysis pipeline starts.</p><p>high-level flow:</p><pre><code class="language-text">Angular
+  -&gt; POST /api/agent-runs
+.NET AgentRunsController
+  -&gt; create pending AgentRun row
+  -&gt; AgentRunService.ExecuteSportsMatchupAsync()
+     -&gt; CollectAsync()
+     -&gt; FastApiClient.AnalyzeSportsMatchupAsync()
+     -&gt; Evaluate()
+     -&gt; ComposeDecisionArtifact()
+  -&gt; update AgentRun row to completed / failed
+Angular
+  &lt;- lean, summary, confidence, factors, runtime metadata</code></pre><h3 id="the-angular-payload-boundary">the angular payload boundary</h3><p>angular is responsible for packaging the request, but it does not decide final home / away orientation from the user&#x27;s team order. it uses the selected event returned by the schedule lookup.</p><p>live code excerpt from <code>analyzer.component.ts</code>:</p><pre><code class="language-ts">analyze(): void {
+  this.error.set(null)
+  this.result.set(null)
+  this.analyzedMatchup.set(null)
+
+  if (this.form.invalid) {
+    this.form.markAllAsTouched()
+    return
+  }
+
+  const ev = this.selectedEvent()
+  if (!ev) return
+
+  const competition = this.form.getRawValue().competition
+
+  this.loading.set(true)
+  this.form.disable({ emitEvent: false })
+
+  this.api.createMatchupAnalysis({
+    runType: &#x27;sports.matchup.analysis&#x27;,
+    agentProfileId: null,
+    input: {
+      competition,
+      // use resolved orientation from the selected event, not the user&#x27;s Team A/B selection order
+      homeTeam: ev.homeTeam,
+      awayTeam: ev.awayTeam,
+      gameDate: ev.date
+    }
+  }).subscribe({</code></pre><p>why this matters:</p><ul><li>the user chooses a neutral team pair</li><li>the platform chooses the actual provider-resolved home / away matchup</li><li>spread matching and collector lookups become deterministic</li></ul><h3 id="the-net-execution-pipeline">the .net execution pipeline</h3><p>the current orchestration shape is a three-step pipeline:</p><ol><li>collect grounded evidence</li><li>analyze with python</li><li>evaluate and calibrate confidence</li></ol><p>live code excerpt from <code>AgentRunService.cs</code>:</p><pre><code class="language-csharp">private async Task&lt;AgentRunExecutionResult&gt; ExecuteSportsMatchupAsync(
+    CreateAgentRunRequest req, Guid agentRunId, CancellationToken ct)
+{
+    var gameDate = req.Input.GameDate.ToString(&quot;yyyy-MM-dd&quot;);
+
+    // -- step 1: collect --
+    var collector = await CollectAsync(req.Input, gameDate, ct);
+
+    // -- step 2: analyze --
+    var aiReq = new SportsAnalysisRequest(
+        Competition:               req.Input.Competition,
+        HomeTeam:                  req.Input.HomeTeam,
+        AwayTeam:                  req.Input.AwayTeam,
+        GameDate:                  gameDate,
+        FootballMarketContext:     collector.FootballMarketContext,
+        MlbStarterContext:         collector.MlbStarterContext,
+        BasketballScheduleContext: collector.BasketballScheduleContext,
+        BasketballMarketContext:   collector.BasketballMarketContext
+    );
+
+    var aiRes = await ai.AnalyzeSportsMatchupAsync(aiReq, agentRunId, ct);
+
+    // -- step 3: evaluate --
+    var evaluator = Evaluate(aiRes, collector, req.Input.Competition);
+
+    return ComposeDecisionArtifact(aiRes, collector, evaluator);
+}</code></pre><p>why this matters:</p><ul><li>python is no longer the only step</li><li>evidence retrieval happens before the model call</li><li>final confidence is a platform concern, not only a model concern</li></ul><h3 id="the-python-routing-boundary">the python routing boundary</h3><p>python validates supported competitions and dispatches to the right analyzer family.</p><p>live code excerpt from <code>services/agent-service/app/routes/sports.py</code>:</p><pre><code class="language-python">async def analyze_sports(req: SportsAnalysisRequest, request: Request) -&gt; SportsAnalysisResponse:
+    competition = req.competition.lower()
+    correlation_id = request.headers.get(&quot;x-correlation-id&quot;, &quot;none&quot;)
+    agent_run_id = request.headers.get(&quot;x-agent-run-id&quot;, &quot;none&quot;)
+
+    if competition not in _SUPPORTED_COMPETITIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f&quot;competition &#x27;{req.competition}&#x27; is not supported -- supported competitions: {&#x27;, &#x27;.join(sorted(_SUPPORTED_COMPETITIONS))}&quot;,
+        )
+
+    try:
+        if competition in {&quot;nfl&quot;, &quot;ncaaf&quot;}:
+            return await analyze_football(req.homeTeam, req.awayTeam, req.gameDate, competition, req.footballMarketContext)
+        if competition in {&quot;nba&quot;, &quot;ncaamb&quot;}:
+            return await analyze_basketball(
+                req.homeTeam,
+                req.awayTeam,
+                req.gameDate,
+                competition,
+                req.basketballScheduleContext,
+                req.basketballMarketContext,
+            )
+        return await analyze_mlb(req.homeTeam, req.awayTeam, req.gameDate, req.mlbStarterContext)</code></pre><p>why this matters:</p><ul><li>python receives an already-resolved competition</li><li>family-level prompt behavior stays clean</li><li>unsupported competition rejection is explicit, not prompt-driven</li></ul><h3 id="grounded-signal-ownership">grounded signal ownership</h3><p>the collector layer, not python, owns the statement &quot;what real signals existed for this run.&quot;</p><p>live code excerpt from <code>SportsCollectorOutput.cs</code>:</p><pre><code class="language-csharp">public SportsCollectorOutput(
+    FootballMarketContext? footballMarketContext,
+    MlbStarterContext? mlbStarterContext,
+    BasketballScheduleContext? basketballScheduleContext,
+    BasketballMarketContext? basketballMarketContext)
+{
+    FootballMarketContext     = footballMarketContext;
+    MlbStarterContext         = mlbStarterContext;
+    BasketballScheduleContext = basketballScheduleContext;
+    BasketballMarketContext   = basketballMarketContext;
+
+    var signals = new List&lt;string&gt;(4);
+    if (footballMarketContext is not null) signals.Add(&quot;market&quot;);
+    if (mlbStarterContext is not null) signals.Add(&quot;starting_pitching&quot;);
+    if (basketballScheduleContext is not null) signals.Add(&quot;rest_schedule&quot;);
+    if (basketballMarketContext is not null) signals.Add(&quot;market&quot;);
+    GroundedSignals = [.. signals];
+}</code></pre><p>why this matters:</p><ul><li>grounded provenance stays platform-owned</li><li>the model cannot silently claim evidence richness it did not have</li><li>future learning loops can compare outcome accuracy against actual grounded categories</li></ul><h3 id="confidence-calibration">confidence calibration</h3><p>the analyzer&#x27;s confidence is treated as provisional. the final displayed confidence is calibrated in <code>.NET</code> based on grounded evidence richness.</p><p>live code excerpt from <code>AgentRunService.cs</code>:</p><pre><code class="language-csharp">private static EvaluatorOutput Evaluate(
+    SportsAnalysisResponse analyzerOutput,
+    SportsCollectorOutput  collector,
+    string                 competition)
+{
+    var maxGrounded   = CompetitionMaxGroundedSignals(competition);
+    var groundedCount = Math.Min(collector.GroundedSignals.Length, maxGrounded);
+
+    var calibration = ResolveConfidenceCalibration(groundedCount, maxGrounded);
+    var calibrated = Math.Clamp(
+        analyzerOutput.Confidence * calibration.Dampening,
+        calibration.MinConfidence,
+        calibration.MaxConfidence);
+
+    var band = calibrated &gt;= 0.70 ? &quot;high&quot;
+             : calibrated &gt;= 0.50 ? &quot;medium&quot;
+             : &quot;low&quot;;
+
+    return new EvaluatorOutput(
+        AggregateConfidence: calibrated,
+        AnalyzerConfidence:  analyzerOutput.Confidence,
+        ConfidenceBand:      band
+    );
+}</code></pre><p>what this means in practice:</p><ul><li><code>0 grounded</code> is treated as priors-only reasoning</li><li>basketball can now distinguish <code>0 of 2</code>, <code>1 of 2</code>, and <code>2 of 2</code></li><li>the platform is beginning to separate &quot;the model sounded confident&quot; from &quot;the system had real evidence&quot;</li></ul><h3 id="cross-layer-tracing">cross-layer tracing</h3><p>the stable cross-layer trace anchor is <code>X-Agent-Run-Id</code>.</p><p>live code excerpt from <code>FastApiClient.cs</code>:</p><pre><code class="language-csharp">public async Task&lt;SportsAnalysisResponse&gt; AnalyzeSportsMatchupAsync(SportsAnalysisRequest req, Guid agentRunId, CancellationToken ct)
+{
+    var request = new HttpRequestMessage(HttpMethod.Post, &quot;/api/sports/analyze&quot;);
+    request.Headers.Add(&quot;X-Correlation-Id&quot;, GetCorrelationId());
+    // forward the stable agentRunId so fastapi logs can be tied back to the agentrun db row
+    request.Headers.Add(&quot;X-Agent-Run-Id&quot;, agentRunId.ToString());
+    request.Content = JsonContent.Create(req);</code></pre><p>why this matters:</p><ul><li>angular shows the run id after completion</li><li>SQL stores the run</li><li>python logs can be tied back to the same run</li><li>debugging becomes much easier than relying on separate trace formats</li></ul><hr /><h2 id="major-moving-parts-and-ownership">major moving parts and ownership</h2><h3 id="angular-sports-app">angular sports app</h3><p>owns:</p><ul><li>user interaction</li><li>sport / level / team / date selection</li><li>neutral team pair selection</li><li>displaying the final result</li><li>showing <code>agentRunId</code> and runtime metadata in the UI</li></ul><p>does not own:</p><ul><li>evidence retrieval</li><li>final confidence calibration</li><li>sport-family business logic beyond form flow</li></ul><p>key files:</p><ul><li><code>dai/apps/sports-app/src/app/analyzer/analyzer.component.ts</code></li><li><code>dai/apps/sports-app/src/app/sports-api.service.ts</code></li><li><code>dai/apps/sports-app/src/app/core/models/agent-run.model.ts</code></li><li><code>dai/apps/sports-app/src/app/app.routes.ts</code></li></ul><h3 id="net-platform-api">.net platform api</h3><p>owns:</p><ul><li>competition-aware routing</li><li>SQL-backed reference data</li><li>creating and updating <code>AgentRun</code></li><li>collector orchestration</li><li>transport to python</li><li>evaluator logic</li><li>final decision artifact assembly</li></ul><p>does not own:</p><ul><li>natural-language synthesis</li><li>long narrative phrasing</li></ul><p>key files:</p><ul><li><code>dai/platform/dotnet/DevCore.Api/Controllers/SportsReferenceController.cs</code></li><li><code>dai/platform/dotnet/DevCore.Api/Controllers/AgentRunsController.cs</code></li><li><code>dai/platform/dotnet/DevCore.Api/AgentRuns/AgentRunService.cs</code></li><li><code>dai/platform/dotnet/DevCore.Api/AgentRuns/SportsCollectorOutput.cs</code></li><li><code>dai/platform/dotnet/DevCore.Api/Sports/CompetitionCatalog.cs</code></li></ul><h3 id="collector-clients-in-net">collector clients in .net</h3><p>owns:</p><ul><li>fetching raw grounded evidence before the model call</li></ul><p>current clients:</p><ul><li><code>OddsScheduleClient</code></li><p>- matchup dates and resolved home / away orientation</p><li><code>OddsMarketClient</code></li><p>- football and basketball current spread</p><li><code>EspnBasketballScheduleClient</code></li><p>- basketball rest / schedule grounding</p><li><code>MlbStarterClient</code></li><p>- probable starters</p></ul><p>important principle:</p><ul><li>collectors are the raw-material side of the factory</li><li>they should stay deterministic and thin</li></ul><h3 id="python-agent-service">python agent service</h3><p>owns:</p><ul><li>family-based prompt selection</li><li>model call to OpenAI</li><li>writing the <code>lean</code>, <code>summary</code>, and <code>factors</code></li><li>returning provisional analyzer confidence</li></ul><p>does not own:</p><ul><li>grounded signal provenance</li><li>final displayed confidence</li><li>SQL persistence</li></ul><p>key files:</p><ul><li><code>dai/services/agent-service/app/routes/sports.py</code></li><li><code>dai/services/agent-service/app/models/sports.py</code></li><li><code>dai/services/agent-service/app/services/sports_analyzer.py</code></li></ul><h3 id="sql-persistence">SQL persistence</h3><p>owns:</p><ul><li>reference data for sports / competitions and teams</li><li>durable <code>AgentRun</code> records</li><li>stored input and output payloads</li></ul><p>important business role:</p><ul><li>this is the memory layer for debugging, future history views, and eventual learning loops</li></ul><h3 id="external-providers">external providers</h3><p>current external dependencies:</p><ul><li>The Odds API</li><p>- schedule lookup - current spread lookup</p><li>ESPN public scoreboard</li><p>- basketball rest / schedule context</p><li>MLB Stats API</li><p>- probable starters</p><li>OpenAI via python</li><p>- language synthesis</p></ul><p>important product truth:</p><ul><li>the current architecture is ahead of the current evidence depth</li><li>the evidence set is still intentionally thin</li></ul><hr /><h2 id="major-architectural-decisions-made-so-far">major architectural decisions made so far</h2><h3 id="1-competition-first-routing-instead-of-sport-first-routing">1. competition-first routing instead of sport-first routing</h3><p>decision:</p><ul><li>move from vague sport routing to explicit competition codes like <code>nfl</code>, <code>ncaaf</code>, <code>nba</code>, <code>ncaamb</code>, <code>mlb</code></li></ul><p>why it was made:</p><ul><li>pro and college variants need different seed data, schedule keys, collector behavior, and confidence richness</li></ul><p>founder implication:</p><ul><li>the product can stay user-friendly while the platform stays explicit and scalable</li></ul><h3 id="2-resolve-home-away-from-a-real-scheduled-event-not-from-user-order">2. resolve home / away from a real scheduled event, not from user order</h3><p>decision:</p><ul><li>the selected event from schedule lookup determines <code>homeTeam</code> and <code>awayTeam</code></li></ul><p>why it was made:</p><ul><li>user selection order is not reliable enough for spread matching or provider consistency</li></ul><p>founder implication:</p><ul><li>correctness was chosen over a superficially simpler input model</li></ul><h3 id="3-introduce-a-real-collect-analyze-evaluate-pipeline">3. introduce a real collect -&gt; analyze -&gt; evaluate pipeline</h3><p>decision:</p><ul><li>stop treating the model call as the whole pipeline</li></ul><p>why it was made:</p><ul><li>evidence retrieval, reasoning, and confidence calibration are different responsibilities</li></ul><p>founder implication:</p><ul><li>the system is moving toward reusable platform roles rather than prompt-only product logic</li></ul><h3 id="4-keep-grounded-signal-ownership-in-the-collector-layer">4. keep grounded signal ownership in the collector layer</h3><p>decision:</p><ul><li><code>GroundedSignals</code> is computed in <code>.NET</code>, not in python</li></ul><p>why it was made:</p><ul><li>the platform can know what it retrieved</li><li>the model cannot reliably self-report that</li></ul><p>founder implication:</p><ul><li>this is foundational for honest provenance and future outcome tracking</li></ul><h3 id="5-make-evaluator-confidence-the-displayed-confidence">5. make evaluator confidence the displayed confidence</h3><p>decision:</p><ul><li>the model&#x27;s confidence is stored, but the evaluator&#x27;s calibrated confidence becomes the user-facing <code>confidence</code></li></ul><p>why it was made:</p><ul><li>narrative confidence is not the same as evidence-backed confidence</li></ul><p>founder implication:</p><ul><li>this is the correct design move if you eventually want trust, calibration, and measurable signal quality</li></ul><h3 id="6-make-python-fail-closed-when-collector-data-is-missing">6. make python fail closed when collector data is missing</h3><p>decision:</p><ul><li>if schedule, market, or starter data is missing, python gets an explicit no-data instruction and omits that factor</li></ul><p>why it was made:</p><ul><li>reduce hallucinated claims</li></ul><p>founder implication:</p><ul><li>the system is choosing honesty over prettier but less reliable output</li></ul><h3 id="7-treat-agentrun-as-the-audit-spine">7. treat <code>AgentRun</code> as the audit spine</h3><p>decision:</p><ul><li>create the run row before execution, store input, persist output, and preserve failures</li></ul><p>why it was made:</p><ul><li>failed and successful runs both need durable traceability</li></ul><p>founder implication:</p><ul><li>this is the right substrate for support, debugging, history, and future analytics</li></ul><h3 id="8-stay-thin-and-resist-premature-abstraction">8. stay thin and resist premature abstraction</h3><p>decision:</p><ul><li>do not build the full orchestrator / profile / scoring framework before there are enough real pipeline differences to justify it</li></ul><p>why it was made:</p><ul><li>premature platformization would outrun product proof</li></ul><p>founder implication:</p><ul><li>current code intentionally contains some competition branches in <code>.NET</code></li><li>that is acceptable because the product is still proving the slice</li></ul><hr /><h2 id="what-the-system-stores-and-returns-after-analyze">what the system stores and returns after analyze</h2><h3 id="what-angular-receives">what angular receives</h3><p>the main UI response is intentionally small:</p><pre><code class="language-json">{
+  &quot;agentRunId&quot;: &quot;...&quot;,
+  &quot;status&quot;: &quot;completed&quot;,
+  &quot;lean&quot;: &quot;edge toward ...&quot;,
+  &quot;summary&quot;: &quot;...&quot;,
+  &quot;confidence&quot;: 0.64,
+  &quot;factors&quot;: [&quot;...&quot;, &quot;...&quot;, &quot;...&quot;],
+  &quot;createdUtc&quot;: &quot;...&quot;,
+  &quot;durationMs&quot;: 1842
+}</code></pre><p>meaning:</p><ul><li>the UI gets the main artifact it needs to render</li><li>the UI does not get raw collector payloads</li><li>the UI does not yet get grounded signal provenance directly</li></ul><h3 id="what-sql-stores">what SQL stores</h3><p>the stored <code>AgentRun</code> row is richer than the UI response.</p><p>it includes:</p><ul><li><code>RunType</code></li><li><code>Status</code></li><li><code>InputJson</code></li><li><code>OutputJson</code></li><li><code>ErrorMessage</code></li><li><code>CorrelationId</code></li><li><code>StartedUtc</code></li><li><code>CompletedUtc</code></li><li><code>DurationMs</code></li></ul><p>and <code>OutputJson</code> now includes more than the UI shows:</p><ul><li><code>lean</code></li><li><code>summary</code></li><li>calibrated <code>confidence</code></li><li><code>factors</code></li><li><code>groundedSignals</code></li><li><code>analyzerConfidence</code></li></ul><p>important implication:</p><ul><li>the stored output is already closer to a real decision artifact than the UI surface is</li></ul><h3 id="current-product-reality-after-analyze">current product reality after analyze</h3><p>after <code>Analyze</code>, the user has a useful read, but not the full future product experience.</p><p>they do not yet have:</p><ul><li>persistent real history in the UI</li><li>delivery status</li><li>source citations in the UI</li><li>structured signal tables</li><li>outcome tracking</li></ul><p>this is why the current result should be understood as a <strong>proxy decision artifact</strong>, not the finished artifact model described in the vault&#x27;s longer-term architecture docs.</p><hr /><h2 id="important-caveats-and-risks">important caveats and risks</h2><h3 id="production-build-still-points-at-stub-api-behavior">production build still points at stub api behavior</h3><p>local dev serve uses the development environment, which is live:</p><pre><code class="language-ts">export const environment = {
+  production: false,
+  useStubApi: false,
+  useStubSchedule: false,
+  apiBaseUrl: &#x27;http://localhost:5007&#x27;
+}</code></pre><p>but the default <code>environment.ts</code> still enables stub api behavior:</p><pre><code class="language-ts">export const environment = {
+  production: true,
+  useStubApi: true,
+  useStubSchedule: false,
+  apiBaseUrl: &#x27;http://localhost:5007&#x27;
+}</code></pre><p>why this matters:</p><ul><li><code>ng serve</code> should hit the live stack</li><li>a production-style build can still short-circuit inside angular if this is not corrected</li></ul><h3 id="history-and-account-are-shell-surfaces">history and account are shell surfaces</h3><p>current truth:</p><ul><li>analyzer is real</li><li>history is mock data</li><li>account is static placeholder data</li></ul><p>why this matters:</p><ul><li>the app shell is ahead of the real product surface behind those routes</li></ul><h3 id="auth-is-not-production-grade-yet">auth is not production-grade yet</h3><p>current truth:</p><ul><li>identity resolution supports dev bypass</li><li>this is acceptable for current development, not for real tenant-facing production</li></ul><h3 id="evidence-depth-is-still-thin">evidence depth is still thin</h3><p>current grounded evidence:</p><ul><li>football: market only</li><li>basketball: rest / schedule + market</li><li>baseball: starters only</li></ul><p>not yet grounded:</p><ul><li>injuries</li><li>weather</li><li>line movement history</li><li>public / sharp money</li><li>richer situational models</li></ul><p>why this matters:</p><ul><li>the architecture is getting stronger faster than the signal depth</li></ul><h3 id="outputjson-is-still-blob-storage"><code>OutputJson</code> is still blob storage</h3><p>current truth:</p><ul><li>the platform stores structured meaning inside a raw JSON string column</li></ul><p>why this matters:</p><ul><li>good enough for now</li><li>weak for structured analytics later</li></ul><h3 id="some-docs-are-newer-than-others">some docs are newer than others</h3><p>most trustworthy current-state docs:</p><ul><li><code>current-sports-analysis-flow.md</code></li><li><code>orchestration.md</code></li><li><code>current-sports-matchup-analyzer.md</code></li></ul><p>older but still useful:</p><ul><li><code>current-agent-run-contract.md</code></li></ul><p>why this matters:</p><ul><li>some contract docs lag the most recent basketball grounding changes</li></ul><hr /><h2 id="recommended-study-order">recommended study order</h2><h3 id="pass-1-founder-product-understanding">pass 1: founder / product understanding</h3><p>read these first:</p><ol><li><code>dai-vault/02 Platform/architecture/current-sports-analysis-flow.md</code></li><li><code>dai-vault/02 Platform/architecture/orchestration.md</code></li><li><code>dai-vault/06 Execution/handoffs/current-sports-matchup-analyzer.md</code></li><li><code>dai-vault/04 Products/sports-v1/ui-concept.md</code></li></ol><p>goal:</p><ul><li>understand what the product is today</li><li>understand why the pipeline shape exists</li><li>understand what is real vs shell</li></ul><h3 id="pass-2-code-path-understanding">pass 2: code path understanding</h3><p>read these second:</p><ol><li><code>dai/apps/sports-app/src/app/analyzer/analyzer.component.ts</code></li><li><code>dai/apps/sports-app/src/app/sports-api.service.ts</code></li><li><code>dai/platform/dotnet/DevCore.Api/Controllers/SportsReferenceController.cs</code></li><li><code>dai/platform/dotnet/DevCore.Api/Controllers/AgentRunsController.cs</code></li><li><code>dai/platform/dotnet/DevCore.Api/AgentRuns/AgentRunService.cs</code></li><li><code>dai/platform/dotnet/DevCore.Api/AgentRuns/SportsCollectorOutput.cs</code></li><li><code>dai/platform/dotnet/DevCore.AiClient/FastApiClient.cs</code></li><li><code>dai/services/agent-service/app/routes/sports.py</code></li><li><code>dai/services/agent-service/app/services/sports_analyzer.py</code></li></ol><p>goal:</p><ul><li>trace the live request path end to end</li><li>see where ownership changes across layers</li></ul><h3 id="pass-3-operational-debugging-understanding">pass 3: operational debugging understanding</h3><p>focus on:</p><ul><li><code>agentRunId</code></li><li><code>InputJson</code></li><li><code>OutputJson</code></li><li>collector branches by competition</li><li>environment split between live dev and stub production config</li></ul><p>goal:</p><ul><li>be able to answer &quot;what happened in this run?&quot; with confidence</li></ul><hr /><h2 id="the-current-state-story-in-one-paragraph">the current-state story in one paragraph</h2><p>the sports platform as of 2026-04-21 is a thin but credible decision-engine foundation. angular is a competition-aware shell that packages a real matchup request. .net is the authoritative platform layer that validates competition selection, retrieves grounded evidence, stores runs, and calibrates final confidence. python is a constrained synthesis worker that writes the natural-language read from the evidence it is given. SQL is the memory layer. the product is still early and the evidence set is still thin, but the major architectural decisions made so far are pointed in the right direction: competition-first routing, platform-owned provenance, evaluator-owned confidence, and durable run traceability.</p><hr /><h2 id="appendix-key-questions-this-document-should-help-you-answer">appendix: key questions this document should help you answer</h2><ul><li>what is real in the product today versus still mocked?</li><li>where does the request leave angular?</li><li>which parts go through python and which parts do not?</li><li>who decides what evidence was actually grounded?</li><li>who owns final confidence?</li><li>what exactly gets stored after a run?</li><li>what are the biggest current risks if this were pushed toward production too early?</li></ul>
+      <div class="footer-note">Generated from the vault markdown source so the study doc stays maintainable. If implementation changes after 2026-04-21, update the markdown first and then regenerate the print companion.</div>
+    </section>
+  </article>
+</main>
+</body>
+</html>

@@ -1,47 +1,33 @@
 # orchestration
 
 **date:** 2026-04-20
-**status:** three explicit pipeline steps in place — collect, analyze, evaluate. typed SportsCollectorOutput and EvaluatorOutput exist. calibrated confidence now comes from the evaluator, not the analyzer. ComposeDecisionArtifact receives all three outputs. competition is now the internal routing key for the sports slice. nba + ncaamb now have grounded `rest_schedule` and `market` collectors, and the evaluator now distinguishes partial vs full basketball grounding richness. agent/tool doctrine documented. see `decision-intelligence-model.md` for full context.
+**status:** four explicit pipeline steps in place — retrieve, analyze, evaluate, compose. typed SportsRetrievalOutput and EvaluatorOutput exist. calibrated confidence comes from the evaluator, not the analyzer. the compose step assembles AgentRunExecutionResult from all prior stage outputs. competition is the internal routing key for the sports slice. nba + ncaamb have grounded `rest_schedule` and `market` signals, and the evaluator distinguishes partial vs full basketball grounding richness. agent/tool doctrine documented. see `decision-intelligence-model.md` for full context.
 
 ---
 
 ## current truth
 
-there is no orchestration layer today. `AgentRunService` coordinates three explicit steps for sports runs: collect, analyze, evaluate. the RunType dispatch switch in `AgentRunService` is the only routing logic that exists.
+there is no orchestration layer today. `AgentRunService` coordinates four explicit steps for sports runs: retrieve, analyze, evaluate, compose. the RunType dispatch switch in `AgentRunService` is the only routing logic that exists.
 
-**three explicit steps in `ExecuteSportsMatchupAsync`:**
-1. `CollectAsync` — retrieves grounded evidence for the selected competition; returns `SportsCollectorOutput`
-2. `ai.AnalyzeSportsMatchupAsync` — sends user input + collector evidence to FastAPI; returns `SportsAnalysisResponse`
-3. `Evaluate(analyzerOutput, collector, competition)` — scores evidence richness + analyzer confidence; returns `EvaluatorOutput`
+**four explicit steps in `RunSportsMatchupPipelineAsync`:**
+1. `ISportsRetriever.RetrieveAsync` — retrieves grounded evidence for the selected competition; records `SportsRetrievalOutput` on the artifact
+2. `ISportsAnalyzer.AnalyzeAsync` — sends user input + retrieval evidence to FastAPI; records `SportsAnalysisResponse` on the artifact
+3. `ISportsEvaluator.Evaluate` — scores evidence richness + analyzer confidence; records `EvaluatorOutput` on the artifact
+4. `ISportsComposer.Compose` — assembles all prior outputs into `AgentRunExecutionResult`; sets `artifact.FinalResult`
 
-**`ComposeDecisionArtifact` is the compose seam:** private static method in `AgentRunService.cs`. receives all three step outputs. final `Confidence` now comes from `EvaluatorOutput.AggregateConfidence`, not the analyzer. `Lean`, `Summary`, `Factors` still come from the analyzer (the only source). `GroundedSignals` comes from the collector.
-
-```csharp
-// current signature -- all three pipeline outputs present
-private static AgentRunExecutionResult ComposeDecisionArtifact(
-    SportsAnalysisResponse analyzerOutput,
-    SportsCollectorOutput  collector,
-    EvaluatorOutput        evaluator)
-    => new(Lean: analyzerOutput.Lean, ...,
-           Confidence:         evaluator.AggregateConfidence,   // calibrated
-           GroundedSignals:    collector.GroundedSignals,
-           AnalyzerConfidence: evaluator.AnalyzerConfidence);   // stored for learning loop
-
-// future: when a real scoring evaluator exists, Lean may also shift
-// if scored signals strongly contradict the model's directional read
-```
+**`SportsComposer.Compose` is the compose seam.** final `Confidence` comes from `EvaluatorOutput.AggregateConfidence`, not the analyzer. `Lean`, `Summary`, `Factors` come from the analyzer. `GroundedSignals` comes from `SportsRetrievalOutput`.
 
 **`EvaluatorOutput` is the typed evaluate step contract:** defined in `DevCore.Api/AgentRuns/EvaluatorOutput.cs`. contains `AggregateConfidence` (calibrated), `AnalyzerConfidence` (stored for learning loop comparison), and `ConfidenceBand` (`"high"` / `"medium"` / `"low"`).
 
 **confidence ownership is now established:** `SportsAnalysisResponse.Confidence` is the analyzer's local estimate — used as one input to `Evaluate`, not stored as the final value. `AgentRunExecutionResult.Confidence` is now `EvaluatorOutput.AggregateConfidence`. both are stored in `OutputJson` for the learning loop.
 
 **current calibration model (honest proxy):**
-- zero grounded signals (any competition when its collector fails): dampen analyzer confidence by 0.75; clamp to [0.30, 0.60]. the model reasoned from priors — high claimed confidence is narrative quality, not signal quality.
+- zero grounded signals (any competition when its retriever fails): dampen analyzer confidence by 0.75; clamp to [0.30, 0.60]. the model reasoned from priors — high claimed confidence is narrative quality, not signal quality.
 - partial grounding richness (`0 < groundedCount < CompetitionMaxGroundedSignals(competition)`): dampen analyzer confidence by 0.90; clamp to [0.35, 0.75]. this is a conservative interim path for runs that have some real data but not the full grounded set the current platform can support. today this mainly means basketball `1 of 2`.
 - full grounding richness (`groundedCount == CompetitionMaxGroundedSignals(competition)`): clamp analyzer confidence to [0.35, 0.85]. the model had the full currently supported grounded set for that competition, but the ceiling still stays conservative because this is not outcome-validated scoring yet.
 - `CompetitionMaxGroundedSignals(competition)` defines the current maximum grounded signals possible per supported competition. update the competition catalog when a new grounded source is added.
 
-**`SportsCollectorOutput` is the typed collect step contract:** defined in `DevCore.Api/AgentRuns/SportsCollectorOutput.cs`. contains `FootballMarketContext?`, `MlbStarterContext?`, `BasketballScheduleContext?`, `BasketballMarketContext?`, and `GroundedSignals` (computed from non-null fields). the single source of truth for which signals had real retrieved data.
+**`SportsRetrievalOutput` is the typed retrieve step contract:** defined in `DevCore.Api/AgentRuns/SportsRetrievalOutput.cs`. contains `FootballMarketContext?`, `MlbStarterContext?`, `BasketballScheduleContext?`, `BasketballMarketContext?`, and `GroundedSignals` (computed from non-null fields). the single source of truth for which signals had real retrieved data.
 
 **evidence quality is stored in `OutputJson`:** `AgentRunExecutionResult.GroundedSignals` and `AgentRunExecutionResult.AnalyzerConfidence` are both stored for the future learning loop.
 
@@ -103,7 +89,7 @@ profiles are versioned. a profile key is stored on the `AgentRun` record so hist
 each step produces a typed output consumed by the next. the orchestrator does not inspect or transform these — it passes them through.
 
 ```
-CollectorOutput {
+RetrievalOutput {
   competition, matchup, date,
   signals: { line_movement?, sharp_money?, injury?, weather?, situational? }
   retrieved_at, source_statuses: [{ source, status, stale }]
@@ -130,7 +116,7 @@ SynthesizerOutput  =  DecisionArtifact  (see decision-intelligence-model.md §4)
 
 **do not hardcode niche rules into shared role code.** a collector should not contain an if-statement that says "if football, also fetch weather." that rule belongs in the niche config or agent profile. the collector calls whatever tools the profile authorizes.
 
-**current exception:** `AgentRunService.CollectAsync` contains competition-specific branches for `nfl`, `ncaaf`, `mlb`, `nba`, and `ncaamb` data retrieval. this is the correct deferral — there is no profile system yet to inject competition-specific tool lists. when additional competition-specific sources are added, this logic should move into niche config. do not generalize prematurely.
+**current exception:** `SportsRetriever.RetrieveAsync` contains competition-specific branches for `nfl`, `ncaaf`, `mlb`, `nba`, and `ncaamb` data retrieval. this is the correct deferral — there is no profile system yet to inject competition-specific tool lists. when additional competition-specific sources are added, this logic should move into niche config. do not generalize prematurely.
 
 ---
 
@@ -139,7 +125,7 @@ SynthesizerOutput  =  DecisionArtifact  (see decision-intelligence-model.md §4)
 **analyzer confidence is provisional.** the model emits confidence based on the inputs in the prompt. it reflects narrative consistency of the model's reasoning — not signal quality, not calibration against outcomes, not cross-source weighting. a model with no real data can claim 0.80 confidence because its story is internally consistent. that reading is not equivalent to 0.80 real predictive confidence.
 
 **final confidence belongs to the evaluator.** the evaluate step exists:
-- `Evaluate(analyzerOutput, collector, competition)` in `AgentRunService` scores evidence richness against analyzer confidence
+- `ISportsEvaluator.Evaluate` in `AgentRunService` scores evidence richness against analyzer confidence
 - it produces `EvaluatorOutput.AggregateConfidence` — the calibrated final value
 - `ComposeDecisionArtifact` uses `AggregateConfidence`, not `analyzerOutput.Confidence`
 - the analyzer's provisional value is stored separately in `AnalyzerConfidence` for learning loop comparison
@@ -155,12 +141,12 @@ SynthesizerOutput  =  DecisionArtifact  (see decision-intelligence-model.md §4)
 the current single-step analysis does not need to be replaced immediately. the path is:
 
 1. RunType dispatch — done. `AgentRunService` routes by run type.
-2. collect step started — `OddsMarketClient` and `MlbStarterClient` fetch grounded data before the analyzer call.
-3. compose seam named — `ComposeDecisionArtifact` is the explicit seam.
-4. collect step typed — done. `SportsCollectorOutput` is the explicit contract. `GroundedSignals` ownership moved to collector.
+2. retrieve step started — `OddsMarketClient` and `MlbStarterClient` fetch grounded data before the analyzer call.
+3. compose seam named — `SportsComposer.Compose` is the explicit seam.
+4. retrieve step typed — done. `SportsRetrievalOutput` is the explicit contract. `GroundedSignals` ownership is with the retriever.
 5. evaluate step added — done. `EvaluatorOutput` is the typed contract. `Evaluate` produces calibrated confidence from evidence richness + analyzer input. `ComposeDecisionArtifact` now receives all three pipeline outputs.
 6. competition-first routing slice added — done. internal analysis now keys off explicit competition codes (`nfl`, `ncaaf`, `nba`, `ncaamb`, `mlb`) while the UI stays at sport family + level.
-7. basketball rest/schedule grounding added — done. `nba` and `ncaamb` now send explicit `BasketballScheduleContext` into the analyzer when the collector grounds both teams' recent schedule context.
+7. basketball rest/schedule grounding added — done. `nba` and `ncaamb` now send explicit `BasketballScheduleContext` into the analyzer when the retriever grounds both teams' recent schedule context.
 8. basketball market grounding added — done. `nba` and `ncaamb` now also send explicit `BasketballMarketContext` into the analyzer when current spreads are available.
 9. evaluator richness distinction added — done. `Evaluate` now uses current grounded count plus `CompetitionMaxGroundedSignals(competition)` to distinguish zero grounded, partially grounded, and fully grounded runs. today that mainly changes basketball `0 of 2`, `1 of 2`, and `2 of 2`.
 10. next: when calibration parameters are outcome-validated, `Evaluate` can grow into a real scoring pass with per-category weights

@@ -1,6 +1,6 @@
 # current agent run contract
 
-**date:** 2026-04-19 (competition-first slice completed)
+**date:** 2026-04-23 (failure-artifact persistence integration slice completed)
 **derived from:** actual code in `platform/dotnet/` and `apps/sports-app/`
 **status:** reflects what is implemented today — not a design target
 
@@ -35,12 +35,12 @@ OutputJson is written as the raw serialized `AgentRunExecutionResult`:
 
 ```json
 {
-  "lean": "edge toward chiefs based on rest advantage and line movement since open.",
+  "lean": "Edge toward Chiefs based on rest advantage and line movement since open.",
   "summary": "...",
   "confidence": 0.64,
   "groundedSignals": ["market"],
   "analyzerConfidence": 0.76,
-  "factors": ["...", "...", "..."]
+  "factors": ["Market: Current spread supports the lean.", "Rest: Chiefs have the schedule edge."]
 }
 ```
 
@@ -79,10 +79,10 @@ it is an unstructured string. there is no `sections[]`, no `brief_id`, no `deliv
 {
   "agentRunId": "...",
   "status": "completed",
-  "lean": "edge toward Chiefs based on rest advantage and line movement since open.",
+  "lean": "Edge toward Chiefs based on rest advantage and line movement since open.",
   "summary": "...",
   "confidence": 0.64,
-  "factors": ["...", "...", "..."],
+  "factors": ["Market: Current spread supports the lean.", "Rest: Chiefs have the schedule edge."],
   "createdUtc": "...",
   "durationMs": 1842
 }
@@ -93,6 +93,14 @@ it is an unstructured string. there is no `sections[]`, no `brief_id`, no `deliv
 ### response body (failure)
 
 status is `"failed"`, summary and factors are null or absent. `ErrorMessage` is stored on the AgentRun row but is not currently returned in the response DTO.
+
+for analyze-stage failures specifically, `AgentRunsController` now catches `AnalysisPipelineException`, marks the row `failed`, stores `ErrorMessage` from the wrapped inner exception, and persists `FailureArtifact` into `OutputJson` before re-throwing. that means failed analyze runs now keep:
+
+- `publishability`
+- `degradationNotes`
+- `pipelineSteps`
+
+inside the stored output payload instead of leaving `OutputJson` as the placeholder `{}`.
 
 ---
 
@@ -157,6 +165,8 @@ two ids exist in the flow today. they are different values and should not be con
 | `RunTypes.SportsMatchupAnalysis` | `"sports.matchup.analysis"` | `ExecuteSportsMatchupAsync` (private method) |
 
 **unknown run types** throw `NotSupportedException("run type '...' is not supported")`. the controller catches this as an unhandled exception, marks the `AgentRun` row `failed`, stores the message in `ErrorMessage`, and re-throws (resulting in a 500 response to the client).
+
+**analyze-stage failures** are different from generic failures: `AgentRunService` wraps them in `AnalysisPipelineException` with a composed not-publishable failure artifact. the controller persists that artifact to `OutputJson` before re-throwing so the run record preserves pipeline-step and publishability metadata for debugging and the future learning loop.
 
 **input contract note:** `CreateAgentRunRequest.Input` is currently typed as `CompetitionMatchupInput` — still matchup-analysis-specific, but no longer overloaded as a generic "sport" input. when a second run type is introduced, `Input` will still need to become a generic envelope (for example `JsonElement`) and each run type will own its own input shape.
 

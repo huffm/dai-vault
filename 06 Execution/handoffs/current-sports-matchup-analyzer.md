@@ -1,11 +1,50 @@
 # current handoff: sports matchup analyzer
 
-**date:** 2026-04-20
-**status:** dark mode redesign completed. architecture audit completed. RunType dispatch slice completed. strategic vault update completed. run metadata visibility slice completed. structured lean slice completed. output-quality evaluation gate completed. NFL market enrichment slice completed. orchestrator-ready foundation slice completed. MLB starting pitcher injection slice completed. typed SportsCollectorOutput slice completed. typed EvaluatorOutput + calibrated confidence slice completed — three-step pipeline (collect → analyze → evaluate) now fully established; calibrated confidence comes from the evaluator, not the analyzer; both confidence values stored in OutputJson for the learning loop. app shell + nav slice completed — persistent header, three-route nav (Matchup Analyzer / History / Account), lazy-loaded page components; Saved Reads moved inside History as a filter tab. competition-first slice completed — selection flow is now sport family + level → explicit competition code; supported competitions are NFL, NCAAF, NBA, NCAAMB, and MLB; college baseball is visible as unavailable. basketball rest / schedule grounding slice completed — `nba` and `ncaamb` now ground back-to-back and days-rest claims before the model call. NCAAF market grounding slice completed — `ncaaf` now shares the football market collector path and no supported competition remains permanently zero-grounded by design. basketball market grounding slice completed — `nba` and `ncaamb` now ground current spread before the model call; the shared injury/availability feasibility gate failed, so no unreliable injury collector was forced. basketball evaluator richness slice completed — the evaluator now distinguishes `0 of 2`, `1 of 2`, and `2 of 2` grounded basketball runs while keeping confidence ownership in the evaluator seam.
+**date:** 2026-04-23
+**status:** dark mode redesign completed. architecture audit completed. RunType dispatch slice completed. strategic vault update completed. run metadata visibility slice completed. structured lean slice completed. output-quality evaluation gate completed. NFL market enrichment slice completed. orchestrator-ready foundation slice completed. MLB starting pitcher injection slice completed. typed SportsCollectorOutput slice completed. typed EvaluatorOutput + calibrated confidence slice completed — three-step pipeline (collect → analyze → evaluate) now fully established; calibrated confidence comes from the evaluator, not the analyzer; both confidence values stored in OutputJson for the learning loop. app shell + nav slice completed — persistent header, three-route nav (Matchup Analyzer / History / Account), lazy-loaded page components; Saved Reads moved inside History as a filter tab. competition-first slice completed — selection flow is now sport family + level → explicit competition code; supported competitions are NFL, NCAAF, NBA, NCAAMB, and MLB; college baseball is visible as unavailable. basketball rest / schedule grounding slice completed — `nba` and `ncaamb` now ground back-to-back and days-rest claims before the model call. NCAAF market grounding slice completed — `ncaaf` now shares the football market collector path and no supported competition remains permanently zero-grounded by design. basketball market grounding slice completed — `nba` and `ncaamb` now ground current spread before the model call; the shared injury/availability feasibility gate failed, so no unreliable injury collector was forced. basketball evaluator richness slice completed — the evaluator now distinguishes `0 of 2`, `1 of 2`, and `2 of 2` grounded basketball runs while keeping confidence ownership in the evaluator seam. controller failure-artifact persistence integration slice completed — `AgentRunsController` now has a focused host-level test proving analyze failures persist the composed failure artifact, including publishability and pipeline-step metadata, onto the `AgentRun` row.
 
 ---
 
 ## what was completed in this session
+
+### 19. controller failure-artifact persistence integration slice
+
+added one narrow integration test slice around `AgentRunsController` failure persistence without introducing a broad host or execution suite.
+
+**what was implemented:**
+
+- **new focused integration coverage:** added `DevCore.Api.Tests/Integration/AgentRunsControllerTests.cs`.
+- **light app host only:** the test host swaps `AppDbContext` to EF Core in-memory, stubs `IIdentityResolver`, and injects a per-test `IAgentRunService` stub.
+- **failure artifact persistence is now verified end-to-end:** when the stub throws `AnalysisPipelineException`, the test confirms the controller persists:
+  - `Status = "failed"`
+  - serialized `FailureArtifact` in `OutputJson` instead of `{}`
+  - `Publishability = NotPublishable`
+  - non-empty `PipelineSteps`
+  - `ErrorMessage` from the wrapped inner exception (`"model unavailable"`)
+- **test-host caveats are now closed locally:** the factory clears default logging providers so testserver does not fail on windows event-log writes, and the test asserts the re-thrown exception directly because `TestServer` surfaces it instead of materializing a 500 response.
+- **net10 local build caveat noted:** `dotnet` parallel project-reference builds in this workspace were flaky for this slice; serializing with `-m:1` made build and test execution stable.
+
+**what was intentionally NOT built:**
+
+- no broad integration suite
+- no sql server-backed test database
+- no fastapi calls
+- no real model calls
+- no controller exception-handler middleware just for tests
+
+**files changed in this slice:**
+- `dai/platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj`
+- `dai/platform/dotnet/DevCore.Api.Tests/Integration/AgentRunsControllerTests.cs` (new)
+- `dai/platform/dotnet/DevCore.Api/DevCore.Api.csproj`
+- `dai/platform/dotnet/DevCore.Api/Program.cs`
+- `dai/platform/dotnet/DevCore.Data/DevCore.Data.csproj`
+
+**tests run in this slice:**
+- `dotnet test .\DevCore.Api.Tests\DevCore.Api.Tests.csproj --no-restore -m:1 --filter "FullyQualifiedName~AgentRunsControllerTests"`
+
+**vault docs changed in this slice:**
+- `02 Platform/architecture/current-agent-run-contract.md`
+- this handoff
 
 ### 18. basketball evaluator richness calibration slice
 
@@ -814,10 +853,9 @@ Angular sports-app
 1. `CreateAgentRunRequest.Input` typed as `CompetitionMatchupInput` — still matchup-analysis-specific; will need to become a generic envelope before a second run type can be added. documented with a comment in the record.
 2. `OutputJson` has no schema — stored as raw JSON blob; cannot be queried or validated structurally
 3. no auth on `AgentRunsController` — dev bypass only; not production-safe
-4. `useStubApi = true` in `environment.ts` production build — real API only called in dev
-5. `GET /api/agent-runs/{id}` — endpoint exists and works; UI still never calls it; wiring it up is the next natural step for making individual runs inspectable
-6. no run history in UI — runs accumulate in DB with no visibility surface. the History page shell now exists as a client-side mock; wiring it to real api data (GET /api/agent-runs) is the natural follow-on.
-7. football market grounding is still intentionally thin — `nfl` and `ncaaf` now ground current spread, but line movement history and additional football evidence sources are still absent
+4. `GET /api/agent-runs/{id}` — endpoint exists and works; UI still never calls it; wiring it up is the next natural step for making individual runs inspectable
+5. no run history in UI — runs accumulate in DB with no visibility surface. the History page shell now exists as a client-side mock; wiring it to real api data (GET /api/agent-runs) is the natural follow-on.
+6. football market grounding is still intentionally thin — `nfl` and `ncaaf` now ground current spread, but line movement history and additional football evidence sources are still absent
 
 ---
 
@@ -970,4 +1008,3 @@ the sports matchup analyzer is the first expression of a decision intelligence s
 - apply the competition seed migration to the running DB instance
 - apply `RenameOaklandToSacramento` migration to running DB instance
 - auth on `AgentRunsController` before any production deployment
-- `useStubApi` in `environment.ts` — confirm production build value before any real deployment

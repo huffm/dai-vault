@@ -28,7 +28,7 @@ user-facing flow stays clearer than raw codes:
 - then date
 - then analyze
 
-the platform resolves that selection to a competition code before teams, dates, collector routing, or analyzer dispatch happen.
+the platform resolves that selection to a competition code before teams, dates, retriever routing, or analyzer dispatch happen.
 
 ---
 
@@ -69,12 +69,12 @@ Angular sports-app
       → INSERT AgentRun (status=pending, CorrelationId=TraceIdentifier)
       → AgentRunService.ExecuteAsync(req, run.AgentRunId, ct)
         → ExecuteSportsMatchupAsync()
-          → CollectAsync()
+          → RetrieveAsync()
             [nfl / ncaaf] OddsMarketClient.GetFootballSpreadAsync()
             [mlb only]  MlbStarterClient.GetStartersAsync()
             [nba / ncaamb] EspnBasketballScheduleClient.GetRestContextAsync()
             [nba / ncaamb] OddsMarketClient.GetBasketballSpreadAsync()
-          ← SportsCollectorOutput { FootballMarketContext?, MlbStarterContext?, BasketballScheduleContext?, BasketballMarketContext?, GroundedSignals[] }
+          ← SportsRetrievalOutput { FootballMarketContext?, MlbStarterContext?, BasketballScheduleContext?, BasketballMarketContext?, GroundedSignals[] }
           → FastApiClient.AnalyzeSportsMatchupAsync()
             → POST http://127.0.0.1:8001/api/sports/analyze
                 X-Correlation-Id: Activity.Current?.Id
@@ -85,7 +85,7 @@ Angular sports-app
                   nba / ncaamb   → basketball analyzer
                   mlb            → mlb analyzer
           ← SportsAnalysisResponse { lean, summary, confidence, factors[] }
-          → Evaluate(analyzerOutput, collector, competition)
+          → Evaluate(analyzerOutput, retrieval, competition)
           ← EvaluatorOutput { aggregateConfidence, analyzerConfidence, confidenceBand }
       → UPDATE AgentRun (completed, OutputJson, DurationMs)
       ← AgentRunResultDto { agentRunId, status, lean, summary, confidence, factors, createdUtc, durationMs }
@@ -232,8 +232,8 @@ typed `HttpClient` that retrieves the thinnest possible market signal: current s
 
 - `ExecuteAsync` still dispatches by `RunType`
 - `ExecuteSportsMatchupAsync` now receives `CompetitionMatchupInput`
-- collect, analyze, and evaluate all key off `competition`, not `sport`
-- collector routing is still intentionally thin:
+- retrieve, analyze, and evaluate all key off `competition`, not `sport`
+- retriever routing is still intentionally thin:
   - `nfl`, `ncaaf` → fetch market spread
   - `mlb` → fetch probable starters
   - `nba`, `ncaamb` → fetch rest/schedule grounding and current spread
@@ -319,7 +319,10 @@ college baseball is not seeded. it is only represented in the visible competitio
 | RunType | `"sports.matchup.analysis"` |
 | Status | `"completed"` |
 | InputJson | `{"competition":"ncaaf","homeTeam":"...","awayTeam":"...","gameDate":"..."}` |
-| OutputJson | includes `lean`, `summary`, calibrated `confidence`, `factors`, `groundedSignals`, `analyzerConfidence` |
+| OutputJson | includes `lean`, `summary`, calibrated `confidence`, `factors`, `groundedSignals`, `analyzerConfidence`, `publishability`, `degradationNotes`, `pipelineSteps` |
+| Competition | denormalized from input, e.g. `"ncaaf"` |
+| GameDate | denormalized from input as `date` column |
+| Outcome | null until the learning loop back-fills it |
 | AgentProfileKey | null |
 | CorrelationId | ASP.NET trace identifier |
 | DurationMs | server-side elapsed time |
@@ -363,14 +366,14 @@ the UI should not leak raw internal codes unless there is a true fallback case.
 | limitation | location | impact |
 |---|---|---|
 | no auth on sports path | `AgentRunsController`, `SportsApiService` | any caller can create runs; no tenant scoping in production |
-| production `useStubApi` | `apps/sports-app/environment.ts` | production build still uses stub analysis unless changed |
+| frontend stub path | `SportsApiService`, `environment.development.ts` | demo response remains available for explicit local stub mode; production now calls the real API |
 | OutputJson has no schema | `AgentRun.OutputJson` | stored content cannot be queried structurally |
 | football market grounding is intentionally thin | `OddsMarketClient`, `sports_analyzer.py` | only current spread is grounded; no line movement history, injury feed, or broader football evidence set yet |
 | basketball rest signal is intentionally thin | `EspnBasketballScheduleClient`, `sports_analyzer.py` | grounds back-to-back / days-rest claims only; no travel, injury, or broader schedule-load intelligence yet |
 | basketball market grounding is intentionally thin | `OddsMarketClient`, `sports_analyzer.py` | grounds current spread only; no totals, line movement history, or availability feed |
-| no reliable shared season-long basketball injury source | collector layer (deferred) | nba has official injury reporting, but ncaamb still lacks a season-wide shared availability feed; do not force cross-competition injury grounding until a real source exists |
+| no reliable shared season-long basketball injury source | retriever layer (deferred) | nba has official injury reporting, but ncaamb still lacks a season-wide shared availability feed; do not force cross-competition injury grounding until a real source exists |
 | no college baseball support | `CompetitionCatalog`, frontend level picker | user can see the concept but cannot select a working competition |
-| espn schedule source is public but unofficial | `EspnBasketballScheduleClient` | shape can drift over time; collector must fail closed to the no-data prompt path |
+| espn schedule source is public but unofficial | `EspnBasketballScheduleClient` | shape can drift over time; retriever must fail closed to the no-data prompt path |
 
 ---
 
@@ -378,7 +381,7 @@ the UI should not leak raw internal codes unless there is a true fallback case.
 
 these concepts appear in vault docs but are not implemented in this path today:
 
-- competition-specific collector packages for college sports
+- competition-specific retriever packages for college sports
 - competition-specific evaluator rules beyond `MaxGroundedSignals`
 - competition-specific prompt families beyond football / basketball / mlb
 - shared basketball injury/availability grounding across `nba` and `ncaamb`

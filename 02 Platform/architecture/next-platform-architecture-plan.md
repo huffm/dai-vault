@@ -238,7 +238,7 @@ Do not scaffold Stripe webhook infrastructure until billing is a real near-term 
 | gRPC | port 50051 scaffolded, unused | do not generate proto stubs until there is a second Python service or a real streaming requirement |
 | account feature in Angular | empty shell component | leave it empty until delivery preferences exist to configure |
 | SSE streaming | `interval(2500)` seam in place | do not implement SSE until the sports analysis pipeline is stable and real-time progress is a product need |
-| `useStubApi` in production env | `true` in `environment.ts` | flip to `false` only after milestone 1 of the sports analysis plan is validated in a real deployment |
+| `useStubApi` in production env | `false` in `environment.ts` | resolved; keep the stub path only for explicit local development fallback |
 
 ---
 
@@ -265,8 +265,8 @@ The future `GamesService` in Angular needs to know when a brief transitions from
 
 Polling is correct for v1. SSE is an upgrade once the polling latency is a real user problem.
 
-**decision 6 — remove `useStubApi: true` from production environment**
-This flag is the only thing preventing real API calls in a production build. It should be removed (not just flipped) as a named milestone once the sports analysis path is validated under real conditions. Do not forget it exists.
+**decision 6 — keep `useStubApi` false in production**
+This flag was the only thing preventing real API calls in a production build. Production now sets it to `false`; the remaining cleanup is to remove the stub branch entirely once local fallback behavior is no longer useful.
 
 ---
 
