@@ -1,7 +1,7 @@
 # current sports analysis flow
 
-Last updated: 2026-04-24 (collect→retrieve rename; Competition/GameDate/Outcome columns added)
-Reflects code state after the retrieve rename + persistence slice.
+Last updated: 2026-04-24 (outcome capture slice: AgentRunOutcome entity, RecordOutcome endpoint)
+Reflects code state after the outcome capture slice.
 
 ---
 
@@ -234,11 +234,11 @@ framework: xUnit 2.9.x, real instances for pure logic, hand-written fakes at the
 | SportsEvaluatorTests | 7 | calibration tiers (priors-only, partial, fully grounded); confidence band labels; step recording |
 | SportsComposerTests | 10 | Compose confidence ownership; pipeline step list; ComposeFailedRun lean/confidence/publishability/steps |
 | AgentRunServiceTests | 6 | analyze failure wrapping; AnalysisPipelineException artifact; cancellation propagation; success path |
-| AgentRunsControllerTests | 2 | OutputJson persistence on analyze failure; ErrorMessage from InnerException |
+| AgentRunsControllerTests | 5 | OutputJson persistence on analyze failure; ErrorMessage from InnerException; RecordOutcome 201/409/404 |
 
 run command: `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj`
 
-total: 32 tests, all passing.
+total: 35 tests, all passing.
 
 ---
 
@@ -248,5 +248,6 @@ total: 32 tests, all passing.
   actionnetwork client does not exist. adding it only requires a new client, a new context type,
   a new SportsRetrievalOutput field, and a new branch in SportsRetriever.RetrieveAsync.
 - confidence calibration parameters are undocumented interim estimates pending the learning loop.
-- Outcome column is nullable and will remain null until the learning loop back-fill is implemented.
-- Competition and GameDate are now first-class columns on AgentRun (added in migration AddAgentRunOutcomeColumns).
+- Competition and GameDate are first-class columns on AgentRun (added in migration AddAgentRunOutcomeColumns).
+- AgentRunOutcome entity is now live. Raw game results are recorded via POST /api/agent-runs/{id}/outcome.
+- Derived run evaluation (was the lean correct?) is future work — no comparison logic exists yet.

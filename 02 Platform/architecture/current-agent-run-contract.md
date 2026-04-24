@@ -1,6 +1,6 @@
 # current agent run contract
 
-**date:** 2026-04-23 (failure-artifact persistence integration slice completed)
+**date:** 2026-04-24 (outcome capture slice: AgentRunOutcome entity, RecordOutcome endpoint)
 **derived from:** actual code in `platform/dotnet/` and `apps/sports-app/`
 **status:** reflects what is implemented today — not a design target
 
@@ -28,6 +28,8 @@ migration added: `20260311223224_AddAgentRuns`
 | StartedUtc | datetime | set when row is created |
 | CompletedUtc | datetime? | set after ExecuteAsync returns |
 | DurationMs | long? | computed from StartedUtc/CompletedUtc |
+| Competition | string? | denormalized from input (e.g. `"nfl"`); indexed; populated at row creation |
+| GameDate | date? | denormalized from input; indexed; populated at row creation so outcomes can join runs |
 
 ### what OutputJson currently contains
 
@@ -47,6 +49,90 @@ OutputJson is written as the raw serialized `AgentRunExecutionResult`:
 it is an unstructured string. there is no `sections[]`, no `brief_id`, no `delivery_status`, and no stored competition metadata inside the output payload itself. the shape is whatever the service layer composes and serializes — the .NET layer does not enforce a schema at the database column level.
 
 **lean field:** optional (`string? / null`). present when the model successfully emits a directional signal. absent (null) when the model does not include it or the value is empty. stored as-is in OutputJson and returned in the response DTO.
+
+---
+
+## database entity: AgentRunOutcome
+
+file: `DevCore.Domain/Agentic/AgentRunOutcome.cs`
+table: `AgentRunOutcomes` (via EF Core, `DevCore.Data/AppDbContext.cs`)
+migration added: `20260424182112_AddAgentRunOutcome`
+
+this is the raw real-world result of a game. it is NOT the decision (that is AgentRun+OutputJson). it is NOT a derived evaluation. it is only the factual result: who won, what the score was, when it was recorded, and where it came from.
+
+**one-to-zero-or-one with AgentRun.** a unique index on `AgentRunKey` enforces this at the database level. if an outcome was recorded incorrectly, it is updated in place, not replaced.
+
+| column | type | notes |
+|---|---|---|
+| AgentRunOutcomeKey | bigint | internal PK, identity |
+| AgentRunOutcomeId | guid | public-facing identifier, sequential (`newsequentialid()`) |
+| AgentRunKey | bigint | FK to AgentRuns, NoAction on delete; unique index enforces 1:0..1 |
+| OutcomeStatus | string(32) | check constraint: `home_win \| away_win \| draw \| cancelled \| postponed` |
+| HomeScore | int? | null if not recorded or not applicable (cancelled/postponed) |
+| AwayScore | int? | null if not recorded or not applicable |
+| Source | string(64) | `"manual"` today; future: `"odds_api"`, `"espn"`, etc. |
+| SourceRef | string?(512) | opaque reference to the source event; null for manual entries |
+| ResolvedUtc | datetimeoffset | when the outcome was confirmed; server-set unless caller supplies a back-fill timestamp |
+| Notes | string?(1000) | free-text; for corrections, postponement details, or anything that doesn't fit above |
+
+**separation rationale:** three things are intentionally kept separate:
+1. decision-time snapshot → `AgentRun` + `OutputJson`
+2. raw real-world outcome → `AgentRunOutcome`
+3. derived run evaluation (was the lean correct?) → future work, not yet implemented
+
+do not collapse these into one field or one record. the learning loop compares (1) against (2) to produce (3).
+
+---
+
+## API contract: record an outcome
+
+**endpoint:** `POST /api/agent-runs/{agentRunId}/outcome`
+**file:** `DevCore.Api/Controllers/AgentRunsController.cs`
+
+scoped to tenant only (not user) — future automated feeds won't have a user key.
+
+### request body
+
+```json
+{
+  "outcomeStatus": "home_win",
+  "homeScore": 27,
+  "awayScore": 17,
+  "source": "manual",
+  "sourceRef": null,
+  "notes": null,
+  "resolvedUtc": null
+}
+```
+
+`resolvedUtc` is optional. if omitted, the server uses `UtcNow`. supply a past timestamp when back-filling historical outcomes.
+
+### responses
+
+| status | condition |
+|---|---|
+| 201 Created | outcome recorded; body is `AgentRunOutcomeDto` |
+| 404 Not Found | run does not exist for this tenant |
+| 409 Conflict | an outcome has already been recorded for this run |
+| 422 Unprocessable | `outcomeStatus` is not a known value |
+
+### response body (201)
+
+```json
+{
+  "agentRunOutcomeId": "...",
+  "agentRunId": "...",
+  "outcomeStatus": "home_win",
+  "homeScore": 27,
+  "awayScore": 17,
+  "source": "manual",
+  "sourceRef": null,
+  "resolvedUtc": "...",
+  "notes": null
+}
+```
+
+`agentRunId` is included so the caller can cross-reference without a separate lookup.
 
 ---
 
