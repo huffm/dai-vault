@@ -29,6 +29,7 @@ They are not surfaced to the UI -- the API response shape is unchanged.
 | `SportsRetrievalOutput` | SportsCollectorOutput.cs | retrieve stage output; owned signal grounding |
 | `EvaluatorOutput` | EvaluatorOutput.cs | calibrated confidence from evaluate stage |
 | `AgentRunExecutionResult` | AgentRunContracts.cs | final artifact; serialized to OutputJson |
+| `AgentRunEvaluationDto` | AgentRunContracts.cs | response shape for GET /evaluation read endpoint |
 
 ---
 
@@ -228,7 +229,7 @@ builder.Services.AddScoped<IAgentRunService, AgentRunService>();
 
 ---
 
-## automated tests (as of 2026-04-23)
+## automated tests (as of 2026-04-25)
 
 test project: `platform/dotnet/DevCore.Api.Tests`
 framework: xUnit 2.9.x, real instances for pure logic, hand-written fakes at the two i/o boundaries.
@@ -240,16 +241,16 @@ framework: xUnit 2.9.x, real instances for pure logic, hand-written fakes at the
 | SportsComposerTests | 10 | Compose confidence ownership; pipeline step list; ComposeFailedRun lean/confidence/publishability/steps |
 | AgentRunServiceTests | 6 | analyze failure wrapping; AnalysisPipelineException artifact; cancellation propagation; success path |
 | RunEvaluatorTests | 13 | WinningSide mapping; correct/incorrect/inconclusive paths for all outcome types |
-| AgentRunsControllerTests | 6 | OutputJson persistence on analyze failure; ErrorMessage from InnerException; RecordOutcome 201/409/404; evaluation persisted on outcome |
+| AgentRunsControllerTests | 9 | OutputJson persistence on analyze failure; ErrorMessage from InnerException; RecordOutcome 201/409/404; evaluation persisted on outcome; GetEvaluation 200/404-no-run/404-no-eval |
 | tests/test_sports_analyzer.py (python) | 21 | lean_side parsing; signals_used: valid values, absent defaults to empty, unknown filtered, wrong type safe |
 
 run command: `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj`
 
-total: 56 tests, all passing.
+total: 59 tests, all passing.
 
 ---
 
-## known gaps (as of 2026-04-24)
+## known gaps (as of 2026-04-25)
 
 - sharp/public split is in v1-scope.md but has no retriever implementation.
   actionnetwork client does not exist. adding it only requires a new client, a new context type,
@@ -258,5 +259,6 @@ total: 56 tests, all passing.
 - Competition and GameDate are first-class columns on AgentRun (added in migration AddAgentRunOutcomeColumns).
 - AgentRunOutcome entity is live. Raw game results are recorded via POST /api/agent-runs/{id}/outcome.
 - AgentRunEvaluation entity is live. Derived evaluation (correct/incorrect/inconclusive) is computed and persisted atomically at outcome recording time.
+- GET /api/agent-runs/{id}/evaluation is live. Returns AgentRunEvaluationDto (200) or 404 when the run does not exist for the tenant or no evaluation has been computed yet.
 - FastAPI now returns `lean_side` alongside the narrative `lean`. The evaluation loop is active — runs produce correct/incorrect instead of defaulting to inconclusive.
 - Confidence calibration analysis (was the confidence accurate relative to the outcome?) is deferred — the data is stored but no comparison logic exists yet.
