@@ -1,7 +1,7 @@
 # current sports analysis flow
 
-Last updated: 2026-04-25 (lean_side slice: FastAPI returns structured lean_side; evaluation loop is now active)
-Reflects code state after the lean_side activation slice.
+Last updated: 2026-04-25 (signals_used slice: analyze response now carries model self-reported signal categories)
+Reflects code state after the signals_used contract refinement.
 
 ---
 
@@ -76,6 +76,7 @@ The analyze response now includes `lean_side` ("home", "away", or null) alongsid
 The prompt instructs the model to emit `lean_side` consistent with its lean text.
 FastAPI normalizes: only "home" and "away" are accepted -- any other value is clamped to null.
 `lean_side` flows through the artifact into `AgentRunExecutionResult` and is denormalized to `AgentRun.LeanSide`.
+The analyze response now also carries `signals_used`: a compact list of signal category keys the model self-reported incorporating (e.g. `["market", "situational"]`). This is the model-side complement to `GroundedSignals` from the retrieve layer. Together they form the retrieved vs. used picture needed for calibration.
 If this stage throws (model error, FastAPI down), AgentRunService catches the exception
 (except OperationCanceledException), calls `artifact.RecordAnalyzeFailed(ex.Message)` and
 `composer.ComposeFailedRun(artifact)`, then re-throws as `AnalysisPipelineException`.
@@ -240,7 +241,7 @@ framework: xUnit 2.9.x, real instances for pure logic, hand-written fakes at the
 | AgentRunServiceTests | 6 | analyze failure wrapping; AnalysisPipelineException artifact; cancellation propagation; success path |
 | RunEvaluatorTests | 13 | WinningSide mapping; correct/incorrect/inconclusive paths for all outcome types |
 | AgentRunsControllerTests | 6 | OutputJson persistence on analyze failure; ErrorMessage from InnerException; RecordOutcome 201/409/404; evaluation persisted on outcome |
-| tests/test_sports_analyzer.py (python) | 13 | lean_side parsing: valid values, absent field, invalid clamped to null; required field validation |
+| tests/test_sports_analyzer.py (python) | 21 | lean_side parsing; signals_used: valid values, absent defaults to empty, unknown filtered, wrong type safe |
 
 run command: `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj`
 
