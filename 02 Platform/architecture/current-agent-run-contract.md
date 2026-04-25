@@ -114,7 +114,7 @@ this is the derived judgment after comparing the decision-time lean to the real-
 - `incorrect` — leanside and winning side are opposite
 - `inconclusive` — leanside is null, or outcome was draw/cancelled/postponed (no directional winner)
 
-**LeanSide note:** `AgentRun.LeanSide` comes from `AgentRunExecutionResult.LeanSide`, which comes from `SportsAnalysisResponse.LeanSide` (FastAPI). Until FastAPI returns `lean_side`, all runs will have `LeanSide = null` → all evaluations will be `inconclusive`. This is correct, not a bug — the system is ready, FastAPI just needs to send the field.
+**LeanSide note:** `AgentRun.LeanSide` comes from `AgentRunExecutionResult.LeanSide`, which comes from `SportsAnalysisResponse.LeanSide` (FastAPI). FastAPI now returns `lean_side` as part of every analyze response. The field is normalized to only "home", "away", or null — invalid model output is clamped to null and logged. The `[JsonPropertyName("lean_side")]` attribute on the C# record handles the snake_case → PascalCase mapping at deserialization.
 
 **indexes:**
 - `IX_AgentRunEvaluations_AgentRunKey` (unique) — enforces 1:0..1, run-to-eval lookup

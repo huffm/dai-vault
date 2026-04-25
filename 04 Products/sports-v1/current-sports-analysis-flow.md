@@ -1,7 +1,7 @@
 # current sports analysis flow
 
-Last updated: 2026-04-25 (derived evaluation slice: AgentRunEvaluation entity, RunEvaluator, LeanSide)
-Reflects code state after the derived evaluation slice.
+Last updated: 2026-04-25 (lean_side slice: FastAPI returns structured lean_side; evaluation loop is now active)
+Reflects code state after the lean_side activation slice.
 
 ---
 
@@ -72,6 +72,10 @@ Calls `artifact.RecordAnalyze(response, Succeeded)`.
 
 This is the only AI step. One model call per run. json_object mode, temperature 0.3.
 Confidence from the response is provisional -- the evaluator calibrates it in the next stage.
+The analyze response now includes `lean_side` ("home", "away", or null) alongside the narrative `lean` string.
+The prompt instructs the model to emit `lean_side` consistent with its lean text.
+FastAPI normalizes: only "home" and "away" are accepted -- any other value is clamped to null.
+`lean_side` flows through the artifact into `AgentRunExecutionResult` and is denormalized to `AgentRun.LeanSide`.
 If this stage throws (model error, FastAPI down), AgentRunService catches the exception
 (except OperationCanceledException), calls `artifact.RecordAnalyzeFailed(ex.Message)` and
 `composer.ComposeFailedRun(artifact)`, then re-throws as `AnalysisPipelineException`.
@@ -236,6 +240,7 @@ framework: xUnit 2.9.x, real instances for pure logic, hand-written fakes at the
 | AgentRunServiceTests | 6 | analyze failure wrapping; AnalysisPipelineException artifact; cancellation propagation; success path |
 | RunEvaluatorTests | 13 | WinningSide mapping; correct/incorrect/inconclusive paths for all outcome types |
 | AgentRunsControllerTests | 6 | OutputJson persistence on analyze failure; ErrorMessage from InnerException; RecordOutcome 201/409/404; evaluation persisted on outcome |
+| tests/test_sports_analyzer.py (python) | 13 | lean_side parsing: valid values, absent field, invalid clamped to null; required field validation |
 
 run command: `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj`
 
@@ -252,5 +257,5 @@ total: 56 tests, all passing.
 - Competition and GameDate are first-class columns on AgentRun (added in migration AddAgentRunOutcomeColumns).
 - AgentRunOutcome entity is live. Raw game results are recorded via POST /api/agent-runs/{id}/outcome.
 - AgentRunEvaluation entity is live. Derived evaluation (correct/incorrect/inconclusive) is computed and persisted atomically at outcome recording time.
-- Evaluations will be inconclusive until FastAPI returns lean_side alongside the narrative lean. The .NET side is ready.
+- FastAPI now returns `lean_side` alongside the narrative `lean`. The evaluation loop is active — runs produce correct/incorrect instead of defaulting to inconclusive.
 - Confidence calibration analysis (was the confidence accurate relative to the outcome?) is deferred — the data is stored but no comparison logic exists yet.
