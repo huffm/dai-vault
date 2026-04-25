@@ -1,6 +1,6 @@
 # current agent run contract
 
-**date:** 2026-04-24 (outcome capture slice: AgentRunOutcome entity, RecordOutcome endpoint)
+**date:** 2026-04-25 (derived evaluation slice: AgentRunEvaluation entity, RunEvaluator, LeanSide denormalization)
 **derived from:** actual code in `platform/dotnet/` and `apps/sports-app/`
 **status:** reflects what is implemented today — not a design target
 
@@ -30,6 +30,7 @@ migration added: `20260311223224_AddAgentRuns`
 | DurationMs | long? | computed from StartedUtc/CompletedUtc |
 | Competition | string? | denormalized from input (e.g. `"nfl"`); indexed; populated at row creation |
 | GameDate | date? | denormalized from input; indexed; populated at row creation so outcomes can join runs |
+| LeanSide | string?(8) | structured lean direction: `"home"`, `"away"`, or null; denormalized from `AgentRunExecutionResult.LeanSide` at run completion; null until fastapi returns `lean_side` |
 
 ### what OutputJson currently contains
 
@@ -81,6 +82,43 @@ this is the raw real-world result of a game. it is NOT the decision (that is Age
 3. derived run evaluation (was the lean correct?) → future work, not yet implemented
 
 do not collapse these into one field or one record. the learning loop compares (1) against (2) to produce (3).
+
+---
+
+## database entity: AgentRunEvaluation
+
+file: `DevCore.Domain/Agentic/AgentRunEvaluation.cs`
+table: `AgentRunEvaluations` (via EF Core, `DevCore.Data/AppDbContext.cs`)
+migration added: `20260425145646_AddAgentRunEvaluation`
+
+this is the derived judgment after comparing the decision-time lean to the real-world outcome. it is NOT the decision (AgentRun+OutputJson). it is NOT the raw outcome (AgentRunOutcome). it is only the interpretation: was the lean directionally correct?
+
+**computed at outcome recording time**, in the same transaction as AgentRunOutcome. no separate endpoint. no background job.
+
+**one-to-zero-or-one with AgentRun.** unique index on `AgentRunKey`. "unresolved" is never stored as a string — it is expressed by the absence of this record.
+
+**evaluation logic** lives in `RunEvaluator` (static class, `DevCore.Api/AgentRuns/RunEvaluator.cs`). pure computation, no I/O.
+
+| column | type | notes |
+|---|---|---|
+| AgentRunEvaluationKey | bigint | internal PK, identity |
+| AgentRunEvaluationId | guid | public-facing identifier, sequential |
+| AgentRunKey | bigint | FK to AgentRuns, NoAction on delete; unique index enforces 1:0..1 |
+| EvalStatus | string(16) | check constraint: `correct \| incorrect \| inconclusive` |
+| LeanSide | string?(8) | snapshotted from `AgentRun.LeanSide` at evaluation time; "home", "away", or null |
+| WinningSide | string?(8) | derived from `OutcomeStatus` at evaluation time; "home", "away", or null |
+| EvaluatedUtc | datetimeoffset | always server-set at outcome recording time |
+
+**EvalStatus logic:**
+- `correct` — leanside and winning side match
+- `incorrect` — leanside and winning side are opposite
+- `inconclusive` — leanside is null, or outcome was draw/cancelled/postponed (no directional winner)
+
+**LeanSide note:** `AgentRun.LeanSide` comes from `AgentRunExecutionResult.LeanSide`, which comes from `SportsAnalysisResponse.LeanSide` (FastAPI). Until FastAPI returns `lean_side`, all runs will have `LeanSide = null` → all evaluations will be `inconclusive`. This is correct, not a bug — the system is ready, FastAPI just needs to send the field.
+
+**indexes:**
+- `IX_AgentRunEvaluations_AgentRunKey` (unique) — enforces 1:0..1, run-to-eval lookup
+- `IX_AgentRunEvaluations_EvalStatus_EvaluatedUtc` — calibration queries: accuracy by status over time
 
 ---
 

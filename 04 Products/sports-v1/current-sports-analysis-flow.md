@@ -1,7 +1,7 @@
 # current sports analysis flow
 
-Last updated: 2026-04-24 (outcome capture slice: AgentRunOutcome entity, RecordOutcome endpoint)
-Reflects code state after the outcome capture slice.
+Last updated: 2026-04-25 (derived evaluation slice: AgentRunEvaluation entity, RunEvaluator, LeanSide)
+Reflects code state after the derived evaluation slice.
 
 ---
 
@@ -234,11 +234,12 @@ framework: xUnit 2.9.x, real instances for pure logic, hand-written fakes at the
 | SportsEvaluatorTests | 7 | calibration tiers (priors-only, partial, fully grounded); confidence band labels; step recording |
 | SportsComposerTests | 10 | Compose confidence ownership; pipeline step list; ComposeFailedRun lean/confidence/publishability/steps |
 | AgentRunServiceTests | 6 | analyze failure wrapping; AnalysisPipelineException artifact; cancellation propagation; success path |
-| AgentRunsControllerTests | 5 | OutputJson persistence on analyze failure; ErrorMessage from InnerException; RecordOutcome 201/409/404 |
+| RunEvaluatorTests | 13 | WinningSide mapping; correct/incorrect/inconclusive paths for all outcome types |
+| AgentRunsControllerTests | 6 | OutputJson persistence on analyze failure; ErrorMessage from InnerException; RecordOutcome 201/409/404; evaluation persisted on outcome |
 
 run command: `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj`
 
-total: 35 tests, all passing.
+total: 56 tests, all passing.
 
 ---
 
@@ -249,5 +250,7 @@ total: 35 tests, all passing.
   a new SportsRetrievalOutput field, and a new branch in SportsRetriever.RetrieveAsync.
 - confidence calibration parameters are undocumented interim estimates pending the learning loop.
 - Competition and GameDate are first-class columns on AgentRun (added in migration AddAgentRunOutcomeColumns).
-- AgentRunOutcome entity is now live. Raw game results are recorded via POST /api/agent-runs/{id}/outcome.
-- Derived run evaluation (was the lean correct?) is future work — no comparison logic exists yet.
+- AgentRunOutcome entity is live. Raw game results are recorded via POST /api/agent-runs/{id}/outcome.
+- AgentRunEvaluation entity is live. Derived evaluation (correct/incorrect/inconclusive) is computed and persisted atomically at outcome recording time.
+- Evaluations will be inconclusive until FastAPI returns lean_side alongside the narrative lean. The .NET side is ready.
+- Confidence calibration analysis (was the confidence accurate relative to the outcome?) is deferred — the data is stored but no comparison logic exists yet.
