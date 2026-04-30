@@ -1,6 +1,6 @@
 # current agent run contract
 
-**date:** 2026-04-25 (derived evaluation slice: AgentRunEvaluation entity, RunEvaluator, LeanSide denormalization)
+**date:** 2026-04-30 (cognitive artifact v1: compact read stance fields and internal phases)
 **derived from:** actual code in `platform/dotnet/` and `apps/sports-app/`
 **status:** reflects what is implemented today — not a design target
 
@@ -38,18 +38,31 @@ OutputJson is written as the raw serialized `AgentRunExecutionResult`:
 
 ```json
 {
-  "lean": "Edge toward Chiefs based on rest advantage and line movement since open.",
-  "summary": "...",
-  "confidence": 0.64,
-  "groundedSignals": ["market"],
-  "analyzerConfidence": 0.76,
-  "factors": ["Market: Current spread supports the lean.", "Rest: Chiefs have the schedule edge."]
+  "Lean": "Edge toward Chiefs based on rest advantage and line movement since open.",
+  "Summary": "...",
+  "Confidence": 0.64,
+  "GroundedSignals": ["market"],
+  "AnalyzerConfidence": 0.76,
+  "Factors": ["Market: Current spread supports the lean.", "Rest: Chiefs have the schedule edge."],
+  "CognitivePhases": {
+    "Perceive": { "Detect": ["..."], "Frame": "...", "Aim": ["..."] },
+    "Interrogate": { "Balance": "...", "Stress": "...", "Reframe": "..." },
+    "Discern": { "Test": "...", "Listen": "...", "Filter": "..." },
+    "Decide": { "Calibrate": "...", "Posture": "monitor", "Voice": "..." }
+  },
+  "Posture": "monitor",
+  "CounterCase": "The strongest opposing case...",
+  "WatchFor": "The condition that would weaken the read...",
+  "WhatWouldChangeTheRead": ["late injury status change", "market move against the read"],
+  "EvidenceRichness": 2
 }
 ```
 
 it is an unstructured string. there is no `sections[]`, no `brief_id`, no `delivery_status`, and no stored competition metadata inside the output payload itself. the shape is whatever the service layer composes and serializes — the .NET layer does not enforce a schema at the database column level.
 
 **lean field:** optional (`string? / null`). present when the model successfully emits a directional signal. absent (null) when the model does not include it or the value is empty. stored as-is in OutputJson and returned in the response DTO.
+
+**cognitive artifact fields:** `cognitivePhases` is the internal 4-phase artifact from FastAPI and is stored in OutputJson only. `posture`, `counterCase`, `watchFor`, `whatWouldChangeTheRead`, and `evidenceRichness` are compact delivery fields that can be returned in `AgentRunResultDto`. `evidenceRichness` is nullable: null means an older record predates the field, while 0 means the current retriever found no grounded signals.
 
 ---
 
@@ -208,11 +221,19 @@ scoped to tenant only (not user) — future automated feeds won't have a user ke
   "confidence": 0.64,
   "factors": ["Market: Current spread supports the lean.", "Rest: Chiefs have the schedule edge."],
   "createdUtc": "...",
-  "durationMs": 1842
+  "durationMs": 1842,
+  "posture": "monitor",
+  "counterCase": "The strongest opposing case...",
+  "watchFor": "The condition that would weaken the read...",
+  "whatWouldChangeTheRead": ["late injury status change", "market move against the read"],
+  "evidenceRichness": 2
 }
 ```
 
 `lean` is positioned before `summary` to reflect decision-first ordering: the directional signal leads, the fuller explanation follows. `lean` may be null if the model response did not include it.
+The UI labels `posture` as `Read Stance`, never `Pick`.
+Allowed posture values are `play`, `pass`, `monitor`, `wait`, `compare`, and `avoid`.
+`evidenceRichness` is from the retriever's grounded signal count, not from model output.
 
 ### response body (failure)
 
@@ -249,18 +270,33 @@ SportsAnalysisRequest {
   HomeTeam,
   AwayTeam,
   GameDate,
-  NflMarketContext?,
-  MlbStarterContext?
+  FootballMarketContext?,
+  MlbStarterContext?,
+  BasketballScheduleContext?,
+  BasketballMarketContext?,
+  SharpPublicContext?
 }
 ```
 
 response received from FastAPI:
 
 ```
-SportsAnalysisResponse { Lean?, Summary, Confidence, Factors[] }
+SportsAnalysisResponse {
+  Lean?,
+  LeanSide?,
+  SignalsUsed?,
+  Summary,
+  Confidence,
+  Factors[],
+  Phases?,
+  Posture?,
+  CounterCase?,
+  WatchFor?,
+  WhatWouldChangeTheRead?
+}
 ```
 
-these are the only contracts exchanged between .NET and FastAPI. .NET does not parse or validate the content of `Lean`, `Summary`, or `Factors` — it stores them as-is and returns them in the DTO. `Lean` is optional (`string?`); null is a valid value when the model does not emit a lean.
+these are the only contracts exchanged between .NET and FastAPI. FastAPI validates `lean_side`, `signals_used`, `posture`, and the cognitive phase shape before .NET receives the response. .NET owns evidence richness separately through `SportsRetrievalOutput.GroundedSignals`.
 
 ---
 
@@ -300,5 +336,6 @@ two ids exist in the flow today. they are different values and should not be con
 
 - `AgentProfileKey` — accepted in the request, stored as nullable on the row, but no profile is loaded or used during execution
 - `OutputJson` schema — no validation; any JSON string FastAPI returns is stored and returned
+- `CognitivePhases` database shape — stored inside OutputJson, not split into queryable columns
 - auth on `AgentRunsController` — no `[Authorize]` attribute; production enforcement would require adding it and removing the dev bypass
 - `CreateAgentRunRequest.Input` typed as `CompetitionMatchupInput` — still run-type-specific and will need generalization before a second run type can be added

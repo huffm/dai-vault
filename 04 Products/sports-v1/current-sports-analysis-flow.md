@@ -1,7 +1,7 @@
 # current sports analysis flow
 
-Last updated: 2026-04-25 (signals_used slice: analyze response now carries model self-reported signal categories)
-Reflects code state after the signals_used contract refinement.
+Last updated: 2026-04-30 (cognitive artifact v1: 4-phase read stance slice)
+Reflects code state after compact cognitive artifact integration.
 
 ---
 
@@ -14,7 +14,9 @@ There is exactly one model call per run, in the analyze stage.
 
 The artifact carries publishability, degradation notes, and per-stage step results.
 These are persisted in OutputJson for observability and the future learning loop.
-They are not surfaced to the UI -- the API response shape is unchanged.
+The cognitive artifact v1 adds a compact 4-phase reasoning object to OutputJson and exposes only
+delivery fields to the UI: Read Stance, Counter Case, Watch For, What Would Change the Read, and
+nullable evidence richness.
 
 ---
 
@@ -26,7 +28,9 @@ They are not surfaced to the UI -- the API response shape is unchanged.
 | `PipelineStepResult` | PipelineModels.cs | recorded outcome of one stage |
 | `PipelineStepStatus` | PipelineModels.cs | Succeeded / Degraded / Skipped / Failed |
 | `PublishabilityStatus` | PipelineModels.cs | Publishable / PublishableWithCaveats / NotPublishable |
-| `SportsRetrievalOutput` | SportsCollectorOutput.cs | retrieve stage output; owned signal grounding |
+| `SportsRetrievalOutput` | SportsRetrievalOutput.cs | retrieve stage output; owned signal grounding |
+| `SharpPublicContext` | SportAnalysisContracts.cs | sharp vs public betting split from actionnetwork |
+| `SportsCognitivePhases` | SportAnalysisContracts.cs / sports.py | internal 4-phase cognitive artifact stored in OutputJson |
 | `EvaluatorOutput` | EvaluatorOutput.cs | calibrated confidence from evaluate stage |
 | `AgentRunExecutionResult` | AgentRunContracts.cs | final artifact; serialized to OutputJson |
 | `AgentRunEvaluationDto` | AgentRunContracts.cs | response shape for GET /evaluation read endpoint |
@@ -38,7 +42,7 @@ They are not surfaced to the UI -- the API response shape is unchanged.
 ### stage 1: retrieve
 **class:** `SportsRetriever` (implements `ISportsRetriever`)
 **signature:** `Task RetrieveAsync(SportsRunArtifact artifact, CancellationToken ct)`
-**file:** `platform/dotnet/DevCore.Api/AgentRuns/SportsCollector.cs`
+**file:** `platform/dotnet/DevCore.Api/AgentRuns/SportsRetriever.cs`
 
 Reads `artifact.Input` and `artifact.GameDate`.
 Retrieves grounded evidence from external APIs per competition code.
@@ -47,17 +51,31 @@ Calls `artifact.RecordRetrieve(output, status, note?)`.
 | competition | data source | client |
 |---|---|---|
 | nfl, ncaaf | current spread | OddsMarketClient |
+| nfl, ncaaf | sharp vs public split | ActionNetworkClient |
 | mlb | probable starters | MlbStarterClient |
 | nba, ncaamb | rest/schedule + spread | EspnBasketballScheduleClient + OddsMarketClient |
+| nba, ncaamb | sharp vs public split | ActionNetworkClient |
 
 **step status logic:**
 - `MaxGroundedSignals == 0` or all sources returned data → `Succeeded`
 - some sources returned null → `Degraded` with note ("N of M signals grounded")
 - all sources returned null → `Degraded` with note ("no signals grounded -- priors-only run")
 
+**maxgroundedsignals per competition (current):**
+| competition | max | sources |
+|---|---|---|
+| nfl | 2 | spread (odds api) + sharp/public (actionnetwork) |
+| ncaaf | 2 | spread (odds api) + sharp/public (actionnetwork) |
+| nba | 3 | schedule (espn) + spread (odds api) + sharp/public (actionnetwork) |
+| ncaamb | 3 | schedule (espn) + spread (odds api) + sharp/public (actionnetwork) |
+| mlb | 1 | probable starters (statsapi.mlb.com) |
+
 A degraded retrieve does not stop the run. The artifact's `Publishability` is downgraded to
 `PublishableWithCaveats`. The analyzer receives explicit no-data instructions and falls back gracefully.
 The evaluator dampens confidence according to grounded signal count.
+ActionNetworkClient uses the first `books_odds` entry with all four percentage fields populated.
+If the provider returns the same matchup with home and away flipped, the client preserves the requested
+home/away orientation and swaps the percentages to match.
 
 ---
 
@@ -78,6 +96,16 @@ The prompt instructs the model to emit `lean_side` consistent with its lean text
 FastAPI normalizes: only "home" and "away" are accepted -- any other value is clamped to null.
 `lean_side` flows through the artifact into `AgentRunExecutionResult` and is denormalized to `AgentRun.LeanSide`.
 The analyze response now also carries `signals_used`: a compact list of signal category keys the model self-reported incorporating (e.g. `["market", "situational"]`). This is the model-side complement to `GroundedSignals` from the retrieve layer. Together they form the retrieved vs. used picture needed for calibration.
+The analyze response now also carries cognitive artifact v1:
+- `phases`: internal 4-phase object with perceive, interrogate, discern, decide
+- `posture`: validated read stance, one of play/pass/monitor/wait/compare/avoid or null
+- `counter_case`: strongest case against the lean
+- `watch_for`: fragile assumption or condition to monitor
+- `what_would_change_the_read`: short conditions that would flip or modify the read
+
+FastAPI validates posture and clamps unknown values to null. Missing phase fields are safe and do not fail parsing.
+Top-level `counter_case` and `watch_for` fall back to `phases.interrogate.balance` and
+`phases.interrogate.stress` when the deliver extracts are absent.
 If this stage throws (model error, FastAPI down), AgentRunService catches the exception
 (except OperationCanceledException), calls `artifact.RecordAnalyzeFailed(ex.Message)` and
 `composer.ComposeFailedRun(artifact)`, then re-throws as `AnalysisPipelineException`.
@@ -118,6 +146,9 @@ Reads all prior stage outputs from the artifact.
 Assembles `AgentRunExecutionResult` including all pipeline metadata.
 Calls `artifact.RecordCompose(result, Succeeded)`.
 `artifact.FinalResult` being non-null signals the pipeline completed successfully.
+`SportsComposer` passes the internal `CognitivePhases` object into OutputJson and maps only the compact
+deliver-layer fields to the final response DTO. `EvidenceRichness` is set from
+`retrieval.GroundedSignals.Length`, not from the model.
 
 ---
 
@@ -165,7 +196,7 @@ Angular AnalyzerComponent
         4. ISportsComposer.Compose(artifact)         [pure mapping; records Succeeded; sets FinalResult]
     -> return artifact.FinalResult (AgentRunExecutionResult)
     -> update AgentRun row (completed, OutputJson includes pipeline metadata)
-  -> return AgentRunResultDto (lean, summary, confidence, factors -- same as before)
+  -> return AgentRunResultDto (lean, summary, confidence, factors, read stance fields)
 ```
 
 ---
@@ -180,11 +211,17 @@ Angular AnalyzerComponent
 | Factors | yes | yes |
 | GroundedSignals | yes | yes |
 | AnalyzerConfidence | yes | yes |
+| CognitivePhases | no | yes -- internal 4-phase artifact in OutputJson only |
+| Posture | no | yes -- compact read stance, surfaced as Read Stance |
+| CounterCase | no | yes -- compact counter-case field surfaced to the UI |
+| WatchFor | no | yes -- compact watch condition surfaced to the UI |
+| WhatWouldChangeTheRead | no | yes -- compact list surfaced to the UI when populated |
+| EvidenceRichness | no | yes -- nullable grounded signal count from retrieval |
 | Publishability | no | yes -- enum name string |
 | DegradationNotes | no | yes -- string[] of any degradation messages |
 | PipelineSteps | no | yes -- [{StepName, Status, Note?}] for all 4 stages |
 
-API response shape to the UI is unchanged (uses AgentRunResultDto, not AgentRunExecutionResult).
+API response shape to the UI remains compact. It does not expose the nested `CognitivePhases` object.
 
 ---
 
@@ -238,23 +275,47 @@ framework: xUnit 2.9.x, real instances for pure logic, hand-written fakes at the
 |---|---|---|
 | SportsRunArtifactTests | 7 | RecordRetrieve publishability + notes; RecordAnalyzeFailed step/publishability/notes |
 | SportsEvaluatorTests | 7 | calibration tiers (priors-only, partial, fully grounded); confidence band labels; step recording |
-| SportsComposerTests | 10 | Compose confidence ownership; pipeline step list; ComposeFailedRun lean/confidence/publishability/steps |
-| AgentRunServiceTests | 6 | analyze failure wrapping; AnalysisPipelineException artifact; cancellation propagation; success path |
+| SportsComposerTests | 11 | Compose confidence ownership; pipeline step list; nullable evidence richness compatibility; ComposeFailedRun lean/confidence/publishability/steps |
+| AgentRunServiceTests | 7 | analyze failure wrapping; AnalysisPipelineException artifact; cancellation propagation; success path with and without sharp_public |
 | RunEvaluatorTests | 13 | WinningSide mapping; correct/incorrect/inconclusive paths for all outcome types |
 | AgentRunsControllerTests | 9 | OutputJson persistence on analyze failure; ErrorMessage from InnerException; RecordOutcome 201/409/404; evaluation persisted on outcome; GetEvaluation 200/404-no-run/404-no-eval |
-| tests/test_sports_analyzer.py (python) | 21 | lean_side parsing; signals_used: valid values, absent defaults to empty, unknown filtered, wrong type safe |
+| SportsRetrieverTests | 2 | sharp_public included in grounded signals when available; graceful degraded retrieve when sharp_public is missing |
+| SportsAnalyzerTests | 1 | .NET analyze request forwards compact sharp_public context into the single FastAPI model call |
+| ActionNetworkClientTests | 12 | correct parse; case-insensitive match; partial name match; flipped home/away mapping; later usable book fallback; empty games; no match; missing books_odds; empty books_odds; null percentages; unsupported competition; non-200 response |
+| tests/test_sports_analyzer.py (python) | 67 | lean_side parsing; signals_used validation; sharp_public prompt context; cognitive phases parsing; posture validation; deliver extract fallbacks |
 
 run command: `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj`
 
-total: 59 tests, all passing.
+total: 85 .NET tests, 67 Python tests, all passing in the current validation pass.
+
+---
+
+## migration notes
+
+`AddAgentRunOutcomeColumns` (20260424130353) contained duplicate InsertData for Teams 101-330 (NFL/NBA/MLB).
+those teams were already seeded by `AddSportsReferenceData` which was applied earlier.
+the duplicate inserts caused a PRIMARY KEY violation when `dotnet ef database update` was run.
+
+fix applied 2026-04-25: removed the InsertData block and corresponding DeleteData blocks from
+`AddAgentRunOutcomeColumns.cs` Up()/Down(). the migration was not yet applied when it failed
+(ef rolls back on error), so the edit was safe.
+
+because the running API locked DevCore.Api's bin DLL, migrations were applied directly via sqlcmd
+using a hand-written SQL script (C:\temp\apply_migrations.sql) covering all four pending migrations
+in order: MakeCompetitionFirstClass, AddAgentRunOutcomeColumns, AddAgentRunOutcome, AddAgentRunEvaluation.
+
+**future note**: after pulling migration files, always run `dotnet ef database update --project DevCore.Data
+--startup-project DevCore.Api` with the API server stopped. if the API is running and the migration has
+duplicate seed data, the rollback will hide the schema changes -- stop the server first.
 
 ---
 
 ## known gaps (as of 2026-04-25)
 
-- sharp/public split is in v1-scope.md but has no retriever implementation.
-  actionnetwork client does not exist. adding it only requires a new client, a new context type,
-  a new SportsRetrievalOutput field, and a new branch in SportsRetriever.RetrieveAsync.
+- sharp/public split is now live for nfl, ncaaf, nba, ncaamb via ActionNetworkClient.
+  actionnetwork uses an unofficial undocumented api -- schema is not under our control.
+  client returns null gracefully if the schema changes; run degrades to priors-only for this signal.
+  mlb sharp/public is deferred -- spread betting split is not the primary quality driver for baseball.
 - confidence calibration parameters are undocumented interim estimates pending the learning loop.
 - Competition and GameDate are first-class columns on AgentRun (added in migration AddAgentRunOutcomeColumns).
 - AgentRunOutcome entity is live. Raw game results are recorded via POST /api/agent-runs/{id}/outcome.

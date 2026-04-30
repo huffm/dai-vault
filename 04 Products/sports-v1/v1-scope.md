@@ -33,6 +33,12 @@ this section describes the dev app frontend only. the backend v1 product scope i
   - baseball + pro → MLB
 - baseball + college is intentionally visible as unsupported
 - this does not change the commercial v1 delivery priority: pro competitions remain the first commercial focus until brief quality and delivery prove out
+- cognitive artifact v1 is implemented as a compact read artifact, not a pick feed:
+  - UI label is Read Stance, not Pick
+  - posture values are play, pass, monitor, wait, compare, avoid
+  - counter-case, watch-for, and what-would-change fields are optional and render only when populated
+  - the nested 4-phase cognitive artifact is stored internally in OutputJson, not expanded into the UI
+  - evidence richness is grounded signal count from the platform pipeline, not LLM output
 
 ## in scope
 - NFL games (regular season + playoffs)

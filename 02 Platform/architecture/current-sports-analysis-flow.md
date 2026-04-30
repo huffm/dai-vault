@@ -1,6 +1,6 @@
 # current sports analysis flow
 
-**date:** 2026-04-20  
+**date:** 2026-04-30  
 **derived from:** actual code in `apps/sports-app/`, `platform/dotnet/`, and `services/agent-service/`  
 **status:** reflects what is implemented today — not a design target
 
@@ -84,11 +84,11 @@ Angular sports-app
                   nfl / ncaaf    → football analyzer
                   nba / ncaamb   → basketball analyzer
                   mlb            → mlb analyzer
-          ← SportsAnalysisResponse { lean, summary, confidence, factors[] }
+          ← SportsAnalysisResponse { lean, lean_side, signals_used, summary, confidence, factors[], phases?, posture?, counter_case?, watch_for?, what_would_change_the_read[] }
           → Evaluate(analyzerOutput, retrieval, competition)
           ← EvaluatorOutput { aggregateConfidence, analyzerConfidence, confidenceBand }
       → UPDATE AgentRun (completed, OutputJson, DurationMs)
-      ← AgentRunResultDto { agentRunId, status, lean, summary, confidence, factors, createdUtc, durationMs }
+      ← AgentRunResultDto { agentRunId, status, lean, summary, confidence, factors, createdUtc, durationMs, posture?, counterCase?, watchFor?, whatWouldChangeTheRead?, evidenceRichness? }
 ```
 
 ---
@@ -260,8 +260,24 @@ SportsAnalysisRequest {
 response from FastAPI:
 
 ```text
-SportsAnalysisResponse { Lean?, Summary, Confidence, Factors[] }
+SportsAnalysisResponse {
+  Lean?,
+  LeanSide?,
+  SignalsUsed?,
+  Summary,
+  Confidence,
+  Factors[],
+  Phases?,
+  Posture?,
+  CounterCase?,
+  WatchFor?,
+  WhatWouldChangeTheRead?
+}
 ```
+
+`Phases` is the internal cognitive artifact v1 shape: perceive, interrogate, discern, decide.
+It is stored in `OutputJson` only. Angular receives the compact delivery fields and labels posture as
+`Read Stance`.
 
 ### FastAPI: `services/agent-service/`
 
@@ -319,7 +335,7 @@ college baseball is not seeded. it is only represented in the visible competitio
 | RunType | `"sports.matchup.analysis"` |
 | Status | `"completed"` |
 | InputJson | `{"competition":"ncaaf","homeTeam":"...","awayTeam":"...","gameDate":"..."}` |
-| OutputJson | includes `lean`, `summary`, calibrated `confidence`, `factors`, `groundedSignals`, `analyzerConfidence`, `publishability`, `degradationNotes`, `pipelineSteps` |
+| OutputJson | includes `Lean`, `Summary`, calibrated `Confidence`, `Factors`, `GroundedSignals`, `AnalyzerConfidence`, `Publishability`, `DegradationNotes`, `PipelineSteps`, `CognitivePhases`, `Posture`, `CounterCase`, `WatchFor`, `WhatWouldChangeTheRead`, `EvidenceRichness` |
 | Competition | denormalized from input, e.g. `"ncaaf"` |
 | GameDate | denormalized from input as `date` column |
 | Outcome | null until the learning loop back-fills it |
@@ -384,6 +400,7 @@ these concepts appear in vault docs but are not implemented in this path today:
 - competition-specific retriever packages for college sports
 - competition-specific evaluator rules beyond `MaxGroundedSignals`
 - competition-specific prompt families beyond football / basketball / mlb
+- nested cognitive phases surfaced directly in the Angular UI
 - shared basketball injury/availability grounding across `nba` and `ncaamb`
 - college baseball support
 - outcome tracking or calibration tuning from real results
