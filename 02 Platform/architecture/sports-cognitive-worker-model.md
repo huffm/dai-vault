@@ -50,7 +50,7 @@ The first 4 phases (12 actions) are expressed through a single model call. The 1
 - not a gambling pick service
 - not a lock or certainty claim
 
-The current retrieve -> analyze -> evaluate -> compose spine remains intact.
+The current retrieve -> analyze -> evaluate -> quality_check -> compose spine remains intact.
 
 ---
 
@@ -61,6 +61,7 @@ The current retrieve -> analyze -> evaluate -> compose spine remains intact.
 | retrieve | perceive | collects grounded context, signal categories, and evidence availability |
 | analyze | perceive, interrogate, discern, decide | one FastAPI model call emits the compact 4-phase cognitive artifact plus top-level delivery extracts |
 | evaluate | discern, decide | deterministic .NET calibration uses grounded signal count and owns final confidence/evidence richness |
+| quality_check | discern | deterministic .NET artifact quality warnings for internal feedback loops |
 | compose | synthesize | builds `AgentRunExecutionResult`, integrates validated phase material, stores the full artifact in `OutputJson`, and maps compact delivery fields to `AgentRunResultDto` |
 
 The model can describe its reasoning, but it does not own evidence richness. Evidence richness is the count of grounded signal categories from the retriever/evaluator path.
@@ -91,6 +92,12 @@ The API response and Angular UI receive only the compact delivery fields:
 | `evidence_richness` / `evidenceRichness` | .NET `retrieval.GroundedSignals.Length` | diagnostic only |
 
 `evidenceRichness` is nullable in the final .NET DTO. `null` means an older record or response predates the field. `0` means a current run completed with no grounded signals.
+
+Artifact Quality v1 adds platform-owned `MissingSignals` and `ArtifactQualityWarnings` in `OutputJson`.
+These are deterministic internal quality-loop fields.
+They are not user-facing.
+They do not implement the full future `ArtifactSources` taxonomy.
+The full `known_facts`, `ai_interpretations`, `missing_information`, and `excluded_inputs` taxonomy remains deferred.
 
 ---
 
@@ -147,6 +154,8 @@ The platform enforces additional guardrails in code:
 - posture is validated against the allowed vocabulary and clamped to null on invalid values
 - lean_side is validated to only "home", "away", or null
 - signals_used is validated against the known signal category vocabulary
+- `MissingSignals` is computed by the platform from expected competition signals minus grounded signals
+- `ArtifactQualityWarnings` is produced by exactly five deterministic quality rules and remains internal
 - missing phase fields fail safely to null — they do not fail the run
 
 ---

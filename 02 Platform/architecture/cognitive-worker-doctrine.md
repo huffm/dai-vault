@@ -372,12 +372,19 @@ The current sports implementation uses one model call per run.
 FastAPI receives grounded signals from the retriever and structures the prompt through the 4 cognitive phases.
 The platform handles synthesize as deterministic code in `SportsComposer`.
 
-Current pipeline: retrieve → analyze → evaluate → compose
+Current pipeline: retrieve → analyze → evaluate → quality_check → compose
 
 - retrieve: external http calls, grounded signal collection
 - analyze: one gpt-4o-mini call emitting structured phase output
 - evaluate: deterministic confidence calibration based on evidence richness
+- quality_check: deterministic internal artifact quality warnings
 - compose: synthesize — integrates phase material, assembles `AgentRunExecutionResult`, maps delivery fields
+
+Artifact Quality v1 adds platform-owned `MissingSignals` and `ArtifactQualityWarnings` in `OutputJson`.
+These are deterministic internal quality-loop fields.
+They are not user-facing.
+They do not implement the full future `ArtifactSources` taxonomy.
+The full `known_facts`, `ai_interpretations`, `missing_information`, and `excluded_inputs` taxonomy remains deferred.
 
 The conceptual artifact template, full phase attribution in separate SQL columns, and vector memory layers are target doctrine — not yet implemented.
 
