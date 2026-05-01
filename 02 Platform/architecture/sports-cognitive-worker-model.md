@@ -33,9 +33,11 @@ Cognitive Artifact v1 represents a 12-action decision worker through 4 macro pha
 | decide | calibrate | explain why confidence matches the evidence |
 | decide | posture | set the read stance |
 | decide | voice | phrase the read without hype or false certainty |
-| deliver | final artifact | return the consumable `AgentRunResultDto` and persist the full `OutputJson` |
+| synthesize | integrate | combine validated material from prior phases without adding new claims |
+| synthesize | compose | assemble the final decision artifact shape |
+| synthesize | deliver | return the consumable `AgentRunResultDto` and persist the full `OutputJson` |
 
-This is intentionally 4 phases with 3 actions each because the product needs a compact, inspectable reasoning artifact. It gives the system enough structure to challenge a read without creating a 12-step UI, 12 agents, or 12 model calls.
+The first 4 phases (12 actions) are expressed through a single model call. The 13th function — Synthesize — is the platform-owned layer that integrates, compresses, and presents the validated artifact. It maps to `SportsComposer` in code. In vault language: Manifest. It does not invent; it plates what survived the prior phases.
 
 ---
 
@@ -59,7 +61,7 @@ The current retrieve -> analyze -> evaluate -> compose spine remains intact.
 | retrieve | perceive | collects grounded context, signal categories, and evidence availability |
 | analyze | perceive, interrogate, discern, decide | one FastAPI model call emits the compact 4-phase cognitive artifact plus top-level delivery extracts |
 | evaluate | discern, decide | deterministic .NET calibration uses grounded signal count and owns final confidence/evidence richness |
-| compose | deliver | builds `AgentRunExecutionResult`, stores the full artifact in `OutputJson`, and maps compact fields to `AgentRunResultDto` |
+| compose | synthesize | builds `AgentRunExecutionResult`, integrates validated phase material, stores the full artifact in `OutputJson`, and maps compact delivery fields to `AgentRunResultDto` |
 
 The model can describe its reasoning, but it does not own evidence richness. Evidence richness is the count of grounded signal categories from the retriever/evaluator path.
 
@@ -116,6 +118,36 @@ Invalid posture values are clamped to null before they leave FastAPI. The UI lab
 - old/minimal records remain compatible
 - `CognitivePhases` is internal to `OutputJson` for now
 - Angular renders each compact section only when populated
+
+---
+
+## synthesize rule
+
+Synthesize integrates, compresses, augments, and presents validated artifact material.
+It does not invent. It does not add unsupported claims. It does not override evidence quality.
+It produces the consumable decision artifact from what survived the prior phases.
+
+In this implementation, synthesize is owned by `SportsComposer` — deterministic code that reads all prior stage outputs from the `SportsRunArtifact` and maps them into the final `AgentRunExecutionResult`. Evidence richness is derived from the retriever's grounded signal count, not from model output.
+
+---
+
+## guardrails
+
+Each phase has hard boundaries. These apply to the model role — prompt design must enforce them.
+
+| phase | must not |
+|---|---|
+| perceive | decide posture, invent missing data, overstate signal strength |
+| interrogate | add new facts, attack for noise, decide final stance |
+| discern | treat interpretation as fact, admit weak evidence as strong, ignore missing information |
+| decide | let confidence exceed evidence, use hype language, call uncertain reads certain |
+| synthesize | invent evidence, introduce unsupported claims, hide uncertainty, override evidence quality |
+
+The platform enforces additional guardrails in code:
+- posture is validated against the allowed vocabulary and clamped to null on invalid values
+- lean_side is validated to only "home", "away", or null
+- signals_used is validated against the known signal category vocabulary
+- missing phase fields fail safely to null — they do not fail the run
 
 ---
 
