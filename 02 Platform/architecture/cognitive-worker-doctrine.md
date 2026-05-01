@@ -386,6 +386,9 @@ They are not user-facing.
 They do not implement the full future `ArtifactSources` taxonomy.
 The full `known_facts`, `ai_interpretations`, `missing_information`, and `excluded_inputs` taxonomy remains deferred.
 
+Run Artifact Inspection v1 provides a tenant/user-scoped read-only inspection endpoint for internal artifact quality and cognitive phase review.
+It is for platform learning and debugging, not the main user-facing sports read.
+
 The conceptual artifact template, full phase attribution in separate SQL columns, and vector memory layers are target doctrine — not yet implemented.
 
 See `sports-cognitive-worker-model.md` for the sports-specific pipeline detail.

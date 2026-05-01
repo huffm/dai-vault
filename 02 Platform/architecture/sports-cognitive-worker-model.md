@@ -99,6 +99,9 @@ They are not user-facing.
 They do not implement the full future `ArtifactSources` taxonomy.
 The full `known_facts`, `ai_interpretations`, `missing_information`, and `excluded_inputs` taxonomy remains deferred.
 
+Run Artifact Inspection v1 adds `GET /api/agent-runs/{agentRunId}/artifact` as a tenant/user-scoped read-only inspection surface.
+It exposes the curated internal artifact for platform learning and debugging without changing the main user-facing sports read.
+
 ---
 
 ## posture vocabulary

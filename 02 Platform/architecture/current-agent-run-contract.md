@@ -1,6 +1,6 @@
 # current agent run contract
 
-**date:** 2026-04-30 (cognitive artifact v1: compact read stance fields and internal phases)
+**date:** 2026-05-01 (run artifact inspection v1)
 **derived from:** actual code in `platform/dotnet/` and `apps/sports-app/`
 **status:** reflects what is implemented today — not a design target
 
@@ -42,6 +42,7 @@ OutputJson is written as the raw serialized `AgentRunExecutionResult`:
   "Summary": "...",
   "Confidence": 0.64,
   "GroundedSignals": ["market"],
+  "MissingSignals": ["sharp_public"],
   "AnalyzerConfidence": 0.76,
   "Factors": ["Market: Current spread supports the lean.", "Rest: Chiefs have the schedule edge."],
   "CognitivePhases": {
@@ -54,7 +55,8 @@ OutputJson is written as the raw serialized `AgentRunExecutionResult`:
   "CounterCase": "The strongest opposing case...",
   "WatchFor": "The condition that would weaken the read...",
   "WhatWouldChangeTheRead": ["late injury status change", "market move against the read"],
-  "EvidenceRichness": 2
+  "EvidenceRichness": 2,
+  "ArtifactQualityWarnings": []
 }
 ```
 
@@ -63,6 +65,8 @@ it is an unstructured string. there is no `sections[]`, no `brief_id`, no `deliv
 **lean field:** optional (`string? / null`). present when the model successfully emits a directional signal. absent (null) when the model does not include it or the value is empty. stored as-is in OutputJson and returned in the response DTO.
 
 **cognitive artifact fields:** `cognitivePhases` is the internal 4-phase artifact from FastAPI and is stored in OutputJson only. `posture`, `counterCase`, `watchFor`, `whatWouldChangeTheRead`, and `evidenceRichness` are compact delivery fields that can be returned in `AgentRunResultDto`. `evidenceRichness` is nullable: null means an older record predates the field, while 0 means the current retriever found no grounded signals.
+
+**artifact quality fields:** `MissingSignals` and `ArtifactQualityWarnings` are internal quality-loop fields stored in OutputJson. they are available through the artifact inspection endpoint below, not the normal `AgentRunResultDto`.
 
 ---
 
@@ -255,6 +259,27 @@ inside the stored output payload instead of leaving `OutputJson` as the placehol
 **file:** `DevCore.Api/Controllers/AgentRunsController.cs`
 
 response is `AgentRunDetailDto` — includes all fields from the result DTO plus the raw `InputJson` and `OutputJson` strings. tenant and user scoping is applied to the query — a run from a different tenant cannot be retrieved.
+
+---
+
+## API contract: inspect an agent run artifact
+
+**endpoint:** `GET /api/agent-runs/{agentRunId}/artifact`
+**file:** `DevCore.Api/Controllers/AgentRunsController.cs`
+
+response is `AgentRunArtifactDto` -- a curated, read-only inspection surface for internal artifact quality and cognitive phase review.
+it is for platform learning and debugging, not the main user-facing sports read.
+tenant and user scoping matches the existing detail endpoint.
+
+the response includes:
+- run metadata: `agentRunId`, `status`, `competition`, `gameDate`
+- evidence fields: `groundedSignals`, `missingSignals`, `evidenceRichness`
+- quality fields: `artifactQualityWarnings`, `pipelineSteps`
+- cognitive fields: `cognitivePhases`, `analyzerConfidence`, `confidence`
+- compact delivery fields: `posture`, `counterCase`, `watchFor`, `whatWouldChangeTheRead`, `summary`, `lean`
+
+the endpoint returns 404 when the run is not visible to the caller or when `OutputJson` is missing, empty, or cannot be deserialized into the current artifact contract.
+it does not expose raw prompts, provider metadata, api keys, or unrelated tenant/user data.
 
 ---
 
