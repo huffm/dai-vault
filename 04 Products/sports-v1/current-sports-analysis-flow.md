@@ -199,6 +199,14 @@ Angular AnalyzerComponent
   -> return AgentRunResultDto (lean, summary, confidence, factors, read stance fields)
 ```
 
+## internal artifact review surface
+
+Dev Artifact Review Page v1 adds `/dev/artifacts` in `apps/sports-app`.
+It lets a builder paste a completed AgentRun ID and inspect the curated internal artifact through `GET /api/agent-runs/{agentRunId}/artifact`.
+The page is for builder learning, debugging, and quality review.
+It is not linked from the main nav and is not part of the main user-facing sports read.
+explicit admin/dev role gating is deferred until the app has a role model.
+
 ---
 
 ## what is stored in OutputJson (new vs before)

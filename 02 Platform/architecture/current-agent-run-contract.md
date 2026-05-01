@@ -281,6 +281,11 @@ the response includes:
 the endpoint returns 404 when the run is not visible to the caller or when `OutputJson` is missing, empty, or cannot be deserialized into the current artifact contract.
 it does not expose raw prompts, provider metadata, api keys, or unrelated tenant/user data.
 
+Dev Artifact Review Page v1 in `apps/sports-app` consumes this endpoint at `/dev/artifacts`.
+It provides an internal review surface for inspecting completed AgentRun artifacts through the existing artifact endpoint.
+It is for builder learning, debugging, and quality review, not the main user-facing sports read.
+explicit admin/dev role gating is deferred until the app has a role model.
+
 ---
 
 ## internal contracts: .NET to FastAPI

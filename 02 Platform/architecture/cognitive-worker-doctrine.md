@@ -388,6 +388,8 @@ The full `known_facts`, `ai_interpretations`, `missing_information`, and `exclud
 
 Run Artifact Inspection v1 provides a tenant/user-scoped read-only inspection endpoint for internal artifact quality and cognitive phase review.
 It is for platform learning and debugging, not the main user-facing sports read.
+Dev Artifact Review Page v1 exposes that endpoint in the sports app at `/dev/artifacts` as a hidden builder review surface.
+It is for builder learning, debugging, and quality review, not the main user-facing sports read.
 
 The conceptual artifact template, full phase attribution in separate SQL columns, and vector memory layers are target doctrine — not yet implemented.
 

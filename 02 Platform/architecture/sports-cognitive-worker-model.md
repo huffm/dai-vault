@@ -101,6 +101,8 @@ The full `known_facts`, `ai_interpretations`, `missing_information`, and `exclud
 
 Run Artifact Inspection v1 adds `GET /api/agent-runs/{agentRunId}/artifact` as a tenant/user-scoped read-only inspection surface.
 It exposes the curated internal artifact for platform learning and debugging without changing the main user-facing sports read.
+Dev Artifact Review Page v1 adds `/dev/artifacts` in the sports app as a hidden internal review page for completed AgentRun artifacts.
+It is for builder learning, debugging, and quality review, not the main user-facing sports read.
 
 ---
 
