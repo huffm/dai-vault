@@ -286,6 +286,11 @@ It provides an internal review surface for inspecting completed AgentRun artifac
 It is for builder learning, debugging, and quality review, not the main user-facing sports read.
 explicit admin/dev role gating is deferred until the app has a role model.
 
+Dev Artifact Review Selector v1 adds `GET /api/agent-runs/recent` — a tenant/user-scoped read of recent sports matchup analysis runs.
+default take is 25, capped at 50.
+returns `AgentRunRecentDto` with denormalized columns plus home/away teams parsed from InputJson.
+no OutputJson fields are included in the list.
+
 ---
 
 ## internal contracts: .NET to FastAPI

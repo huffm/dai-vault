@@ -207,6 +207,11 @@ The page is for builder learning, debugging, and quality review.
 It is not linked from the main nav and is not part of the main user-facing sports read.
 explicit admin/dev role gating is deferred until the app has a role model.
 
+Dev Artifact Review Selector v1 adds a recent-runs selector to `/dev/artifacts`.
+`GET /api/agent-runs/recent` returns the most recent 25 sports matchup analysis runs scoped to the calling tenant and user.
+The selector lets a builder pick a run without manually querying the database for AgentRun IDs.
+It uses only denormalized columns and InputJson for display; no OutputJson parsing in the list response.
+
 ---
 
 ## what is stored in OutputJson (new vs before)
