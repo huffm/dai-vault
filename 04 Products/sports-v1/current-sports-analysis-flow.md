@@ -212,6 +212,17 @@ Dev Artifact Review Selector v1 adds a recent-runs selector to `/dev/artifacts`.
 The selector lets a builder pick a run without manually querying the database for AgentRun IDs.
 It uses only denormalized columns and InputJson for display; no OutputJson parsing in the list response.
 
+Dev Upcoming Artifact Runs v1 adds a "Run Upcoming Samples" section to `/dev/artifacts`.
+`GET /api/competitions/{code}/upcoming?days=7` returns all upcoming scheduled games for a competition (no team-pair filtering) using the Odds API.
+The section lets a builder select up to 10 upcoming games (checkboxes) and batch-run them as AgentRuns using the existing sports pipeline.
+Execution is sequential: one `POST /api/agent-runs` per game, awaited in turn. No background jobs, no cron, no billing changes.
+Per-game progress is shown inline with status badges. Completed runs show a truncated agentRunId for quick cross-reference.
+After the batch completes the recent-runs selector above refreshes automatically so runs are immediately inspectable.
+`OddsScheduleClient.GetAllUpcomingEventsAsync` is the new schedule method; it reuses the Odds API infrastructure without team-pair filtering.
+Backend: days default 7, max 14; result capped at 50 events. Degrades gracefully (empty array) when API key is missing.
+Frontend: hard max 10 selected games; Run button disabled until at least one game is checked.
+6 integration tests added to `SportsReferenceControllerTests` covering 404 paths, graceful degradation, and days param handling.
+
 ---
 
 ## what is stored in OutputJson (new vs before)

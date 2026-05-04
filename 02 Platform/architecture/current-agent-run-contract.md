@@ -291,6 +291,11 @@ default take is 25, capped at 50.
 returns `AgentRunRecentDto` with denormalized columns plus home/away teams parsed from InputJson.
 no OutputJson fields are included in the list.
 
+Dev Upcoming Artifact Runs v1 adds `GET /api/competitions/{code}/upcoming?days=7` in `SportsReferenceController`.
+returns `MatchupEventDto[]` (date + homeTeam + awayTeam) for all events in the competition within the given window (default 7 days, max 14).
+no team-pair filtering. backed by `OddsScheduleClient.GetAllUpcomingEventsAsync`. 30-minute cache.
+intended only for the `/dev/artifacts` batch sample tool, not for production pair-based lookups.
+
 ---
 
 ## internal contracts: .NET to FastAPI
