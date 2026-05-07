@@ -1,6 +1,6 @@
 # current sports analysis flow
 
-Last updated: 2026-04-30 (cognitive artifact v1: 4-phase read stance slice)
+Last updated: 2026-05-07 (dev calibration polish v1)
 Reflects code state after compact cognitive artifact integration.
 
 ---
@@ -223,6 +223,14 @@ Backend: days default 7, max 14; result capped at 50 events. Degrades gracefully
 Frontend: hard max 10 selected games; Run button disabled until at least one game is checked.
 6 integration tests added to `SportsReferenceControllerTests` covering 404 paths, graceful degradation, and days param handling.
 
+Dev Calibration Polish v1 fixes three real-usage friction points in the builder workflow:
+
+1. **Signal alias normalization in `SportsQualityChecker` rule 4.** The FastAPI analyzer prompt instructs the model to use a different vocabulary than the platform's canonical grounded signal names (e.g. model emits `rest_fatigue`; platform grounds `rest_schedule`). Without normalization, rule 4 fired a false quality warning. `SportsQualityChecker` now maps model-emitted aliases to platform canonical names before checking grounded-set membership. Canonical platform signals remain: `market`, `sharp_public`, `rest_schedule`, `starting_pitching`. Conservative aliases include `rest_fatigue → rest_schedule`, `public_sharp → sharp_public`, `starter → starting_pitching`. The warning message uses the canonical name. 4 new tests added to `SportsQualityCheckerTests` covering the alias paths.
+
+2. **Cognitive phase completeness on `/dev/artifacts`.** Previously, phase fields with null or empty output were silently hidden, making it impossible to tell whether a field was missing from the model response or simply not displayed. The Dev Artifact Review page now always renders all 12 expected phase actions (Perceive: Detect/Frame/Aim, Interrogate: Balance/Stress/Reframe, Discern: Test/Listen/Filter, Decide: Calibrate/Posture/Voice) with explicit "Not recorded" for absent fields. Builders can now distinguish missing model output from UI omission.
+
+3. **Actionable empty and error states in the upcoming games section.** The "no games found" empty state and the error state now carry actionable guidance text instead of bare status messages.
+
 ---
 
 ## what is stored in OutputJson (new vs before)
@@ -290,7 +298,7 @@ builder.Services.AddScoped<IAgentRunService, AgentRunService>();
 
 ---
 
-## automated tests (as of 2026-04-25)
+## automated tests (as of 2026-05-07)
 
 test project: `platform/dotnet/DevCore.Api.Tests`
 framework: xUnit 2.9.x, real instances for pure logic, hand-written fakes at the two i/o boundaries.
@@ -303,6 +311,8 @@ framework: xUnit 2.9.x, real instances for pure logic, hand-written fakes at the
 | AgentRunServiceTests | 7 | analyze failure wrapping; AnalysisPipelineException artifact; cancellation propagation; success path with and without sharp_public |
 | RunEvaluatorTests | 13 | WinningSide mapping; correct/incorrect/inconclusive paths for all outcome types |
 | AgentRunsControllerTests | 9 | OutputJson persistence on analyze failure; ErrorMessage from InnerException; RecordOutcome 201/409/404; evaluation persisted on outcome; GetEvaluation 200/404-no-run/404-no-eval |
+| SportsQualityCheckerTests | 16 | 5 deterministic quality rules; signal alias normalization (rest_fatigue, public_sharp, starter); unknown signals still warn; clean-pass case |
+| SportsReferenceControllerTests | 6 | 404 for unknown code; 404 for unseeded competition; 200+empty when API key absent; days=0 defaults; days=999 clamps; response is plain array |
 | SportsRetrieverTests | 2 | sharp_public included in grounded signals when available; graceful degraded retrieve when sharp_public is missing |
 | SportsAnalyzerTests | 1 | .NET analyze request forwards compact sharp_public context into the single FastAPI model call |
 | ActionNetworkClientTests | 12 | correct parse; case-insensitive match; partial name match; flipped home/away mapping; later usable book fallback; empty games; no match; missing books_odds; empty books_odds; null percentages; unsupported competition; non-200 response |
@@ -310,7 +320,7 @@ framework: xUnit 2.9.x, real instances for pure logic, hand-written fakes at the
 
 run command: `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj`
 
-total: 85 .NET tests, 67 Python tests, all passing in the current validation pass.
+total: 125 .NET tests, 67 Python tests, all passing in the current validation pass.
 
 ---
 

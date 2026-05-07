@@ -386,6 +386,8 @@ They are not user-facing.
 They do not implement the full future `ArtifactSources` taxonomy.
 The full `known_facts`, `ai_interpretations`, `missing_information`, and `excluded_inputs` taxonomy remains deferred.
 
+`SportsQualityChecker` rule 4 normalizes model-emitted signal vocabulary to platform canonical signal names before checking grounded-set membership. This prevents false warnings when the model uses its own vocabulary (e.g. `rest_fatigue`) while the platform retriever grounds the canonical name (`rest_schedule`). Normalization happens in the quality checker — the FastAPI prompt vocabulary is unchanged.
+
 Run Artifact Inspection v1 provides a tenant/user-scoped read-only inspection endpoint for internal artifact quality and cognitive phase review.
 It is for platform learning and debugging, not the main user-facing sports read.
 Dev Artifact Review Page v1 exposes that endpoint in the sports app at `/dev/artifacts` as a hidden builder review surface.

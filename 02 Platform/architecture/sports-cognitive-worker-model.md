@@ -1,6 +1,6 @@
 # sports cognitive worker model
 
-**date:** 2026-04-30  
+**date:** 2026-05-07  
 **status:** implemented as cognitive artifact v1 for `sports.matchup.analysis`
 
 ---
@@ -130,6 +130,7 @@ Invalid posture values are clamped to null before they leave FastAPI. The UI lab
 - old/minimal records remain compatible
 - `CognitivePhases` is internal to `OutputJson` for now
 - Angular renders each compact section only when populated
+- the Dev Artifact Review page always renders all 12 expected phase actions with explicit "Not recorded" for absent fields; missing phase output is visible rather than silently hidden
 
 ---
 
@@ -158,7 +159,7 @@ Each phase has hard boundaries. These apply to the model role — prompt design 
 The platform enforces additional guardrails in code:
 - posture is validated against the allowed vocabulary and clamped to null on invalid values
 - lean_side is validated to only "home", "away", or null
-- signals_used is validated against the known signal category vocabulary
+- signals_used is validated against the known signal category vocabulary; `SportsQualityChecker` rule 4 normalizes model-emitted aliases to platform canonical names before the grounded-set membership check (e.g. `rest_fatigue → rest_schedule`, `public_sharp → sharp_public`)
 - `MissingSignals` is computed by the platform from expected competition signals minus grounded signals
 - `ArtifactQualityWarnings` is produced by exactly five deterministic quality rules and remains internal
 - missing phase fields fail safely to null — they do not fail the run
