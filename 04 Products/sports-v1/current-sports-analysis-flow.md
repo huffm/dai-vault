@@ -1,7 +1,7 @@
 # current sports analysis flow
 
-Last updated: 2026-05-07 (dev calibration polish v1)
-Reflects code state after compact cognitive artifact integration.
+Last updated: 2026-05-07 (cognitive prompt tightening v1)
+Reflects code state after cognitive artifact prompt quality improvements.
 
 ---
 
@@ -106,6 +106,16 @@ The analyze response now also carries cognitive artifact v1:
 FastAPI validates posture and clamps unknown values to null. Missing phase fields are safe and do not fail parsing.
 Top-level `counter_case` and `watch_for` fall back to `phases.interrogate.balance` and
 `phases.interrogate.stress` when the deliver extracts are absent.
+
+Cognitive prompt tightening v1 (2026-05-07) added the following prompt-level constraints to `_JSON_SHAPE` in `sports_analyzer.py`:
+- `frame` must include the spread when market data is present and name the rest differential when schedule data is present
+- `balance` must cite the specific signal being pushed back against; if counter-evidence is thin, say so rather than inventing a counter
+- `reframe` and `test` must derive from available signals; fabrication is prohibited
+- `listen` is required (non-null) whenever any market or sharp/public block was provided; null is only valid when zero external blocks were present
+- `counter_case` must cite the specific signal or condition; generic phrases ("has the potential", "could outperform", "may surprise", "talent") are prohibited
+- `watch_for` must name something specific and observable; vague phrases ("inconsistent performance", "competitive edge", "performance trends") are prohibited
+- `what_would_change_the_read` items must each name a specific condition, event, or data point; 1-2 strong items preferred over 3 generic ones
+- anti-fabrication rule explicitly prohibits claiming resilience, recent form, injuries, travel, player availability, or team trends unless they appear in the supplied context blocks
 If this stage throws (model error, FastAPI down), AgentRunService catches the exception
 (except OperationCanceledException), calls `artifact.RecordAnalyzeFailed(ex.Message)` and
 `composer.ComposeFailedRun(artifact)`, then re-throws as `AnalysisPipelineException`.
@@ -230,6 +240,15 @@ Dev Calibration Polish v1 fixes three real-usage friction points in the builder 
 2. **Cognitive phase completeness on `/dev/artifacts`.** Previously, phase fields with null or empty output were silently hidden, making it impossible to tell whether a field was missing from the model response or simply not displayed. The Dev Artifact Review page now always renders all 12 expected phase actions (Perceive: Detect/Frame/Aim, Interrogate: Balance/Stress/Reframe, Discern: Test/Listen/Filter, Decide: Calibrate/Posture/Voice) with explicit "Not recorded" for absent fields. Builders can now distinguish missing model output from UI omission.
 
 3. **Actionable empty and error states in the upcoming games section.** The "no games found" empty state and the error state now carry actionable guidance text instead of bare status messages.
+
+Dev Artifact Calibration Harness v1 adds `scripts/dev/sports/run-artifact-calibration.ps1`.
+It lets a builder run a small capped batch of upcoming sports analyses from the command line, fetch the resulting artifacts, and write a readable calibration report into `dai-vault/04 Products/sports-v1/calibration/`.
+It is a manual feedback loop for builder use only — no scheduled jobs, no background automation, no billing changes.
+Parameters: `-Competition`, `-Take` (cap: 10), `-Days` (cap: 14), `-ApiBaseUrl`, `-BearerToken`, `-DryRun`, `-Force`.
+Auth: reads bearer token from `-BearerToken` param or `DAI_DEV_BEARER_TOKEN` env var; falls back to local dev bypass (`Dev:EnableBypassAuth`).
+Report format: metadata, summary table, quality warnings grouped by type, cognitive phase completeness table, blank manual review notes section.
+Raw artifact JSON files are written alongside the report in `calibration/artifacts/`.
+See `scripts/dev/sports/README.md` for usage examples.
 
 ---
 

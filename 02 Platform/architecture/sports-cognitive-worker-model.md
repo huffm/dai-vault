@@ -151,10 +151,12 @@ Each phase has hard boundaries. These apply to the model role — prompt design 
 | phase | must not |
 |---|---|
 | perceive | decide posture, invent missing data, overstate signal strength |
-| interrogate | add new facts, attack for noise, decide final stance |
-| discern | treat interpretation as fact, admit weak evidence as strong, ignore missing information |
+| interrogate | add new facts, attack for noise, decide final stance, invent a counter-case when evidence is thin |
+| discern | treat interpretation as fact, admit weak evidence as strong, ignore missing information, emit null for `listen` when external signal blocks were provided |
 | decide | let confidence exceed evidence, use hype language, call uncertain reads certain |
 | synthesize | invent evidence, introduce unsupported claims, hide uncertainty, override evidence quality |
+
+Prompt-level fabrication rule (cognitive prompt tightening v1): the model must not claim prior resilience, recent form, injuries, travel, player availability, or team trends unless they appear explicitly in the supplied context blocks. If a useful detail is missing, the model must say it is missing — not invent it.
 
 The platform enforces additional guardrails in code:
 - posture is validated against the allowed vocabulary and clamped to null on invalid values
