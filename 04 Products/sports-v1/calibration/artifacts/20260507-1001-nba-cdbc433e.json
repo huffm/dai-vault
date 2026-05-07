@@ -1,0 +1,81 @@
+{
+  "agentRunId": "cdbc433e-f36b-1410-815b-00373db4b724",
+  "status": "completed",
+  "competition": "nba",
+  "gameDate": "2026-05-07",
+  "groundedSignals": [
+    "rest_schedule",
+    "market"
+  ],
+  "missingSignals": [
+    "sharp_public"
+  ],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Degraded",
+      "note": "retrieve: 2 of 3 signals grounded for nba"
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": [
+        "Oklahoma City favored significantly by the market"
+      ],
+      "frame": "The Lakers visit the Thunder in an NBA matchup with equal rest.",
+      "aim": [
+        "market positioning",
+        "home court advantage"
+      ]
+    },
+    "interrogate": {
+      "balance": "The Lakers could perform well despite the spread, given their talent.",
+      "stress": "The large spread may not reflect potential competitive dynamics.",
+      "reframe": "The Lakers have shown resilience in tough matchups before."
+    },
+    "discern": {
+      "test": "The Lakers' performance could challenge the market's confidence.",
+      "listen": null,
+      "filter": "Market signals are strong, but team performance data is absent."
+    },
+    "decide": {
+      "calibrate": "The confidence level reflects the clear market favor and equal rest.",
+      "posture": "monitor",
+      "voice": "It's important to stay aware of any late-breaking news or performance trends."
+    }
+  },
+  "analyzerConfidence": 0.8,
+  "confidence": 0.7200000000000001,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The Lakers have the potential to exceed expectations despite the spread.",
+  "watchFor": "Any signs of the Lakers' competitive edge or injury updates.",
+  "whatWouldChangeTheRead": [
+    "Injury news affecting key players",
+    "Significant performance trends from recent games",
+    "Market adjustments indicating a shift in confidence"
+  ],
+  "summary": "The Oklahoma City Thunder are favored by 15.5 points, indicating strong market confidence. Both teams have equal rest, but the Thunder's home advantage may play a crucial role.",
+  "lean": "Edge toward Oklahoma City Thunder based on significant market favor."
+}
