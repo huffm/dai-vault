@@ -1,0 +1,81 @@
+{
+  "agentRunId": "d7bc433e-f36b-1410-815b-00373db4b724",
+  "status": "completed",
+  "competition": "nba",
+  "gameDate": "2026-05-07",
+  "groundedSignals": [
+    "rest_schedule",
+    "market"
+  ],
+  "missingSignals": [
+    "sharp_public"
+  ],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Degraded",
+      "note": "retrieve: 2 of 3 signals grounded for nba"
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": [
+        "Oklahoma City favored by a large spread",
+        "Both teams have equal rest"
+      ],
+      "frame": "The Lakers visit the Thunder, with Oklahoma City favored by 15.5 points.",
+      "aim": [
+        "market confidence",
+        "home court advantage"
+      ]
+    },
+    "interrogate": {
+      "balance": "The Lakers could outperform expectations despite the spread.",
+      "stress": "The key risk is the large spread indicating potential overconfidence.",
+      "reframe": "The Lakers may have hidden strengths that aren't reflected in the spread."
+    },
+    "discern": {
+      "test": "The Lakers could surprise with a strong performance.",
+      "listen": "The spread indicates significant market confidence in the Thunder.",
+      "filter": "Market confidence is strong, but Lakers' potential is uncertain."
+    },
+    "decide": {
+      "calibrate": "The confidence level reflects strong market favor and equal rest.",
+      "posture": "monitor",
+      "voice": "It's important to remain cautious given the large spread."
+    }
+  },
+  "analyzerConfidence": 0.8,
+  "confidence": 0.7200000000000001,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The Lakers could outperform expectations despite the spread being large.",
+  "watchFor": "Any significant lineup changes or injury updates.",
+  "whatWouldChangeTheRead": [
+    "A sudden injury to a key Thunder player",
+    "A notable shift in the betting line"
+  ],
+  "summary": "The Oklahoma City Thunder are heavily favored by the market, indicating strong confidence. Both teams have equal rest, but the Thunder's home advantage could be pivotal.",
+  "lean": "Edge toward Oklahoma City Thunder based on significant market favor."
+}

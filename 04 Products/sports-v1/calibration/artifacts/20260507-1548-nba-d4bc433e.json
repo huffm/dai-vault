@@ -1,0 +1,81 @@
+{
+  "agentRunId": "d4bc433e-f36b-1410-815b-00373db4b724",
+  "status": "completed",
+  "competition": "nba",
+  "gameDate": "2026-05-07",
+  "groundedSignals": [
+    "rest_schedule",
+    "market"
+  ],
+  "missingSignals": [
+    "sharp_public"
+  ],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Degraded",
+      "note": "retrieve: 2 of 3 signals grounded for nba"
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": [
+        "Pistons favored by the market",
+        "Both teams have equal rest"
+      ],
+      "frame": "Cleveland Cavaliers face Detroit Pistons with both teams having one day of rest.",
+      "aim": [
+        "market positioning",
+        "home court advantage"
+      ]
+    },
+    "interrogate": {
+      "balance": "The Cavaliers could leverage their away performance to challenge the lean.",
+      "stress": "The key risk is the Cavaliers' potential to outperform expectations.",
+      "reframe": "The Pistons' home court may not guarantee a decisive advantage."
+    },
+    "discern": {
+      "test": "The Cavaliers have shown resilience in previous matchups.",
+      "listen": "The market indicates a solid favor for the Pistons at -3.5.",
+      "filter": "Evidence of team performance is grounded, but specific player statuses are missing."
+    },
+    "decide": {
+      "calibrate": "The confidence level reflects the clear market favor and equal rest.",
+      "posture": "monitor",
+      "voice": "This read should be held with caution, acknowledging potential volatility."
+    }
+  },
+  "analyzerConfidence": 0.75,
+  "confidence": 0.675,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The Cavaliers' ability to perform well on the road could undermine the lean.",
+  "watchFor": "Any significant injury updates or lineup changes before the game.",
+  "whatWouldChangeTheRead": [
+    "Injury to a key player on the Pistons",
+    "Cavaliers showing strong pre-game performance indicators"
+  ],
+  "summary": "The market favors the Detroit Pistons by 3.5 points, indicating confidence in their home performance. Both teams are on equal rest, but the Pistons have the home court advantage.",
+  "lean": "Edge toward Detroit Pistons based on market favor and home court advantage."
+}

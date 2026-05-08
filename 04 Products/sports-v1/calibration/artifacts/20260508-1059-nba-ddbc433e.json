@@ -1,0 +1,81 @@
+{
+  "agentRunId": "ddbc433e-f36b-1410-815b-00373db4b724",
+  "status": "completed",
+  "competition": "nba",
+  "gameDate": "2026-05-08",
+  "groundedSignals": [
+    "rest_schedule",
+    "market"
+  ],
+  "missingSignals": [
+    "sharp_public"
+  ],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Degraded",
+      "note": "retrieve: 2 of 3 signals grounded for nba"
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": [
+        "Philadelphia favored by 1.5 points",
+        "Both teams have equal rest"
+      ],
+      "frame": "The Knicks visit the 76ers with both teams having one day of rest.",
+      "aim": [
+        "market confidence",
+        "home court advantage"
+      ]
+    },
+    "interrogate": {
+      "balance": "The Knicks could leverage their recent performance against the 76ers.",
+      "stress": "The key risk is the potential for an upset by the Knicks.",
+      "reframe": "The 76ers' home advantage may not fully counter the Knicks' competitive edge."
+    },
+    "discern": {
+      "test": "The Knicks have shown resilience in previous matchups.",
+      "listen": "The spread implies the market has a slight preference for the 76ers.",
+      "filter": "Market confidence is present, but no injury reports are available."
+    },
+    "decide": {
+      "calibrate": "The confidence level reflects the clear market lean and equal rest.",
+      "posture": "monitor",
+      "voice": "This read is based on current signals but should be observed for changes."
+    }
+  },
+  "analyzerConfidence": 0.75,
+  "confidence": 0.675,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The Knicks may exploit any weaknesses in the 76ers' defense.",
+  "watchFor": "Any significant player injury updates or lineup changes.",
+  "whatWouldChangeTheRead": [
+    "A major injury to a key player on the 76ers",
+    "A shift in market spread favoring the Knicks"
+  ],
+  "summary": "The Philadelphia 76ers are favored by 1.5 points, indicating market confidence in their performance. Both teams have equal rest, but the 76ers benefit from home court advantage.",
+  "lean": "Edge toward Philadelphia 76ers based on market favoring them slightly."
+}
