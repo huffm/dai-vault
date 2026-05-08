@@ -73,9 +73,22 @@ Calls `artifact.RecordRetrieve(output, status, note?)`.
 A degraded retrieve does not stop the run. The artifact's `Publishability` is downgraded to
 `PublishableWithCaveats`. The analyzer receives explicit no-data instructions and falls back gracefully.
 The evaluator dampens confidence according to grounded signal count.
-ActionNetworkClient uses the first `books_odds` entry with all four percentage fields populated.
+ActionNetworkClient uses the first odds entry with all four percentage fields populated.
 If the provider returns the same matchup with home and away flipped, the client preserves the requested
 home/away orientation and swaps the percentages to match.
+
+**Signal Source Review v1 + Signal Availability Diagnostics v1 (2026-05-08) findings:**
+Three schema bugs in `ActionNetworkClient` were identified and corrected:
+
+1. **Team names**: the real API uses `away_team_id`/`home_team_id` integers + a `teams[]` array with `full_name`. The client previously looked for `away_team`/`home_team` nested sub-objects. Team lookup now falls back to `TryGetTeamNamesFromArray` using the `teams` array.
+
+2. **Odds field name**: without the `bookIds` query parameter, `odds: []` always. Adding `?bookIds=15` causes the odds array to be populated with entries that include the percentage fields. The client URL now includes `&bookIds=15`.
+
+3. **Percentage field names**: the real field names are `spread_home_public`, `spread_away_public`, `spread_home_money`, `spread_away_money` — not `home_spread_pct`, `away_spread_pct`, `home_money_pct`, `away_money_pct` as originally assumed. The client now parses the correct field names.
+
+**Data availability by context**: percentage splits are populated for regular season NFL and NBA games. During NBA and NFL playoffs, these fields return null across all checked book IDs and dates. This is a provider limitation of the current endpoint, not a parsing issue. `sharp_public` will degrade gracefully (null → missing signal) during playoffs.
+
+`sharp_public` expected signals are correct and should remain as-is. The signal degrades gracefully (partial retrieval) without blocking the run. Confidence is dampened by the evaluator when grounded signal count is below max. During regular season play, `sharp_public` should now be grounded when betting volume is sufficient.
 
 ---
 

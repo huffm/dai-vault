@@ -170,6 +170,8 @@ The platform enforces additional guardrails in code:
 - `ArtifactQualityWarnings` is produced by exactly five deterministic quality rules and remains internal
 - missing phase fields fail safely to null — they do not fail the run
 
+**sharp_public signal availability note (2026-05-08):** Three schema bugs in `ActionNetworkClient` were fixed: (1) team name extraction now uses `away_team_id`/`home_team_id` + `teams[]` array; (2) URL now includes `&bookIds=15` which causes the odds array to be populated; (3) percentage field names corrected to `spread_home_public`, `spread_away_public`, `spread_home_money`, `spread_away_money`. Data is available for regular season NBA and NFL games. During NBA/NFL playoffs, percentage fields return null for all checked book IDs — this is a provider limitation, not a parsing issue. NBA expected signals remain as-is; partial retrieval (2 of 3) during playoffs is expected and degrades confidence correctly.
+
 ---
 
 ## deferred
