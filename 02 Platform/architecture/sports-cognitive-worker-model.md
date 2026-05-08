@@ -156,7 +156,11 @@ Each phase has hard boundaries. These apply to the model role — prompt design 
 | decide | let confidence exceed evidence, use hype language, call uncertain reads certain |
 | synthesize | invent evidence, introduce unsupported claims, hide uncertainty, override evidence quality |
 
-Prompt-level fabrication rule (cognitive prompt tightening v1): the model must not claim prior resilience, recent form, injuries, travel, player availability, or team trends unless they appear explicitly in the supplied context blocks. If a useful detail is missing, the model must say it is missing — not invent it.
+Prompt-level fabrication rule (cognitive prompt tightening v1.5): the model must not claim prior resilience, recent form, injuries, travel, player availability, team trends, hidden strengths, matchup history, or performance trends unless they appear explicitly in the supplied context blocks. If a useful detail is missing, the model must say it is missing — not invent it. If a field needs a counterpoint but no grounded counterpoint exists, name the limitation instead of inventing a team trait.
+
+Interrogate guardrails (v1.5): `balance` must cite a specific signal or state the missing-signal limitation explicitly; prohibited phrases include "could outperform", "has potential", "may surprise", "talent", "strong team", "recent performance". `stress` must name a concrete fragility (missing sharp_public, large spread cover risk, market-only lean, equal rest limiting schedule edge, or missing injury/lineup data). `reframe` must not mention hidden strengths, resilience, trends, form, travel, weather, injuries, or player availability without grounded context.
+
+Discern guardrails (v1.5): `test` must evaluate whether a market-only read stands alone when only market data is present. `filter` must name what is admitted, what is missing, and what should be discounted — if a signal category is absent, name it as missing.
 
 The platform enforces additional guardrails in code:
 - posture is validated against the allowed vocabulary and clamped to null on invalid values
