@@ -1,7 +1,7 @@
 # sports cognitive worker model
 
 **date:** 2026-05-07  
-**status:** implemented as cognitive artifact v1 for `sports.matchup.analysis`; signal availability diagnostics v1 (2026-05-09)
+**status:** implemented as cognitive artifact v1 for `sports.matchup.analysis`; signal availability diagnostics v1 (2026-05-09); signal quality model v1 (2026-05-09)
 
 ---
 
@@ -94,6 +94,8 @@ The API response and Angular UI receive only the compact delivery fields:
 `evidenceRichness` is nullable in the final .NET DTO. `null` means an older record or response predates the field. `0` means a current run completed with no grounded signals.
 
 Signal Availability Diagnostics v1 adds `SignalAvailability[]` in `OutputJson` and exposes it via the artifact inspection endpoint and `/dev/artifacts` Angular page. Each record carries `Signal`, `Status` (grounded / missing / not_attempted), `Source`, `Reason`, and optional `Detail`. `sharp_public` carries the specific `MissingReason` from `SharpPublicLookupResult` so the exact failure mode (null percentages, empty odds, no matching game, provider error) is visible per run. Other signals use grounded / unavailable based on null/non-null context. Not user-facing — internal diagnostics only.
+
+Signal Quality Model v1 extends `SignalAvailabilityRecord` with four deterministic quality fields computed by `SignalQualityEvaluator` inside `SportsRetrievalOutput`: `Quality` (strong / usable / unavailable), `DecisionUse` (the signal's role in the decision), `FollowUpSignals` (signals to check next), `ConfidenceEffect` (support / support_cautiously / dampen / block_aggressive_posture / neutral). `block_aggressive_posture` is the key safety signal: when `sharp_public` is missing, `ConfidenceEffect` = `block_aggressive_posture`, indicating aggressive postures are not warranted without confirmation. Market quality depends on `sharp_public` co-grounding — `strong` when both are present, `usable` with `directional_only_without_confirmation` when sharp is absent. Not user-facing. Exposed via `/dev/artifacts` (8-column Signal Availability table) and the calibration report PS1 (`signal_quality_blocks_aggressive_posture` flag).
 
 Artifact Quality v1 adds platform-owned `MissingSignals` and `ArtifactQualityWarnings` in `OutputJson`.
 These are deterministic internal quality-loop fields.

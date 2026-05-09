@@ -68,6 +68,8 @@ it is an unstructured string. there is no `sections[]`, no `brief_id`, no `deliv
 
 **artifact quality fields:** `MissingSignals` and `ArtifactQualityWarnings` are internal quality-loop fields stored in OutputJson. they are available through the artifact inspection endpoint below, not the normal `AgentRunResultDto`.
 
+**signal availability and quality fields:** `SignalAvailability` is stored in OutputJson as an array of `SignalAvailabilityRecord`. Each record carries: `Signal`, `Status` (grounded / missing / not_attempted), `Source`, `Reason`, `Detail`, `Quality` (strong / usable / unavailable), `DecisionUse`, `FollowUpSignals`, `ConfidenceEffect` (support / support_cautiously / dampen / block_aggressive_posture / neutral). Computed deterministically by `SignalQualityEvaluator` inside `SportsRetrievalOutput`. Not surfaced in `AgentRunResultDto`. Available via the artifact inspection endpoint and `/dev/artifacts`.
+
 ---
 
 ## database entity: AgentRunOutcome

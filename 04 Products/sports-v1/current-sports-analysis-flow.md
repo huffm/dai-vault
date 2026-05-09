@@ -1,7 +1,7 @@
 # current sports analysis flow
 
-Last updated: 2026-05-09 (signal availability diagnostics v1)
-Reflects code state after signal availability diagnostics implementation.
+Last updated: 2026-05-09 (signal quality model v1)
+Reflects code state after signal quality model v1 implementation.
 
 ---
 
@@ -31,7 +31,8 @@ nullable evidence richness.
 | `SportsRetrievalOutput` | SportsRetrievalOutput.cs | retrieve stage output; owns grounding + availability diagnostics |
 | `SharpPublicContext` | SportAnalysisContracts.cs | sharp vs public betting split from actionnetwork |
 | `SharpPublicLookupResult` | ActionNetworkClient.cs | wrapper around SharpPublicContext? with status + MissingReason |
-| `SignalAvailabilityRecord` | AgentRunContracts.cs | per-signal availability record; stored in OutputJson |
+| `SignalAvailabilityRecord` | AgentRunContracts.cs | per-signal availability + quality record; stored in OutputJson |
+| `SignalQualityEvaluator` | SignalQualityEvaluator.cs | deterministic signal quality rules; enriches availability records with quality, decision use, confidence effect, and follow-up signals |
 | `SportsCognitivePhases` | SportAnalysisContracts.cs / sports.py | internal 4-phase cognitive artifact stored in OutputJson |
 | `EvaluatorOutput` | EvaluatorOutput.cs | calibrated confidence from evaluate stage |
 | `AgentRunExecutionResult` | AgentRunContracts.cs | final artifact; serialized to OutputJson |
@@ -81,6 +82,9 @@ home/away orientation and swaps the percentages to match.
 
 **Signal Availability Diagnostics v1 (2026-05-09) implementation:**
 `ActionNetworkClient.GetSharpPublicDataAsync` now returns `SharpPublicLookupResult` instead of `SharpPublicContext?`. Every failure path carries a `Status` (`missing` or `not_attempted`) and a `MissingReason` string distinguishing: `no_matching_game`, `provider_returned_null_pct`, `provider_returned_empty_odds`, `unsupported_competition`, `provider_error`, `invalid_date`. `SportsRetrievalOutput` computes `SignalAvailability[]` from all signal retrieval outcomes — grounded signals use `status=grounded`; missing/not-attempted carry the detailed reason. `AgentRunExecutionResult` stores `SignalAvailability` in OutputJson. `GET /api/agent-runs/{id}/artifact` exposes it. The `/dev/artifacts` Angular page renders a Signal Availability table. The calibration report PS1 includes a Signal Availability section per matchup.
+
+**Signal Quality Model v1 (2026-05-09) implementation:**
+`SignalQualityEvaluator` is a new deterministic static class in `DevCore.Api/AgentRuns/`. It is called from within `SportsRetrievalOutput`'s constructor after all availability records are built. It enriches each `SignalAvailabilityRecord` with four quality fields: `Quality` (strong / usable / unavailable), `DecisionUse` (the role the signal plays in the decision), `FollowUpSignals` (signals to check next when this one is unavailable or needs confirmation), and `ConfidenceEffect` (the effect this signal's state has on posture aggressiveness: support / support_cautiously / dampen / block_aggressive_posture / neutral). Market quality depends on whether `sharp_public` is also grounded — `block_aggressive_posture` is assigned to `sharp_public` when missing, signaling that aggressive read postures are not warranted without confirmation. `SignalAvailabilityRecord` in `AgentRunContracts.cs` is extended with these four nullable fields. `SignalAvailabilityDto` in `agent-run.model.ts` carries them. The `/dev/artifacts` Angular table expands to 8 columns. The calibration report PS1 shows quality and confidence effect per signal and flags `signal_quality_blocks_aggressive_posture` in per-run assessment when any signal carries that effect.
 
 **Signal Source Review v1 + Signal Availability Diagnostics v1 (2026-05-08) findings:**
 Three schema bugs in `ActionNetworkClient` were identified and corrected:
