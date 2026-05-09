@@ -1,7 +1,7 @@
 # current sports analysis flow
 
-Last updated: 2026-05-08 (cognitive prompt tightening v1.5)
-Reflects code state after cognitive artifact prompt quality improvements.
+Last updated: 2026-05-09 (signal availability diagnostics v1)
+Reflects code state after signal availability diagnostics implementation.
 
 ---
 
@@ -28,8 +28,10 @@ nullable evidence richness.
 | `PipelineStepResult` | PipelineModels.cs | recorded outcome of one stage |
 | `PipelineStepStatus` | PipelineModels.cs | Succeeded / Degraded / Skipped / Failed |
 | `PublishabilityStatus` | PipelineModels.cs | Publishable / PublishableWithCaveats / NotPublishable |
-| `SportsRetrievalOutput` | SportsRetrievalOutput.cs | retrieve stage output; owned signal grounding |
+| `SportsRetrievalOutput` | SportsRetrievalOutput.cs | retrieve stage output; owns grounding + availability diagnostics |
 | `SharpPublicContext` | SportAnalysisContracts.cs | sharp vs public betting split from actionnetwork |
+| `SharpPublicLookupResult` | ActionNetworkClient.cs | wrapper around SharpPublicContext? with status + MissingReason |
+| `SignalAvailabilityRecord` | AgentRunContracts.cs | per-signal availability record; stored in OutputJson |
 | `SportsCognitivePhases` | SportAnalysisContracts.cs / sports.py | internal 4-phase cognitive artifact stored in OutputJson |
 | `EvaluatorOutput` | EvaluatorOutput.cs | calibrated confidence from evaluate stage |
 | `AgentRunExecutionResult` | AgentRunContracts.cs | final artifact; serialized to OutputJson |
@@ -76,6 +78,9 @@ The evaluator dampens confidence according to grounded signal count.
 ActionNetworkClient uses the first odds entry with all four percentage fields populated.
 If the provider returns the same matchup with home and away flipped, the client preserves the requested
 home/away orientation and swaps the percentages to match.
+
+**Signal Availability Diagnostics v1 (2026-05-09) implementation:**
+`ActionNetworkClient.GetSharpPublicDataAsync` now returns `SharpPublicLookupResult` instead of `SharpPublicContext?`. Every failure path carries a `Status` (`missing` or `not_attempted`) and a `MissingReason` string distinguishing: `no_matching_game`, `provider_returned_null_pct`, `provider_returned_empty_odds`, `unsupported_competition`, `provider_error`, `invalid_date`. `SportsRetrievalOutput` computes `SignalAvailability[]` from all signal retrieval outcomes — grounded signals use `status=grounded`; missing/not-attempted carry the detailed reason. `AgentRunExecutionResult` stores `SignalAvailability` in OutputJson. `GET /api/agent-runs/{id}/artifact` exposes it. The `/dev/artifacts` Angular page renders a Signal Availability table. The calibration report PS1 includes a Signal Availability section per matchup.
 
 **Signal Source Review v1 + Signal Availability Diagnostics v1 (2026-05-08) findings:**
 Three schema bugs in `ActionNetworkClient` were identified and corrected:
@@ -184,7 +189,10 @@ Calls `artifact.RecordCompose(result, Succeeded)`.
 `artifact.FinalResult` being non-null signals the pipeline completed successfully.
 `SportsComposer` passes the internal `CognitivePhases` object into OutputJson and maps only the compact
 deliver-layer fields to the final response DTO. `EvidenceRichness` is set from
-`retrieval.GroundedSignals.Length`, not from the model.
+`retrieval.GroundedSignals.Length`, not from the model. `SignalAvailability` is now passed from
+`retrieval.SignalAvailability` into `AgentRunExecutionResult` and persisted in OutputJson.
+It is exposed via `GET /api/agent-runs/{id}/artifact` and rendered on the `/dev/artifacts` page.
+It is not surfaced in `AgentRunResultDto` or the normal user-facing sports card.
 
 ---
 

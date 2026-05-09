@@ -1,7 +1,7 @@
 # sports cognitive worker model
 
 **date:** 2026-05-07  
-**status:** implemented as cognitive artifact v1 for `sports.matchup.analysis`
+**status:** implemented as cognitive artifact v1 for `sports.matchup.analysis`; signal availability diagnostics v1 (2026-05-09)
 
 ---
 
@@ -92,6 +92,8 @@ The API response and Angular UI receive only the compact delivery fields:
 | `evidence_richness` / `evidenceRichness` | .NET `retrieval.GroundedSignals.Length` | diagnostic only |
 
 `evidenceRichness` is nullable in the final .NET DTO. `null` means an older record or response predates the field. `0` means a current run completed with no grounded signals.
+
+Signal Availability Diagnostics v1 adds `SignalAvailability[]` in `OutputJson` and exposes it via the artifact inspection endpoint and `/dev/artifacts` Angular page. Each record carries `Signal`, `Status` (grounded / missing / not_attempted), `Source`, `Reason`, and optional `Detail`. `sharp_public` carries the specific `MissingReason` from `SharpPublicLookupResult` so the exact failure mode (null percentages, empty odds, no matching game, provider error) is visible per run. Other signals use grounded / unavailable based on null/non-null context. Not user-facing — internal diagnostics only.
 
 Artifact Quality v1 adds platform-owned `MissingSignals` and `ArtifactQualityWarnings` in `OutputJson`.
 These are deterministic internal quality-loop fields.
