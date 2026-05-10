@@ -70,6 +70,8 @@ it is an unstructured string. there is no `sections[]`, no `brief_id`, no `deliv
 
 **signal availability and quality fields:** `SignalAvailability` is stored in OutputJson as an array of `SignalAvailabilityRecord`. Each record carries: `Signal`, `Status` (grounded / missing / not_attempted), `Source`, `Reason`, `Detail`, `Quality` (strong / usable / unavailable), `DecisionUse`, `FollowUpSignals`, `ConfidenceEffect` (support / support_cautiously / dampen / block_aggressive_posture / neutral). Computed deterministically by `SignalQualityEvaluator` inside `SportsRetrievalOutput`. Not surfaced in `AgentRunResultDto`. Available via the artifact inspection endpoint and `/dev/artifacts`.
 
+**signal follow-up diagnostics (2026-05-10):** `SignalFollowUps` is stored in OutputJson as an array of `SignalFollowUpRecord`. One record per (parent signal, follow-up signal) pair. Each record carries: `TriggeredBy`, `Signal`, `Status` (grounded / missing / unavailable / not_implemented / candidate), `Source`, `Reason` (already_grounded / future_signal_candidate / provider_unavailable / primary_signal_missing / proxy_candidate / not_required), `DecisionUse` (proxy_candidate / confirmation_candidate / already_available / missing_confirmation / not_usable / directional_context), `Detail`. Computed deterministically by `SignalFollowUpEvaluator` inside `SportsRetrievalOutput` immediately after `SignalQualityEvaluator`. Not surfaced in `AgentRunResultDto`. Available via the artifact inspection endpoint and `/dev/artifacts`. `line_movement` is currently `not_implemented` (no backup provider added in this slice; no outcome reconciliation added in this slice).
+
 ---
 
 ## database entity: AgentRunOutcome

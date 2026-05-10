@@ -1,7 +1,7 @@
 # sports cognitive worker model
 
 **date:** 2026-05-07  
-**status:** implemented as cognitive artifact v1 for `sports.matchup.analysis`; signal availability diagnostics v1 (2026-05-09); signal quality model v1 (2026-05-09)
+**status:** implemented as cognitive artifact v1 for `sports.matchup.analysis`; signal availability diagnostics v1 (2026-05-09); signal quality model v1 (2026-05-09); signal follow-up diagnostics v1 (2026-05-10) — each follow-up signal name attached to a `SignalAvailabilityRecord` is now resolved deterministically by `SignalFollowUpEvaluator` to a status (grounded / missing / unavailable / not_implemented / candidate) plus reason and decision-use guidance; `line_movement` is currently `not_implemented` and prepares for a future `Line Movement Proxy v1` slice; no backup provider was added; no outcome reconciliation was added
 
 ---
 
