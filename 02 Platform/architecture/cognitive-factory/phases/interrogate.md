@@ -81,3 +81,15 @@ When calibration finds these, the fix lands in the interrogate prompt block, the
 ## generalization beyond sports
 
 In other niches, interrogate is the same responsibility expressed differently. For a stock entry decision: balance might cite a missing earnings catalyst; stress might name liquidity risk; reframe might offer a sector-rotation explanation. The doctrine is identical. The forbidden vocabulary and concrete-fragility examples differ.
+
+---
+
+## boundary with discern on the fallback ladder
+
+Interrogate **names candidates**. Discern **grades them**.
+
+When a primary signal is missing, interrogate identifies which signals could conceivably fill the gap. Today this is implemented by `SignalAvailabilityRecord.FollowUpSignals` — a plain list of signal names attached to each availability record by `SignalQualityEvaluator`.
+
+Interrogate must not classify those candidates against the Sharp/Public Fallback Ladder. That grading is discern's responsibility. Interrogate's contribution is honest naming: "here is what could be looked at next." Discern then decides whether the candidate is `exact_recovery`, `source_substitution`, `fidelity_downgrade`, `adjacent_proxy`, `lateral_proxy`, or `unavailable_with_reason`.
+
+See `../signal-fallback-ladder.md`.

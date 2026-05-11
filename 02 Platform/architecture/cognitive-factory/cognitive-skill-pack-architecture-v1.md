@@ -201,4 +201,5 @@ The pattern proves itself in sports first. Niche generalization happens after th
 - `orchestration.md` — current four-step pipeline and confidence ownership.
 - `current-sports-analysis-flow.md` — end-to-end request path and storage.
 - `current-agent-run-contract.md` — db entities, API contracts, signal availability fields.
+- `signal-fallback-ladder.md` — first concrete extension of v1: ladder vocabulary, invariants, and concrete classifications.
 - `dai/.claude/skills/dai-signal-follow-up-diagnostics/SKILL.md` — the first concrete skill pack.

@@ -106,3 +106,20 @@ See `dai/.claude/skills/dai-signal-follow-up-diagnostics/SKILL.md`.
 ## generalization beyond sports
 
 For crypto: discern judges on-chain signal freshness, sharp-wallet activity, and market regime. For stocks: discern judges fundamental versus narrative signals. The vocabularies and evaluators differ. The doctrine is the same: discern owns evidence quality and follow-up routing.
+
+---
+
+## sharp/public fallback ladder v1
+
+Discern now owns explicit fallback equivalence classification. When a follow-up signal is recommended in place of a missing primary, discern grades the candidate against a six-tier ladder:
+
+1. `exact_recovery` (same signal, same source — retry / normalize)
+2. `source_substitution` (same signal, alternate source)
+3. `fidelity_downgrade` (same concept, lower fidelity)
+4. `adjacent_proxy` (different signal, same dimension)
+5. `lateral_proxy` (signal from a different dimension)
+6. `unavailable_with_reason` (no fallback present)
+
+The ladder is implemented by `SignalFollowUpEvaluator` and emitted on `SignalFollowUpRecord` as `FallbackType`, `Equivalence`, `ConfidencePermission`, and `PosturePermission`. The full table, invariants, and concrete classifications live in `../signal-fallback-ladder.md`.
+
+Key rule: **a lateral proxy never lifts confidence**, and only `exact_recovery` or `source_substitution` may permit `aggressive_allowed_if_corroborated`. This is the rule that prevents `line_movement` from being treated as a substitute for missing `sharp_public`.

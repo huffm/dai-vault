@@ -91,3 +91,18 @@ When calibration finds these, the fix lands in `SportsEvaluator` clamps, the dec
 ## generalization beyond sports
 
 The posture vocabulary is niche-specific. The decide doctrine is not. For stocks, postures might be `enter`, `accumulate`, `hold`, `trim`, `exit`. For kalshi, `take`, `pass`, `monitor`. The owning code (calibration clamp, enum validator) stays platform-shaped; the vocabulary lives in niche config.
+
+---
+
+## sharp/public fallback ladder v1 (downstream impact)
+
+Discern now emits two new permissions per follow-up record:
+
+- `ConfidencePermission` — the most this fallback may contribute to final confidence (`confidence_preserved`, `confidence_mostly_preserved`, `confidence_dampened`, `confidence_conservative`, `confidence_reduced`).
+- `PosturePermission` — the strongest posture this fallback may permit (`aggressive_allowed`, `aggressive_allowed_if_corroborated`, `aggressive_blocked`).
+
+Decide must respect these. If any active fallback emits `aggressive_blocked`, `play` is not a valid posture for the run. If every relevant fallback emits `confidence_conservative` or `confidence_reduced`, decide must not produce a high-band confidence value.
+
+**This wiring is observational in v1.** The ladder fields are persisted on the artifact but `SportsEvaluator` has not yet been adapted to consume them — it still uses the existing grounded-count and confidence-effect clamps. Wiring `ConfidencePermission` into the calibration path is a future slice that should be scoped against outcome data. Until that slice lands, decide reads the ladder via the Claude Code diagnostics skill, not via deterministic code enforcement.
+
+See `../signal-fallback-ladder.md`.
