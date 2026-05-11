@@ -405,3 +405,21 @@ these concepts appear in vault docs but are not implemented in this path today:
 - college baseball support
 - outcome tracking or calibration tuning from real results
 - delivery, scheduling, billing, or tier enforcement
+
+---
+
+## next architectural layer: cognitive skill pack architecture v1
+
+The pipeline above (retrieve → analyze → evaluate → quality_check → compose) is being given a
+phase ownership name layer: perceive → interrogate → discern → decide → synthesize. Existing
+code names stay. The phase vocabulary names responsibility independently of implementation
+so future calibration findings land in the right place.
+
+The first concrete Claude Code skill pack — `dai-signal-follow-up-diagnostics` — reads the
+artifact inspection surface and calibration reports to produce a structured diagnosis of signal
+coverage gaps. It maps to the **discern** phase.
+
+See:
+- `cognitive-factory/cognitive-skill-pack-architecture-v1.md`
+- `cognitive-factory/phases/discern.md`
+- `dai/.claude/skills/dai-signal-follow-up-diagnostics/SKILL.md`

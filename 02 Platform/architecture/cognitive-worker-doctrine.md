@@ -396,3 +396,23 @@ It is for builder learning, debugging, and quality review, not the main user-fac
 The conceptual artifact template, full phase attribution in separate SQL columns, and vector memory layers are target doctrine — not yet implemented.
 
 See `sports-cognitive-worker-model.md` for the sports-specific pipeline detail.
+
+---
+
+## cognitive skill pack architecture v1
+
+The phase ownership defined above is being layered into a versioned skill pack model.
+Two tracks share the same shape but have different runtime status:
+
+- **Claude Code skill packs** — development-time helpers under `dai/.claude/skills/`. Zero runtime dependency.
+- **DAI runtime worker packs** — production worker definitions that encode how each phase performs inside an agent run.
+
+The platform must not depend on Claude Code skills at runtime. The first concrete pack is `dai-signal-follow-up-diagnostics`, which lives in the **discern** phase.
+
+See:
+- `cognitive-factory/cognitive-skill-pack-architecture-v1.md`
+- `cognitive-factory/phases/perceive.md`
+- `cognitive-factory/phases/interrogate.md`
+- `cognitive-factory/phases/discern.md`
+- `cognitive-factory/phases/decide.md`
+- `cognitive-factory/phases/synthesize.md`

@@ -187,3 +187,20 @@ The platform enforces additional guardrails in code:
 - a multi-agent deliberation workflow
 - richer evidence sources for injury, weather, travel, or line movement
 - confidence calibration against historical outcomes
+
+---
+
+## cognitive skill pack architecture v1
+
+The cognitive phase model in this doc maps directly onto Cognitive Skill Pack Architecture v1.
+Each phase has a per-phase doc under `cognitive-factory/phases/` that names its responsibilities,
+must-nots, inputs, outputs, guardrails, and calibration hooks.
+
+The first concrete Claude Code skill pack is `dai-signal-follow-up-diagnostics`. It lives in the
+**discern** phase and reads existing artifact and calibration data to produce a structured diagnosis.
+It does not modify retrieval, scoring, posture, or composition code.
+
+See:
+- `cognitive-factory/cognitive-skill-pack-architecture-v1.md`
+- `cognitive-factory/phases/discern.md`
+- `dai/.claude/skills/dai-signal-follow-up-diagnostics/SKILL.md`
