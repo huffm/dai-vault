@@ -281,6 +281,22 @@ It is stored in `OutputJson` only. Angular receives the compact delivery fields 
 
 As of the v2 artifact slice (2026-05-14), `SportsComposer` also stamps `ArtifactVersion = "sports_decision_artifact_v2"` on the persisted `AgentRunExecutionResult` and produces a canonical `CognitiveProtocol` block alongside `CognitivePhases`. The canonical shape is built deterministically from the legacy phases by `CognitiveProtocolBuilder.FromLegacy`; the FastAPI wire contract is unchanged. v1 records (no `ArtifactVersion`, no `CognitiveProtocol`) continue to load and project through the legacy fallback path on the artifact inspection endpoint.
 
+### dev artifact review surface (2026-05-14)
+
+`/dev/artifacts` now renders the canonical Cognitive Protocol Runtime output. The page reads the artifact endpoint and resolves the protocol block in this order:
+
+1. `cognitiveProtocol` (persisted v2 canonical shape) — preferred when present.
+2. `protocolView` (per-request projection) — fallback when only the projection is available, including v1 records.
+3. neither present — every micro-action card displays "Not recorded".
+
+A small badge on the section header tells reviewers which source is active: "Canonical Artifact", "View Projection", or "Not Recorded". The Artifact Version stat in the Run Overview shows `v2 sports_decision_artifact` for new runs and `v1 (legacy)` for older runs that predate the v2 slice.
+
+The new Cognitive Protocol section renders five cards in canonical order: Perceive (Detect, Frame, Aim), Interrogate (Question, Probe, Verify), Discern (Weigh, Contrast, Stress), Decide (Resolve, Position, Justify), and Synthesize (Integrate, Compose, Deliver). Probe stays blank ("Not recorded") because no runtime source emits it yet.
+
+Discern.Stress is the only multi-source field. When projection source is canonical, the page shows a single "Canonical Stress" row. When source is the view projection of a v1 record, both legacy slots are shown as labeled rows — "Legacy Interrogate Stress" and "Legacy Discern Test" — with no concatenation. This preserves the slice 4 doctrine rule for calibration reviewers.
+
+The existing legacy Cognitive Phases section stays in place for now, labeled as a compatibility view. The main Matchup Analyzer output is unchanged. The new section is hidden behind the existing `/dev/artifacts` dev route and is not exposed on customer-facing pages.
+
 ### FastAPI: `services/agent-service/`
 
 - `app/routes/sports.py`

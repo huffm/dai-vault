@@ -81,3 +81,25 @@ Until then, `CognitiveProtocol` is the authoritative source and `CognitivePhases
 - Phase B continuation: dual-emit prompt update — teach the analyze prompt to emit canonical field names without removing legacy ones. Requires FastAPI + .NET lockstep.
 - Probe runtime source: surface `SignalFollowUpRecord[]` into `Interrogate.Probe` so the canonical Probe is non-null when the platform has investigation candidates.
 - Quality check migration: update `SportsQualityChecker` to read canonical sources for `CounterCase` / `WatchFor` derivation before the legacy fields are removed.
+
+## addendum: dev artifact surface (2026-05-14)
+
+`/dev/artifacts` in `apps/sports-app` now renders the canonical Cognitive Protocol Runtime output in a new "Cognitive Protocol" section. The page:
+
+- Shows an Artifact Version stat in the Run Overview. `v2 sports_decision_artifact` for new runs, `v1 (legacy)` for older runs.
+- Prefers persisted `cognitiveProtocol` when present (v2 records).
+- Falls back to the per-request `protocolView` projection when only the projection is available (v1 records).
+- Displays "Not recorded" on every micro-action when both shapes are absent.
+- Shows a source badge — "Canonical Artifact", "View Projection", or "Not Recorded" — so reviewers know which path produced the rendered block.
+- Renders the five canonical cards: Perceive, Interrogate, Discern, Decide, Synthesize.
+- For Discern.Stress: renders a single "Canonical Stress" row when canonical, or two labeled rows ("Legacy Interrogate Stress", "Legacy Discern Test") for v1 records. No concatenation.
+- Leaves the legacy "Cognitive Phases" section in place as a labeled compatibility view.
+- Does not change the customer-facing Matchup Analyzer output.
+
+Backend, FastAPI, and database are unchanged in this surface slice. Only the dev review page and its TypeScript types were touched.
+
+Affected files:
+
+- `dai/apps/sports-app/src/app/core/models/agent-run.model.ts` — new TS types: `CognitiveProtocolDto`, `CognitiveProtocolViewDto`, plus nested per-protocol types; `AgentRunArtifactDto` gains optional `artifactVersion`, `cognitiveProtocol`, `protocolView`.
+- `dai/apps/sports-app/src/app/dev-artifact-review/dev-artifact-review.component.ts` — view-model builder (`protocolBlocks`), source resolution logic, multi-source Stress handling, artifact version label.
+- `dai/apps/sports-app/src/app/dev-artifact-review/dev-artifact-review.component.html` — Artifact Version stat in Run Overview; new Cognitive Protocol section with source badge.
