@@ -178,6 +178,38 @@ The platform enforces additional guardrails in code:
 
 ---
 
+## canonical CognitiveProtocol persistence (2026-05-14)
+
+Runs produced after the v2 artifact slice persist a canonical `CognitiveProtocol` block in `OutputJson` alongside the legacy `CognitivePhases`. The `OutputJson` shape now also carries `ArtifactVersion`, set to `"sports_decision_artifact_v2"` on new runs and null on older runs.
+
+| field | type | semantics |
+|---|---|---|
+| `ArtifactVersion` | `string?` | `"sports_decision_artifact_v2"` on v2 runs; null on pre-slice records (treated as v1) |
+| `CognitiveProtocol` | `CognitiveProtocol?` | canonical shape; null on v1 records and on analyze-failure runs without `CognitivePhases` |
+| `CognitivePhases` | `SportsCognitivePhases?` | legacy shape; remains until a later cleanup slice |
+
+The canonical shape is produced deterministically at compose time by `CognitiveProtocolBuilder.FromLegacy(SportsCognitivePhases?)`. It is not produced by FastAPI and does not require a prompt change. Canonical and legacy stay semantically aligned because both derive from the same single analyzer call.
+
+```text
+CognitiveProtocol {
+  Perceive    { Detect?, Frame?, Aim? }
+  Interrogate { Question?, Probe?, Verify? }
+  Discern     { Weigh?, Contrast?, Stress? }
+  Decide      { Resolve?, Position?, Justify? }
+  Synthesize  { Integrate?, Compose?, Deliver? }
+}
+```
+
+Doctrine rules carried by the canonical shape:
+
+- `Perceive.Detect` and `Perceive.Aim` are scalars in the canonical shape. The builder joins legacy arrays with `"; "`. The projection layer splits on the same separator when reconstructing the view's array form, so v2 records round-trip cleanly.
+- `Interrogate.Probe` has no runtime source today. It is null on every v2 record produced by this slice. Future slices may populate it.
+- `Discern.Stress` is single-source. The builder prefers legacy `interrogate.stress` and falls back to legacy `discern.test` only when the first is null. There is no concatenation. Calibration reviewers can still see both legacy sources side-by-side on the `ProtocolView` projection.
+- `Decide.Position` preserves the validated posture string exactly (`play`, `pass`, `monitor`, `wait`, `compare`, `avoid`). Position is decision posture, not a pick. The UI label remains `Read Stance`.
+- `Synthesize` carries short informational descriptions of platform operations. It is not simulated cognition. The three slots map to `SportsComposer`'s integrate/compose/deliver responsibilities and are deterministic.
+
+The artifact inspection endpoint (`GET /api/agent-runs/{id}/artifact`) surfaces `ArtifactVersion`, `CognitiveProtocol`, and a `ProtocolView` projection. `ProtocolView` prefers `CognitiveProtocol` when present and falls back to legacy `CognitivePhases` when absent. The user-facing `AgentRunResultDto` is unchanged.
+
 ## cognitive protocol runtime mapping (2026-05-14)
 
 The platform doctrine now names the Cognitive Protocol Runtime as the canonical model. The sports implementation remains as documented above. The mapping below translates the current sports cognitive worker vocabulary into the canonical protocol vocabulary so calibration reviews and future code slices land on the right surface.

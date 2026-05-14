@@ -34,7 +34,7 @@ migration added: `20260311223224_AddAgentRuns`
 
 ### what OutputJson currently contains
 
-OutputJson is written as the raw serialized `AgentRunExecutionResult`:
+OutputJson is written as the raw serialized `AgentRunExecutionResult`. Runs produced after the v2 artifact slice (2026-05-14) include `ArtifactVersion` and a canonical `CognitiveProtocol` alongside the legacy `CognitivePhases`:
 
 ```json
 {
@@ -56,7 +56,15 @@ OutputJson is written as the raw serialized `AgentRunExecutionResult`:
   "WatchFor": "The condition that would weaken the read...",
   "WhatWouldChangeTheRead": ["late injury status change", "market move against the read"],
   "EvidenceRichness": 2,
-  "ArtifactQualityWarnings": []
+  "ArtifactQualityWarnings": [],
+  "ArtifactVersion": "sports_decision_artifact_v2",
+  "CognitiveProtocol": {
+    "Perceive":    { "Detect": "...", "Frame": "...", "Aim": "..." },
+    "Interrogate": { "Question": "...", "Probe": null, "Verify": "..." },
+    "Discern":     { "Weigh": "...", "Contrast": "...", "Stress": "..." },
+    "Decide":      { "Resolve": "...", "Position": "monitor", "Justify": "..." },
+    "Synthesize":  { "Integrate": "platform operation: ...", "Compose": "platform operation: ...", "Deliver": "platform operation: ..." }
+  }
 }
 ```
 
@@ -64,7 +72,15 @@ it is an unstructured string. there is no `sections[]`, no `brief_id`, no `deliv
 
 **lean field:** optional (`string? / null`). present when the model successfully emits a directional signal. absent (null) when the model does not include it or the value is empty. stored as-is in OutputJson and returned in the response DTO.
 
-**cognitive artifact fields:** `cognitivePhases` is the internal 4-phase artifact from FastAPI and is stored in OutputJson only. `posture`, `counterCase`, `watchFor`, `whatWouldChangeTheRead`, and `evidenceRichness` are compact delivery fields that can be returned in `AgentRunResultDto`. `evidenceRichness` is nullable: null means an older record predates the field, while 0 means the current retriever found no grounded signals.
+**cognitive artifact fields:** `cognitivePhases` is the legacy 4-phase artifact from FastAPI and is stored in OutputJson only. `posture`, `counterCase`, `watchFor`, `whatWouldChangeTheRead`, and `evidenceRichness` are compact delivery fields that can be returned in `AgentRunResultDto`. `evidenceRichness` is nullable: null means an older record predates the field, while 0 means the current retriever found no grounded signals.
+
+**artifactVersion (2026-05-14):** optional (`string? / null`). null on records persisted before the v2 slice (treat as v1 — legacy `CognitivePhases` only). `"sports_decision_artifact_v2"` on records persisted after the slice. the constant lives in `ArtifactVersions.SportsDecisionArtifactV2` in `DevCore.Api/AgentRuns/CognitiveProtocol.cs`. v2 records carry both `CognitivePhases` and `CognitiveProtocol`. there is no migration script; older rows keep the v1 shape and continue to deserialize.
+
+**cognitiveProtocol (2026-05-14):** optional canonical Cognitive Protocol Runtime shape produced deterministically by `CognitiveProtocolBuilder.FromLegacy(SportsCognitivePhases?)` at compose time. null on v1 records and on analyze-failure runs without `CognitivePhases`. canonical and legacy stay semantically aligned because both derive from the same single analyzer call. canonical scalars for `Perceive.Detect` and `Perceive.Aim` are produced by joining legacy arrays with `"; "`. canonical `Discern.Stress` is single-source: legacy `interrogate.stress` is preferred, falling back to legacy `discern.test` only when the first is null. there is no concatenation across stress sources. `Decide.Position` preserves the validated posture string (`play`, `pass`, `monitor`, `wait`, `compare`, `avoid`) exactly. `Synthesize` carries short informational descriptions of platform operations; it is not simulated cognition. `Interrogate.Probe` is null today because no runtime source emits it.
+
+**read-side projection:** the artifact inspection endpoint (`GET /api/agent-runs/{id}/artifact`) exposes both `ArtifactVersion` and `CognitiveProtocol` directly, plus a `ProtocolView` projection. `ProtocolView` prefers `CognitiveProtocol` when present and falls back to legacy `CognitivePhases` when absent. v1 records continue to project through the legacy fallback path with no changes for consumers.
+
+**future removal path:** legacy `CognitivePhases` remains in the persisted artifact as transitional compatibility structure. removal happens in a later slice after (1) the analyze prompt is updated to emit canonical names directly, (2) FastAPI Pydantic models and the .NET `SportsCognitivePhases` records are renamed in lockstep, and (3) historical v1 records have either been migrated or aged out for the relevant calibration windows. until then, `CognitiveProtocol` is the authoritative source and `CognitivePhases` is a compatibility alias.
 
 **artifact quality fields:** `MissingSignals` and `ArtifactQualityWarnings` are internal quality-loop fields stored in OutputJson. they are available through the artifact inspection endpoint below, not the normal `AgentRunResultDto`.
 

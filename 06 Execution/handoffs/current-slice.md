@@ -1,0 +1,83 @@
+# current slice
+
+**slice:** cognitive protocol runtime — artifact contract migration (slice 4)
+**status:** shipped 2026-05-14
+**repos touched:** `dai` (.NET backend, tests); `dai-vault` (this doc, contract doc, sports cognitive worker model, sports flow)
+
+## what shipped
+
+The first runtime-side slice of the Cognitive Protocol Runtime migration. New sports runs persist a canonical `CognitiveProtocol` block alongside the legacy `CognitivePhases`. The persisted `AgentRunExecutionResult` now carries an explicit `ArtifactVersion`.
+
+- canonical contract: `dai/platform/dotnet/DevCore.Api/AgentRuns/CognitiveProtocol.cs`
+  - records: `CognitiveProtocol`, `PerceiveProtocol`, `InterrogateProtocol`, `DiscernProtocol`, `DecideProtocol`, `SynthesizeProtocol`
+  - constants: `ArtifactVersions.SportsDecisionArtifactV2 = "sports_decision_artifact_v2"`
+- deterministic builder: `dai/platform/dotnet/DevCore.Api/AgentRuns/CognitiveProtocolBuilder.cs`
+  - `CognitiveProtocolBuilder.FromLegacy(SportsCognitivePhases?)` produces the canonical shape from the legacy phases at compose time
+- compose wiring: `dai/platform/dotnet/DevCore.Api/AgentRuns/SportsComposer.cs`
+  - success path stamps `ArtifactVersion` and populates `CognitiveProtocol`
+  - failure path stamps `ArtifactVersion` and leaves `CognitiveProtocol` null
+- read-side projection updated: `dai/platform/dotnet/DevCore.Api/AgentRuns/ProtocolVocabularyMapper.cs`
+  - prefers persisted `CognitiveProtocol` when present (v2)
+  - falls back to legacy `CognitivePhases` when absent (v1)
+- DTO surface: `dai/platform/dotnet/DevCore.Api/AgentRuns/AgentRunContracts.cs`
+  - `AgentRunExecutionResult` gains optional `ArtifactVersion` and `CognitiveProtocol`
+  - `AgentRunArtifactDto` surfaces both on `GET /api/agent-runs/{id}/artifact`
+- view: `dai/platform/dotnet/DevCore.Api/AgentRuns/CognitiveProtocolView.cs`
+  - `DiscernStressProtocolView` gains optional `Canonical` slot for canonical-sourced stress
+- tests: 24 new tests added (197 total passing)
+  - `CognitiveProtocolBuilderTests.cs` covers the legacy → canonical builder rules
+  - `ProtocolVocabularyMapperTests.cs` covers canonical-source preference, legacy fallback, and round-trip
+  - `SportsComposerTests.cs` covers v2 stamping on success and failure paths and v1 deserialization
+  - `AgentRunsControllerTests.cs` covers the artifact endpoint for both v1 and v2 records
+
+## doctrine carried by this slice
+
+- canonical protocol names are now authoritative on persisted artifacts. legacy names remain compatibility aliases only.
+- Retrieve is platform plumbing, not a cognitive micro-action.
+- `Interrogate.Probe` has no runtime source yet and is null on every v2 record. future slices may populate it.
+- `Discern.Stress` is single-source by canonical contract. the builder prefers legacy `interrogate.stress` and falls back to legacy `discern.test` only when the first is null. no concatenation.
+- `Decide.Position` preserves the validated posture string exactly. position is decision posture, not a pick.
+- `Synthesize` is platform-operational, not simulated cognition.
+
+## transitional compatibility model
+
+The migration is dual-emit. While both shapes are present:
+
+- new runs persist both `CognitivePhases` and `CognitiveProtocol`. They stay semantically aligned because they derive from the same single analyzer call.
+- old runs (no `ArtifactVersion`, no `CognitiveProtocol`) continue to deserialize and project through the legacy fallback.
+- the artifact inspection endpoint surfaces both shapes plus a `ProtocolView` projection. `ProtocolView` prefers canonical when present.
+- the user-facing `AgentRunResultDto` is unchanged. Angular consumers are unaffected.
+- there is no database migration, no schema change, no historical row rewrite, no calibration report rewrite.
+
+## artifactVersion semantics
+
+- `null` on `OutputJson` records: treat as v1. Legacy `CognitivePhases` only. Projection uses the legacy fallback path.
+- `"sports_decision_artifact_v2"`: canonical `CognitiveProtocol` is present and authoritative. Legacy `CognitivePhases` is present for compatibility.
+- the constant lives in `DevCore.Api.AgentRuns.ArtifactVersions.SportsDecisionArtifactV2`.
+
+## what this slice did not touch
+
+- `dai/services/agent-service/` (FastAPI Pydantic models, analyze prompt body, route handler)
+- `DevCore.AiClient/SportAnalysisContracts.cs` (the wire contract for `SportsAnalysisResponse.Phases`)
+- `SportsRunArtifact`, `SportsAnalyzer`, `SportsEvaluator`, `SportsQualityChecker` (and the pipeline stage order)
+- Angular sports app or `/dev/artifacts` page
+- database schema and migrations
+- calibration reports under `dai-vault/04 Products/sports-v1/calibration/`
+
+## future removal path for CognitivePhases
+
+Removal lands in a later slice after the following:
+
+1. Update the analyze prompt in `sports_analyzer.py` so the model emits canonical micro-action names directly.
+2. Rename the FastAPI Pydantic models in `app/models/sports.py` and the .NET `SportsCognitivePhases` records in `DevCore.AiClient/SportAnalysisContracts.cs` in lockstep.
+3. Adjust `SportsQualityChecker` rules that read legacy field-derived `CounterCase` / `WatchFor` to read canonical sources.
+4. Confirm historical v1 records have either been migrated or aged out for the relevant calibration windows.
+5. Drop `CognitivePhases` from `AgentRunExecutionResult` and the contract docs.
+
+Until then, `CognitiveProtocol` is the authoritative source and `CognitivePhases` is a compatibility alias.
+
+## next slice candidates
+
+- Phase B continuation: dual-emit prompt update — teach the analyze prompt to emit canonical field names without removing legacy ones. Requires FastAPI + .NET lockstep.
+- Probe runtime source: surface `SignalFollowUpRecord[]` into `Interrogate.Probe` so the canonical Probe is non-null when the platform has investigation candidates.
+- Quality check migration: update `SportsQualityChecker` to read canonical sources for `CounterCase` / `WatchFor` derivation before the legacy fields are removed.

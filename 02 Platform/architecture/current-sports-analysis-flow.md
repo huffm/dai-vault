@@ -279,6 +279,8 @@ SportsAnalysisResponse {
 It is stored in `OutputJson` only. Angular receives the compact delivery fields and labels posture as
 `Read Stance`.
 
+As of the v2 artifact slice (2026-05-14), `SportsComposer` also stamps `ArtifactVersion = "sports_decision_artifact_v2"` on the persisted `AgentRunExecutionResult` and produces a canonical `CognitiveProtocol` block alongside `CognitivePhases`. The canonical shape is built deterministically from the legacy phases by `CognitiveProtocolBuilder.FromLegacy`; the FastAPI wire contract is unchanged. v1 records (no `ArtifactVersion`, no `CognitiveProtocol`) continue to load and project through the legacy fallback path on the artifact inspection endpoint.
+
 ### FastAPI: `services/agent-service/`
 
 - `app/routes/sports.py`
@@ -335,7 +337,7 @@ college baseball is not seeded. it is only represented in the visible competitio
 | RunType | `"sports.matchup.analysis"` |
 | Status | `"completed"` |
 | InputJson | `{"competition":"ncaaf","homeTeam":"...","awayTeam":"...","gameDate":"..."}` |
-| OutputJson | includes `Lean`, `Summary`, calibrated `Confidence`, `Factors`, `GroundedSignals`, `AnalyzerConfidence`, `Publishability`, `DegradationNotes`, `PipelineSteps`, `CognitivePhases`, `Posture`, `CounterCase`, `WatchFor`, `WhatWouldChangeTheRead`, `EvidenceRichness` |
+| OutputJson | includes `Lean`, `Summary`, calibrated `Confidence`, `Factors`, `GroundedSignals`, `AnalyzerConfidence`, `Publishability`, `DegradationNotes`, `PipelineSteps`, `CognitivePhases`, `Posture`, `CounterCase`, `WatchFor`, `WhatWouldChangeTheRead`, `EvidenceRichness`, `ArtifactVersion`, `CognitiveProtocol` (v2 records) |
 | Competition | denormalized from input, e.g. `"ncaaf"` |
 | GameDate | denormalized from input as `date` column |
 | Outcome | null until the learning loop back-fills it |
