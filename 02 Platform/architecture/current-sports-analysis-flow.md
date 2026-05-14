@@ -291,7 +291,9 @@ As of the v2 artifact slice (2026-05-14), `SportsComposer` also stamps `Artifact
 
 A small badge on the section header tells reviewers which source is active: "Canonical Artifact", "View Projection", or "Not Recorded". The Artifact Version stat in the Run Overview shows `v2 sports_decision_artifact` for new runs and `v1 (legacy)` for older runs that predate the v2 slice.
 
-The new Cognitive Protocol section renders five cards in canonical order: Perceive (Detect, Frame, Aim), Interrogate (Question, Probe, Verify), Discern (Weigh, Contrast, Stress), Decide (Resolve, Position, Justify), and Synthesize (Integrate, Compose, Deliver). Probe stays blank ("Not recorded") because no runtime source emits it yet.
+The new Cognitive Protocol section renders five cards in canonical order: Perceive (Detect, Frame, Aim), Interrogate (Question, Probe, Verify), Discern (Weigh, Contrast, Stress), Decide (Resolve, Position, Justify), and Synthesize (Integrate, Compose, Deliver).
+
+As of Probe Population v1 (2026-05-14), `Interrogate.Probe` is populated deterministically at compose time by `CognitiveProtocolBuilder.BuildProbe` from `SignalFollowUpRecord[]`. each missing primary signal identified by the follow-up evaluator is mapped through a doctrinal template into one sentence; sentences are deduplicated, ordered by canonical signal name, and joined with a single space. signals without a template (or with permanently `not_implemented` status like `line_movement`) are silently dropped so the probe does not fabricate injury, form, travel, or unsupported market claims. when no missing primary matches a template, Probe stays null and the dev artifact page continues to render "Not recorded". no model call.
 
 Discern.Stress is the only multi-source field. When projection source is canonical, the page shows a single "Canonical Stress" row. When source is the view projection of a v1 record, both legacy slots are shown as labeled rows — "Legacy Interrogate Stress" and "Legacy Discern Test" — with no concatenation. This preserves the slice 4 doctrine rule for calibration reviewers.
 

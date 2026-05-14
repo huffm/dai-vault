@@ -72,7 +72,7 @@ Current implementations under `OutputJson.CognitivePhases`, FastAPI Pydantic mod
 | `interrogate.balance` | Interrogate.Question | the strongest counter-case against the lean is the canonical Question output |
 | `interrogate.stress` | Discern.Stress | Stress moves to Discern in the canonical model; legacy emissions stay under interrogate until a future code slice |
 | `interrogate.reframe` | Interrogate.Verify | an alternate explanation tested against staged evidence is the canonical Verify output |
-| (none today) | Interrogate.Probe | Probe is new; today the platform performs follow-up investigation via `SignalFollowUpEvaluator` rather than an interrogate micro-action |
+| `SignalFollowUpRecord[]` (post-2026-05-14, Probe Population v1) | Interrogate.Probe | populated deterministically by `CognitiveProtocolBuilder.BuildProbe` from existing follow-up data. each missing primary signal identified via `Reason = "primary_signal_missing"`, `DecisionUse = "missing_confirmation"`, or `FallbackType = "lateral_proxy"` is mapped through a doctrinal template (one templated sentence per signal). signals without a template are dropped to avoid fabricating injury, form, or travel claims. line_movement is excluded because it is permanently not_implemented. Probe stays null when no template matches. no model call. |
 
 ### Discern
 

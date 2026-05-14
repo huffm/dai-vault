@@ -82,6 +82,40 @@ Until then, `CognitiveProtocol` is the authoritative source and `CognitivePhases
 - Probe runtime source: surface `SignalFollowUpRecord[]` into `Interrogate.Probe` so the canonical Probe is non-null when the platform has investigation candidates.
 - Quality check migration: update `SportsQualityChecker` to read canonical sources for `CounterCase` / `WatchFor` derivation before the legacy fields are removed.
 
+## addendum: Probe Population v1 (2026-05-14)
+
+`Interrogate.Probe` is now populated deterministically at compose time from existing signal follow-up data. No LLM call. No FastAPI change. No prompt change. No database migration.
+
+- new overload: `CognitiveProtocolBuilder.FromLegacy(SportsCognitivePhases?, SignalFollowUpRecord[]?)`. The single-arg overload (`FromLegacy(phases)`) is preserved and keeps Probe null.
+- new helper: `CognitiveProtocolBuilder.BuildProbe(SignalFollowUpRecord[]?)` is the pure deterministic probe builder.
+- `SportsComposer.Compose` calls the two-arg overload with `retrieval.SignalFollowUps`.
+- failure path unchanged: `ComposeFailedRun` keeps `CognitiveProtocol` null, so Probe stays null on failure.
+
+### gap detection
+
+A follow-up record marks a missing primary when any of the following holds:
+
+- `Reason == "primary_signal_missing"` -> `Signal` is the missing primary
+- `DecisionUse == "missing_confirmation"` -> `Signal` is the missing primary
+- `FallbackType == "lateral_proxy"` -> `TriggeredBy` is the missing primary (the proxy is filling for it)
+
+Missing primaries are deduplicated and ordered by `StringComparer.Ordinal`.
+
+### doctrinal probe templates
+
+| missing signal | probe sentence |
+|---|---|
+| `sharp_public` | Sharp/public signal missing; market read relies on price movement only. |
+| `market` | Market signal missing; directional read should rely on schedule and situational context. |
+| `rest_schedule` | Rest edge is unclear; schedule signal should be treated as neutral. |
+| `starting_pitching` | Starting pitching unavailable; lean should not depend on starter advantage. |
+
+Signals without a template are silently dropped so the probe never fabricates injury, form, travel, or unsupported claims. `line_movement` is deliberately excluded because it is permanently `not_implemented` and would add noise on every run.
+
+### dev artifact surface impact
+
+`/dev/artifacts` already pass-through `cognitiveProtocol.interrogate.probe` from the artifact endpoint, so Probe now renders as a one or two sentence summary on v2 runs with real gaps and as "Not recorded" otherwise. No Angular change was needed.
+
 ## addendum: dev artifact surface (2026-05-14)
 
 `/dev/artifacts` in `apps/sports-app` now renders the canonical Cognitive Protocol Runtime output in a new "Cognitive Protocol" section. The page:
