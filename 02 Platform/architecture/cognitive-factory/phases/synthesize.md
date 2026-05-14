@@ -1,7 +1,23 @@
 # phase: synthesize
 
-**date:** 2026-05-11
+**date:** 2026-05-11 (updated 2026-05-14)
 **status:** v1 doctrine — synthesize is fully platform-owned today (no model call).
+
+---
+
+## cognitive protocol runtime alignment (2026-05-14)
+
+Synthesize is the final artifact layer of the Cognitive Protocol Runtime. It is not counted as a fifth macro protocol and does not contribute to the 12 cognitive micro-actions.
+
+Synthesize keeps Integrate, Compose, and Deliver as internal synthesis operations. These are platform operations, not cognitive micro-actions.
+
+| operation | responsibility |
+|---|---|
+| Integrate | combine validated material from prior protocols without adding new claims |
+| Compose | assemble the final decision artifact shape |
+| Deliver | return the consumable result and persist the full artifact |
+
+In the current implementation Synthesize is deterministic code owned by `SportsComposer`. It does not call a model. The mapping to the conceptual `Manifest` layer in earlier vault language is preserved below.
 
 ---
 

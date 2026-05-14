@@ -1,7 +1,40 @@
 # phase: interrogate
 
-**date:** 2026-05-11
+**date:** 2026-05-11 (updated 2026-05-14)
 **status:** v1 doctrine — implemented today as a prompt block inside the single FastAPI model call.
+
+---
+
+## cognitive protocol runtime alignment (2026-05-14)
+
+Interrogate is the second macro protocol of the Cognitive Protocol Runtime. Its three canonical micro-actions are:
+
+| canonical micro-action | responsibility |
+|---|---|
+| Question | name the strongest open question or counter-case against the emerging read |
+| Probe | targeted investigation of signal gaps, evidence needs, source follow-ups, or tool-backed questions |
+| Verify | confirm or reject claims by checking them against staged evidence and platform guardrails |
+
+### why Probe and not Retrieve
+
+An earlier proposal made Retrieve a cognitive micro-action under Interrogate. That collided with the existing platform retrieval surface (`SportsRetriever`, `RetrieveAsync`, `SportsRunArtifact.RecordRetrieve`, and the `retrieve` pipeline step label).
+
+Probe replaces it. Probe is a cognitive action that may request platform retrieval through allowed tools, but it is not retrieval itself. Retrieval remains deterministic platform work owned by the retriever surfaces. See `../protocol-vocabulary-map.md` for the full mapping and `../../decisions/0004-cognitive-protocol-runtime.md` for the naming decision.
+
+### legacy field mapping
+
+Today the analyze prompt emits `interrogate.balance`, `interrogate.stress`, and `interrogate.reframe`. The canonical mapping is:
+
+| legacy field | canonical micro-action |
+|---|---|
+| `interrogate.balance` | Interrogate.Question |
+| `interrogate.stress` | Discern.Stress (moves protocols in the canonical model) |
+| `interrogate.reframe` | Interrogate.Verify |
+| (none today) | Interrogate.Probe |
+
+`interrogate.stress` stays where it is in code and persisted runs. A future code slice will move it to Discern. Persisted `OutputJson` records and calibration reports written before that slice keep the legacy location.
+
+Probe has no current field. Platform-side follow-up investigation today is performed deterministically by `SignalFollowUpEvaluator`. A future slice may introduce a model-emitted Probe field for cases where the model itself should request a tool-backed follow-up.
 
 ---
 

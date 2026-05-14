@@ -1,7 +1,33 @@
 # cognitive worker doctrine
 
-**date:** 2026-05-01
+**date:** 2026-05-01 (updated 2026-05-14)
 **status:** foundational platform doctrine — applies to all niche assembly lines
+
+---
+
+## cognitive protocol runtime alignment (2026-05-14)
+
+DAI is now framed as a Cognitive Protocol Runtime. Deterministic platform code moves a shared decision artifact through four macro cognitive protocols, each composed of three micro-actions, followed by a final Synthesize layer.
+
+| macro protocol | canonical micro-actions |
+|---|---|
+| Perceive | Detect, Frame, Aim |
+| Interrogate | Question, Probe, Verify |
+| Discern | Weigh, Contrast, Stress |
+| Decide | Resolve, Position, Justify |
+| Synthesize (final layer) | Integrate, Compose, Deliver (operations, not cognitive micro-actions) |
+
+This is doctrine. Current runtime code uses legacy field names inside `OutputJson.CognitivePhases` and inside the analyze prompt body. The translation between the canonical names and the legacy names is in `cognitive-factory/protocol-vocabulary-map.md`. The full runtime spec is in `cognitive-factory/cognitive-protocol-runtime.md`. The naming decisions are recorded in `decisions/0004-cognitive-protocol-runtime.md`.
+
+Key naming points carried by this doctrine:
+
+- Retrieve is not a cognitive micro-action. It stays a platform and pipeline concept.
+- Interrogate.Probe replaces the earlier proposed Interrogate.Retrieve.
+- Stress lives under Discern in the canonical model. `interrogate.stress` in current code is legacy.
+- Decide.Position replaces Decide.Choose. Position is decision posture, not a pick.
+- Synthesize is the final artifact layer and is not counted as a fifth macro protocol.
+
+The phase ownership sections later in this document keep the existing implementation-side vocabulary for clarity. They are not retracted by the canonical model; they describe what the code does today and what each protocol owns conceptually.
 
 ---
 

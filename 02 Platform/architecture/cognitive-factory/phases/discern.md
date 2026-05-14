@@ -1,7 +1,43 @@
 # phase: discern
 
-**date:** 2026-05-11
+**date:** 2026-05-11 (updated 2026-05-14)
 **status:** v1 doctrine — discern is the most code-heavy phase today. signal quality and follow-up diagnostics already live in dedicated evaluators.
+
+---
+
+## cognitive protocol runtime alignment (2026-05-14)
+
+Discern is the third macro protocol of the Cognitive Protocol Runtime. Its three canonical micro-actions are:
+
+| canonical micro-action | responsibility |
+|---|---|
+| Weigh | grade signals by quality and decision use |
+| Contrast | interpret alignment or divergence between signals (market, sharp/public, situational) |
+| Stress | name the fragility, key risk, or condition under which the read fails |
+
+### why Stress belongs here
+
+Stress testing operates on weighed evidence, not on raw initial impressions. The canonical home for Stress is therefore Discern. The current implementation emits Stress under `interrogate.stress`; that is legacy vocabulary.
+
+Until a future code slice moves the field, two readings are both correct:
+
+- in code, persisted runs, and analyze prompt blocks: Stress lives inside Interrogate
+- in doctrine and the canonical protocol model: Stress lives inside Discern
+
+See `../protocol-vocabulary-map.md` for the full legacy mapping.
+
+### legacy field mapping
+
+Today the analyze prompt emits `discern.test`, `discern.listen`, and `discern.filter`. The deterministic surface is `SignalQualityEvaluator`, `SignalFollowUpEvaluator`, and `SportsEvaluator`. The canonical mapping is:
+
+| legacy field or surface | canonical micro-action |
+|---|---|
+| `discern.test` | Discern.Stress (also receives the legacy `interrogate.stress`) |
+| `discern.listen` | Discern.Contrast |
+| `discern.filter` | Discern.Weigh (qualitative side) |
+| `SignalQualityEvaluator` outputs | Discern.Weigh (deterministic side) |
+
+`SignalQualityEvaluator.Quality`, `DecisionUse`, `FollowUpSignals`, and `ConfidenceEffect` remain the platform-owned deterministic surface of Discern.Weigh. They do not change in this slice.
 
 ---
 

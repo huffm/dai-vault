@@ -1,7 +1,23 @@
 # phase: perceive
 
-**date:** 2026-05-11
+**date:** 2026-05-11 (updated 2026-05-14)
 **status:** v1 doctrine — sports pipeline is the first concrete instance.
+
+---
+
+## cognitive protocol runtime alignment (2026-05-14)
+
+Perceive is the first macro protocol of the Cognitive Protocol Runtime. Its three canonical micro-actions are:
+
+| canonical micro-action | responsibility |
+|---|---|
+| Detect | identify available signals, anomalies, and missing context |
+| Frame | state the factual context for the decision |
+| Aim | name the factors that matter most |
+
+Field names in the current implementation (`perceive.detect`, `perceive.frame`, `perceive.aim`) already match the canonical micro-action names. No rename is needed for Perceive. See `../protocol-vocabulary-map.md` for the full legacy-to-canonical map.
+
+Retrieve remains a deterministic platform and pipeline concept owned by the retriever surfaces and tool calls. It is not a cognitive micro-action under Perceive or any other protocol.
 
 ---
 

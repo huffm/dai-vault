@@ -178,6 +178,45 @@ The platform enforces additional guardrails in code:
 
 ---
 
+## cognitive protocol runtime mapping (2026-05-14)
+
+The platform doctrine now names the Cognitive Protocol Runtime as the canonical model. The sports implementation remains as documented above. The mapping below translates the current sports cognitive worker vocabulary into the canonical protocol vocabulary so calibration reviews and future code slices land on the right surface.
+
+Code, prompt blocks, Pydantic models, `CognitivePhases` JSON, and persisted `OutputJson` records use the legacy names. This section does not claim any code has been renamed.
+
+| current sports field or surface | canonical protocol micro-action |
+|---|---|
+| `perceive.detect` | Perceive.Detect |
+| `perceive.frame` | Perceive.Frame |
+| `perceive.aim` | Perceive.Aim |
+| `SportsRetriever`, `SportsRetrievalOutput`, `retrieve` pipeline step | platform retrieval (not a cognitive micro-action) |
+| `interrogate.balance` | Interrogate.Question |
+| `interrogate.stress` | Discern.Stress (moves protocols in the canonical model; field stays where it is until a future code slice) |
+| `interrogate.reframe` | Interrogate.Verify |
+| `SignalFollowUpEvaluator` and follow-up signal records | platform support for Interrogate.Probe (Probe itself has no model-emitted field today) |
+| `discern.test` | Discern.Stress |
+| `discern.listen` | Discern.Contrast |
+| `discern.filter` | Discern.Weigh (qualitative side) |
+| `SignalQualityEvaluator` outputs | Discern.Weigh (deterministic side) |
+| `decide.calibrate` | Decide.Justify |
+| `decide.posture` (enum unchanged, UI label `Read Stance`) | Decide.Position |
+| `decide.voice` | Decide.Resolve |
+| `SportsComposer.Compose` | Synthesize.Compose |
+| `AgentRunResultDto` mapping and persistence | Synthesize.Deliver |
+| integration of validated phase material into `AgentRunExecutionResult` | Synthesize.Integrate |
+
+Naming notes carried by this map:
+
+- Retrieve is not a cognitive micro-action. It stays a platform and pipeline concept.
+- Interrogate.Probe replaces the earlier proposed Interrogate.Retrieve.
+- Stress lives under Discern in the canonical model. The current `interrogate.stress` field is legacy.
+- Decide.Position replaces Decide.Choose. Position names a decision posture, not a pick.
+- Synthesize is the final artifact layer and is not counted as a fifth macro protocol.
+
+See `cognitive-factory/cognitive-protocol-runtime.md`, `cognitive-factory/protocol-vocabulary-map.md`, and `../decisions/0004-cognitive-protocol-runtime.md`.
+
+---
+
 ## deferred
 
 - exposing the nested 4-phase artifact directly in Angular

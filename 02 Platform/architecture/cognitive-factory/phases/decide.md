@@ -1,7 +1,37 @@
 # phase: decide
 
-**date:** 2026-05-11
+**date:** 2026-05-11 (updated 2026-05-14)
 **status:** v1 doctrine — decide is partially model-owned (posture, voice) and partially platform-owned (final confidence calibration).
+
+---
+
+## cognitive protocol runtime alignment (2026-05-14)
+
+Decide is the fourth macro protocol of the Cognitive Protocol Runtime. Its three canonical micro-actions are:
+
+| canonical micro-action | responsibility |
+|---|---|
+| Resolve | reconcile the weighed evidence into a single direction or non-direction |
+| Position | set the decision posture from the niche posture vocabulary |
+| Justify | one-sentence calibration rationale for why the stated confidence fits the evidence |
+
+### Position is decision posture, not a pick
+
+Position is the canonical word. It names the decision posture the platform supports, drawn from the niche posture vocabulary. In sports today that vocabulary is `play`, `pass`, `monitor`, `wait`, `compare`, `avoid`. The UI label remains `Read Stance`. Position must never be labeled `Pick`, must never read as a lock, and must never become a recommendation to act.
+
+An earlier proposal made Decide.Choose the canonical name. That is rejected. Any future code that introduces a `Choose` field is a regression against decision 0004.
+
+### legacy field mapping
+
+Today the analyze prompt emits `decide.calibrate`, `decide.posture`, and `decide.voice`. The canonical mapping is:
+
+| legacy field | canonical micro-action |
+|---|---|
+| `decide.calibrate` | Decide.Justify |
+| `decide.posture` | Decide.Position |
+| `decide.voice` | Decide.Resolve |
+
+The posture enum, the FastAPI clamp, the `SportsEvaluator` confidence calibration, and the `Read Stance` UI label are unchanged. See `../protocol-vocabulary-map.md` for the full map.
 
 ---
 

@@ -1,8 +1,20 @@
 # cognitive skill pack architecture v1
 
-**date:** 2026-05-11
+**date:** 2026-05-11 (updated 2026-05-14)
 **status:** v1 — foundation slice. defines the doctrine and the first concrete skill pack. broader runtime worker-pack rollout is deferred.
 **owns:** the cognitive factory layer of DAI — phase ownership, dual-track skill pack model (build vs runtime), calibration feedback loop.
+
+---
+
+## runtime authority vs build-time aids (2026-05-14)
+
+The Cognitive Protocol Runtime is product architecture. The four macro protocols (Perceive, Interrogate, Discern, Decide) and the final Synthesize layer are runtime concepts owned by the platform. Their canonical micro-actions are defined in `cognitive-protocol-runtime.md` and the vocabulary map.
+
+Claude Code skill packs under `dai/.claude/skills/` are development-side aids. They help the human and the assistant build, audit, and diagnose DAI faster. They do not run inside an agent run. They have no runtime authority over the artifact, the prompt, or the calibration loop.
+
+Skill packs should align with the canonical protocol vocabulary so that diagnoses land on the right protocol. They must not be confused with runtime authority. If a Claude Code skill emits a recommendation, the platform applies it only as a deliberate code slice. The skill never edits production behavior on its own.
+
+DAI runtime worker packs (target shape, not yet built) are production code and config. They are the runtime instantiation of a protocol or micro-action. They run with no Claude Code present.
 
 ---
 
