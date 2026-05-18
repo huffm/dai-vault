@@ -155,3 +155,21 @@ Dev tooling to reconcile the 2026-05-18 cognitive protocol calibration batch aga
   - `2026-05-18-cognitive-protocol-outcome-reconciliation.md`
 
 status: harness built and dry-run verified 2026-05-18 (8 runs, 0 completed, 8 pending; final-game derivation self-tested with synthetic scores). live reconciliation runs after 2026-05-20 once NBA (05-18, 05-19) and MLB (05-18) games are final and the results input is filled with actual scores. confidence calibration remains blocked on this reconciliation evidence — see the calibration export note.
+
+## addendum: Cognitive Protocol Node Specs v1 (2026-05-18)
+
+Doctrine slice. Vault docs only — no runtime code touched.
+
+- new doc: `dai-vault/02 Platform/architecture/cognitive-factory/protocol-node-specs.md`
+  - operational node spec for all 15 cognitive nodes (Perceive/Interrogate/Discern/Decide + Synthesize, three micro-actions each)
+  - each node defines 11 facets: purpose, fields read, fields written, allowed tools, allowed scripts/reflexes, model-call rule, signal dependencies, quality checks, fallback, sports overlay, forbidden behavior
+  - sits below `cognitive-protocol-runtime.md` (names the nodes) and `protocol-vocabulary-map.md` (legacy↔canonical) as the contract a future code slice implements against
+- doctrine reinforced by this doc:
+  - Retrieve is platform plumbing, not a node; Perceive consumes retrieval output
+  - Probe is deterministic (`CognitiveProtocolBuilder.BuildProbe` from `SignalFollowUpRecord[]`), no model call
+  - the Synthesize trio is deterministic (`SportsComposer`), no model call
+  - models never choose their own tools, write scope, or data access — fields and tools are fixed per node
+  - confidence value and band are deterministic (`SportsEvaluator`); the model owns rationale text, not numbers or the posture enum
+- open question carried forward: NCAAW (women's college basketball) is not a platform competition — no `CompetitionCatalog` entry, no teams, no retriever — so no node overlay exists for it. Decide whether to add the competition or drop it from cognitive scope.
+
+status: node specs defined 2026-05-18. they give the stable target that the Phase B canonical prompt/contract rename was waiting on.
