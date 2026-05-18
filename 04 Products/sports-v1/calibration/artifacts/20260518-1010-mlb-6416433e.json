@@ -1,0 +1,158 @@
+{
+  "agentRunId": "6416433e-f36b-1410-815c-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-05-18",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": [
+        "JR Ritchie is starting for the Braves.",
+        "Max Meyer is starting for the Marlins."
+      ],
+      "frame": "The Braves face the Marlins in Miami with both starters confirmed.",
+      "aim": [
+        "starting pitching advantage",
+        "lineup matchups"
+      ]
+    },
+    "interrogate": {
+      "balance": "The Marlins could benefit from home field advantage, which is notable.",
+      "stress": "The performance of both starters is uncertain due to lack of recent data.",
+      "reframe": "The handedness of the pitchers may not significantly impact the lineups."
+    },
+    "discern": {
+      "test": "The read on starting pitching needs further confirmation from lineup performance.",
+      "listen": "Market confidence may be reflected in the line movement leading up to the game.",
+      "filter": "Starting pitching signals are present, but recent form data is missing."
+    },
+    "decide": {
+      "calibrate": "The confidence level reflects the clear starting pitching advantage for the Braves.",
+      "posture": "monitor",
+      "voice": "This read is based on available starting pitcher information without overestimating certainty."
+    }
+  },
+  "analyzerConfidence": 0.7,
+  "confidence": 0.7,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The Marlins' home field could provide a competitive edge, but it's not strong enough to outweigh the starting pitching advantage.",
+  "watchFor": "Any updates on the performance of the starting pitchers before the game.",
+  "whatWouldChangeTheRead": [
+    "Injury updates to key lineup players",
+    "Significant changes in starting pitcher performance",
+    "Market movement indicating a shift in confidence"
+  ],
+  "summary": "The Braves have a potential edge with JR Ritchie on the mound, while Max Meyer will be making his start for the Marlins. The handedness of both pitchers could influence lineup matchups.",
+  "lean": "Edge toward Braves based on starting pitching advantage.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "JR Ritchie is starting for the Braves.",
+        "Max Meyer is starting for the Marlins."
+      ],
+      "frame": "The Braves face the Marlins in Miami with both starters confirmed.",
+      "aim": [
+        "starting pitching advantage",
+        "lineup matchups"
+      ]
+    },
+    "interrogate": {
+      "question": "The Marlins could benefit from home field advantage, which is notable.",
+      "probe": null,
+      "verify": "The handedness of the pitchers may not significantly impact the lineups."
+    },
+    "discern": {
+      "weigh": "Starting pitching signals are present, but recent form data is missing.",
+      "contrast": "Market confidence may be reflected in the line movement leading up to the game.",
+      "stress": {
+        "legacyInterrogateStress": null,
+        "legacyDiscernTest": null,
+        "canonical": "The performance of both starters is uncertain due to lack of recent data."
+      }
+    },
+    "decide": {
+      "resolve": "This read is based on available starting pitcher information without overestimating certainty.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the clear starting pitching advantage for the Braves."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v2",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "JR Ritchie is starting for the Braves.; Max Meyer is starting for the Marlins.",
+      "frame": "The Braves face the Marlins in Miami with both starters confirmed.",
+      "aim": "starting pitching advantage; lineup matchups"
+    },
+    "interrogate": {
+      "question": "The Marlins could benefit from home field advantage, which is notable.",
+      "probe": null,
+      "verify": "The handedness of the pitchers may not significantly impact the lineups."
+    },
+    "discern": {
+      "weigh": "Starting pitching signals are present, but recent form data is missing.",
+      "contrast": "Market confidence may be reflected in the line movement leading up to the game.",
+      "stress": "The performance of both starters is uncertain due to lack of recent data."
+    },
+    "decide": {
+      "resolve": "This read is based on available starting pitcher information without overestimating certainty.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the clear starting pitching advantage for the Braves."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}

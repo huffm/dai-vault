@@ -1,0 +1,157 @@
+{
+  "agentRunId": "7b16433e-f36b-1410-815c-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-05-18",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": [
+        "Yankees have a left-handed starter",
+        "Blue Jays face a lefty starter"
+      ],
+      "frame": "The Yankees host the Blue Jays with Weathers and Corbin starting.",
+      "aim": [
+        "starting pitching advantage",
+        "lineup matchups"
+      ]
+    },
+    "interrogate": {
+      "balance": "The Blue Jays may have a strong lineup against lefties, countering Weathers.",
+      "stress": "The absence of recent performance data creates uncertainty.",
+      "reframe": "Corbin's experience against left-handed hitters could mitigate Weathers' advantage."
+    },
+    "discern": {
+      "test": "The read could change if Corbin performs better than expected.",
+      "listen": "Market confidence may shift based on starting pitcher performance leading up to the game.",
+      "filter": "Starting pitching is confirmed, but recent form data is missing."
+    },
+    "decide": {
+      "calibrate": "Confidence is moderate due to the clear starting pitching signal.",
+      "posture": "monitor",
+      "voice": "Hold this read cautiously, as performance can vary."
+    }
+  },
+  "analyzerConfidence": 0.7,
+  "confidence": 0.7,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The Blue Jays could exploit Corbin's weaknesses against lefties, making the matchup closer.",
+  "watchFor": "Any last-minute changes to the starting pitchers or lineup adjustments.",
+  "whatWouldChangeTheRead": [
+    "Corbin shows strong recent form",
+    "Weathers struggles in warm-up games"
+  ],
+  "summary": "The Yankees have a starting pitching advantage with Ryan Weathers facing Patrick Corbin. This could impact the effectiveness of both lineups, especially considering handedness matchups.",
+  "lean": "Edge toward Yankees based on starting pitching advantage.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Yankees have a left-handed starter",
+        "Blue Jays face a lefty starter"
+      ],
+      "frame": "The Yankees host the Blue Jays with Weathers and Corbin starting.",
+      "aim": [
+        "starting pitching advantage",
+        "lineup matchups"
+      ]
+    },
+    "interrogate": {
+      "question": "The Blue Jays may have a strong lineup against lefties, countering Weathers.",
+      "probe": null,
+      "verify": "Corbin's experience against left-handed hitters could mitigate Weathers' advantage."
+    },
+    "discern": {
+      "weigh": "Starting pitching is confirmed, but recent form data is missing.",
+      "contrast": "Market confidence may shift based on starting pitcher performance leading up to the game.",
+      "stress": {
+        "legacyInterrogateStress": null,
+        "legacyDiscernTest": null,
+        "canonical": "The absence of recent performance data creates uncertainty."
+      }
+    },
+    "decide": {
+      "resolve": "Hold this read cautiously, as performance can vary.",
+      "position": "monitor",
+      "justify": "Confidence is moderate due to the clear starting pitching signal."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v2",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Yankees have a left-handed starter; Blue Jays face a lefty starter",
+      "frame": "The Yankees host the Blue Jays with Weathers and Corbin starting.",
+      "aim": "starting pitching advantage; lineup matchups"
+    },
+    "interrogate": {
+      "question": "The Blue Jays may have a strong lineup against lefties, countering Weathers.",
+      "probe": null,
+      "verify": "Corbin's experience against left-handed hitters could mitigate Weathers' advantage."
+    },
+    "discern": {
+      "weigh": "Starting pitching is confirmed, but recent form data is missing.",
+      "contrast": "Market confidence may shift based on starting pitcher performance leading up to the game.",
+      "stress": "The absence of recent performance data creates uncertainty."
+    },
+    "decide": {
+      "resolve": "Hold this read cautiously, as performance can vary.",
+      "position": "monitor",
+      "justify": "Confidence is moderate due to the clear starting pitching signal."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}

@@ -1,0 +1,241 @@
+{
+  "agentRunId": "5816433e-f36b-1410-815c-00373db4b724",
+  "status": "completed",
+  "competition": "nba",
+  "gameDate": "2026-05-18",
+  "groundedSignals": [
+    "rest_schedule",
+    "market"
+  ],
+  "missingSignals": [
+    "sharp_public"
+  ],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Degraded",
+      "note": "retrieve: 2 of 3 signals grounded for nba"
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": [
+        "Oklahoma City is favored by 6.5 points.",
+        "Thunder have 6 days of rest."
+      ],
+      "frame": "The Spurs face the Thunder in Oklahoma City with a spread of -6.5.",
+      "aim": [
+        "Market confidence in Thunder",
+        "Rest advantage for Thunder"
+      ]
+    },
+    "interrogate": {
+      "balance": "Sharp/public data is missing, so this is a market-only lean.",
+      "stress": "The Spurs' recent performance could challenge this lean.",
+      "reframe": "The Thunder's rest advantage may enhance their performance."
+    },
+    "discern": {
+      "test": "The lean relies solely on market confidence without additional signals.",
+      "listen": "The spread suggests strong market confidence in the Thunder.",
+      "filter": "Sharp/public data is missing; only market signals are present."
+    },
+    "decide": {
+      "calibrate": "The confidence level reflects a clear market signal and rest advantage.",
+      "posture": "monitor",
+      "voice": "This read is grounded in market favor and rest context."
+    }
+  },
+  "analyzerConfidence": 0.8,
+  "confidence": 0.7200000000000001,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The Spurs' recent performance could undermine the Thunder's advantage. Without sharp/public data, the lean is less certain.",
+  "watchFor": "Any significant line movement or injury updates before the game.",
+  "whatWouldChangeTheRead": [
+    "A major injury to a key player for the Thunder",
+    "A shift in the spread indicating more confidence in the Spurs"
+  ],
+  "summary": "The Oklahoma City Thunder are favored by 6.5 points, indicating market confidence. They have a significant rest advantage with 6 days off compared to the Spurs' 2 days.",
+  "lean": "Edge toward Oklahoma City Thunder based on market favoring them at -6.5.",
+  "signalAvailability": [
+    {
+      "signal": "rest_schedule",
+      "status": "grounded",
+      "source": "espn",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "directional_only_without_confirmation",
+      "followUpSignals": [
+        "sharp_public",
+        "line_movement"
+      ],
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "provider_returned_empty_odds",
+      "detail": null,
+      "quality": "unavailable",
+      "decisionUse": "missing_confirmation",
+      "followUpSignals": [
+        "line_movement",
+        "market"
+      ],
+      "confidenceEffect": "block_aggressive_posture"
+    }
+  ],
+  "signalFollowUps": [
+    {
+      "triggeredBy": "market",
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "primary_signal_missing",
+      "decisionUse": "missing_confirmation",
+      "detail": "sharp_public was the recommended confirmation but is missing for this run; market remains directional only",
+      "fallbackType": "unavailable_with_reason",
+      "equivalence": "none",
+      "confidencePermission": "confidence_reduced",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "market",
+      "signal": "line_movement",
+      "status": "not_implemented",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "proxy_candidate",
+      "detail": "line movement is adjacent to market direction; it is the recommended adjacent proxy when sharp_public is missing, but it is not implemented yet and cannot equivalently substitute",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "sharp_public",
+      "signal": "line_movement",
+      "status": "not_implemented",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "proxy_candidate",
+      "detail": "line movement is adjacent to sharp_public (market pressure, not the public/sharp split); it cannot equivalently substitute and it is not implemented yet",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "sharp_public",
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "already_grounded",
+      "decisionUse": "directional_context",
+      "detail": "market provides direction but not the public/sharp split; it is a lateral_proxy and cannot lift confidence on its own",
+      "fallbackType": "lateral_proxy",
+      "equivalence": "lateral",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    }
+  ],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Oklahoma City is favored by 6.5 points.",
+        "Thunder have 6 days of rest."
+      ],
+      "frame": "The Spurs face the Thunder in Oklahoma City with a spread of -6.5.",
+      "aim": [
+        "Market confidence in Thunder",
+        "Rest advantage for Thunder"
+      ]
+    },
+    "interrogate": {
+      "question": "Sharp/public data is missing, so this is a market-only lean.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "The Thunder's rest advantage may enhance their performance."
+    },
+    "discern": {
+      "weigh": "Sharp/public data is missing; only market signals are present.",
+      "contrast": "The spread suggests strong market confidence in the Thunder.",
+      "stress": {
+        "legacyInterrogateStress": null,
+        "legacyDiscernTest": null,
+        "canonical": "The Spurs' recent performance could challenge this lean."
+      }
+    },
+    "decide": {
+      "resolve": "This read is grounded in market favor and rest context.",
+      "position": "monitor",
+      "justify": "The confidence level reflects a clear market signal and rest advantage."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v2",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Oklahoma City is favored by 6.5 points.; Thunder have 6 days of rest.",
+      "frame": "The Spurs face the Thunder in Oklahoma City with a spread of -6.5.",
+      "aim": "Market confidence in Thunder; Rest advantage for Thunder"
+    },
+    "interrogate": {
+      "question": "Sharp/public data is missing, so this is a market-only lean.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "The Thunder's rest advantage may enhance their performance."
+    },
+    "discern": {
+      "weigh": "Sharp/public data is missing; only market signals are present.",
+      "contrast": "The spread suggests strong market confidence in the Thunder.",
+      "stress": "The Spurs' recent performance could challenge this lean."
+    },
+    "decide": {
+      "resolve": "This read is grounded in market favor and rest context.",
+      "position": "monitor",
+      "justify": "The confidence level reflects a clear market signal and rest advantage."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}

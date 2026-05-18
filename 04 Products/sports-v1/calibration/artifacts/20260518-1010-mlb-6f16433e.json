@@ -1,0 +1,166 @@
+{
+  "agentRunId": "6f16433e-f36b-1410-815c-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-05-18",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [
+    "signals_used contains bullpen but bullpen was not grounded",
+    "signals_used contains lineup_form but lineup_form was not grounded",
+    "signals_used contains ballpark but ballpark was not grounded"
+  ],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Degraded",
+      "note": "signals_used contains bullpen but bullpen was not grounded; signals_used contains lineup_form but lineup_form was not grounded; signals_used contains ballpark but ballpark was not grounded"
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": [
+        "Both starters are left-handed, impacting lineup matchups.",
+        "Reds have hitters in good form, while Phillies are struggling.",
+        "Bullpen usage may be a concern for both teams."
+      ],
+      "frame": "The Cincinnati Reds visit the Philadelphia Phillies with both teams' lineups in varying form.",
+      "aim": [
+        "Impact of starting pitchers on lineup performance",
+        "Current hitting trends for both teams",
+        "Bullpen effectiveness and fatigue"
+      ]
+    },
+    "interrogate": {
+      "balance": "The Phillies' home advantage and lineup depth could counter the Reds' hitting form.",
+      "stress": "Heavy bullpen usage for both teams raises concerns about late-game performance.",
+      "reframe": "The left-handed starters may neutralize some of the lineup advantages."
+    },
+    "discern": {
+      "test": "The matchup's outcome could hinge on late-game bullpen effectiveness.",
+      "listen": "Market confidence appears balanced, reflecting uncertainty in the matchup.",
+      "filter": "Starting pitching data is present, but injury reports and recent performance details are missing."
+    },
+    "decide": {
+      "calibrate": "The confidence level reflects the mixed signals from both teams' current forms.",
+      "posture": "monitor",
+      "voice": "It's important to stay aware of lineup changes and bullpen usage leading up to the game."
+    }
+  },
+  "analyzerConfidence": 0.65,
+  "confidence": 0.65,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The Phillies' home field advantage and potential for lineup improvement could shift the balance.",
+  "watchFor": "Any significant lineup changes or bullpen announcements before the game.",
+  "whatWouldChangeTheRead": [
+    "A key player from either lineup is ruled out or confirmed injured.",
+    "A significant change in bullpen availability or usage is announced.",
+    "Market movement indicating a strong shift in confidence for one team."
+  ],
+  "summary": "Both teams have solid starting pitchers, but recent lineup performance and bullpen depth are mixed. The ballpark conditions may also influence play style.",
+  "lean": "Signals are split.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Both starters are left-handed, impacting lineup matchups.",
+        "Reds have hitters in good form, while Phillies are struggling.",
+        "Bullpen usage may be a concern for both teams."
+      ],
+      "frame": "The Cincinnati Reds visit the Philadelphia Phillies with both teams' lineups in varying form.",
+      "aim": [
+        "Impact of starting pitchers on lineup performance",
+        "Current hitting trends for both teams",
+        "Bullpen effectiveness and fatigue"
+      ]
+    },
+    "interrogate": {
+      "question": "The Phillies' home advantage and lineup depth could counter the Reds' hitting form.",
+      "probe": null,
+      "verify": "The left-handed starters may neutralize some of the lineup advantages."
+    },
+    "discern": {
+      "weigh": "Starting pitching data is present, but injury reports and recent performance details are missing.",
+      "contrast": "Market confidence appears balanced, reflecting uncertainty in the matchup.",
+      "stress": {
+        "legacyInterrogateStress": null,
+        "legacyDiscernTest": null,
+        "canonical": "Heavy bullpen usage for both teams raises concerns about late-game performance."
+      }
+    },
+    "decide": {
+      "resolve": "It's important to stay aware of lineup changes and bullpen usage leading up to the game.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the mixed signals from both teams' current forms."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v2",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Both starters are left-handed, impacting lineup matchups.; Reds have hitters in good form, while Phillies are struggling.; Bullpen usage may be a concern for both teams.",
+      "frame": "The Cincinnati Reds visit the Philadelphia Phillies with both teams' lineups in varying form.",
+      "aim": "Impact of starting pitchers on lineup performance; Current hitting trends for both teams; Bullpen effectiveness and fatigue"
+    },
+    "interrogate": {
+      "question": "The Phillies' home advantage and lineup depth could counter the Reds' hitting form.",
+      "probe": null,
+      "verify": "The left-handed starters may neutralize some of the lineup advantages."
+    },
+    "discern": {
+      "weigh": "Starting pitching data is present, but injury reports and recent performance details are missing.",
+      "contrast": "Market confidence appears balanced, reflecting uncertainty in the matchup.",
+      "stress": "Heavy bullpen usage for both teams raises concerns about late-game performance."
+    },
+    "decide": {
+      "resolve": "It's important to stay aware of lineup changes and bullpen usage leading up to the game.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the mixed signals from both teams' current forms."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}

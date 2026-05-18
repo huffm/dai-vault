@@ -1,0 +1,166 @@
+{
+  "agentRunId": "6816433e-f36b-1410-815c-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-05-18",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [
+    "signals_used contains bullpen but bullpen was not grounded",
+    "signals_used contains lineup_form but lineup_form was not grounded",
+    "signals_used contains ballpark but ballpark was not grounded"
+  ],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Degraded",
+      "note": "signals_used contains bullpen but bullpen was not grounded; signals_used contains lineup_form but lineup_form was not grounded; signals_used contains ballpark but ballpark was not grounded"
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": [
+        "Both starters are left-handed, impacting lineup matchups.",
+        "Key hitters on both teams are in good form.",
+        "Bullpen usage has been high for both teams recently."
+      ],
+      "frame": "The Orioles visit the Rays with both teams featuring left-handed starters.",
+      "aim": [
+        "Starting pitching effectiveness",
+        "Recent lineup performance",
+        "Bullpen depth and usage"
+      ]
+    },
+    "interrogate": {
+      "balance": "The absence of a clear edge in starting pitching makes it difficult to lean toward one side. Both teams have strong lineups that could exploit any weaknesses.",
+      "stress": "Heavy bullpen usage raises concerns about availability for critical late-game situations.",
+      "reframe": "The ballpark's dimensions may favor a lower-scoring game, impacting offensive output."
+    },
+    "discern": {
+      "test": "The lack of a definitive edge in starting pitching challenges the lean.",
+      "listen": "Market confidence appears balanced, reflecting uncertainty about both teams.",
+      "filter": "Starting pitching and lineup form are present, but specific recent performance metrics are missing."
+    },
+    "decide": {
+      "calibrate": "The confidence level reflects the balanced signals from both teams and the uncertainty in bullpen effectiveness.",
+      "posture": "monitor",
+      "voice": "It's important to stay aware of any late-breaking news that could shift the balance."
+    }
+  },
+  "analyzerConfidence": 0.65,
+  "confidence": 0.65,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The lack of a strong directional signal due to equal starting pitching and heavy bullpen usage makes this matchup uncertain. Without clear advantages, the outcome remains unpredictable.",
+  "watchFor": "Any significant lineup changes or injury updates before the game.",
+  "whatWouldChangeTheRead": [
+    "A notable injury to a key player on either team",
+    "A significant change in starting pitcher effectiveness",
+    "Market movement indicating a clear favorite"
+  ],
+  "summary": "Both teams feature strong starting pitchers, but recent lineup performance and bullpen depth may influence the outcome. The ballpark conditions could also play a role in the style of play.",
+  "lean": "Signals are split",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Both starters are left-handed, impacting lineup matchups.",
+        "Key hitters on both teams are in good form.",
+        "Bullpen usage has been high for both teams recently."
+      ],
+      "frame": "The Orioles visit the Rays with both teams featuring left-handed starters.",
+      "aim": [
+        "Starting pitching effectiveness",
+        "Recent lineup performance",
+        "Bullpen depth and usage"
+      ]
+    },
+    "interrogate": {
+      "question": "The absence of a clear edge in starting pitching makes it difficult to lean toward one side. Both teams have strong lineups that could exploit any weaknesses.",
+      "probe": null,
+      "verify": "The ballpark's dimensions may favor a lower-scoring game, impacting offensive output."
+    },
+    "discern": {
+      "weigh": "Starting pitching and lineup form are present, but specific recent performance metrics are missing.",
+      "contrast": "Market confidence appears balanced, reflecting uncertainty about both teams.",
+      "stress": {
+        "legacyInterrogateStress": null,
+        "legacyDiscernTest": null,
+        "canonical": "Heavy bullpen usage raises concerns about availability for critical late-game situations."
+      }
+    },
+    "decide": {
+      "resolve": "It's important to stay aware of any late-breaking news that could shift the balance.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the balanced signals from both teams and the uncertainty in bullpen effectiveness."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v2",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Both starters are left-handed, impacting lineup matchups.; Key hitters on both teams are in good form.; Bullpen usage has been high for both teams recently.",
+      "frame": "The Orioles visit the Rays with both teams featuring left-handed starters.",
+      "aim": "Starting pitching effectiveness; Recent lineup performance; Bullpen depth and usage"
+    },
+    "interrogate": {
+      "question": "The absence of a clear edge in starting pitching makes it difficult to lean toward one side. Both teams have strong lineups that could exploit any weaknesses.",
+      "probe": null,
+      "verify": "The ballpark's dimensions may favor a lower-scoring game, impacting offensive output."
+    },
+    "discern": {
+      "weigh": "Starting pitching and lineup form are present, but specific recent performance metrics are missing.",
+      "contrast": "Market confidence appears balanced, reflecting uncertainty about both teams.",
+      "stress": "Heavy bullpen usage raises concerns about availability for critical late-game situations."
+    },
+    "decide": {
+      "resolve": "It's important to stay aware of any late-breaking news that could shift the balance.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the balanced signals from both teams and the uncertainty in bullpen effectiveness."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}

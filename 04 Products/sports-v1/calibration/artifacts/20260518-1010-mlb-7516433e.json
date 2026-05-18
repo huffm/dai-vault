@@ -1,0 +1,155 @@
+{
+  "agentRunId": "7516433e-f36b-1410-815c-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-05-18",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": [
+        "Unknown handedness of both starting pitchers."
+      ],
+      "frame": "The Mets face the Nationals with both starters' handedness unknown.",
+      "aim": [
+        "Starting pitcher performance",
+        "Lineup matchups"
+      ]
+    },
+    "interrogate": {
+      "balance": "The lack of handedness information makes it hard to assess matchups. Without knowing how each starter performs against specific lineups, the lean remains uncertain.",
+      "stress": "Key risks include the unknown performance of both starters.",
+      "reframe": "An alternate angle is that both teams might have similar offensive capabilities."
+    },
+    "discern": {
+      "test": "The challenge is the unknown performance metrics of the pitchers.",
+      "listen": "Market data is not provided, so confidence in the read is limited.",
+      "filter": "Starting pitching data is present, but performance and lineup context are missing."
+    },
+    "decide": {
+      "calibrate": "The confidence level reflects the uncertainty due to unknown pitcher details.",
+      "posture": "monitor",
+      "voice": "It's important to remain cautious given the lack of clear signals."
+    }
+  },
+  "analyzerConfidence": 0.5,
+  "confidence": 0.5,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The strongest case against the lean is the uncertainty surrounding both starting pitchers. Without knowing their handedness or performance, it's difficult to draw a solid conclusion.",
+  "watchFor": "Any updates on the handedness or performance of the starting pitchers.",
+  "whatWouldChangeTheRead": [
+    "Information on the handedness of both starters",
+    "Recent performance metrics for both pitchers"
+  ],
+  "summary": "Both teams have starting pitchers with unknown handedness advantages, leading to uncertainty. Without additional context on their recent performance or lineup matchups, the signals do not favor either side.",
+  "lean": "Signals are split",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Unknown handedness of both starting pitchers."
+      ],
+      "frame": "The Mets face the Nationals with both starters' handedness unknown.",
+      "aim": [
+        "Starting pitcher performance",
+        "Lineup matchups"
+      ]
+    },
+    "interrogate": {
+      "question": "The lack of handedness information makes it hard to assess matchups. Without knowing how each starter performs against specific lineups, the lean remains uncertain.",
+      "probe": null,
+      "verify": "An alternate angle is that both teams might have similar offensive capabilities."
+    },
+    "discern": {
+      "weigh": "Starting pitching data is present, but performance and lineup context are missing.",
+      "contrast": "Market data is not provided, so confidence in the read is limited.",
+      "stress": {
+        "legacyInterrogateStress": null,
+        "legacyDiscernTest": null,
+        "canonical": "Key risks include the unknown performance of both starters."
+      }
+    },
+    "decide": {
+      "resolve": "It's important to remain cautious given the lack of clear signals.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the uncertainty due to unknown pitcher details."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v2",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Unknown handedness of both starting pitchers.",
+      "frame": "The Mets face the Nationals with both starters' handedness unknown.",
+      "aim": "Starting pitcher performance; Lineup matchups"
+    },
+    "interrogate": {
+      "question": "The lack of handedness information makes it hard to assess matchups. Without knowing how each starter performs against specific lineups, the lean remains uncertain.",
+      "probe": null,
+      "verify": "An alternate angle is that both teams might have similar offensive capabilities."
+    },
+    "discern": {
+      "weigh": "Starting pitching data is present, but performance and lineup context are missing.",
+      "contrast": "Market data is not provided, so confidence in the read is limited.",
+      "stress": "Key risks include the unknown performance of both starters."
+    },
+    "decide": {
+      "resolve": "It's important to remain cautious given the lack of clear signals.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the uncertainty due to unknown pitcher details."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}

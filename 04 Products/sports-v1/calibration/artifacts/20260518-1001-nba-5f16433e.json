@@ -1,0 +1,241 @@
+{
+  "agentRunId": "5f16433e-f36b-1410-815c-00373db4b724",
+  "status": "completed",
+  "competition": "nba",
+  "gameDate": "2026-05-19",
+  "groundedSignals": [
+    "rest_schedule",
+    "market"
+  ],
+  "missingSignals": [
+    "sharp_public"
+  ],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Degraded",
+      "note": "retrieve: 2 of 3 signals grounded for nba"
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": [
+        "Knicks have 8 days of rest",
+        "Cavaliers played recently"
+      ],
+      "frame": "The Knicks host the Cavaliers with a 7.5-point spread.",
+      "aim": [
+        "rest advantage",
+        "market confidence"
+      ]
+    },
+    "interrogate": {
+      "balance": "Sharp/public data is missing, so this is a market-only lean.",
+      "stress": "The Cavaliers' recent game could impact their performance.",
+      "reframe": "The Knicks' extended rest may lead to better preparation."
+    },
+    "discern": {
+      "test": "The lean relies solely on market confidence and rest advantage.",
+      "listen": "The spread indicates strong market support for the Knicks.",
+      "filter": "No sharp/public data or injury reports are available."
+    },
+    "decide": {
+      "calibrate": "Confidence is high due to the clear rest differential.",
+      "posture": "monitor",
+      "voice": "This read is based on current signals, but uncertainties remain."
+    }
+  },
+  "analyzerConfidence": 0.8,
+  "confidence": 0.7200000000000001,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The Cavaliers' recent game could provide momentum, but sharp/public data is missing.",
+  "watchFor": "Any injury updates for key players on either team.",
+  "whatWouldChangeTheRead": [
+    "Injury news affecting key players for the Knicks",
+    "Significant line movement before the game"
+  ],
+  "summary": "The Knicks have a substantial rest advantage with 8 days off compared to the Cavaliers' 1 day. The market favors the Knicks as 7.5-point favorites, indicating confidence in their performance.",
+  "lean": "Edge toward New York Knicks based on significant rest advantage.",
+  "signalAvailability": [
+    {
+      "signal": "rest_schedule",
+      "status": "grounded",
+      "source": "espn",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "directional_only_without_confirmation",
+      "followUpSignals": [
+        "sharp_public",
+        "line_movement"
+      ],
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "provider_returned_empty_odds",
+      "detail": null,
+      "quality": "unavailable",
+      "decisionUse": "missing_confirmation",
+      "followUpSignals": [
+        "line_movement",
+        "market"
+      ],
+      "confidenceEffect": "block_aggressive_posture"
+    }
+  ],
+  "signalFollowUps": [
+    {
+      "triggeredBy": "market",
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "primary_signal_missing",
+      "decisionUse": "missing_confirmation",
+      "detail": "sharp_public was the recommended confirmation but is missing for this run; market remains directional only",
+      "fallbackType": "unavailable_with_reason",
+      "equivalence": "none",
+      "confidencePermission": "confidence_reduced",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "market",
+      "signal": "line_movement",
+      "status": "not_implemented",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "proxy_candidate",
+      "detail": "line movement is adjacent to market direction; it is the recommended adjacent proxy when sharp_public is missing, but it is not implemented yet and cannot equivalently substitute",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "sharp_public",
+      "signal": "line_movement",
+      "status": "not_implemented",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "proxy_candidate",
+      "detail": "line movement is adjacent to sharp_public (market pressure, not the public/sharp split); it cannot equivalently substitute and it is not implemented yet",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "sharp_public",
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "already_grounded",
+      "decisionUse": "directional_context",
+      "detail": "market provides direction but not the public/sharp split; it is a lateral_proxy and cannot lift confidence on its own",
+      "fallbackType": "lateral_proxy",
+      "equivalence": "lateral",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    }
+  ],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Knicks have 8 days of rest",
+        "Cavaliers played recently"
+      ],
+      "frame": "The Knicks host the Cavaliers with a 7.5-point spread.",
+      "aim": [
+        "rest advantage",
+        "market confidence"
+      ]
+    },
+    "interrogate": {
+      "question": "Sharp/public data is missing, so this is a market-only lean.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "The Knicks' extended rest may lead to better preparation."
+    },
+    "discern": {
+      "weigh": "No sharp/public data or injury reports are available.",
+      "contrast": "The spread indicates strong market support for the Knicks.",
+      "stress": {
+        "legacyInterrogateStress": null,
+        "legacyDiscernTest": null,
+        "canonical": "The Cavaliers' recent game could impact their performance."
+      }
+    },
+    "decide": {
+      "resolve": "This read is based on current signals, but uncertainties remain.",
+      "position": "monitor",
+      "justify": "Confidence is high due to the clear rest differential."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v2",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Knicks have 8 days of rest; Cavaliers played recently",
+      "frame": "The Knicks host the Cavaliers with a 7.5-point spread.",
+      "aim": "rest advantage; market confidence"
+    },
+    "interrogate": {
+      "question": "Sharp/public data is missing, so this is a market-only lean.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "The Knicks' extended rest may lead to better preparation."
+    },
+    "discern": {
+      "weigh": "No sharp/public data or injury reports are available.",
+      "contrast": "The spread indicates strong market support for the Knicks.",
+      "stress": "The Cavaliers' recent game could impact their performance."
+    },
+    "decide": {
+      "resolve": "This read is based on current signals, but uncertainties remain.",
+      "position": "monitor",
+      "justify": "Confidence is high due to the clear rest differential."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}
