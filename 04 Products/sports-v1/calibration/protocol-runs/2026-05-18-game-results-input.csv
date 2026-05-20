@@ -1,9 +1,9 @@
 run_id,competition,game_date,matchup,game_status,final_score_home,final_score_away,closing_spread_home,closing_total,notes
-5816433e-f36b-1410-815c-00373db4b724,nba,2026-05-18,San Antonio Spurs at Oklahoma City Thunder,pending,,,,,
-5f16433e-f36b-1410-815c-00373db4b724,nba,2026-05-19,Cleveland Cavaliers at New York Knicks,pending,,,,,
-6416433e-f36b-1410-815c-00373db4b724,mlb,2026-05-18,Atlanta Braves at Miami Marlins,pending,,,,,
-6816433e-f36b-1410-815c-00373db4b724,mlb,2026-05-18,Baltimore Orioles at Tampa Bay Rays,pending,,,,,
-6f16433e-f36b-1410-815c-00373db4b724,mlb,2026-05-18,Cincinnati Reds at Philadelphia Phillies,pending,,,,,
-7016433e-f36b-1410-815c-00373db4b724,mlb,2026-05-18,Cleveland Guardians at Detroit Tigers,pending,,,,,
-7516433e-f36b-1410-815c-00373db4b724,mlb,2026-05-18,New York Mets at Washington Nationals,pending,,,,,
-7b16433e-f36b-1410-815c-00373db4b724,mlb,2026-05-18,Toronto Blue Jays at New York Yankees,pending,,,,,
+5816433e-f36b-1410-815c-00373db4b724,nba,2026-05-18,San Antonio Spurs at Oklahoma City Thunder,final,115,122,,,Western Conference Finals Game 1 (2OT) - Spurs won
+5f16433e-f36b-1410-815c-00373db4b724,nba,2026-05-19,Cleveland Cavaliers at New York Knicks,final,115,104,,,Eastern Conference Finals Game 1 (OT) - Knicks won
+6416433e-f36b-1410-815c-00373db4b724,mlb,2026-05-18,Atlanta Braves at Miami Marlins,final,12,0,,,Marlins shutout 12-0 over Braves
+6816433e-f36b-1410-815c-00373db4b724,mlb,2026-05-18,Baltimore Orioles at Tampa Bay Rays,final,16,6,,,Rays 16-6 over Orioles
+6f16433e-f36b-1410-815c-00373db4b724,mlb,2026-05-18,Cincinnati Reds at Philadelphia Phillies,final,5,4,,,Phillies 5-4 over Reds (Stott 2-run HR 8th)
+7016433e-f36b-1410-815c-00373db4b724,mlb,2026-05-18,Cleveland Guardians at Detroit Tigers,final,2,8,,,Guardians 8-2 over Tigers
+7516433e-f36b-1410-815c-00373db4b724,mlb,2026-05-18,New York Mets at Washington Nationals,final,7,16,,,Mets 16-7 over Nationals (10-run 12th inning)
+7b16433e-f36b-1410-815c-00373db4b724,mlb,2026-05-18,Toronto Blue Jays at New York Yankees,final,7,6,,,Yankees 7-6 over Blue Jays (Bellinger Chisholm HRs 7th)
