@@ -441,3 +441,60 @@ Wrap the analyze model call as `analyze.sports` through the gateway (allowed nod
 - No PowerShell changed this slice, so no ASCII/parser-validation step was required.
 
 status: telemetry merged 2026-05-21. tests 231 passing (was 227, +4). gateway invocations now emit one structured ToolGatewayInvocation log each; outbound header injection deferred to the analyze.sports wrap. no FastAPI/prompt/confidence/CognitiveProtocolBuilder/DB/Angular/MCP/Azure/pgvector changes. jera-workspace-skills untouched.
+
+## addendum: Tool Gateway Analyze Wrap v1 (2026-05-21)
+
+Runtime slice. Routes the internal .NET -> FastAPI sports analysis call through the Tool Gateway. After this slice the analyze stage joins reference and retrieve behind the gateway; the only remaining direct external/internal call paths are gone from the pipeline. No FastAPI implementation, prompt, Pydantic-contract-name, CognitiveProtocolBuilder, confidence-rule, DB, Angular, MCP, Azure Functions, pgvector, or Container Apps changes.
+
+### naming and skills gate
+
+Skills: `dai-grill-with-vault` (read FastApiClient, SportsAnalyzer, the request/response contracts, and the consumption path before naming), `dai-token-tight` (reporting), `superpowers:test-driven-development` (RED 40 errors -> GREEN), `superpowers:verification-before-completion` (fresh suite + named-test confirmation), `dai-agent-handoff` shaping. Skill-fit note carried forward, unchanged: a dedicated `dai-audit`/`dai-implement-with-vault` skill would suit solo implementation slices better than the interactive grill template. jera-workspace-skills untouched (no approval to edit).
+
+Naming decision (reviewed the four candidates; confirmed the preferred):
+- **`analysis.sports.matchup_read`** chosen. `analysis` is a durable noun-domain (parallel to market/schedule/pitching). `sports` honestly signals one tool across all sport families (the analyze call is family-agnostic at this layer; FastAPI dispatches by competition internally). `matchup_read` names the product output ("the read" / "Read Stance") without leaking implementation.
+- Rejected: `analysis.sports.matchup_analysis` (analysis/analysis stutter); `analyze.sports` (verb-domain, thin on capability, less self-describing); `model.sports.matchup_analysis` (`model` ties to implementation -- would mislead if analyze ever became partly deterministic).
+- Protocol node constant added: **`ProtocolNodes.PlatformAnalyze = "platform.analyze"`** -- parallels `platform.reference` and `platform.retrieve`. The caller is platform orchestration (SportsAnalyzer); the 12 cognitive micro-actions are produced inside the model call, but the tool *caller* is the platform analyze stage, so a platform-stage sentinel is correct.
+- Helper/type names: `ToolIds.AnalysisSportsMatchupRead`, `AnalysisSportsMatchupReadHandler`, `SportsMatchupReadInput(SportsAnalysisRequest Request, Guid AgentRunId)`. AgentRunId is an explicit input field (a functional FastAPI argument forwarded as X-Agent-Run-Id), not read from context, to avoid depending on a nullable.
+- Registry metadata: `Kind.Analyzer`, `Transport.HttpInternal`, `Idempotency.PerRun`, `CacheTtl = null` (each run analyzes fresh), `CostClass.ModelCall`. All enum values already existed.
+
+### files changed
+
+- `dai/platform/dotnet/DevCore.Api/Tools/ToolInvocationContext.cs` -- `ProtocolNodes.PlatformAnalyze`.
+- `dai/platform/dotnet/DevCore.Api/Tools/ToolRegistry.cs` -- `ToolIds.AnalysisSportsMatchupRead` + one `ToolDefinition` (Analyzer/HttpInternal/PerRun/no-cache/ModelCall/PlatformAnalyze).
+- `dai/platform/dotnet/DevCore.Api/Tools/Handlers/AnalysisSportsMatchupReadHandler.cs` (new) -- `SportsMatchupReadInput` + handler wrapping `FastApiClient.AnalyzeSportsMatchupAsync` 1:1.
+- `dai/platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- keyed-scoped handler registration.
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/SportsAnalyzer.cs` -- constructor takes `IToolGateway` instead of `FastApiClient`; builds the request as before, then routes the single call through the gateway with a `platform.analyze` context (`RunId = artifact.AgentRunId`, `CorrelationId = Activity.Current?.Id`).
+- `dai/platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayAnalyzeTests.cs` (new) -- dispatch (allowed), denied node, FastAPI-failure-rethrow.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/SportsAnalyzerTests.cs` -- `SportsAnalyzer` built with a real gateway wired to a capturing FastApiClient; asserts request-body shape, response mapping, AND that `X-Agent-Run-Id` / `X-Correlation-Id` outbound headers are preserved through the gateway.
+- Program.cs unchanged: `AddDaiToolGateway()` registers the gateway + handler; `FastApiClient` stays registered via `AddHttpClient<FastApiClient>` (now consumed by the handler, not SportsAnalyzer).
+
+### behavior summary
+
+No behavior change. The analyze call now flows `SportsAnalyzer -> IToolGateway -> AnalysisSportsMatchupReadHandler -> FastApiClient.AnalyzeSportsMatchupAsync`. FastApiClient still owns the wire contract, the SportsAnalysisResponse mapping, and the `X-Correlation-Id` / `X-Agent-Run-Id` headers (which already existed and are unchanged). Legacy `CognitivePhases` and the canonical `CognitiveProtocolBuilder` path are downstream of the response and untouched. A FastAPI failure (non-2xx) still throws the same exception via `EnsureSuccessStatusCode`; the gateway logs it as `HandlerError` and re-throws, so the existing `RecordAnalyzeFailed`/`ComposeFailedRun` pipeline behavior is preserved. The gateway enforces `platform.analyze` and fails closed for any other caller. Telemetry now emits a `ToolGatewayInvocation` event for the analyze call with `CostClass=ModelCall`.
+
+Outbound correlation headers: already present in `FastApiClient` (added before this work); the wrap preserves them. No new header injection was needed -- scope item 8 satisfied by existing code and verified by the header-preservation test.
+
+### test results
+
+`dotnet test`: 234 passed, 0 failed (was 231, +3). New/updated: `invoke_dispatches_analysis_sports_matchup_read_to_fastapi_when_node_is_allowed`, `invoke_throws_tool_not_allowed_when_matchup_read_called_from_non_analyze_node`, `invoke_preserves_fastapi_failure_as_thrown_exception`, and `analyze_forwards_sharp_public_context_and_correlation_headers_through_gateway` (replaces the prior direct-client analyzer test). WebApplicationFactory integration tests pass, confirming the gateway-routed analyze resolves through the real Program.cs DI graph.
+
+### risks
+
+- `SportsAnalyzer` now depends solely on the gateway; a dropped registration fails the analyze stage closed (covered by the integration tests + the analyze dispatch tests).
+- `AgentRunId` is duplicated (context.RunId and input.AgentRunId) -- same value, intentional: context.RunId is for telemetry, input.AgentRunId is the functional FastAPI argument. Documented in the handler.
+- Telemetry classifies any analyze exception as `HandlerError` (catch-all), then re-throws; behavior unchanged, classification coarse.
+- Idempotency `PerRun` on the analyze tool is declarative only; there is no run-scoped analyze cache yet (one call per run already, so no duplicate today).
+
+### next slice
+
+The full sports pipeline (reference, retrieve, analyze) now routes through the gateway. Natural next steps: (a) Container Apps deploy slice (package both services, internal DNS, Key Vault, App Insights, smoke parity) now that the gateway seam and telemetry are in place; or (b) gateway idempotency-cache enforcement reading the registry `Idempotency`/`CacheTtl` fields (currently declarative). Recommend (a) -- the launch target -- since the wrap work that made the system observable and governable is complete.
+
+### Claude <-> Codex transfer notes
+
+- Repos in play: `dai` (7 files: 3 new, 4 modified) and `dai-vault` (this handoff). `jera-workspace-skills` read-only, untouched.
+- Re-verify anywhere: `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj` -> 234 passing. No stack/DB/network needed (fake HTTP handlers throughout).
+- Extension pattern is identical to prior wraps: `ToolDefinition` + `ToolIds` constant, `IToolHandler<TInput, TOutput>` in `Tools/Handlers/`, keyed-scoped registration, route the call site through `gateway.InvokeAsync(...)` with the correct `ProtocolNodes.*`. For internal calls use `Transport.HttpInternal`; the analyze tool is `Kind.Analyzer` + `CostClass.ModelCall`.
+- Gotcha: hand-built `ServiceCollection` test providers that resolve `IToolGateway` must call `services.AddLogging()` (the gateway depends on `ILogger<ToolGateway>` since the telemetry slice).
+- No PowerShell changed this slice, so no ASCII/parser-validation step was required.
+
+status: analyze wrap merged 2026-05-21. tests 234 passing (was 231, +3). the sports pipeline's reference, retrieve, and analyze calls all route through the Tool Gateway now. outbound X-Agent-Run-Id / X-Correlation-Id headers preserved (already in FastApiClient). no FastAPI/prompt/Pydantic/CognitiveProtocolBuilder/confidence/DB/Angular/MCP/Azure/pgvector changes. jera-workspace-skills untouched.
