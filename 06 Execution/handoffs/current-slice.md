@@ -618,3 +618,72 @@ Containerize: three Dockerfiles, the `dai-api` `/health` endpoint, externalize c
 - No history rewrite was performed; the SQL password rotation is a manual human step (checklist above).
 
 status: secrets hygiene merged 2026-05-21. tracked SQL password placeholdered; onboarding example added; readiness doc corrected. 234 tests passing. SQL credential rotation is a pending manual human action. no history rewrite, no rotation performed by Claude. jera-workspace-skills untouched.
+
+## addendum: Containerization Readiness v1 (2026-05-21)
+
+Build-readiness slice. Added the `dai-api` `/health` endpoint (TDD) and Dockerfiles for `dai-api` and `dai-analyzer`, and verified both images build and that `dai-api` serves `/health` from the container. No Azure resources created. No FastAPI prompt, Pydantic, CognitiveProtocolBuilder, confidence, DB schema, Angular, MCP, pgvector, Azure Functions, or Kubernetes changes.
+
+### naming and skills gate
+
+Skills: `dai-grill-with-vault` (read Program.cs, the csproj graph, requirements.txt, the readiness doc, and confirmed Docker availability before authoring), `dai-token-tight` (reporting), `superpowers:test-driven-development` (RED 404 -> GREEN for `/health`), `superpowers:verification-before-completion` (ran the full suite, both `docker build`s, and a container `/health` smoke). jera-workspace-skills untouched (no approval). Skill-fit note carried forward, unchanged: a dedicated `dai-audit`/`dai-implement-with-vault` skill would suit these solo build slices.
+
+Naming decisions:
+- Health endpoint `GET /health` for `dai-api` (boring, standard; liveness only); reuse existing `GET /api/ping` for `dai-analyzer` (no new endpoint).
+- Dockerfile locations: `platform/dotnet/Dockerfile` (build context is the .NET solution root because DevCore.Api references Domain/Data/AiClient; build with `docker build -t dai-api platform/dotnet`) and `services/agent-service/Dockerfile` (`docker build -t dai-analyzer services/agent-service`). A `.dockerignore` sits in each context.
+- Container app names unchanged from the readiness doc: `dai-api`, `dai-analyzer`, `dai-sports-web`.
+- Container internal ports: `dai-api` on 8080 (`ASPNETCORE_URLS=http://+:8080`, the aspnet image default), `dai-analyzer` on 8000 (uvicorn). The internal `AiService__BaseUrl` points dai-api at `http://dai-analyzer:8000` in cloud.
+
+### files changed
+
+- `dai/platform/dotnet/DevCore.Api/Program.cs` -- added `app.MapGet("/health", () => Results.Ok(new { status = "ok" }))` after `MapControllers()`. Anonymous, no DB.
+- `dai/platform/dotnet/DevCore.Api.Tests/Integration/HealthEndpointTests.cs` (new) -- `health_endpoint_returns_ok_without_auth` via WebApplicationFactory (in-memory DB swap + identity stub, established pattern).
+- `dai/platform/dotnet/Dockerfile` (new) -- multi-stage .NET build (sdk:10.0 -> aspnet:10.0), csproj-graph restore for layer caching, publishes DevCore.Api. No secrets baked in.
+- `dai/platform/dotnet/.dockerignore` (new) -- excludes bin/obj, the test project, `appsettings.Development.json`, logs.
+- `dai/services/agent-service/Dockerfile` (new) -- python:3.12-slim, pip install requirements, uvicorn on 0.0.0.0:8000. OPENAI_API_KEY supplied at runtime, not baked.
+- `dai/services/agent-service/.dockerignore` (new) -- excludes .venv, __pycache__, `.env`/`.env.*` (keeps `.env.example`), tests.
+- `dai-vault/02 Platform/architecture/cloud-deploy-readiness-v1.md` -- marked the Dockerfile and `/health` blockers resolved; health section updated.
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+
+### container readiness summary
+
+`dai-api` and `dai-analyzer` are now container-buildable from the repo. The Tool Gateway and CognitiveProtocol paths are not bypassed: the .NET image publishes DevCore.Api unchanged (gateway DI, telemetry, and the analyze wrap are all in the published assembly), and the analyzer image runs the same FastAPI app. `dai-sports-web` remains a static build (Angular), hosted on Static Web Apps / Storage+CDN per the readiness doc; its production `apiBaseUrl` must be set to the deployed `dai-api` URL at build time (still an open launch-required item, unchanged).
+
+### health check behavior
+
+- `dai-api`: `GET /health` -> 200 `{"status":"ok"}`, anonymous, no database dependency. Verified live from the built container (`docker run` + curl).
+- `dai-analyzer`: existing `GET /api/ping` is the liveness probe.
+
+### environment variable map
+
+- `dai-api` (container, `Section__Key`): `ASPNETCORE_ENVIRONMENT=Production`, `ASPNETCORE_URLS=http://+:8080` (set in image), `ConnectionStrings__Sql` (Key Vault), `AiService__BaseUrl=http://dai-analyzer:8000`, `AzureAd__TenantId`, `AzureAd__Audience`, `OddsApi__ApiKey` (Key Vault), `Dev__EnableBypassAuth=false`, `APPLICATIONINSIGHTS_CONNECTION_STRING` (Key Vault).
+- `dai-analyzer` (container): `OPENAI_API_KEY` (Key Vault), uvicorn host/port set in image CMD.
+- `dai-sports-web`: `apiBaseUrl` is build-time (environment.ts), not a runtime env var.
+
+### verification results
+
+- `dotnet test`: 235 passed, 0 failed (was 234, +1 health test). RED confirmed first (404), then GREEN.
+- `docker build -t dai-analyzer services/agent-service`: success (image 318MB).
+- `docker build -t dai-api platform/dotnet`: success; all four .NET projects compiled, DevCore.Api published (image 374MB).
+- container smoke: `docker run dai-api` then `GET /health` -> 200 `{"status":"ok"}`; container removed.
+- No PowerShell changed, so no ASCII/parser-validation step was required.
+
+### risks
+
+- Images build and `dai-api` serves health locally; full end-to-end in-container run (dai-api -> dai-analyzer over a docker network, with a real SQL and OPENAI key) was not exercised this slice. That belongs to the first actual deploy / a compose-based local integration check.
+- `dai-api` health is liveness-only; it does not check SQL or analyzer reachability. A readiness probe with dependency checks is a deliberate later concern.
+- Base image tags are floating `10.0` / `3.12-slim`; pin to digests or patch tags before production for reproducibility.
+- The SQL credential rotation from Secrets Hygiene v1 is still a pending human action and gates a real deploy (not this slice).
+
+### next slice
+
+Azure Container Apps provisioning: create the Container Apps environment, push images to a registry (ACR), wire internal ingress (`dai-analyzer` internal-only) and `AiService__BaseUrl`, set env vars / Key Vault refs, point `dai-sports-web` at the deployed `dai-api` URL, set `Dev__EnableBypassAuth=false`. Gated on the manual SQL rotation and on customer auth (Entra External ID) for public exposure.
+
+### Claude <-> Codex transfer notes
+
+- `dai` changed: Program.cs (+/health), one new test, two Dockerfiles, two .dockerignore. `dai-vault`: readiness doc updates + this handoff. `jera-workspace-skills` untouched.
+- Reproduce builds: `docker build -t dai-api platform/dotnet` and `docker build -t dai-analyzer services/agent-service`. Smoke: `docker run -d -p 8090:8080 dai-api` then `curl localhost:8090/health` -> 200.
+- Re-verify tests: `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj` -> 235 passing.
+- No secrets are in the images (.dockerignore excludes `.env` and `appsettings.Development.json`; no secret ENV baked). Runtime config is injected by Container Apps.
+- No PowerShell changed this slice.
+
+status: containerization readiness merged 2026-05-21. dai-api /health added (TDD); dai-api + dai-analyzer Dockerfiles build clean; /health verified from container. 235 tests passing. no Azure deploy. SQL rotation + customer auth still gate a real deploy. jera-workspace-skills untouched.

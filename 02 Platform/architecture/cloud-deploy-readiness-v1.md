@@ -88,7 +88,7 @@ Rotation of the SQL password is still required because it lived in committed his
 
 ## 6. health check plan
 
-- `dai-api`: no health endpoint exists. Add a minimal liveness endpoint (for example `GET /health` returning 200) so Container Apps can probe it. This is a small code change for the containerize slice, not done here.
+- `dai-api`: `GET /health` exists as of Containerization Readiness v1 (2026-05-21). Anonymous, no database access, returns `{"status":"ok"}`. Use it as the Container Apps liveness probe.
 - `dai-analyzer`: reuse the existing `GET /api/ping` as the liveness probe. No new code needed.
 - `dai-sports-web`: static host serves `index.html`; the platform's static-site health is sufficient. No app probe.
 - Azure SQL: managed; platform-owned health.
@@ -126,9 +126,9 @@ Rotation of the SQL password is still required because it lived in committed his
 ## 11. deployment blockers
 
 1. **Committed SQL password (security, highest priority).** The tracked base `appsettings.json` carried a real SQL password (now placeholdered by Secrets Hygiene v1, but still in git history). Rotate the SQL credential. `appsettings.Development.json` was gitignored / never committed, so its OddsApi key and Dev provision key are not a git-history exposure (rotate as defense-in-depth only).
-2. **No Dockerfiles.** All three services run from source today; none is container-ready.
+2. ~~**No Dockerfiles.**~~ Resolved by Containerization Readiness v1 (2026-05-21): `platform/dotnet/Dockerfile` (dai-api) and `services/agent-service/Dockerfile` (dai-analyzer) build cleanly; `dai-sports-web` is a static build. Each has a `.dockerignore` that excludes secrets and local build output.
 3. **Auth bypass on.** `Dev:EnableBypassAuth = true` in dev. Cloud must be `false`, and real customer auth must exist before the public API is exposed.
-4. **No `dai-api` health endpoint.** Container Apps needs a liveness probe target.
+4. ~~**No `dai-api` health endpoint.**~~ Resolved by Containerization Readiness v1: `GET /health` exists (anonymous, no DB, `{"status":"ok"}`), verified serving 200 from the built container.
 5. **Angular API URL hardcoded to localhost.** Production `environment.ts` must point at the deployed `dai-api`.
 6. **No managed SQL provisioned.** Local points at the `devcore-sql` docker container; cloud needs Azure SQL plus the connection string in Key Vault.
 7. **CORS allows dev origins only.** Must add the deployed web origin.
