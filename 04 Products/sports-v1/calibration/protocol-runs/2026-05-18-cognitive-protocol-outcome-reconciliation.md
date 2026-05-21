@@ -2,7 +2,7 @@
 
 | field | value |
 |---|---|
-| generated | 2026-05-20 19:44 |
+| generated | 2026-05-21 07:40 |
 | mode | live |
 | export | 2026-05-18-cognitive-protocol-run-export.csv |
 | results input | 2026-05-18-game-results-input.csv |
@@ -10,7 +10,7 @@
 | runs in batch | 8 |
 | completed | 8 |
 | pending | 0 |
-| outcomes posted | 8 |
+| outcomes posted | 0 |
 
 ## completed games
 
@@ -37,12 +37,29 @@ From the platform `AgentRunEvaluation` (computed from `AgentRun.LeanSide` vs the
 - inconclusive: 3
 - incorrect: 2
 
+## derived calibration flags
+
+Computed deterministically from the export's artifact fields by the reconciliation script. These are distinct from `quality_warnings` (the runtime `ArtifactQualityWarnings` from `SportsQualityChecker`, which carries signal narrative-drift and signals_used integrity warnings only). Calibration flags are an offline analytics surface; the full flag set lives in `run-artifact-calibration.ps1`. This column carries the decision-relevant subset onto the reconciled export so the risk is visible next to the outcome. The flag does not change lean, confidence, or position.
+
+| flag | count | rule |
+|---|---|---|
+| confidence_high_for_partial_evidence | 5 | evidence_richness < 3 and confidence >= 0.70 |
+
+Per-run breakdown:
+
+- San Antonio Spurs at Oklahoma City Thunder: confidence_high_for_partial_evidence
+- Cleveland Cavaliers at New York Knicks: confidence_high_for_partial_evidence
+- Atlanta Braves at Miami Marlins: confidence_high_for_partial_evidence
+- Cleveland Guardians at Detroit Tigers: confidence_high_for_partial_evidence
+- Toronto Blue Jays at New York Yankees: confidence_high_for_partial_evidence
+
 ## method and caveats
 
 - Outcomes are posted only for games marked `final` with numeric scores in the results input.
 - Cover and total results are filled only when `closing_spread_home` / `closing_total` are supplied in the results input. Blank means not computed -- the harness never guesses a line or total.
 - 3 of 8 runs have `lean_side = none` (signals were split); their platform directional evaluation will be `inconclusive`.
 - The original export CSV is never modified. The reconciled CSV is harness output and is regenerated on each run.
+- `derived_calibration_flags` is a new reconciled-output column (added 2026-05-20). It is computed from the export's confidence / evidence_richness and is additive only -- it does not change lean, confidence, or position. The original export CSV does not carry it.
 - Confidence rules, the analyzer, FastAPI, and runtime scoring logic were not touched. The harness only calls `POST /api/agent-runs/{id}/outcome` and `GET /api/agent-runs/{id}/evaluation`.
 
 

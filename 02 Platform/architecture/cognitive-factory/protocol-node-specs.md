@@ -40,6 +40,7 @@ These hold for every node and override any node-level convenience:
 - **Deterministic where determinism is honest.** Probe and the Synthesize trio are deterministic today and stay that way. Confidence and confidence band are deterministic (`SportsEvaluator`). The model owns judgment text, not numbers, not posture enums, not artifact shape.
 - **Synthesize transforms; it never invents.** It plates what survived the prior protocols and adds no new facts.
 - **Legacy vs canonical.** Node names here are canonical. The legacy code field each maps to is cited per node — see `protocol-vocabulary-map.md`. No code is renamed by this slice.
+- **Calibration flags are not ArtifactQualityWarnings.** The "Quality checks" facet below lists two different surfaces. Deterministic runtime warnings (signals_used integrity, narrative drift) are produced by `SportsQualityChecker` and stored in `ArtifactQualityWarnings` (the `quality_warnings` export column). Calibration flags such as `confidence_high_for_partial_evidence`, `posture_aligned_with_partial_evidence`, and `frame_missing_rest_context` are computed offline by `dai/scripts/dev/sports/run-artifact-calibration.ps1` and are not stored on the artifact. A reviewer scanning `quality_warnings` alone will not see a calibration flag; the outcome reconciliation export carries the decision-relevant ones in its `derived_calibration_flags` column (added 2026-05-20).
 
 ## shared decision artifact — field reference
 
