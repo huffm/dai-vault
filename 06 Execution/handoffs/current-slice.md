@@ -687,3 +687,60 @@ Azure Container Apps provisioning: create the Container Apps environment, push i
 - No PowerShell changed this slice.
 
 status: containerization readiness merged 2026-05-21. dai-api /health added (TDD); dai-api + dai-analyzer Dockerfiles build clean; /health verified from container. 235 tests passing. no Azure deploy. SQL rotation + customer auth still gate a real deploy. jera-workspace-skills untouched.
+
+## addendum: Local Container Compose Smoke v1 (2026-05-21)
+
+Local-only smoke slice. Added a docker compose file that builds and runs `dai-api` + `dai-analyzer` together and proves container-to-container parity by service name, mirroring the Container Apps internal-DNS shape. No Azure resources, no .NET code change, no secrets committed. FastAPI prompts / Pydantic / CognitiveProtocolBuilder / confidence / DB schema / Angular / MCP / pgvector / Azure Functions / Kubernetes all untouched.
+
+### naming and skills gate
+
+Skills: `dai-grill-with-vault` (read the Dockerfiles, the analyzer `/api/ping` route, compose availability, and the readiness doc before authoring), `dai-token-tight` (reporting), `superpowers:verification-before-completion` (ran `docker compose config`, `up --build`, host + cross-service smoke, and teardown -- evidence, not assumption). No TDD (no testable code; compose is config). jera-workspace-skills untouched (no approval). Skill-fit note carried forward, unchanged.
+
+Naming decisions:
+- Compose file `compose.smoke.yaml` at the `dai/` repo root (must reference both build contexts). The `.smoke` qualifier and a header comment make "local smoke, not production" explicit; Compose v2 `compose.*.yaml` spec name.
+- Compose project name `dai-smoke`; network `dai-smoke` (bridge). Service names `dai-api` and `dai-analyzer` match the launch container-app names.
+- Internal URL env on dai-api: `AiService__BaseUrl=http://dai-analyzer:8000` (service-name DNS).
+
+### files changed
+
+- `dai/compose.smoke.yaml` (new) -- two services (`dai-api` build context `./platform/dotnet`, `dai-analyzer` build context `./services/agent-service`), a `dai-smoke` bridge network, published ports 8080 and 8000, and `AiService__BaseUrl=http://dai-analyzer:8000`. No secrets; SQL and `OPENAI_API_KEY` intentionally unset with a documented rationale.
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum). `cloud-deploy-readiness-v1.md` needed no correction.
+
+### local compose / smoke behavior
+
+`docker compose -f compose.smoke.yaml up -d --build` builds both images and starts them on the `dai-smoke` bridge. dai-api reaches dai-analyzer by the service name `dai-analyzer` exactly as it will in Container Apps internal ingress. SQL is excluded by design: the smoke checks do not touch the database, so no connection string or model key is needed, keeping the smoke secret-free. The full analyze chain (SQL + OpenAI) is a deploy/integration concern, not this smoke.
+
+### health check results
+
+- Host `GET http://localhost:8080/health` -> 200 `{"status":"ok"}`.
+- Host `GET http://localhost:8000/api/ping` -> 200 `{"status":"ok"}`.
+
+### internal service communication result
+
+- Cross-service `dai-analyzer -> http://dai-api:8080/health` (python urllib inside the analyzer container) -> 200, proving compose service-name DNS + reachability.
+- Throwaway client on the `dai-smoke` network -> `http://dai-analyzer:8000/api/ping` -> 200, proving the exact `AiService__BaseUrl` target dai-api uses resolves and responds.
+- Teardown (`docker compose down`) removed both containers and the network cleanly.
+
+### environment variable notes
+
+- compose sets only non-secret values: `ASPNETCORE_ENVIRONMENT=Production`, `ASPNETCORE_URLS=http://+:8080`, `AiService__BaseUrl=http://dai-analyzer:8000`.
+- `ConnectionStrings__Sql` and `OPENAI_API_KEY` are intentionally unset for the smoke. For a fuller local run, supply them via shell env or a gitignored `.env` (compose reads `.env`); never commit them. dai-api boots on its baked placeholder connection string because `/health` never opens a connection.
+
+### risks
+
+- The smoke covers build + boot + health + service-name reachability. It does NOT exercise the full analyze chain (requires SQL + OpenAI key) -- that is the first real deploy / a separate integration check.
+- Published host ports 8080/8000 may collide with a running local dev stack (.NET dev uses 5007, FastAPI dev uses 8000). Run the compose smoke when the dev FastAPI is stopped, or remap the host port. Documented for the next runner.
+- Base image tags still float (`10.0`, `3.12-slim`); pin before production.
+- SQL rotation and customer auth remain the gating manual blockers for a real deploy (unchanged).
+
+### next slice
+
+Azure Container Apps provisioning: push images to ACR, create the Container Apps environment, set `dai-analyzer` internal-only ingress with `AiService__BaseUrl` pointed at its internal FQDN, wire Key Vault refs, `Dev__EnableBypassAuth=false`, and point `dai-sports-web` at the deployed `dai-api`. Gated on the manual SQL rotation and customer auth.
+
+### Claude <-> Codex transfer notes
+
+- `dai` changed: one new file `compose.smoke.yaml`. No code, no test changes. `dai-vault`: this handoff. `jera-workspace-skills` untouched.
+- Reproduce: `cd dai && docker compose -f compose.smoke.yaml up -d --build`, then `curl localhost:8080/health` and `curl localhost:8000/api/ping` (both 200), then `docker compose -f compose.smoke.yaml down`. Stop the local dev FastAPI first if port 8000 is busy.
+- No .NET code changed this slice, so the test suite is unaffected (235 passing from Containerization Readiness v1). No PowerShell changed; no ASCII/parser step.
+
+status: local compose smoke merged 2026-05-21. compose.smoke.yaml builds + runs dai-api and dai-analyzer; /health, /api/ping, and service-name reachability all verified 200; clean teardown. no Azure, no secrets, no code change. jera-workspace-skills untouched.
