@@ -546,3 +546,75 @@ Three deployable services plus managed SQL. Target: `dai-api` (public ingress) +
 - No PowerShell changed this slice; no ASCII/parser-validation step required.
 
 status: readiness assessed 2026-05-21. docs only. top blocker is committed secrets in appsettings (rotate + externalize). next: secrets hygiene, then containerize. no code, no deploy. jera-workspace-skills untouched.
+
+## addendum: Secrets Hygiene v1 (2026-05-21)
+
+Security slice. Removed the one real secret from tracked config and added an onboarding template. No git history rewrite, no credential rotation performed (rotation is a manual step for the human, checklist below), no runtime behavior change.
+
+### naming and skills gate
+
+Skills: `dai-grill-with-vault` (read appsettings, csproj, .gitignore, .env.example, and ran `git ls-files` / `git check-ignore` / `git log` to verify tracked-vs-ignored state before changing anything), `dai-token-tight` (reporting), `superpowers:verification-before-completion` (proved tracked state and the post-change clean state with commands, not assumptions). No TDD authored, but ran the full suite because a base-config change could affect startup. jera-workspace-skills untouched (no approval). Skill-fit note carried forward, unchanged.
+
+Naming decisions: placeholder token `__REPLACE_VIA_USER_SECRETS_OR_ENV__` for the SQL password, `__REPLACE_VIA_USER_SECRETS__` for the OddsApi key / Dev provision key, `__REPLACE_WITH_TENANT_ID__` / `api://__REPLACE_WITH_API_APP_ID__` for AzureAd identifiers. Example file `appsettings.Development.example.json` (mirrors the `.env.example` convention; not caught by the `**/appsettings.Development.json` gitignore rule, confirmed via `git check-ignore`).
+
+### findings (verified, correcting the readiness draft)
+
+- Only `appsettings.json` (base) was a tracked secret: a real SQL password in `ConnectionStrings:Sql`. Genuine git-history exposure.
+- `appsettings.Development.json` is gitignored (`**/appsettings.Development.json`) and was NEVER committed (empty `git log`). Its dev SQL password, `OddsApi:ApiKey`, and `Dev:ProvisionKey` are NOT in the repo or history; they live only in the developer's local gitignored copy. The readiness doc's "committed in both files / in git history" claim was overstated and has been corrected in `cloud-deploy-readiness-v1.md`.
+- `services/agent-service/.env` gitignored; `.env.example` keyless. `CompetitionCatalog.cs` `OddsApiKey` values are public odds-api sport-route slugs (e.g. `americanfootball_nfl`), not the secret API key. `DevProvisionController` reads `Dev:ProvisionKey` from config (no hardcoded value). Test files use `"test-key"`.
+
+### files changed
+
+- `dai/platform/dotnet/DevCore.Api/appsettings.json` -- SQL password replaced with `__REPLACE_VIA_USER_SECRETS_OR_ENV__`; all non-secret structure preserved.
+- `dai/platform/dotnet/DevCore.Api/appsettings.Development.example.json` (new, tracked) -- onboarding template: real non-secret dev defaults (`AiService:BaseUrl = http://127.0.0.1:8000`), placeholders for secrets, header comment with the `dotnet user-secrets set` commands.
+- `dai-vault/02 Platform/architecture/cloud-deploy-readiness-v1.md` -- corrected the urgent-finding and blocker #1 wording to the verified tracked-vs-ignored reality.
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+- Not changed: `appsettings.Development.json` (untracked, the developer's local real values stay there, gitignored); `.gitignore` (already covers `.env`, `.env.*`, `**/appsettings.Development.json`, `services/agent-service/.env`); `Program.cs` (csproj already has a `UserSecretsId`, so user secrets auto-load in Development with no code change); `DevCore.Api.csproj`.
+
+### secrets removed from tracked config
+
+- SQL Server password in `appsettings.json` `ConnectionStrings:Sql` -> placeholder. This is the only secret that was in tracked config.
+
+### manual rotation checklist (human action, outside Claude)
+
+- [ ] **SQL password** -- rotate the `sa` (or app) SQL credential; it was in committed git history. Update the local `appsettings.Development.json` or user secrets with the new value, and set `ConnectionStrings__Sql` in Container Apps / Key Vault for cloud.
+- [ ] **Odds API key** -- never committed, but surfaced in session transcripts; rotate at api.the-odds-api.com as defense-in-depth and set via `dotnet user-secrets set "OddsApi:ApiKey" "<new>"` locally and Key Vault for cloud.
+- [ ] **Dev provision key** -- never committed; regenerate the local value if desired; not used in cloud (a dev-only bypass path).
+- [ ] **OpenAI API key** -- lives in the gitignored `services/agent-service/.env`; not tracked. Rotate only if otherwise exposed; set `OPENAI_API_KEY` in Key Vault for cloud.
+- [ ] Optional hardening: history rewrite (BFG / git filter-repo) to purge the old SQL password from history. Out of scope for this slice (no history modification was performed); rotation makes the historical value useless, which is the pragmatic fix.
+
+### local dev configuration approach
+
+- The developer's existing `appsettings.Development.json` is untracked and unchanged, so current local dev is unaffected.
+- A fresh clone has no `appsettings.Development.json`. Two supported paths: (a) `cp appsettings.Development.example.json appsettings.Development.json` and fill in real values (stays gitignored), or (b) leave no dev file and set secrets via `dotnet user-secrets set` (the csproj `UserSecretsId` makes user secrets auto-load in Development). Either way, no secret is tracked.
+
+### cloud deploy implications
+
+- Cloud supplies every secret via env vars / Key Vault: `ConnectionStrings__Sql`, `OddsApi__ApiKey`, `OPENAI_API_KEY`, and (non-secret config) `AiService__BaseUrl`, `AzureAd__*`, `Dev__EnableBypassAuth=false`. The base `appsettings.json` placeholder is never used in cloud because the env var overrides it.
+
+### verification results
+
+- `git ls-files` / `git check-ignore` / `git log`: confirmed base `appsettings.json` tracked with the secret; `appsettings.Development.json` ignored and never committed.
+- `git grep "Password=" -- '*.json'` after the change: only the placeholder line in `appsettings.json` remains. No real password in tracked json. ApiKey/ProvisionKey: no real values in tracked json.
+- `git check-ignore appsettings.Development.example.json`: not ignored (trackable).
+- `dotnet test`: 234 passed, 0 failed (base-config change is startup-safe; the test factory uses an in-memory DB so the placeholder connection string is never opened).
+- No PowerShell changed, so no ASCII/parser-validation step was required.
+
+### risks
+
+- The old SQL password remains in git history until rotated (no history rewrite this slice). Rotation neutralizes it; tracked-tree exposure is removed now.
+- A fresh clone without a `appsettings.Development.json` or user secrets will fail to connect to SQL until one is provided -- intended secure default, documented above.
+- The OddsApi key / provision key were exposed in session transcripts (not git); rotation is prudent.
+
+### next slice
+
+Containerize: three Dockerfiles, the `dai-api` `/health` endpoint, externalize config to env vars, verify local container builds + smoke parity. With tracked secrets removed, this is unblocked. (Manual SQL rotation should happen in parallel; it does not block authoring Dockerfiles but must precede a real deploy.)
+
+### Claude <-> Codex transfer notes
+
+- `dai` changed: `appsettings.json` (placeholdered) + new `appsettings.Development.example.json`. `dai-vault`: readiness doc correction + this handoff. `jera-workspace-skills` untouched.
+- Do NOT commit `appsettings.Development.json` (gitignored) or any rotated secret value. The example file holds placeholders only.
+- Re-verify: `git grep "Password=" -- '*.json'` should show only the placeholder; `dotnet test` -> 234 passing.
+- No history rewrite was performed; the SQL password rotation is a manual human step (checklist above).
+
+status: secrets hygiene merged 2026-05-21. tracked SQL password placeholdered; onboarding example added; readiness doc corrected. 234 tests passing. SQL credential rotation is a pending manual human action. no history rewrite, no rotation performed by Claude. jera-workspace-skills untouched.

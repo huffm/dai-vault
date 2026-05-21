@@ -77,12 +77,14 @@ Move to Key Vault, referenced from Container Apps as secret refs:
 
 Not secrets (plain config): `AzureAd__TenantId`, `AzureAd__Audience`, `AiService__BaseUrl`, `ASPNETCORE_ENVIRONMENT`, `Dev__EnableBypassAuth`.
 
-**Urgent finding (security): secrets are committed to the repo today.**
+**Urgent finding (security): one secret is committed; corrected by Secrets Hygiene v1 (2026-05-21).**
 
-- `appsettings.json` and `appsettings.Development.json` both contain a real SQL Server password in `ConnectionStrings:Sql`.
-- `appsettings.Development.json` contains a real `OddsApi:ApiKey` value (despite an inline comment saying to use user secrets) and a `Dev:ProvisionKey` test value.
+Verified tracked state (the original readiness draft overstated this):
+- `appsettings.json` (base) **is tracked** and contained a real SQL Server password in `ConnectionStrings:Sql`. This is genuine git-history exposure. Secrets Hygiene v1 replaced the value with the placeholder `__REPLACE_VIA_USER_SECRETS_OR_ENV__`; the historical value still requires rotation.
+- `appsettings.Development.json` is **gitignored and was never committed** (`.gitignore` line `**/appsettings.Development.json`; empty git log). Its dev SQL password, `OddsApi:ApiKey`, and `Dev:ProvisionKey` are NOT in the repo or history. They remain only in the developer's local (gitignored) copy.
+- `services/agent-service/.env` is gitignored; `.env.example` is keyless. The `OddsApiKey` strings in `CompetitionCatalog.cs` are public odds-api sport-route slugs, not the API key.
 
-These must be rotated and removed from source before any cloud work, and ideally before the next commit. The values are now in git history, so rotation (not just deletion) is required. This is the top blocker and is called out again in section 11. This readiness slice does not edit those files; it flags them.
+Rotation of the SQL password is still required because it lived in committed history. The OddsApi key and Dev provision key were never committed, but were surfaced in assistant session transcripts during inspection, so rotating them is prudent defense-in-depth. See section 11 and the rotation checklist in `06 Execution/handoffs/current-slice.md`.
 
 ## 6. health check plan
 
@@ -123,7 +125,7 @@ These must be rotated and removed from source before any cloud work, and ideally
 
 ## 11. deployment blockers
 
-1. **Committed secrets (security, highest priority).** SQL password in both appsettings files; OddsApi key and Dev provision key in `appsettings.Development.json`. Rotate and remove before cloud work.
+1. **Committed SQL password (security, highest priority).** The tracked base `appsettings.json` carried a real SQL password (now placeholdered by Secrets Hygiene v1, but still in git history). Rotate the SQL credential. `appsettings.Development.json` was gitignored / never committed, so its OddsApi key and Dev provision key are not a git-history exposure (rotate as defense-in-depth only).
 2. **No Dockerfiles.** All three services run from source today; none is container-ready.
 3. **Auth bypass on.** `Dev:EnableBypassAuth = true` in dev. Cloud must be `false`, and real customer auth must exist before the public API is exposed.
 4. **No `dai-api` health endpoint.** Container Apps needs a liveness probe target.
