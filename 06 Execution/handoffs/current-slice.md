@@ -498,3 +498,51 @@ The full sports pipeline (reference, retrieve, analyze) now routes through the g
 - No PowerShell changed this slice, so no ASCII/parser-validation step was required.
 
 status: analyze wrap merged 2026-05-21. tests 234 passing (was 231, +3). the sports pipeline's reference, retrieve, and analyze calls all route through the Tool Gateway now. outbound X-Agent-Run-Id / X-Correlation-Id headers preserved (already in FastApiClient). no FastAPI/prompt/Pydantic/CognitiveProtocolBuilder/confidence/DB/Angular/MCP/Azure/pgvector changes. jera-workspace-skills untouched.
+
+## addendum: Cloud Deploy Readiness v1 (2026-05-21)
+
+Docs-only readiness slice. No deployment, no runtime code, no config change. Produced the assessment that tells the containerize slice exactly what to build.
+
+### naming and skills gate
+
+Skills: `dai-grill-with-vault` (read Program.cs, appsettings, agent-service main.py, sports-app environments, and the dev scripts before naming or asserting anything), `dai-token-tight` (chat reporting; the doc itself is a vault artifact and uses full prose), `superpowers:verification-before-completion` (every readiness claim grounded in a file read; em-dash check on the new doc). No TDD (docs only, no testable code). jera-workspace-skills untouched (no approval to edit). Skill-fit note carried forward, unchanged: a dedicated `dai-audit`/`dai-implement-with-vault` skill would fit solo read-and-assess slices better than the interactive grill template.
+
+Naming decisions:
+- Container app names: `dai-api` (DevCore.Api orchestrator), `dai-analyzer` (FastAPI agent-service), `dai-sports-web` (Angular sports-app). Lowercase, hyphenated, product-prefixed, role-suffixed; map cleanly to code. Azure SQL is managed, not a container app.
+- Env vars use the standard `Section__Key` double-underscore convention for .NET (`ConnectionStrings__Sql`, `AiService__BaseUrl`, `OddsApi__ApiKey`, `Dev__EnableBypassAuth`, `AzureAd__TenantId/Audience`, `APPLICATIONINSIGHTS_CONNECTION_STRING`); `OPENAI_API_KEY` for the analyzer.
+- Doc filename: `cloud-deploy-readiness-v1.md` (preferred).
+
+### files changed
+
+- `dai-vault/02 Platform/architecture/cloud-deploy-readiness-v1.md` (new) -- 12-section readiness assessment: inventory, local shape, target ACA shape, env vars, secrets/Key Vault, health, networking, logging, launch-required, post-launch, blockers, next slice.
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+
+No `dai` repo changes.
+
+### readiness summary
+
+Three deployable services plus managed SQL. Target: `dai-api` (public ingress) + `dai-analyzer` (internal-only) in one Container Apps environment, `dai-sports-web` as a static build, Azure SQL managed. The Tool Gateway's structured `ToolGatewayInvocation` telemetry is the observability surface; wire App Insights into both containers. Internal call stays `POST /api/sports/analyze` with the existing correlation headers; only the hostname changes from `127.0.0.1:8000` to `http://dai-analyzer`. Corrected a stale detail: the analyzer port is 8000, not 8001 as an earlier draft of the cloud plan said.
+
+### launch blockers
+
+1. **Committed secrets (security, top priority).** Real SQL password in `appsettings.json` and `appsettings.Development.json`; real `OddsApi:ApiKey` and a `Dev:ProvisionKey` in `appsettings.Development.json`. They are in git history, so they must be rotated, not just deleted. This readiness slice flags them; it does not edit the files.
+2. No Dockerfiles for any service.
+3. `Dev:EnableBypassAuth = true` must be `false` in cloud; real customer auth (Entra External ID) must precede public exposure.
+4. No `/health` endpoint on `dai-api`.
+5. Angular production `apiBaseUrl` hardcoded to `localhost:5007`.
+6. No managed Azure SQL provisioned.
+7. `dai-api` CORS allows dev origins only.
+
+### next slice
+
+1. **Secrets hygiene (urgent, first):** rotate the committed SQL password and OddsApi key, remove real values from `appsettings*.json`, move local dev to user secrets / gitignored `.env`.
+2. **Containerize:** author the three Dockerfiles, add the `dai-api` `/health` endpoint, externalize config to env vars (dev behavior unchanged because `appsettings.Development.json` still supplies values), verify local container builds + smoke parity. Azure provisioning follows.
+
+### Claude <-> Codex transfer notes
+
+- Docs-only slice. `dai-vault` has one new doc + this handoff. `dai` and `jera-workspace-skills` untouched.
+- The readiness doc is the build spec for the containerize slice; start there.
+- Do NOT commit any rotated secret value. Secret rotation happens in the secrets-hygiene slice and the new values go to Key Vault / user secrets, never to tracked files.
+- No PowerShell changed this slice; no ASCII/parser-validation step required.
+
+status: readiness assessed 2026-05-21. docs only. top blocker is committed secrets in appsettings (rotate + externalize). next: secrets hygiene, then containerize. no code, no deploy. jera-workspace-skills untouched.
