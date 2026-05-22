@@ -884,3 +884,62 @@ Two reasonable next moves; recommend the registry encoding before any FastAPI re
 - No PowerShell or .NET code changed; ASCII check run on the new doc (clean).
 
 status: station blueprint written 2026-05-22. docs only, no runtime code, no Azure resources. 18-field station-card contract fixed; gateway permissions derived as the node->tools dual of tool->nodes; memory/document analysis specified as governed tools, not context dumps; migration staged (dual emit -> gateway -> blueprint -> ProtocolRegistry v0 -> FastAPI canonical -> vector memory). next: ProtocolRegistry v0 encoding. jera-workspace-skills untouched.
+
+## addendum: ProtocolRegistry v0 (2026-05-22)
+
+Code slice (TDD). Added the first static .NET protocol station registry: the 15 station cards from the blueprint encoded as a declarative manifest, plus a test-only validator that cross-checks station `allowed_tools` against `ToolRegistry.Default()`. No execution behavior changed: nothing on the run path reads the registry, and the validator is NOT wired into startup. No FastAPI prompt, Pydantic/.NET analysis contract field, CognitiveProtocolBuilder mapping, confidence rule, DB schema, Angular, MCP, pgvector, Azure Functions, or Kubernetes change. Tool Gateway governance, CognitiveProtocol persistence, and dual emit preserved.
+
+### naming and skills gate
+
+Skills: `dai-grill-with-vault` (read the blueprint, node-specs, vocabulary map, agent-run contract, and the real Tool Gateway types ToolDefinition/ToolInvocationContext/ToolRegistry before naming/encoding), `superpowers:test-driven-development` (RED: test project failed to compile on missing `DevCore.Api.Protocols` types -> GREEN after implementing), `superpowers:verification-before-completion` (full suite run; named tests confirmed; ASCII check on the 4 new .cs files), `dai-token-tight` (reporting), `dai-agent-handoff` (these transfer notes). No `dai-write-skill`/`dai-grill-me` (no new skill; design fixed by the blueprint). jera-workspace-skills untouched (no approval). Skill-fit note carried forward: a dedicated `dai-implement-with-vault` skill would fit solo doctrine-to-code slices better than the interactive grill template.
+
+Naming decisions (gate item documented):
+- new namespace `DevCore.Api.Protocols` (sibling to `DevCore.Api.Tools`, separate from `AgentRuns` run execution) -- keeps the station registry as doctrine/config, parallel to the tool registry.
+- `ProtocolRegistry` with static `Default()` (mirrors `ToolRegistry.Default()`); `ProtocolStationCard` record; `StationIds` constants (mirrors `ToolIds`); `MacroProtocol` enum {Perceive, Interrogate, Discern, Decide, Synthesize}; `StationModelCall` enum {None, SharedAnalyze}; `ProtocolRegistryValidator` + `ProtocolRegistryValidationResult`.
+- `cost_class` reuses `ToolCostClass` (Free/Cheap/PaidExternal/ModelCall) -- one cost vocabulary across the tool and protocol manifests, no duplicate enum.
+- `station_id` reuses the canonical node id string (e.g. `interrogate.probe`), the same value as `ToolInvocationContext.ProtocolNode` and tool `AllowedProtocolNodes` entries -- one keyspace, no second id scheme (the blueprint's load-bearing decision).
+- test names snake_case per the suite convention (`registry_contains_exactly_fifteen_station_cards`, `deliberately_mismatched_card_fails_validation`, ...).
+
+### files changed
+
+- `dai/platform/dotnet/DevCore.Api/Protocols/ProtocolStationCard.cs` (new) -- the v0 card record (10 fields: station id, macro protocol, micro action, purpose, allowed tools, allowed model call, cost class, telemetry tags, quality gates, calibration hooks), `MacroProtocol` + `StationModelCall` enums, `StationIds` constants.
+- `dai/platform/dotnet/DevCore.Api/Protocols/ProtocolRegistry.cs` (new) -- `Default()` with all 15 cards. 11 model-emitted stations list `analysis.sports.matchup_read` (SharedAnalyze, ModelCall); 4 deterministic stations (interrogate.probe + synthesize trio) list no tools (None, Free).
+- `dai/platform/dotnet/DevCore.Api/Protocols/ProtocolRegistryValidator.cs` (new) -- `Validate(cards, toolRegistry)` returning `ProtocolRegistryValidationResult(IsValid, Errors)`; `ApplicableStageSentinel(card)` derives platform.analyze from SharedAnalyze policy; `DocumentedStageSentinels` constant.
+- `dai/platform/dotnet/DevCore.Api.Tests/Protocols/ProtocolRegistryTests.cs` (new) -- 9 tests.
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+
+No Program.cs change (validator intentionally not wired into startup). No `jera-workspace-skills` change.
+
+### registry summary
+
+15 cards, one per canonical node. The 11 model-emitted stations (perceive.detect/frame/aim, interrogate.question/verify, discern.weigh/contrast/stress, decide.resolve/position/justify) carry `allowed_tools = [analysis.sports.matchup_read]`, `AllowedModelCall = SharedAnalyze`, `CostClass = ModelCall`: today their content is produced inside the single shared analyze call served by the `platform.analyze` stage, so the analyze tool is the tool whose call produces them. The 4 deterministic stations (interrogate.probe via `BuildProbe`, synthesize.integrate/compose/deliver via `SportsComposer`) carry no tools, `None`, `Free`. Telemetry tags, quality gates, and calibration hooks are doctrine strings grounded in node-specs facet 8 (e.g. decide.position hooks `posture_aligned_with_partial_evidence`/`aggressive_posture_with_partial_evidence`; decide.justify hook `confidence_high_for_partial_evidence`; perceive.frame hooks `frame_missing_spread_context`/`frame_missing_rest_context`). Count nuance documented in code: the canonical "12 cognitive micro-actions" are the perceive/interrogate/discern/decide nodes; of those only Probe is deterministic, so 11 are model-emitted; the synthesize trio (3) is platform-operational. 11 + 4 = 15.
+
+### validation behavior
+
+`ProtocolRegistryValidator.Validate` enforces, per card per listed tool: (1) the tool exists in `ToolRegistry`; (2) the tool's `AllowedProtocolNodes` contains the exact `station_id` OR the station's applicable stage sentinel. The applicable sentinel is derived from the model-call policy: `SharedAnalyze -> platform.analyze`, deterministic `None -> null` (so a deterministic station listing any current tool fails, since no real tool lists a cognitive node id). This is the node->tools dual of the gateway's tool->nodes check; it is honest about today's stage-level enforcement. Test-only: not wired into startup (slice guardrail item 8), so it cannot affect the run path.
+
+### test results
+
+`dotnet test`: 244 passed, 0 failed (was 235, +9). New: `registry_contains_exactly_fifteen_station_cards`, `all_station_ids_are_unique`, `all_required_canonical_station_ids_are_present`, `station_ids_follow_macro_protocol_dot_micro_action_shape`, `every_allowed_tool_id_exists_in_tool_registry`, `default_registry_validates_against_default_tool_registry`, `every_allowed_tool_is_compatible_with_station_id_or_documented_stage_sentinel`, `deliberately_mismatched_card_fails_validation`, `card_listing_unknown_tool_fails_validation`. RED confirmed first (test project compile failure on missing `DevCore.Api.Protocols`). Pre-existing xUnit2013 warning at `AgentRunsControllerTests.cs:583` is unrelated.
+
+### risks
+
+- the manifest is hand-maintained against node-specs; drift is possible. Mitigation: the validator pins the tool cross-check; a future slice should generate-from or validate-against node-specs. Severity: low (declarative, unread on the run path).
+- listing `analysis.sports.matchup_read` on the 11 model stations could read as "this station calls the analyze tool directly." It does not; the platform.analyze stage does. Mitigated by explicit code comments and the sentinel semantics. Severity: low.
+- the blueprint v1 prose says "twelve are cognitive (model-emitted)... three are deterministic (Probe plus the Synthesize trio)" -- a minor miscount (Probe + 3 synth = 4 deterministic, 11 model-emitted). The code is precise; the blueprint wording is a doc nit to fix in a later touch (not edited this slice, out of scope). Severity: low.
+- validator not wired to startup, so a future bad edit to either manifest is caught only when tests run. Acceptable for v0; promotion to a startup guard is a later, deliberate step. Severity: low.
+
+### next slice
+
+Two options. (a) Promote the validator to a startup guard (fail fast on a manifest/tool mismatch at boot) once it has run green in CI -- small, but changes startup behavior, so gate it behind tests and a deliberate decision. (b) Begin the FastAPI canonical-field migration (the lockstep rename) so per-station model construction and per-station gateway enforcement become honest, at which point `allowed_tools` stops needing the stage-sentinel stand-in. Recommend (b) is the larger arc but (a) is the cheaper immediate hardening; do (a) only if startup-failure-on-mismatch is wanted now. Provisioning execution and Customer Auth Implementation v1 remain independent.
+
+### Claude <-> Codex transfer notes
+
+- Repos in play: `dai` (4 new files under `DevCore.Api/Protocols/` and `DevCore.Api.Tests/Protocols/`) and `dai-vault` (this handoff). `jera-workspace-skills` read-only, untouched.
+- Re-verify anywhere: `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj` -> 244 passing. No stack/DB/network needed (the registry and validator are pure static data + computation).
+- Extension pattern: add a `StationIds` constant + a `ProtocolStationCard` in `ProtocolRegistry.Default()`; if a station gains a real per-station tool call later, set its `allowed_tools` and the validator checks it by exact station id once the tool's `AllowedProtocolNodes` is opened to that node (dropping the stage-sentinel stand-in).
+- The validator is intentionally not in `Program.cs`. Do not wire it in without a deliberate decision; if promoted, add a startup test first.
+- Pre-existing untracked `dai-vault` calibration files under `04 Products/sports-v1/calibration/` are NOT from this slice; leave them.
+- No PowerShell changed; ASCII verified on the 4 new .cs files (comments are lowercase/ascii per CLAUDE.md).
+
+status: ProtocolRegistry v0 merged 2026-05-22. 15 station cards encoded in DevCore.Api/Protocols; test-only validator cross-checks allowed_tools against ToolRegistry via the platform.analyze stage sentinel. 244 tests passing (was 235, +9). no run-path behavior change, validator not wired to startup. next: validator-as-startup-guard (optional) or FastAPI canonical-field migration. jera-workspace-skills untouched.
