@@ -1097,3 +1097,52 @@ Plan step 2-3: the pure renames in the prompt + the `phases->protocol`/class ren
 - Pre-existing untracked `dai-vault` calibration files are NOT from this slice; leave them.
 
 status: alias scaffold merged 2026-05-22. FastAPI parser + Pydantic models and the .NET wire DTO accept canonical (and `protocol`) names while still accepting legacy; legacy emitted + legacy-precedence so runtime behavior is unchanged. pytest 87 passing (+7), dotnet 253 passing (+5). Stress collapse / v3 / prompt flip deferred. next: pure renames + phases->protocol rename. jera-workspace-skills untouched.
+
+## addendum: Canonical Prompt Pure Rename v1 (2026-05-22)
+
+Code slice (TDD, FastAPI prompt only). Flipped the analyzer prompt to request the canonical names for the seven approved pure-rename fields. Backward-compatible because the parser still accepts legacy via the alias scaffold. No structural Stress collapse, no v3 stamp, no alias removal, no Probe/Synthesize change, no confidence/schema/Angular/Tool Gateway/MCP/pgvector/Functions/Kubernetes change. The persisted artifact shape and `CognitiveProtocolBuilder` are untouched (the record fields stay legacy-named; the canonical prompt keys are alias-mapped to them).
+
+### naming and skills gate
+
+Skills: `dai-grill-with-vault` (read the full prompt `_JSON_SHAPE`, `_parse_phases`/`_parse_response`, the scaffold tests, and the migration plan before editing), `superpowers:test-driven-development` (RED on prompt-content tests -> GREEN), `superpowers:systematic-debugging` (caught a self-inflicted regression: a too-broad `replace_all` rewrote Python attribute access `phases.decide.posture`/`phases.interrogate.balance` in `_parse_response`, breaking 20 parse tests; reverted those two code lines to the legacy record-field names, comments updated), `superpowers:verification-before-completion` (full pytest + full dotnet + a prompt-region grep confirming no renamed legacy label remains and stress/test stay), `dai-token-tight`, `dai-agent-handoff`. jera-workspace-skills untouched (no approval). Skill-fit note carried forward, plus a sharpening note: a `dai-implement-with-vault` skill could include a "rename field labels in prompt strings but never in attribute-access code" guard -- the replace_all footgun this slice hit.
+
+Naming review result (against vocabulary map + station registry): the seven canonical names match the registry station ids exactly -- `interrogate.question`, `interrogate.verify`, `discern.weigh`, `discern.contrast`, `decide.resolve`, `decide.position`, `decide.justify`. Top-level delivery fields (`posture`, `counter_case`, `watch_for`) keep their names; only their nested cross-references in the prompt moved to canonical. `interrogate.stress` and `discern.test` stay legacy (collapse deferred). No new vocabulary.
+
+### files changed
+
+- `dai/services/agent-service/app/services/sports_analyzer.py` -- `_JSON_SHAPE` only: skeleton keys and per-field instruction labels flipped for the seven pure renames; the cross-reference lines updated (`posture must match phases.decide.position`, `counter_case must ... phases.interrogate.question`); `watch_for ... phases.interrogate.stress` left legacy. Two `_parse_response` lines that a broad replace_all wrongly touched were reverted to the legacy record-field attribute access (`phases.decide.posture`, `phases.interrogate.balance`) with clarifying comments. `_parse_phases` (the alias scaffold `_pick` reads) is unchanged.
+- `dai/services/agent-service/tests/test_sports_analyzer.py` -- 4 new tests: prompt emits canonical labels, prompt no longer asks for legacy labels (dotted-label absence + quoted-skeleton-key absence), stress/test stay legacy, and a canonical-prompt-shaped payload parses through `_parse_response` into the legacy-named record fields.
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+
+No .NET change this slice (the wire DTO from the scaffold already accepts canonical; dotnet suite re-run green as a regression guard). No prompt change beyond the seven renames. `jera-workspace-skills` untouched.
+
+### behavior summary
+
+The analyzer now asks the model for canonical field names on the seven pure-rename fields; the model's canonical output is read by the parser's alias scaffold (`_pick` legacy-or-canonical) and mapped into the unchanged legacy-named `SportsCognitivePhases` record, so `CognitiveProtocolBuilder`, the persisted `OutputJson` shape, the v2 stamp, and all downstream consumers are byte-unaffected. Legacy payloads still parse (alias scaffold + tests). The top-level delivery extracts and the deterministic Probe/Synthesize are untouched. Stress and test remain legacy pending their own slice.
+
+### test results
+
+- pytest: 91 passed (was 87; +4). RED first on the two prompt-content tests; one extra RED cycle from the replace_all regression (20 parse failures) then GREEN after reverting the two attribute-access lines and tightening the legacy-key test to quoted-key form (avoids a false positive on the word "calibrated").
+- dotnet test (full suite): 253 passed, 0 failed (unchanged; no .NET code touched). Pre-existing xUnit2013 warning at `AgentRunsControllerTests.cs:583` unrelated.
+- verification item 4 confirmed by grep: no renamed legacy field label remains in the `_JSON_SHAPE` region; `phases.interrogate.stress` and `phases.discern.test` still present.
+
+### risks
+
+- prompt wording change can shift model output phrasing/quality even for a pure rename; mitigated because only field labels changed (the instruction prose and prohibited-phrase guardrails are identical), and confidence/posture remain deterministic platform-side. A calibration spot-check on the next live batch is prudent but not required (no scoring logic changed). Severity: low-med.
+- the legacy record field names now diverge from the canonical prompt keys (intentional, alias-mapped). A future reader could be confused that the prompt says `question` but the record says `Balance`; documented in the reverted-line comments and here. Severity: low.
+- replace_all on dotted strings is a footgun when the same string is both a prompt label and an attribute access; caught and fixed this slice. Severity: resolved.
+
+### next recommended slice
+
+Plan step 3 continued: the class/member rename (`SportsCognitivePhases` -> `SportsCognitiveProtocol`, `phases` -> `protocol`) in lockstep across Pydantic + .NET, now that the prompt emits canonical and both sides accept it. Then the gated structural slices: Stress collapse (Q1, isolated commit + calibration spot-check), detect/aim array-vs-scalar (Q2), v3 stamp (Q6) + legacy-block persistence (Q3), then alias removal (step 7). Confidence rules and posture enum stay untouched.
+
+### Claude <-> Codex transfer notes
+
+- Repos in play: `dai` (FastAPI: `sports_analyzer.py` prompt + 2 reverted `_parse_response` lines, plus test additions) and `dai-vault` (this handoff). `jera-workspace-skills` untouched.
+- Re-verify: FastAPI `\.venv\Scripts\python -m pytest tests/test_sports_analyzer.py` -> 91 passing; .NET `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj` -> 253 passing.
+- GOTCHA for the next renamer: in `sports_analyzer.py` the strings `phases.decide.posture` and `phases.interrogate.balance` appear BOTH as prompt instruction labels (rename) AND as Python attribute access in `_parse_response` reading the legacy-named record (do NOT rename until the record fields are renamed). Do not blanket replace_all.
+- The record fields are still legacy-named (`Balance`, `Reframe`, `Listen`, `Filter`, `Calibrate`, `Voice`, `Posture`); the class/member rename is the next slice. Until then the canonical prompt keys are alias-mapped to legacy record fields by `_pick`.
+- Do NOT collapse stress, stamp v3, remove aliases, or touch the .NET wire DTO this far. Legacy still accepted everywhere.
+- Pre-existing untracked `dai-vault` calibration files are NOT from this slice; leave them.
+
+status: canonical prompt pure rename merged 2026-05-22. analyzer prompt now emits canonical names for the seven pure-rename fields; parser alias-maps them to the unchanged legacy record fields, so persisted shape and CognitiveProtocolBuilder are unaffected. pytest 91 (+4), dotnet 253 (unchanged). stress/test still legacy; v3/collapse/alias-removal deferred. next: class/member rename (phases->protocol). jera-workspace-skills untouched.
