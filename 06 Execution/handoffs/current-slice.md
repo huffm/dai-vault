@@ -744,3 +744,46 @@ Azure Container Apps provisioning: push images to ACR, create the Container Apps
 - No .NET code changed this slice, so the test suite is unaffected (235 passing from Containerization Readiness v1). No PowerShell changed; no ASCII/parser step.
 
 status: local compose smoke merged 2026-05-21. compose.smoke.yaml builds + runs dai-api and dai-analyzer; /health, /api/ping, and service-name reachability all verified 200; clean teardown. no Azure, no secrets, no code change. jera-workspace-skills untouched.
+
+## addendum: Azure Container Apps Provisioning Plan v1 (2026-05-22)
+
+Docs-only planning slice. Produced the precise, named Azure Container Apps provisioning plan that the create slice executes against. No Azure resources created. No runtime code, no FastAPI prompt, no Pydantic contract, no CognitiveProtocolBuilder mapping, no confidence rule, no DB schema, no Angular behavior, no MCP, no pgvector, no Azure Functions, no Kubernetes change.
+
+### naming and skills gate
+
+Skills: `dai-grill-with-vault` (read Program.cs auth/CORS, both Dockerfiles, appsettings + the example template, the sports-app environments, compose.smoke.yaml, and both cloud docs before naming or asserting), `dai-token-tight` (chat reporting; the doc itself is a vault artifact and uses full prose), `dai-agent-handoff` (shaped these transfer notes), `superpowers:verification-before-completion` (every claim grounded in a file read with path:line; ASCII check run on the new doc). No TDD (docs only, no testable code). `dai-signal-follow-up-diagnostics` considered and skipped (it diagnoses run signal gaps, not infra). jera-workspace-skills untouched (no approval to edit). Skill-fit note carried forward, unchanged: a dedicated `dai-audit`/`dai-implement-with-vault` skill would fit solo read-and-plan slices better than the interactive grill closing template.
+
+Naming review result (item documented per gate): the three Container Apps keep the doctrine-locked names `dai-api`, `dai-analyzer`, `dai-sports-web` and deliberately do NOT take the CAF `ca-` prefix, because the internal service URL contract depends on the app name (`http://dai-analyzer`) and the names are already locked across compose, both Dockerfiles, and the readiness doc. Every other resource follows CAF abbreviations with a `dai`/`prod` token: `rg-dai-prod`, `crdaiprod` (ACR forbids hyphens), `cae-dai-prod`, `kv-dai-prod`, `log-dai-prod`, `appi-dai-prod`, `sql-dai-prod` + db `devcore` (kept to avoid connection-string drift), `swa-dai-sports-web` (Static Web Apps, the chosen static-hosting alternative), optional `id-dai-api`. Key Vault secret names are hyphenated (vault forbids underscores) and mapped to the `Section__Key` env vars: `connectionstrings-sql`, `oddsapi-apikey`, `appinsights-connection-string`, `openai-api-key`. All names lowercase, product-prefixed, stable, boring; no misleading names found.
+
+### files changed
+
+- `dai-vault/02 Platform/architecture/azure-container-apps-provisioning-plan-v1.md` (new) -- 20-section provisioning plan: naming, RG, region + open question, ACR images, environment, app names, ingress, internal URL, env vars, Key Vault secrets, App Insights/Log Analytics, Azure SQL, CORS, Entra External ID gating, build/push sequence, smoke checklist, rollback, manual pre-deploy blockers, deferred items, next slice. ASCII-clean (verified).
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+
+No `dai` repo changes. No `jera-workspace-skills` changes.
+
+### provisioning plan summary
+
+One resource group `rg-dai-prod`, one region (recommend `eastus2`, open question pending customer/latency/Entra-residency signal), one Container Apps environment `cae-dai-prod` backed by `log-dai-prod`. Two images in `crdaiprod`: `dai-api` (public ingress, 8080) and `dai-analyzer` (internal-only ingress, 8000); Angular ships as Static Web Apps `swa-dai-sports-web`, not a container. `AiService__BaseUrl=http://dai-analyzer` (no port; ACA internal ingress maps port 80 to target 8000, differs from the compose `:8000`). Four secrets in `kv-dai-prod` as Key Vault refs; non-secret config (AzureAd, AiService BaseUrl, env, bypass flag) as plain env. App Insights `appi-dai-prod` ingests the existing `ToolGatewayInvocation` structured logs; correlate on `X-Agent-Run-Id`. Azure SQL `sql-dai-prod`/`devcore`, no schema change, connection string from Key Vault. Images tagged with immutable git sha so rollback is a revision pin. Tool Gateway, CognitiveProtocol persistence, and the analyze wrap ship unchanged inside the images.
+
+### manual blockers (human, before a real deploy)
+
+1. SQL password rotation (gating) -- historical value still live in git history; rotate, then store the new connection string as Key Vault `connectionstrings-sql`.
+2. Odds API key rotation (defense-in-depth; surfaced in transcripts, never committed) -> Key Vault `oddsapi-apikey`; rotate OpenAI key similarly -> `openai-api-key`.
+3. Customer auth decision (gating for public exposure) -- stand up Entra External ID (tenant, user flow, API + SPA app registrations, audience) and confirm the JWT authority shape; the current `Program.cs:47` authority is the workforce Entra form, External ID uses a different host. Public `dai-api` must not go live with `Dev__EnableBypassAuth=true` or without working customer identity.
+
+Two small code prerequisites for the create slice (gated by the above): externalize CORS allowed origins to config (currently hardcoded `Program.cs:22-26`), and confirm/adjust the JWT authority for External ID.
+
+### next recommended slice
+
+Azure Container Apps provisioning execution (the create slice): provision the named resources, populate Key Vault with rotated secrets, stand up Azure SQL, build/push both images, create the environment, deploy `dai-analyzer` (internal) then `dai-api` (public) with the section 9 env vars and `AiService__BaseUrl=http://dai-analyzer`, externalize CORS + deploy `swa-dai-sports-web`, then run the section 16 smoke checklist. Gated on the manual blockers; provisioning can proceed up to but not including public exposure of `dai-api`.
+
+### Claude <-> Codex transfer notes
+
+- Docs-only slice. `dai-vault`: one new doc (`azure-container-apps-provisioning-plan-v1.md`) + this handoff. `dai` and `jera-workspace-skills` untouched.
+- The new doc is the build spec for the provisioning execution slice; start there. It cites the grounding files (Program.cs auth/CORS lines, Dockerfiles, env templates, sports-app environments).
+- Do NOT commit any rotated secret value. New secrets go to Key Vault only.
+- Pre-existing untracked items in `dai-vault` (the 20260508/20260509/20260510 nba calibration md + artifacts json under `04 Products/sports-v1/calibration/`) are NOT from this slice; leave them.
+- No PowerShell or .NET code changed; no ASCII/parser step beyond the ASCII check on the new vault doc (clean).
+
+status: provisioning plan written 2026-05-22. docs only, no Azure resources created. names reviewed (container apps doctrine-locked, rest CAF). manual blockers: SQL rotation, odds/openai key rotation, Entra External ID decision. next: provisioning execution slice. jera-workspace-skills untouched.
