@@ -1040,3 +1040,60 @@ FastAPI Canonical Field Migration v1 (code), gated on approval of the six open q
 - No code or PowerShell changed; ASCII check run on the new doc (clean).
 
 status: migration plan written 2026-05-22. docs only, no runtime code. eight pure renames + two structural changes (Stress relocation/collapse, detect/aim array->scalar) identified; alias-window lockstep approach with no model dual-emit; CognitiveProtocolBuilder narrows to pass-through + deterministic Probe/Synthesize; v3 artifact version proposed; six open questions need approval before coding. next: FastAPI Canonical Field Migration v1 (code, gated on approvals). jera-workspace-skills untouched.
+
+## addendum: FastAPI Canonical Alias Scaffold v1 (2026-05-22)
+
+Code slice (TDD, Python + .NET). Step 1 of the migration plan: make both the FastAPI parser/models and the .NET client contract ACCEPT canonical cognitive-field names while still accepting legacy names, without changing any emitted/serialized output. No prompt change, no persisted-field rename, no v3 stamp, no Stress collapse. No confidence rule, DB schema, Angular, Tool Gateway, MCP, pgvector, Azure Functions, or Kubernetes change. Current runtime behavior preserved (legacy is what is emitted today and legacy keeps precedence on input).
+
+### naming and skills gate
+
+Skills: `dai-grill-with-vault` (read the analyzer prompt + `_parse_phases`/`_parse_response`, sports.py models, SportAnalysisContracts.cs, FastApiClient.cs, and the migration plan before coding -- discovered the analyzer hand-parses model JSON via dict.get, which determined the real alias seam), `superpowers:test-driven-development` (RED on both sides: 3 failing pytest canonical tests, then .NET compile failure on the missing wire type -> GREEN), `superpowers:verification-before-completion` (full pytest + full dotnet test, named tests confirmed, ASCII check on all changed files), `dai-token-tight` (reporting), `dai-agent-handoff` (these notes). jera-workspace-skills untouched (no approval). Skill-fit note carried forward: a `dai-implement-with-vault`/`dai-migration` skill suited to cross-language lockstep edits would beat the interactive grill template here.
+
+Naming decisions (gate item documented):
+- canonical field names reused exactly from the vocabulary map (question/verify/contrast/weigh/justify/resolve/position); `protocol` is the canonical block-key alias for `phases`. No new vocabulary.
+- FastAPI: aliases realized in TWO places -- (a) the hand-parser `_parse_phases`/`_parse_response` via a `_pick(d, *keys)` legacy-first helper (the runtime-meaningful seam, since the analyzer builds models positionally), and (b) Pydantic `validation_alias=AliasChoices(legacy, canonical)` + `model_config = ConfigDict(populate_by_name=True)` on the renamed fields (satisfies "in the models" and enables model_validate; populate_by_name keeps the positional constructor working; no serialization_alias so output stays legacy).
+- .NET: a tolerant `SportsAnalysisResponseWire` (+ `CognitivePhasesWire` and the four phase wires) with dual `[JsonPropertyName]` properties per renamed field and both `phases`/`protocol`, mapping via `ToResponse()`/`ToModel()` (legacy ?? canonical) into the UNCHANGED `SportsAnalysisResponse`/`SportsCognitivePhases`. STJ has no native multi-alias, so a wire DTO is the idiomatic, low-risk choice (vs a converter).
+- Stress (interrogate.stress) and the discern.test source are deliberately NOT aliased on either side -- the Stress relocation/collapse is the next, isolated slice (plan Q1).
+
+### files changed
+
+- `dai/services/agent-service/app/models/sports.py` -- `validation_alias` + `populate_by_name` on `SportsInterrogatePhase` (balance|question, reframe|verify), `SportsDiscernPhase` (listen|contrast, filter|weigh), `SportsDecidePhase` (calibrate|justify, posture|position, voice|resolve), and `SportsAnalysisResponse.phases` (phases|protocol). Import line gains `AliasChoices, ConfigDict`. Serialization unchanged.
+- `dai/services/agent-service/app/services/sports_analyzer.py` -- `_pick` helper in `_parse_phases`; canonical-or-legacy reads for the renamed nested fields and the nested posture/position; `_parse_response` accepts `phases` or `protocol` block. Stress/test reads unchanged.
+- `dai/services/agent-service/tests/test_sports_analyzer.py` -- 7 new tests (legacy still parses, canonical parses, protocol-key alias, legacy precedence, model_validate canonical, model_validate legacy) + import of the three phase models.
+- `dai/platform/dotnet/DevCore.AiClient/SportsAnalysisWire.cs` (new) -- the tolerant wire DTO + mappers.
+- `dai/platform/dotnet/DevCore.AiClient/FastApiClient.cs` -- deserialize `SportsAnalysisResponseWire` then `ToResponse()` (was binding `SportsAnalysisResponse` directly).
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/SportsAnalysisWireTests.cs` (new) -- 5 tests (legacy maps unchanged, canonical maps equivalent, protocol alias, legacy precedence, null phases).
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+
+No change to the prompt JSON output, `CognitiveProtocol.cs`, `CognitiveProtocolBuilder.cs`, `AgentRunContracts.cs`, `SportsAnalyzer.cs`, the ToolGateway, or any persisted field. `jera-workspace-skills` untouched.
+
+### alias scaffold summary
+
+The analyzer still emits legacy field names; nothing user-facing changes. The FastAPI parser and Pydantic models now ALSO accept canonical names (and the `protocol` block key), legacy-first. On the .NET side, `FastApiClient` reads a tolerant wire DTO that accepts both name sets and maps to the unchanged `SportsAnalysisResponse`; for today's legacy payload the mapping is effect-identical to the prior direct deserialization. This decouples the future prompt flip from a .NET deploy: when a later slice flips the prompt to canonical names, both services already parse it. Stress relocation/collapse and the v3 stamp remain deferred.
+
+### test results
+
+- pytest (`tests/test_sports_analyzer.py`): 87 passed (was 80; +7). RED first on the 3 canonical/protocol tests, GREEN after the parser + model aliases.
+- dotnet test (full suite): 253 passed, 0 failed (was 248; +5 wire tests). RED first (compile failure on missing `SportsAnalysisResponseWire`), GREEN after the wire DTO + FastApiClient wire-in. The pre-existing xUnit2013 warning at `AgentRunsControllerTests.cs:583` is unrelated.
+
+### risks
+
+- `FastApiClient` now maps through the wire DTO; for legacy input it must produce exactly the prior response. Covered by `legacy_payload_maps_to_response_unchanged` and the existing analyzer/integration tests; `Summary!`/`Factors!` are passed through to preserve the prior (non-validated) behavior. Severity: low.
+- pydantic `populate_by_name=True` is accepted in 2.12.5 (installed) but is the older spelling (newer `validate_by_name`/`validate_by_alias`); a future pydantic major could deprecate it. Severity: low; pinned by the unchanged requirement and covered by tests.
+- the wire DTO duplicates the response shape; if `SportsAnalysisResponse` gains a field, the wire DTO must too. Documented; a parity test could be added later. Severity: low.
+- validation_alias on the models is partly redundant with the parser (the runtime path hand-parses), but it satisfies the literal "in the models" requirement and the model_validate tests. Severity: none (additive).
+
+### next recommended slice
+
+Plan step 2-3: the pure renames in the prompt + the `phases->protocol`/class renames, now safe because both sides already accept canonical (this scaffold). Then the gated structural slices: Stress collapse (Q1, isolated commit + calibration spot-check) and detect/aim array-vs-scalar (Q2), then v3 stamp (Q6) + legacy-block persistence decision (Q3), then alias removal (step 7). Confidence rules and posture enum stay untouched throughout.
+
+### Claude <-> Codex transfer notes
+
+- Repos in play: `dai` (FastAPI: 3 files; .NET: 1 new wire file, FastApiClient edit, 1 new test) and `dai-vault` (this handoff). `jera-workspace-skills` untouched.
+- Re-verify: FastAPI `\.venv\Scripts\python -m pytest tests/test_sports_analyzer.py` -> 87 passing; .NET `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj` -> 253 passing. No stack/DB/network needed.
+- The real FastAPI alias seam is the parser (`_pick`), because the analyzer hand-parses model JSON; `validation_alias` on the models is additive and only affects `model_validate`. Keep both.
+- The .NET seam is the wire DTO in `DevCore.AiClient/SportsAnalysisWire.cs`; `FastApiClient` maps through it. Production traffic stays legacy until the prompt flips, so the canonical path is exercised only by tests this slice.
+- Do NOT flip the prompt, collapse Stress, stamp v3, or rename persisted fields in this scaffold -- those are later plan steps. legacy keeps precedence everywhere.
+- Pre-existing untracked `dai-vault` calibration files are NOT from this slice; leave them.
+
+status: alias scaffold merged 2026-05-22. FastAPI parser + Pydantic models and the .NET wire DTO accept canonical (and `protocol`) names while still accepting legacy; legacy emitted + legacy-precedence so runtime behavior is unchanged. pytest 87 passing (+7), dotnet 253 passing (+5). Stress collapse / v3 / prompt flip deferred. next: pure renames + phases->protocol rename. jera-workspace-skills untouched.
