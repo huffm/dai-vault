@@ -996,3 +996,47 @@ The protocol manifest is now self-checking at boot. The larger forward arc is th
 - No PowerShell changed; ASCII verified on the new/edited .cs files.
 
 status: startup guard merged 2026-05-22. Program.cs validates ProtocolRegistry.Default() vs ToolRegistry.Default() at host configuration and throws InvalidOperationException on drift; passing leaves runtime unchanged. 248 tests passing (was 244, +4). next: FastAPI canonical-field migration. jera-workspace-skills untouched.
+
+## addendum: FastAPI Canonical Field Migration Plan v1 (2026-05-22)
+
+Planning slice (docs only). Produced the lockstep plan to rename the analyzer's legacy cognitive-phase fields to canonical protocol fields across the FastAPI prompt, the Pydantic models, and the .NET wire contract. No runtime code changed. No FastAPI prompt, Pydantic model, .NET contract, CognitiveProtocolBuilder mapping, confidence rule, DB schema, Angular, Tool Gateway, MCP, pgvector, Azure Functions, or Kubernetes change.
+
+### naming and skills gate
+
+Skills: `dai-grill-with-vault` (read sports_analyzer.py prompt + `_parse_phases`, app/models/sports.py, SportAnalysisContracts.cs, CognitiveProtocolBuilder.cs, and the vocabulary map before planning), `dai-token-tight` (chat reporting; the doc is full prose), `dai-agent-handoff` (these notes), `superpowers:verification-before-completion` (every field claim grounded in a file read with line refs; ASCII check on the new doc), `superpowers:writing-plans`/`planning` (sequenced, revertible implementation steps with explicit gates). No TDD (no code). jera-workspace-skills untouched (no approval). Skill-fit note carried forward: a dedicated `dai-implement-with-vault` (or a `dai-migration-plan`) skill would fit lockstep cross-language migration planning better than the interactive grill template.
+
+Naming review result (gate item documented): canonical field names are LOCKED by the vocabulary map and station ids -- reused exactly (detect/frame/aim, question/probe/verify, weigh/contrast/stress, resolve/position/justify); no new vocabulary invented. Pydantic + .NET class renames specified to the canonical `...Protocol` suffix (SportsCognitivePhases -> SportsCognitiveProtocol, etc.) so both sides share one vocabulary; response member `phases -> protocol` (flagged as Q5). Compatibility aliases use Pydantic `validation_alias`/`AliasChoices` and .NET `[JsonPropertyName]` for a transition window. Delivery field names (`counter_case`, `watch_for`, `what_would_change_the_read`, `lean`, `lean_side`) are NOT renamed -- they are product extracts, not protocol fields. New artifact version constant `sports_decision_artifact_v3` proposed (parallel to v2). Migration steps named and ordered (aliases -> renames -> class/member rename -> structural Stress -> array/scalar -> v3 stamp -> alias removal -> doctrine update).
+
+### files changed
+
+- `dai-vault/02 Platform/architecture/cognitive-factory/fastapi-canonical-field-migration-plan-v1.md` (new) -- 15-section plan: legacy map, canonical map, Pydantic changes, prompt changes, .NET contract changes, persisted-field compatibility, dual-emit decision, builder role, /dev/artifacts handling, calibration handling, test plan, rollback, exact sequence, do-not-change list, open questions. ASCII-clean.
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+
+No `dai` repo changes. No `jera-workspace-skills` changes.
+
+### migration plan summary
+
+The migration is NOT a flat rename. Eight pure renames (balance->question, reframe->verify, filter->weigh, listen->contrast, voice->resolve, calibrate->justify, plus frame and posture->position keeping value semantics) are low risk. Two changes are structural and approval-gated: (1) Stress relocates Interrogate->Discern AND collapses two legacy stress-adjacent prompts (interrogate.stress + discern.test) into one canonical discern.stress -- a prompt-content change with calibration impact; (2) perceive.detect/aim are arrays today but scalars in the canonical CognitiveProtocol record. Probe (deterministic BuildProbe) and Synthesize (deterministic constants) are never model-emitted, so no prompt change for them. Recommended approach: no model-side dual-emit (divergence + token risk); instead an alias window at the parser boundary decouples prompt and contract rollouts and gives clean rollback. CognitiveProtocolBuilder becomes pass-through for the renamed scalars while retaining Probe, Synthesize, array-join, and Stress sourcing. New records stamp `sports_decision_artifact_v3`; old v1/v2 records are never rewritten and continue to project via ProtocolView. /dev/artifacts and calibration scripts already prefer canonical CognitiveProtocol, so they need confirmation, not redesign.
+
+### risks
+
+- the Stress collapse (Q1) changes model output and may shift calibration; mitigated by landing it as its own revertible commit with a calibration spot-check. Severity: med.
+- lockstep drift between FastAPI and .NET if the prompt and contract roll out separately without the alias window; mitigated by shipping aliases first (step 1). Severity: med without aliases, low with.
+- array->scalar (Q2) is a wire-type change; recommend keeping arrays to avoid prompt churn. Severity: low.
+- dropping legacy CognitivePhases on v3 (Q3) could surprise a consumer that reads the legacy block directly; mitigated because the read-side projection and /dev/artifacts already prefer canonical. Severity: low.
+- this is a plan; the risk is mostly deferred to the implementation slice, which must hold the do-not-change list (section 14) and get approval on the six open questions before coding.
+
+### recommended implementation slice
+
+FastAPI Canonical Field Migration v1 (code), gated on approval of the six open questions (especially Q1 Stress collapse and Q4 alias window). Land in the section-13 order: (1) add aliases additive, (2) pure renames in prompt+parser+builder+tests, (3) class + `phases->protocol` rename, (4) structural Stress as an isolated commit with a calibration spot-check, (5) array/scalar per Q2, (6) stamp v3 + decide legacy-block persistence, (7) remove aliases after a calibration window, (8) update the vocabulary map + node-specs to mark legacy names retired-from-runtime. TDD throughout; the 248-test suite plus pytest stay green; confidence rules and posture enum untouched.
+
+### Claude <-> Codex transfer notes
+
+- Planning slice. `dai-vault`: one new doc (`fastapi-canonical-field-migration-plan-v1.md`) + this handoff. `dai` and `jera-workspace-skills` untouched.
+- The plan is the build spec for the migration code slice; start at section 13 (exact sequence) and clear section 15 (open questions) with the human first.
+- Key grounding: the legacy->canonical remap currently lives in `CognitiveProtocolBuilder.FromLegacy` (DevCore.Api/AgentRuns) and the prompt JSON in `sports_analyzer.py` lines 58-80 + 118-168; the .NET wire mirror is `SportAnalysisContracts.cs`. The Stress relocation (interrogate.stress|discern.test -> discern.stress) is the crux.
+- Do NOT start coding without Q1/Q4 approval; do NOT make the model emit two shapes (no model dual-emit); do NOT rewrite historical records.
+- Pre-existing untracked `dai-vault` calibration files under `04 Products/sports-v1/calibration/` are NOT from this slice; leave them.
+- No code or PowerShell changed; ASCII check run on the new doc (clean).
+
+status: migration plan written 2026-05-22. docs only, no runtime code. eight pure renames + two structural changes (Stress relocation/collapse, detect/aim array->scalar) identified; alias-window lockstep approach with no model dual-emit; CognitiveProtocolBuilder narrows to pass-through + deterministic Probe/Synthesize; v3 artifact version proposed; six open questions need approval before coding. next: FastAPI Canonical Field Migration v1 (code, gated on approvals). jera-workspace-skills untouched.
