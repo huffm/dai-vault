@@ -943,3 +943,56 @@ Two options. (a) Promote the validator to a startup guard (fail fast on a manife
 - No PowerShell changed; ASCII verified on the 4 new .cs files (comments are lowercase/ascii per CLAUDE.md).
 
 status: ProtocolRegistry v0 merged 2026-05-22. 15 station cards encoded in DevCore.Api/Protocols; test-only validator cross-checks allowed_tools against ToolRegistry via the platform.analyze stage sentinel. 244 tests passing (was 235, +9). no run-path behavior change, validator not wired to startup. next: validator-as-startup-guard (optional) or FastAPI canonical-field migration. jera-workspace-skills untouched.
+
+## addendum: Protocol Registry Startup Guard v1 (2026-05-22)
+
+Code slice (TDD). Promoted the ProtocolRegistry v0 validator from test-only to a startup guard: Program.cs now validates `ProtocolRegistry.Default()` against `ToolRegistry.Default()` during host configuration and fails fast with a clear `InvalidOperationException` on drift. No run-path behavior change when validation passes. No FastAPI prompt, Pydantic/.NET analysis contract field, CognitiveProtocolBuilder mapping, confidence rule, DB schema, Angular, MCP, pgvector, Azure Functions, or Kubernetes change. Tool Gateway governance, CognitiveProtocol persistence, and dual emit preserved.
+
+### naming and skills gate
+
+Skills: `dai-grill-with-vault` (read the existing validator, the `AddDaiToolGateway` extension pattern, the `ToolGatewayDIRegistrationTests` minimal-factory pattern, and the Program.cs wire-in point before naming/coding), `superpowers:test-driven-development` (RED: test project failed to compile on the missing `ProtocolRegistryServiceCollectionExtensions` -> GREEN after implementing), `superpowers:verification-before-completion` (full suite run; 4 new tests confirmed by name; ASCII check on the new/edited .cs files), `dai-token-tight` (reporting), `dai-agent-handoff` (these notes). No new skill (`dai-write-skill`/`dai-grill-me` not applicable). jera-workspace-skills untouched (no approval). Skill-fit note carried forward: a dedicated `dai-implement-with-vault` skill would fit these solo doctrine-to-code slices better than the interactive grill template.
+
+Naming decisions (gate item documented):
+- new static class `ProtocolRegistryServiceCollectionExtensions` in `DevCore.Api.Protocols` -- mirrors `ToolGatewayServiceCollectionExtensions` in `DevCore.Api.Tools`.
+- entry method `ValidateDaiProtocolRegistry(this IServiceCollection)` -- `Validate` verb (it validates, it does not register services) with the `Dai` prefix matching the `AddDaiToolGateway` family; returns the collection for chaining.
+- testable throw core `ThrowIfProtocolRegistryInvalid(IReadOnlyList<ProtocolStationCard>, IToolRegistry)` -- public so tests drive the throw path with a synthetic bad manifest without needing InternalsVisibleTo.
+- failure type `InvalidOperationException` (per brief); message prefixed "Protocol registry validation failed against the tool registry:" then one line per validator error (each already names station id + tool id).
+- test names snake_case per suite convention (`application_startup_succeeds_when_registries_agree`, `invalid_registry_fails_the_guard_with_invalid_operation_exception`, `guard_error_message_includes_station_id_and_tool_id`).
+
+### files changed
+
+- `dai/platform/dotnet/DevCore.Api/Protocols/ProtocolRegistryServiceCollectionExtensions.cs` (new) -- `ValidateDaiProtocolRegistry` extension + `ThrowIfProtocolRegistryInvalid` core. Validates static metadata only; no db/cloud/http dependency; no node-spec markdown read.
+- `dai/platform/dotnet/DevCore.Api/Program.cs` -- added `using DevCore.Api.Protocols;` and one line `builder.Services.ValidateDaiProtocolRegistry();` immediately after `AddDaiToolGateway()`, before `builder.Build()`.
+- `dai/platform/dotnet/DevCore.Api.Tests/Protocols/ProtocolRegistryStartupGuardTests.cs` (new) -- 4 tests: WebApplicationFactory startup-succeeds smoke, default registry passes the guard, mismatched card throws InvalidOperationException, error message includes station id + tool id.
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+
+No change to `ProtocolRegistry.cs`, `ProtocolStationCard.cs`, `ProtocolRegistryValidator.cs`, the Tool Gateway, SportsRetriever/Analyzer/Composer, or FastAPI. No `jera-workspace-skills` change.
+
+### behavior summary
+
+At host configuration time Program.cs calls `ValidateDaiProtocolRegistry()`, which runs the existing `ProtocolRegistryValidator` over `ProtocolRegistry.Default()` vs `ToolRegistry.Default()`. The manifests agree today, so startup is unchanged and no request path is touched. If a future edit makes a station list a tool the tool registry does not grant it (by exact station id or the applicable stage sentinel) or a nonexistent tool, the host throws `InvalidOperationException` before `builder.Build()` returns -- the app does not start, and the message lists each offending station id + tool id. The guard is synchronous, pure-metadata, and dependency-free, so it adds no startup I/O.
+
+### test results
+
+`dotnet test`: 248 passed, 0 failed (was 244, +4). New: `application_startup_succeeds_when_registries_agree` (real Program.cs host builds via WebApplicationFactory with the guard wired in), `default_protocol_registry_passes_the_startup_guard`, `invalid_registry_fails_the_guard_with_invalid_operation_exception`, `guard_error_message_includes_station_id_and_tool_id`. RED confirmed first (compile failure on missing `ProtocolRegistryServiceCollectionExtensions`). The 9 ProtocolRegistry v0 tests still pass. Pre-existing xUnit2013 warning at `AgentRunsControllerTests.cs:583` is unrelated.
+
+### risks
+
+- the guard now gates app startup. A genuine manifest/tool mismatch will stop the app from booting. This is the intended fail-fast behavior, and it can only fire on a developer edit to one of the two static manifests (not on runtime data), caught immediately in dev/CI. Severity: low (desired hardening; the WebApplicationFactory test proves the current manifests boot clean).
+- validation runs on every host start (including each WebApplicationFactory in the suite). Cost is a single pass over 15 cards x their tool lists -- negligible. Severity: low.
+- `ThrowIfProtocolRegistryInvalid` is public for testability; it is a thin throwing wrapper over the validator, not new permission logic. Severity: low.
+
+### next slice
+
+The protocol manifest is now self-checking at boot. The larger forward arc is the FastAPI canonical-field migration (the lockstep rename of the analyze prompt + Pydantic + .NET records) so per-station model construction and per-station gateway enforcement become honest, at which point station `allowed_tools` validates by exact station id and the stage-sentinel stand-in retires. Azure Container Apps provisioning execution and Customer Auth Implementation v1 remain independent and gated only on their own manual blockers.
+
+### Claude <-> Codex transfer notes
+
+- Repos in play: `dai` (1 new extension, 1 new test, Program.cs +2 lines) and `dai-vault` (this handoff). `jera-workspace-skills` read-only, untouched.
+- Re-verify anywhere: `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj` -> 248 passing. No stack/DB/network needed (in-memory EF + stubbed identity in the factory; the guard is pure static metadata).
+- The guard validates the static `*.Default()` manifests, not the DI-registered `IToolRegistry`; that is intentional and dependency-free. If a future slice makes the tool manifest dynamic, revisit whether the guard should read the registered registry instead.
+- To trip the guard deliberately (sanity check): add a `ProtocolStationCard` whose `AllowedTools` lists a tool whose `AllowedProtocolNodes` excludes both the station id and its applicable sentinel; the app will refuse to start with a message naming that station and tool.
+- Pre-existing untracked `dai-vault` calibration files under `04 Products/sports-v1/calibration/` are NOT from this slice; leave them.
+- No PowerShell changed; ASCII verified on the new/edited .cs files.
+
+status: startup guard merged 2026-05-22. Program.cs validates ProtocolRegistry.Default() vs ToolRegistry.Default() at host configuration and throws InvalidOperationException on drift; passing leaves runtime unchanged. 248 tests passing (was 244, +4). next: FastAPI canonical-field migration. jera-workspace-skills untouched.
