@@ -842,3 +842,45 @@ Customer Auth Implementation v1, gated on the External ID tenant existing (block
 - No PowerShell or .NET code changed; ASCII check run on the new doc and the edited provisioning plan (both clean).
 
 status: customer auth readiness written 2026-05-22. docs only, no auth code, no Azure resources. provider confirmed Entra External ID federating Google/Apple/Microsoft/email; deploy docs de-ambiguated (section 14/18). manual blockers: External ID tenant + federations + app registrations, then the auth implementation slice. next: Customer Auth Implementation v1. jera-workspace-skills untouched.
+
+## addendum: Cognitive Protocol Station Blueprint v1 (2026-05-22)
+
+Docs/architecture slice. Defined the station-card contract that turns each cognitive node into a governed "station" with a compact, machine-loadable card, and specified how the Tool Gateway derives permissions from those cards. No runtime code changed (no doc-linked config stub was justified -- the ProtocolRegistry is explicitly a later slice with its own tests). No FastAPI prompt, Pydantic, CognitiveProtocolBuilder, confidence rule, DB schema, Angular, MCP, pgvector, Azure Functions, Kubernetes, secret, or customer-auth change. Cognitive Protocol Runtime behavior, Tool Gateway governance, and CognitiveProtocol persistence preserved.
+
+### naming and skills gate
+
+Skills: `dai-grill-with-vault` (read cognitive-protocol-runtime.md, protocol-node-specs.md, protocol-vocabulary-map.md, current-agent-run-contract.md, and the real Tool Gateway types ToolDefinition/ToolInvocationContext/ToolRegistry before naming or asserting anything), `dai-token-tight` (chat reporting; the doc itself is a vault artifact, full prose), `dai-agent-handoff` (shaped these transfer notes), `superpowers:verification-before-completion` (every facet/field grounded in a file read; confirmed the 7 registered tools, the 3 platform-stage sentinels, and that only AllowedProtocolNodes is enforced in v1; verified both cross-referenced docs exist; ASCII check on the new doc). No TDD (docs only, no code change). `dai-signal-follow-up-diagnostics` considered and skipped (it diagnoses signal coverage on a run, not protocol machinery). `dai-write-skill`/`dai-grill-me` considered and skipped (no new skill; direction already decided in node-specs, not fuzzy). jera-workspace-skills untouched (no approval). Skill-fit note carried forward, unchanged: a dedicated `dai-audit`/`dai-implement-with-vault` skill would fit solo read-and-architect slices better than the interactive grill closing template.
+
+Naming decisions (gate item documented): "protocol station" = the runtime/factory embodiment of a canonical node (node = doctrine word in node-specs; station = factory framing in CLAUDE.md). Load-bearing decision: `station_id` REUSES the existing canonical node id string (e.g. `interrogate.probe`), the same value as `ToolInvocationContext.ProtocolNode` and the tool `AllowedProtocolNodes` entries -- no second id scheme, one keyspace. The 18 station-card fields adopted verbatim from the brief (snake_case), each mapped to a node-specs facet or a `ToolDefinition` field; `cost_class` mirrors `ToolCostClass`, `telemetry_tags` mirror `ToolGatewayInvocation`. Runtime config concept named `ProtocolRegistry v0` (mirrors `ToolRegistry`, static manifest first). Memory tools adopted verbatim, dotted namespace consistent with existing tool ids: `memory.prior_runs.search`, `memory.calibration.lessons`, `memory.niche.rules`, `memory.signal_failures`. Document tools proposed `document.markdown.extract` / `document.html.extract` (governed, bounded, gateway-routed -- not context dumps). Quality gates referenced by existing ids (`counter_case_generic`, `confidence_high_for_partial_evidence`, `frame_missing_rest_context`, ...), not reinvented. Doc filename `protocol-station-blueprint-v1.md` per brief. No misleading names.
+
+### files changed
+
+- `dai-vault/02 Platform/architecture/cognitive-factory/protocol-station-blueprint-v1.md` (new) -- 15-section blueprint: what a station/card is, relation to node-specs, doctrine->config move, the 18 required card fields, gateway permission derivation (node->tools as the dual of tool->nodes), scripts/reflexes, model calls, document tools, vector memory, ML/calibration, sports v1 mapping (NBA/MLB/NFL/NCAAM, NCAAW out of scope), migration path, launch vs post-launch, what not to build. ASCII-clean.
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+
+No `dai` repo changes. No `jera-workspace-skills` changes.
+
+### summary
+
+The station card is the machine-readable projection of the node-specs 11 prose facets plus runtime/governance metadata (token_budget, cost_class, telemetry_tags, calibration_hooks, allowed_memory_queries). node-specs stays the source; the card never contradicts it. Tool Gateway permissions become a single matrix readable in both directions: a station may invoke a tool iff the tool is in the card's `allowed_tools` AND the station_id is in the tool's `AllowedProtocolNodes` -- a cross-check, not a second permission system, validated at build time by a future `ProtocolRegistry v0`. Honest current-state caveat captured: the 12 cognitive micro-actions are one analyze call whose gateway caller is `platform.analyze`, so enforcement is at the stage level today; per-station enforcement is honest only after the FastAPI canonical-field migration. Scripts (SignalQualityEvaluator, BuildProbe, SportsComposer, SportsEvaluator) and model calls are both bounded by the card and never widen permissions; Synthesize and the deterministic stations add no facts. Vector memory and document analysis enter only as governed, bounded, gateway-logged tools, never as vault/context dumps -- the same discipline as "load compact station cards."
+
+### risks
+
+- station_id reuses the node id string; if a future ProtocolRegistry diverges from `ToolInvocationContext.ProtocolNode` values, the cross-check (section 6) breaks. Mitigation: the doc names one keyspace explicitly and the validator fails the build on mismatch. Severity: low while docs-only.
+- the per-station `allowed_tools` lists are doctrine, not enforced today (one analyze call, stage-level gateway caller). A reader could mistake them for live per-node enforcement. Mitigation: section 6 states the caveat plainly. Severity: low.
+- node-specs and the card can drift if hand-maintained. Mitigation: the doc mandates generate-from/validate-against node-specs for ProtocolRegistry v0. Severity: med if the registry slice ignores it.
+- NCAAW remains an open gap (out of scope, no overlay). Severity: low; flagged not fabricated.
+
+### next slice
+
+Two reasonable next moves; recommend the registry encoding before any FastAPI rename. (a) `ProtocolRegistry v0`: encode the 15 station cards as a static .NET manifest next to `ToolRegistry`, declarative/unenforced first, plus a startup validator that cross-checks card `allowed_tools` against tool `AllowedProtocolNodes` and fails the build on mismatch (TDD; no behavior change). (b) FastAPI canonical-field migration (the lockstep rename) -- larger, gated on (a) existing so the canonical names have a runtime home. The Azure Container Apps provisioning execution and Customer Auth Implementation v1 slices remain independent and can proceed in parallel.
+
+### Claude <-> Codex transfer notes
+
+- Docs-only slice. `dai-vault`: one new doc (`protocol-station-blueprint-v1.md`) + this handoff. `dai` and `jera-workspace-skills` untouched.
+- The new doc is the contract a future `ProtocolRegistry v0` encodes against; it cites the grounding code (`Tools/ToolDefinition.cs`, `ToolInvocationContext.cs`, `ToolRegistry.cs`) and docs (node-specs, vocabulary map, agent-run contract).
+- Do NOT add ProtocolRegistry code ahead of its own TDD slice; do NOT split the single analyze call; `allowed_memory_queries` stays empty on every card until pgvector lands offline-first.
+- Pre-existing untracked items in `dai-vault` (20260508/09/10 nba calibration md + artifacts json under `04 Products/sports-v1/calibration/`) are NOT from this slice; leave them.
+- No PowerShell or .NET code changed; ASCII check run on the new doc (clean).
+
+status: station blueprint written 2026-05-22. docs only, no runtime code, no Azure resources. 18-field station-card contract fixed; gateway permissions derived as the node->tools dual of tool->nodes; memory/document analysis specified as governed tools, not context dumps; migration staged (dual emit -> gateway -> blueprint -> ProtocolRegistry v0 -> FastAPI canonical -> vector memory). next: ProtocolRegistry v0 encoding. jera-workspace-skills untouched.
