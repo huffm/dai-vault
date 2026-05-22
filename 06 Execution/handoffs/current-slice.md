@@ -787,3 +787,58 @@ Azure Container Apps provisioning execution (the create slice): provision the na
 - No PowerShell or .NET code changed; no ASCII/parser step beyond the ASCII check on the new vault doc (clean).
 
 status: provisioning plan written 2026-05-22. docs only, no Azure resources created. names reviewed (container apps doctrine-locked, rest CAF). manual blockers: SQL rotation, odds/openai key rotation, Entra External ID decision. next: provisioning execution slice. jera-workspace-skills untouched.
+
+## addendum: Customer Auth Readiness v1 (2026-05-22)
+
+Docs-only auth readiness slice. Clarified the customer identity plan (Entra External ID) before public exposure and removed the workforce-vs-External-ID ambiguity in the deploy docs. No auth code implemented. No Azure resources created. No FastAPI prompt, Pydantic contract, CognitiveProtocolBuilder mapping, confidence rule, DB schema, Angular product behavior, MCP, pgvector, Azure Functions, or Kubernetes change. No secrets committed. Tool Gateway, CognitiveProtocol persistence, and local dev workflow preserved.
+
+### naming and skills gate
+
+Skills: `dai-grill-with-vault` (read Program.cs auth/CORS, IdentityResolver, DevProvisionController, UserIdentity model, sports-app app.config.ts, and the auth section of next-platform-architecture-plan.md + both cloud docs before asserting or naming), `dai-token-tight` (chat reporting; the doc itself is a vault artifact, full prose), `dai-agent-handoff` (shaped these transfer notes), `superpowers:verification-before-completion` (every current-state claim grounded in a file read with path:line; grepped [Authorize] usage and confirmed sports-app has zero bearer/MSAL; ASCII check on new + edited docs). No TDD (docs only, no code change). `dai-grill-me` considered and skipped (the auth direction was already decided in next-platform-architecture-plan.md, not fuzzy). `dai-write-skill` considered and skipped (no new skill). jera-workspace-skills untouched (no approval). Skill-fit note carried forward, unchanged: a dedicated `dai-audit`/`dai-implement-with-vault` skill would fit solo read-and-assess slices better than the interactive grill closing template.
+
+Naming review result (gate item documented): provider named "Microsoft Entra External ID" (the CIAM product, distinct from workforce Entra and from legacy B2C). Provider slugs in `UserIdentity` confirmed consistent with the model comment and next-platform-architecture-plan.md normalization: `google`, `apple`, `microsoft`, `entra` (direct email). Config: keep the existing `AzureAd` section name (conventional even for External ID; renaming churns code for no gain); add `AzureAd__Instance` (`https://{tenant-subdomain}.ciamlogin.com/`) so the authority host is configurable instead of hardcoded `login.microsoftonline.com`; keep `AzureAd__TenantId` and `AzureAd__Audience` (`api://{api-app-id}`). App registrations named to match the resources they back: API app reg `dai-api`, SPA app reg `dai-sports-web`. CORS: deployed `swa-dai-sports-web` origin must be allowed and the `Authorization` header preserved (existing `.AllowAnyHeader()` covers it). Redirect/logout URIs registered on the SPA app registration (not dai-api): local `http://localhost:4201`, cloud `https://{swa-fqdn}`. No misleading names; none of the External ID config values are secrets (SPA public client, no client secret).
+
+### files changed
+
+- `dai-vault/02 Platform/architecture/customer-auth-readiness-v1.md` (new) -- 12-section + future-alignment auth readiness doc: current implementation (verified), External ID decision, four sign-in methods, app registrations/user flow, env vars, local dev behavior, cloud behavior, CORS, redirect/logout URLs, pre-exposure gate, doc reconciliation, docs-only posture, next slice, Azure/AKS/Functions/Postgres alignment. ASCII-clean.
+- `dai-vault/02 Platform/architecture/azure-container-apps-provisioning-plan-v1.md` -- section 14 rewritten (External ID confirmed; configurable `AzureAd__Instance` authority; references the readiness doc) and section 18 customer-auth blocker updated to point at the readiness doc gate list.
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+
+No `dai` repo changes (docs-only; the narrow authority config correction is deferred to the auth implementation slice, see below). No `jera-workspace-skills` changes.
+
+### auth readiness summary
+
+Real today: .NET JWT Bearer is wired to the workforce authority `login.microsoftonline.com/{tenantId}/v2.0` (`Program.cs:42-53`), the host hardcoded; sports endpoints (`AgentRunsController`, `SportsReferenceController`) carry no `[Authorize]`; `IdentityResolver` hardcodes `provider="entra"`, reads `oid`/`iss`, and has a dev bypass guarded by `env.IsDevelopment() && Dev:EnableBypassAuth`; `UserIdentity` is `(Provider, Issuer, Subject)` with no schema change needed; the sports-app has zero auth (no MSAL, no interceptor, no bearer). Target: Entra External ID as a single JWT issuer federating Google, Apple, Microsoft, and email; the only .NET change is a configurable authority pointed at the `ciamlogin.com` host plus `idp`-claim normalization and JIT provisioning; the only Angular change is MSAL + a bearer interceptor. Local dev is unchanged (dev bypass stays). Cloud requires `Production` + `Dev__EnableBypassAuth=false` and a valid External ID token on every request.
+
+### customer sign-in recommendation
+
+Entra External ID with four methods on one user flow: email one-time passcode (preferred over password to avoid credential storage/reset surface), Google, Apple, and Microsoft (MSA) -- all via External ID federation, no custom OIDC connector needed. Account linking deferred (each provider yields a distinct oid -> distinct UserIdentity row at v1).
+
+### launch blockers (human/portal, before public exposure)
+
+1. Provision the External ID tenant (Azure portal) -- prerequisite for everything else; no validation target exists until it does.
+2. Configure Google/Apple/Microsoft/email federations on a sign-up/sign-in user flow.
+3. Create the API app registration (`dai-api`: scope `access_as_user`, audience `api://{api-app-id}`) and the SPA app registration (`dai-sports-web`: redirect/logout URIs).
+4. Run the auth implementation slice (configurable authority -> External ID; `idp` normalization + JIT in IdentityResolver, drop `tid` splitting; `[Authorize]` on AgentRunsController; MSAL + bearer interceptor in sports-app; environment.ts MSAL config).
+5. `Dev__EnableBypassAuth=false` + `ASPNETCORE_ENVIRONMENT=Production` in cloud.
+6. CORS allows the deployed web origin and preserves `Authorization`.
+7. End-to-end sign-in tested per enabled method before opening the edge.
+
+### future Azure/AKS/Functions/Postgres alignment
+
+External ID changes no topology: `dai-api` is the only public ingress and the token validator; `dai-analyzer` stays internal-only and needs no user token; `swa-dai-sports-web` is the MSAL public client; authority/audience are plain env, not secrets. Future Azure Functions call internal endpoints with a shared-secret header, never a user bearer token. pgvector/Postgres holds no identity (UserIdentity stays in SQL Server). A future AKS move needs no auth change (JWT validation is host-agnostic). Tier enforcement (Stripe) is authorization, separate from this authentication slice.
+
+### next recommended slice
+
+Customer Auth Implementation v1, gated on the External ID tenant existing (blockers 1-3). Order: configurable authority -> idp normalization + JIT -> `[Authorize]` on AgentRunsController -> MSAL + interceptor in sports-app + environment.ts -> externalize CORS + preserve Authorization -> end-to-end sign-in test with bypass off. Last gate before public exposure of `dai-api`. (The Azure Container Apps provisioning execution slice can run in parallel up to but not including public exposure.)
+
+### Claude <-> Codex transfer notes
+
+- Docs-only slice. `dai-vault`: one new doc (`customer-auth-readiness-v1.md`) + provisioning-plan section 14/18 edits + this handoff. `dai` and `jera-workspace-skills` untouched.
+- The narrow authority config correction (add `AzureAd:Instance`, build `{Instance}{TenantId}/v2.0`, replace hardcoded `login.microsoftonline.com` in `Program.cs:47`) was deliberately NOT applied: it is only verifiable against a live External ID tenant that does not exist yet, so it lands with the auth slice and is tested in one pass. Do not apply it ahead of the tenant.
+- The deeper design narrative (claim mapping table, JIT transaction shape, MSAL interceptor placement) lives in `next-platform-architecture-plan.md` sections 1-2; the readiness doc is the launch-gate summary on top of it.
+- Do NOT commit any External ID secret -- there is none for the SPA public client; the API validates tokens with no secret. Tenant id, instance, and audience are non-secret config.
+- Pre-existing untracked items in `dai-vault` (20260508/09/10 nba calibration md + artifacts json under `04 Products/sports-v1/calibration/`) are NOT from this slice; leave them.
+- No PowerShell or .NET code changed; ASCII check run on the new doc and the edited provisioning plan (both clean).
+
+status: customer auth readiness written 2026-05-22. docs only, no auth code, no Azure resources. provider confirmed Entra External ID federating Google/Apple/Microsoft/email; deploy docs de-ambiguated (section 14/18). manual blockers: External ID tenant + federations + app registrations, then the auth implementation slice. next: Customer Auth Implementation v1. jera-workspace-skills untouched.
