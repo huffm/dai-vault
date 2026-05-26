@@ -1206,4 +1206,54 @@ The remaining migration-plan structural steps, now that naming is canonical at t
 - Do NOT remove any compat alias/property, collapse Stress, or stamp v3 yet.
 - Pre-existing untracked `dai-vault` calibration files are NOT from this slice; leave them.
 
-status: protocol class/member rename merged 2026-05-26. Pydantic SportsCognitivePhases->SportsCognitiveProtocol (+alias); response member phases->protocol (+`.phases` property, +phases validation alias, serializes protocol); .NET wire CognitivePhasesWire->CognitiveProtocolWire with Protocol primary / Phases alias / protocol-preferred mapping; downstream .NET contract record intentionally unchanged. pytest 97 (+6), dotnet 254 (+1). v3/collapse/alias-removal/downstream-record-rename deferred. jera-workspace-skills untouched.
+status: protocol class/member rename merged 2026-05-26. Pydantic SportsCognitivePhases->SportsCognitiveProtocol (+alias); response member phases->protocol (+`.phases` property, +phases validation alias, serializes protocol); .NET wire CognitivePhasesWire->CognitiveProtocolWire with Protocol primary / Phases alias / protocol-preferred mapping; downstream .NET contract record intentionally unchanged. pytest 97 (+6), dotnet 254 (+1). v3/collapse/alias-removal/downstream-record-rename deferred. jera-workspace-skills untouched. COMMITTED+PUSHED: dai 0cc87b3 (feat: rename analyzer phases to protocol), dai-vault 181a408 (docs: document analyzer protocol rename).
+
+## addendum: Decision Factory Hardening v1 -- Decision Artifact Contract v1 (2026-05-26)
+
+Focus shift from operational production readiness to hardening how the decision artifact is manufactured. This first slice defines the internal artifact contract and begins enforcing it. No auth/billing/tenant/Kubernetes/deploy work. No confidence-math change, no DB schema change, no Angular change, no broad downstream contract rename, no persisted-shape change.
+
+### naming and skills gate
+
+Skills: `dai-grill-with-vault` (read SportsQualityChecker + its tests, SignalQualityEvaluator, SportsRetrievalOutput, the signal record shapes, and the sports-v1 product folder before deciding the slice -- this is what proved the anti-hype gate was safe against the fully-grounded clean-pass fixture), `superpowers:test-driven-development` (RED on rule 6 -> GREEN), `superpowers:systematic-debugging` (fixed a namespace import miss for SharpPublicLookupResult), `superpowers:verification-before-completion` (full dotnet + full pytest + ASCII check), `dai-token-tight`, `dai-agent-handoff`. `dai-signal-follow-up-diagnostics` considered (it is the closest runtime-doctrine skill) and used as background framing for the signal-availability/proxy reasoning, not invoked as a procedure. jera-workspace-skills untouched (no approval). Skill-fit note: `dai-signal-follow-up-diagnostics` is well-aligned with this hardening track; a companion `dai-decision-artifact-contract` skill (read the artifact contract, classify which of the 16 sections a complaint hits, propose the owning phase + gate) would fit future hardening slices.
+
+Naming decisions (gate item documented): slice named **Decision Artifact Contract v1** per the brief. New quality gate is **rule 6 (anti-hype)**, keyed on the existing `ConfidenceEffect == "block_aggressive_posture"` vocabulary (no new signal vocabulary invented). Warning string is descriptive and stable: `aggressive posture=play asserted while signal layer blocks aggressive posture (missing confirmation signal)`. New test type named `DecisionArtifactContractTests` (characterization). Vault doc at the suggested path `04 Products/sports-v1/decision-factory-hardening-v1.md`. No type/field/contract renames this slice.
+
+### files changed
+
+- `dai-vault/04 Products/sports-v1/decision-factory-hardening-v1.md` (new) -- the durable hardening plan: north star, v1 success, phase responsibilities, the 16-section artifact contract mapped to owning phase + backing field + status, the 7-facet signal source strategy, proxy rules, quality gates (existing 5 + new rule 6 + planned), next slices. ASCII-clean.
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/SportsQualityChecker.cs` -- added rule 6 (anti-hype gate): warns when posture==play and any SignalAvailability record carries ConfidenceEffect==block_aggressive_posture. Reads the existing `retrieval.SignalAvailability`; additive warning only.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/SportsQualityCheckerTests.cs` -- 3 rule-6 tests (warns on play+block; no-warn on play+confirmation-grounded; no-warn on cautious posture+block).
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/DecisionArtifactContractTests.cs` (new) -- 6 characterization tests pinning the contract: available/missing signals surfaced; weak signal graded usable-not-strong; strong only with confirmation; missing confirmation blocks aggressive posture.
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+
+No FastAPI change. No persisted-shape change. `jera-workspace-skills` untouched.
+
+### behavior changes
+
+One additive behavior change: a new deterministic `ArtifactQualityWarning` fires when an aggressive `play` posture is asserted while a confirmation signal is missing (the signal layer marks `block_aggressive_posture`). It surfaces the anti-hype risk on the inspection surface; it does NOT change the confidence number, the posture value, the customer DTO, or any persisted shape. Everything else is documentation + characterization tests that pin already-true guarantees so future hardening cannot silently regress them. Old persisted artifacts are unaffected (the gate runs at check time for new runs only).
+
+### tests added / results
+
+- dotnet test: 263 passed, 0 failed (was 254, +9: 3 rule-6 + 6 contract characterization). RED confirmed first on rule 6. Clean-pass and all existing rule tests stay green (rule 6 cannot fire on the fully-grounded fixture). Pre-existing xUnit2013 warning at `AgentRunsControllerTests.cs:583` unrelated.
+- pytest: 97 passed (unchanged; no FastAPI change this slice).
+- serialization-compatible (testing req 5) and old-artifact-readable (req 6) are covered by the existing SportsAnalysisWireTests (97/254 wire round-trip) and ProtocolVocabularyMapperTests (v1 legacy fallback) suites; not duplicated here.
+
+### risks
+
+- rule 6 adds a warning in the play+missing-confirmation case; additive and inspection-only, but any external consumer that asserted an exact `ArtifactQualityWarnings` set for that scenario would see one more entry. No such consumer exists in-repo (verified by full-suite green). Severity: low.
+- the gate keys on `block_aggressive_posture`, which today only `sharp_public`-missing produces; if future signals add that effect the gate widens automatically (intended). Severity: low.
+- proxy explicit-labeling and runtime `confidence_high_for_partial_evidence` are documented as gaps, deliberately deferred (the latter intersects the confidence surface + clean-pass contract). Severity: low (tracked as next slices).
+
+### next recommended slice
+
+Proxy label surfacing (contract section 6 item): add an explicit proxy label to the artifact when a `lateral_proxy` informs the read, enforced by a quality gate, additive on the inspection surface. Then the injury/availability signal slice, then the runtime weak-evidence confidence gate.
+
+### Claude <-> Codex transfer notes
+
+- Repos in play: `dai` (1 runtime file + 2 test files) and `dai-vault` (1 new product doc + this handoff). `jera-workspace-skills` untouched.
+- Re-verify: .NET `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj` -> 263 passing; FastAPI `\.venv\Scripts\python -m pytest` -> 97 passing. No stack/DB/network needed (checker + evaluators are pure).
+- The artifact contract is .NET-side and additive; the analyzer (FastAPI) already emits canonical `protocol`. Do NOT rename `SportsCognitivePhases`/`SportsAnalysisResponse.Phases` (deferred). Do NOT change confidence math or stamp v3 in hardening slices unless that is the explicit slice.
+- rule 6 is the template for further deterministic gates: read the existing `SignalAvailability`/`SignalFollowUps` diagnostics, emit an additive `ArtifactQualityWarning`, fixture it so it cannot fire on the fully-grounded clean-pass case.
+- Pre-existing untracked `dai-vault` calibration files and the out-of-pack `../home-*.png` / `lessons-learned.md` under the skills workdir are NOT from this slice; leave them.
+
+status: Decision Artifact Contract v1 implemented 2026-05-26 (NOT yet committed -- awaiting commit approval). vault contract doc + anti-hype quality gate (rule 6) + contract characterization tests. dotnet 263 (+9), pytest 97 (unchanged). no confidence/schema/Angular/contract-rename/persisted-shape change. next: proxy label surfacing. jera-workspace-skills untouched.
