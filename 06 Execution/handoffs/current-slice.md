@@ -1146,3 +1146,64 @@ Plan step 3 continued: the class/member rename (`SportsCognitivePhases` -> `Spor
 - Pre-existing untracked `dai-vault` calibration files are NOT from this slice; leave them.
 
 status: canonical prompt pure rename merged 2026-05-22. analyzer prompt now emits canonical names for the seven pure-rename fields; parser alias-maps them to the unchanged legacy record fields, so persisted shape and CognitiveProtocolBuilder are unaffected. pytest 91 (+4), dotnet 253 (unchanged). stress/test still legacy; v3/collapse/alias-removal deferred. next: class/member rename (phases->protocol). jera-workspace-skills untouched.
+
+## addendum: Analyzer Protocol Class and Member Rename v1 (2026-05-26)
+
+Code slice (TDD, Python + .NET). Renamed the analyzer response wrapper from legacy "phases" naming to canonical "protocol" naming, with full backward compatibility. No structural Stress collapse, no v3 stamp, no alias removal, no Probe/Synthesize change, no confidence/schema/Angular/Tool Gateway/MCP/pgvector/Functions/Kubernetes change. Persisted artifact behavior unchanged.
+
+### naming and skills gate
+
+Skills: `dai-grill-with-vault` (read the Pydantic models, `_parse_response`, the route's `response_model` serialization path, the .NET wire DTO, and traced `SportsCognitivePhases` usage across 10 .NET files before scoping), `superpowers:test-driven-development` (RED on 6 pytest + 1 .NET test -> GREEN), `superpowers:verification-before-completion` (full pytest + full dotnet + ASCII check; confirmed the 44 existing `.phases` reads stay green via the property), `dai-token-tight`, `dai-agent-handoff`. jera-workspace-skills untouched (no approval). Skill-fit note carried forward: a `dai-implement-with-vault` skill should encode the "rename at the contract surface, not the deeply-embedded downstream type" scoping heuristic used here.
+
+Naming decisions (gate item documented):
+- Pydantic: `SportsCognitivePhases` -> `SportsCognitiveProtocol`, with a module-level back-compat alias `SportsCognitivePhases = SportsCognitiveProtocol` (importers do not break). Sub-phase classes (`SportsPerceivePhase`, `SportsInterrogatePhase`, `SportsDiscernPhase`, `SportsDecidePhase`) intentionally NOT renamed -- only the aggregate and the response member were approved.
+- Pydantic response member: `phases` -> `protocol` (canonical), `validation_alias=AliasChoices("protocol","phases")` (legacy `phases` key still accepted), serialization now emits `protocol`; a read-only `@property phases` returns `self.protocol` so the 44 existing `.phases` accessors (and any consumer) keep working without churn.
+- .NET wire DTO: `CognitivePhasesWire` -> `CognitiveProtocolWire`; the wire response member `Protocol` is now primary (first, `[JsonPropertyName("protocol")]`) and `Phases` is the retained legacy alias; `ToResponse()` prefers `Protocol ?? Phases`.
+- SCOPING DECISION (documented + deferred): the .NET downstream contract record `SportsCognitivePhases` (in `SportAnalysisContracts.cs`), `SportsAnalysisResponse.Phases`, `CognitiveProtocolBuilder`, `ProtocolVocabularyMapper`, and the persisted-block type are intentionally LEFT UNCHANGED. Renaming that record ripples into 10 files including the legacy->canonical builder and the persisted contract, with no behavior benefit this slice; item 6 mandates mapping into existing downstream contracts without changing them. The .NET wire DTO renames; the downstream contract rename is a separate later slice.
+
+### files changed
+
+- `dai/services/agent-service/app/models/sports.py` -- class rename + back-compat alias; response member `phases`->`protocol` with validation alias + `phases` read-property; comment fixes.
+- `dai/services/agent-service/app/services/sports_analyzer.py` -- import `SportsCognitiveProtocol`; `_parse_phases` return type + constructor; `_parse_response` constructs `SportsAnalysisResponse(protocol=...)`.
+- `dai/services/agent-service/tests/test_sports_analyzer.py` -- 6 new tests (protocol member, phases-property alias, serializes protocol-not-phases, model_validate protocol + phases-alias, back-compat class alias).
+- `dai/platform/dotnet/DevCore.AiClient/SportsAnalysisWire.cs` -- `CognitivePhasesWire`->`CognitiveProtocolWire`; `Protocol` primary + `Phases` alias; `ToResponse()` prefers protocol.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/SportsAnalysisWireTests.cs` -- 1 new test (protocol preferred over phases when both present).
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+
+No change to FastApiClient, the .NET contract record `SportsCognitivePhases`, `CognitiveProtocolBuilder`, `ProtocolVocabularyMapper`, or any persisted field. `jera-workspace-skills` untouched.
+
+### behavior summary
+
+The analyzer response's cognitive block is now the canonical `protocol` member end to end at the analyzer-wire surface: FastAPI serializes `protocol`; the .NET wire DTO reads `protocol` (preferred) or `phases` (legacy alias) and maps into the unchanged `SportsCognitivePhases` .NET contract record, so `CognitiveProtocolBuilder`, the persisted `OutputJson` shape, and the v2 stamp are byte-unaffected. The deterministic Probe/Synthesize, the posture enum, and confidence are untouched. Stress/test stay legacy.
+
+### compatibility behavior
+
+- FastAPI: `protocol` member is canonical; `phases` accepted as a validation alias on input; `.phases` property preserves legacy read access; `SportsCognitivePhases` name still importable (alias). Legacy and canonical payloads both parse; serialization emits `protocol`.
+- .NET: wire accepts both `protocol` (primary) and `phases` (alias); downstream contract `SportsAnalysisResponse.Phases` unchanged, so all consumers and persisted artifacts are unaffected. Old persisted OutputJson records are never touched and remain readable.
+
+### test results
+
+- pytest: 97 passed (was 91; +6). RED first on the 6 rename tests. The 44 pre-existing `.phases` reads pass unchanged via the property.
+- dotnet test (full suite): 254 passed, 0 failed (was 253; +1 protocol-preference test). RED first on that test (Phases won before the precedence flip). Pre-existing xUnit2013 warning at `AgentRunsControllerTests.cs:583` unrelated.
+
+### risks
+
+- FastAPI now serializes `protocol` instead of `phases` to .NET. Safe because the .NET wire DTO accepts both and prefers `protocol`; covered by the wire tests. Severity: low.
+- the `phases` read-property is not a Pydantic field, so it is absent from `model_dump()` (asserted) -- consumers that introspected `model_fields` for `phases` would not find it; none do. Severity: low.
+- naming asymmetry: .NET wire is `CognitiveProtocolWire` but the downstream contract record is still `SportsCognitivePhases`. Documented as intentional; the downstream rename is deferred. Severity: low (cosmetic).
+- the back-compat surfaces (class alias, `.phases` property, `phases` validation alias, .NET `Phases` alias) must be removed together in the later alias-removal slice; tracked. Severity: low.
+
+### next recommended slice
+
+The remaining migration-plan structural steps, now that naming is canonical at the analyzer surface: Stress collapse (plan Q1, isolated commit + calibration spot-check), then detect/aim array-vs-scalar (Q2), then v3 stamp (Q6) + legacy `CognitivePhases` persistence decision (Q3), then alias removal (step 7: drop the `phases` property/alias, the `SportsCognitivePhases` module alias, the wire `Phases` alias) and the downstream .NET contract record rename (`SportsCognitivePhases`->`SportsCognitiveProtocol` across `SportAnalysisContracts.cs`/builder/vocab-mapper). Confidence rules and posture enum stay untouched.
+
+### Claude <-> Codex transfer notes
+
+- Repos in play: `dai` (FastAPI: 3 files; .NET: wire DTO + wire test) and `dai-vault` (this handoff). `jera-workspace-skills` untouched.
+- Re-verify: FastAPI `\.venv\Scripts\python -m pytest tests/test_sports_analyzer.py` -> 97 passing; .NET `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj` -> 254 passing.
+- The canonical Python member is `result.protocol`; `result.phases` is a read-only property alias kept for back-compat. New code should use `.protocol`.
+- The .NET downstream contract is deliberately still `SportsCognitivePhases`/`SportsAnalysisResponse.Phases`; the wire layer (`CognitiveProtocolWire`, `Protocol` member) is what was renamed. Do NOT rename the downstream record until the dedicated slice (it touches CognitiveProtocolBuilder + ProtocolVocabularyMapper + persistence).
+- Do NOT remove any compat alias/property, collapse Stress, or stamp v3 yet.
+- Pre-existing untracked `dai-vault` calibration files are NOT from this slice; leave them.
+
+status: protocol class/member rename merged 2026-05-26. Pydantic SportsCognitivePhases->SportsCognitiveProtocol (+alias); response member phases->protocol (+`.phases` property, +phases validation alias, serializes protocol); .NET wire CognitivePhasesWire->CognitiveProtocolWire with Protocol primary / Phases alias / protocol-preferred mapping; downstream .NET contract record intentionally unchanged. pytest 97 (+6), dotnet 254 (+1). v3/collapse/alias-removal/downstream-record-rename deferred. jera-workspace-skills untouched.
