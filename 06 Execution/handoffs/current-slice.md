@@ -1524,3 +1524,97 @@ Parallel candidate (separate, smaller): teach `run-artifact-calibration.ps1` to 
 - No PowerShell was edited; no parser/ASCII validation step required. The harness was run, not modified.
 
 status: Canonical Protocol Calibration Spot-Check v1 completed 2026-05-28. 3 live NBA runs through the canonical pipeline; cognitiveProtocol shape healthy end-to-end (scalar perceive, single discern.stress, no interrogate.stress / discern.test, populated probe, clean protocolView); runtime quality gates correctly silent on monitor postures; calibration delta directional only at n=3. v3 stamp is now safe. next: artifact v3 stamp + legacy block persistence decision. jera-workspace-skills untouched. COMMITTED+PUSHED: dai-vault afa319d (docs(sports): add canonical protocol calibration spot-check). No dai commit (no code changed).
+
+## addendum: Artifact v3 Stamp v1 (2026-05-28)
+
+Code slice (TDD, .NET + small Angular label touch). Migration plan Q6 + Q3 in one commit: stamp `sports_decision_artifact_v3` on every record from this slice forward, drop the legacy `CognitivePhases` block on success records, and recognize v3 on the dev artifact label. No FastAPI prompt, Pydantic, CognitiveProtocolBuilder mapping, confidence rule, posture behavior, Tool Gateway behavior, DB schema, MCP, pgvector, Azure Functions, Kubernetes, or secrets change. Pre-launch posture honored: no destructive purge of historical records.
+
+### naming and skills gate
+
+Skills used (jera pack, local, read-only):
+- `dai-grill-with-vault` -- read migration plan Q6 + Q3, the spot-check note, `CognitiveProtocol.cs`, `SportsComposer.cs`, `AgentRunContracts.cs`, the artifact endpoint in `AgentRunsController.cs:282-314`, `ProtocolVocabularyMapper`, and `apps/sports-app/.../dev-artifact-review.component.ts:126-131` before naming/coding. Surfaced two semantic choices that needed explicit decisions: (1) failure-path version stamp, (2) what `null CognitivePhases` means for the read-side projection.
+- `dai-token-tight` -- reporting density.
+- `dai-agent-handoff` -- transfer notes.
+
+Skills used (Claude built-ins):
+- `superpowers:test-driven-development` -- RED on renamed v3 assertions + the new `compose_drops_legacy_cognitive_phases_on_v3_success_runs` test + the v3 controller integration test, then GREEN after the constant + composer changes. One genuine RED also surfaced an existing test (`compose_passes_cognitive_phases_from_analyzer`) that was incompatible with the new v3 doctrine -- it was retargeted in the same RED cycle (now `compose_drops_legacy_cognitive_phases_and_carries_canonical_protocol_through`).
+- `superpowers:verification-before-completion` -- full dotnet suite + named-test confirmation; ASCII check on every changed `.cs` and the Angular `.ts` line.
+- `superpowers:planning` / `superpowers:writing-plans` -- consulted; migration plan Q6 already specifies the sequence.
+
+Skill weakness / sharpening recommendations carried forward:
+1. The migration-step pattern "add version constant -> stamp success + failure -> drop legacy block on success -> tiny dev-page label tweak -> retain prior-version tests as backward-compat proofs" has now repeated four times (Stress Collapse, Perceive Scalar Collapse, Spot-Check, v3 Stamp). A dedicated `dai-implement-with-vault` skill that codifies this pattern would beat the interactive grill template.
+2. The harness markdown reporter (the `interrogate.stress` / `discern.test` "not recorded" columns) remains the smallest open follow-up. Not addressed in this slice (scope discipline).
+3. `jera-workspace-skills` left untouched (repo boundary rule honored, no approval to edit).
+
+Naming decisions (gate item documented):
+- **`ArtifactVersions.SportsDecisionArtifactV3 = "sports_decision_artifact_v3"`** -- mirrors V2 precedent; matches the migration plan Q6 vocabulary; no new naming family.
+- **Failure-path version stamp choice: V3 uniformly.** Rationale: the version is an **era marker** of the pipeline that produced the record, not a shape marker of success vs failure. A failed run produced by the post-migration pipeline is still "from the v3 era." Success vs failure is differentiated by the presence of `CognitiveProtocol` (non-null on success, null on failure), not by `ArtifactVersion`. Documented in the `ArtifactVersions` class comment and on `AgentRunExecutionResult.ArtifactVersion` so a future reader does not re-litigate.
+- **Legacy `CognitivePhases` on v3 success records: dropped (null).** Rationale: the read-side projection (`ProtocolVocabularyMapper.Project`) already prefers canonical when present, and the canonical `CognitiveProtocol` is now produced for every success record. Persisting both was justified during the V2 dual-emit window; with the canonical analyzer prompt shipped and the spot-check confirming the shape is healthy, the legacy block is redundant going forward. Old v1 records (which have `CognitivePhases` only and no canonical block) keep their persisted shape and remain readable via `ProjectFromLegacy`.
+- **Legacy `CognitivePhases` on v3 failure records: null** -- analyze failed before any phase output existed; no change in semantics from the prior V2 failure path here.
+- **Angular `/dev/artifacts` label**: added the V3 branch `'v3 sports_decision_artifact'`. V2 label retained; V1 (null) label retained. The dev page's source badge and rendering logic are unchanged because they already prefer `cognitiveProtocol` first.
+- **No destructive purge** script in this slice -- pre-launch dev runs are disposable but were left readable. The user explicitly approved disposability "if needed"; this slice did not need it.
+
+### files changed
+
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/CognitiveProtocol.cs` -- added `SportsDecisionArtifactV3` constant; expanded the `ArtifactVersions` doc comment to spell out the era-marker semantics (V1 null, V2 dual-emit, V3 canonical-authoritative; failure paths also stamp V3).
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/SportsComposer.cs` -- success path: stamp V3 + null `CognitivePhases` (canonical `CognitiveProtocol` is the persisted authoritative shape); failure path: stamp V3 uniformly + null `CognitivePhases` + null `CognitiveProtocol` (era marker, not shape marker). Doc comments updated.
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/AgentRunContracts.cs` -- comment refresh on `AgentRunExecutionResult.CognitivePhases`, `AgentRunExecutionResult.ArtifactVersion`, `AgentRunExecutionResult.CognitiveProtocol`, and `AgentRunArtifactDto.CognitiveProtocol` to reflect v3 semantics (legacy block null on v3, canonical block authoritative on v2+v3).
+- `dai/apps/sports-app/src/app/dev-artifact-review/dev-artifact-review.component.ts` -- one-line addition: `if (version === 'sports_decision_artifact_v3') return 'v3 sports_decision_artifact'`. No HTML change; the existing source-badge logic continues to work because it already prefers the canonical block.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/SportsComposerTests.cs` -- 4 renames + 1 new test:
+  - `compose_stamps_v2_artifact_version_on_successful_runs` -> `compose_stamps_v3_artifact_version_on_successful_runs`.
+  - new `compose_drops_legacy_cognitive_phases_on_v3_success_runs` -- asserts `CognitivePhases is null` and `CognitiveProtocol is not null` on a v3 success result.
+  - `compose_canonical_protocol_is_null_when_analyzer_did_not_emit_phases` -- updated to assert V3 + null `CognitivePhases` + null `CognitiveProtocol`.
+  - `compose_failed_run_stamps_v2_artifact_version_but_leaves_protocol_null` -> `compose_failed_run_stamps_v3_artifact_version_uniformly`, asserting V3 + null `CognitiveProtocol` + null `CognitivePhases`.
+  - `compose_persists_probe_on_v2_when_market_grounded_but_sharp_public_missing` -> `compose_persists_probe_on_v3_...` (era-name only; behavior unchanged).
+  - `compose_passes_cognitive_phases_from_analyzer` (the pre-existing test that asserted the legacy block passed through) -> `compose_drops_legacy_cognitive_phases_and_carries_canonical_protocol_through` -- now asserts the new v3 doctrine.
+- `dai/platform/dotnet/DevCore.Api.Tests/Integration/AgentRunsControllerTests.cs` -- one new integration test (`artifact_endpoint_surfaces_artifact_version_and_canonical_protocol_when_v3_present`) and one new fixture (`BuildInspectableArtifactV3`). The pre-existing v2 test (`artifact_endpoint_surfaces_artifact_version_and_canonical_protocol_when_v2_present`) and v1 test (`artifact_endpoint_returns_null_artifact_version_for_v1_records`) are **deliberately kept unchanged** -- they are the backward-compatibility proofs that old persisted records of either prior era still read back cleanly through the v3-era controller and projection.
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+
+No FastAPI / Python change. No DB migration. No `dai-vault` calibration file change. No `jera-workspace-skills` change.
+
+### version behavior
+
+- **V3 success record** -- new persisted shape from this slice forward: `ArtifactVersion = "sports_decision_artifact_v3"`, `CognitiveProtocol != null`, `CognitivePhases = null`. All deliver-layer extracts (`Posture`, `CounterCase`, `WatchFor`, `WhatWouldChangeTheRead`), `Confidence`, `EvidenceRichness`, `ArtifactQualityWarnings`, `SignalAvailability`, `SignalFollowUps`, and pipeline metadata are unchanged.
+- **V3 failure record** -- new persisted failure shape: `ArtifactVersion = "sports_decision_artifact_v3"`, `CognitiveProtocol = null`, `CognitivePhases = null`. Publishability remains `NotPublishable`; degradation notes and the failed analyze step are recorded as before.
+
+### compatibility behavior
+
+- **V1 records** (legacy, predate the canonical block): `ArtifactVersion = null`, `CognitivePhases` populated, `CognitiveProtocol = null`. Continue to deserialize cleanly. `ProtocolVocabularyMapper.Project` routes them through `ProjectFromLegacy` and surfaces the canonical stress via `Discern.Stress.Canonical` (with the vestigial legacy slots null) per Stress Collapse v1's view rules. The Angular dev page renders them as "v1 (legacy)".
+- **V2 records** (dual-emit window): both `CognitivePhases` and `CognitiveProtocol` populated. Continue to deserialize cleanly. `ProtocolVocabularyMapper.Project` prefers canonical (`ProjectFromCanonical`). The Angular dev page renders them as "v2 sports_decision_artifact".
+- **V3 records** (this slice): `CognitiveProtocol` only. The projection prefers canonical (same code path as v2). The Angular dev page renders them as "v3 sports_decision_artifact".
+- Reader contract on the artifact endpoint is byte-additive: existing v2 consumers see no shape change for v2 records; v3 records expose `CognitivePhases = null` on the artifact DTO, which any consumer was already required to handle since the DTO has always declared it nullable. The customer-facing `AgentRunResultDto` is unchanged.
+
+### test results
+
+`dotnet test`: 277 passed, 0 failed (was 275; +2 net after one test rename + one new composer test + one new integration test). RED first on the renamed v3 assertions and the new tests; one additional RED cycle when the pre-existing legacy-pass-through test surfaced and was retargeted to the new doctrine. Pre-existing xUnit2013 warning at `AgentRunsControllerTests.cs:617` is unrelated.
+
+`pytest`: not run -- no Python file changed this slice.
+
+### risks
+
+- v3 records persist `CognitivePhases = null`. Any external consumer reading the persisted block directly (bypassing the artifact endpoint and the `ProtocolVocabularyMapper`) would see null where they previously got data. No in-repo consumer takes that path; the artifact endpoint, the read-side projection, and the Angular dev page all prefer the canonical block. Severity: low.
+- The failure-path version stamp choice (V3 uniformly) was deliberate. A future reader who expects the version to mark "v3 = successful canonical record" would be wrong. The decision is documented in code and here; the differentiator is `CognitiveProtocol` presence. Severity: low.
+- One existing test had to flip semantics (`compose_passes_cognitive_phases_from_analyzer` -> retargeted). It surfaced from the suite RED cycle and was renamed to assert the new doctrine; no orphan assertions remain. Severity: low.
+- The "v3 stamp on failure" semantic is also documented in the `ArtifactVersions` and `AgentRunExecutionResult.ArtifactVersion` doc comments so the choice is visible at the read site. Severity: low.
+- No data migration; old persisted records keep their stored shape and remain readable. Severity: low.
+
+### next recommended slice
+
+Plan step 7 alias removal (small, safe given v3 is now stamped and the canonical prompt is the only producer):
+1. Pydantic alias removal: drop the `phases` validation alias on `SportsAnalysisResponse`, drop the `phases` read-property, drop the `SportsCognitivePhases` module alias in `app/models/sports.py`. The analyzer no longer emits legacy names; the wire DTO no longer needs to accept them.
+2. .NET wire DTO alias trim: drop the legacy `Phases` JSON property + the `Test` / cross-block `InterrogatePhaseWire.Stress` aliases + the perceive `StringOrStringArrayJsonConverter` (the converter is only useful while legacy array payloads exist in flight; with the canonical prompt the only producer and v3 being scalar, the converter becomes inert).
+3. Downstream .NET contract record rename: `SportsCognitivePhases` -> `SportsCognitiveProtocol` across `SportAnalysisContracts.cs`, `CognitiveProtocolBuilder.cs`, `ProtocolVocabularyMapper.cs`. Naming asymmetry from the prior slices closes.
+
+Parallel candidate: teach `run-artifact-calibration.ps1` to read the canonical `cognitiveProtocol` block first to close the harness markdown reporter divergence (read columns from canonical, drop the retired `interrogate.stress` / `discern.test` columns).
+
+### Claude <-> Codex transfer notes
+
+- Repos in play: `dai` (6 files: 4 .NET runtime/tests + Angular 1 line + 1 contract comment) and `dai-vault` (this addendum). `jera-workspace-skills` untouched.
+- Re-verify anywhere: `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj` -> 277 passing. No stack/DB/network needed (composer/projection logic + WebApplicationFactory integration are pure).
+- Stack state at slice close: Docker Desktop still running, `devcore-sql` up, FastAPI on `:8000` still up in its window; the .NET API on `:5007` was stopped this slice (its build output lock blocked the test rebuild) -- restart with `scripts/start-platform-api.ps1` if continuing. Or stop the whole stack via `scripts/dev/sports/stop-sports-dev.ps1`.
+- Doctrine: ArtifactVersion is an era marker. Success vs failure is differentiated by `CognitiveProtocol` presence on the record, not by the version string. Do NOT add a "v3 failure" variant constant; do NOT decide failure by the version field.
+- Reading old records: the artifact endpoint + `ProtocolVocabularyMapper` already handle V1/V2/V3 cleanly. Do NOT rewrite historical records.
+- Pre-existing untracked `dai-vault` calibration files under `04 Products/sports-v1/calibration/` are NOT from this slice; leave them. Pre-existing untracked `dai/scripts/dev/sports/purge-dev-agent-runs.ps1` is NOT from this slice; leave it.
+- No PowerShell changed this slice, so no ASCII/parser-validation step was required beyond ASCII checks on the changed `.cs` and `.ts` files.
+
+status: Artifact v3 Stamp v1 implemented 2026-05-28. SportsDecisionArtifactV3 added; SportsComposer stamps V3 on success AND failure paths (era marker, not shape marker); legacy CognitivePhases dropped on v3 success records; CognitiveProtocol authoritative on v2+v3; v1 (legacy) records remain readable; Angular dev label recognizes v3. dotnet 277 (+2). pytest unchanged (no Python edit). next: plan step 7 alias removal + downstream record rename. jera-workspace-skills untouched.
