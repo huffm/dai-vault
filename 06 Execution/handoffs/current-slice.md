@@ -1618,3 +1618,111 @@ Parallel candidate: teach `run-artifact-calibration.ps1` to read the canonical `
 - No PowerShell changed this slice, so no ASCII/parser-validation step was required beyond ASCII checks on the changed `.cs` and `.ts` files.
 
 status: Artifact v3 Stamp v1 implemented 2026-05-28. SportsDecisionArtifactV3 added; SportsComposer stamps V3 on success AND failure paths (era marker, not shape marker); legacy CognitivePhases dropped on v3 success records; CognitiveProtocol authoritative on v2+v3; v1 (legacy) records remain readable; Angular dev label recognizes v3. dotnet 277 (+2). pytest unchanged (no Python edit). next: plan step 7 alias removal + downstream record rename. jera-workspace-skills untouched. COMMITTED+PUSHED: dai 185eac3 (feat(protocol): stamp canonical sports artifacts as v3), dai-vault 2f9d220 (docs(protocol): document sports artifact v3 stamp).
+
+## addendum: Canonical Protocol Alias Removal and Contract Rename v1 (2026-05-28)
+
+Code slice (TDD, .NET + FastAPI + small Angular type follow-up). Migration plan step 7 plus the downstream contract record rename, in one commit. The active runtime is canonical-only after this slice: every legacy alias surface (Pydantic `validation_alias` / `populate_by_name`, `phases` block key, `.phases` response property, `SportsCognitivePhases` module alias, .NET wire field aliases for the eight legacy micro-action names, the cross-block stress fallback, the perceive list-to-scalar converter, the runtime contract `CognitivePhases` field, the `ProjectFromLegacy` projection path, the `StringOrStringArrayJsonConverter` file) was retired. Old persisted v1/v2 dev records no longer project; they are disposable per the approved pre-launch direction. No destructive purge was executed this slice. No confidence-rule, posture-behavior, Tool-Gateway, DB-schema, MCP, pgvector, Azure-Functions, Kubernetes, or secrets change. v3 artifact-version behavior is unchanged from the prior slice.
+
+### naming and skills gate
+
+Skills used (jera pack, local, read-only):
+- `dai-grill-with-vault` -- read migration plan step 7 + 8, the vocabulary map, every alias surface (Pydantic models + parser + tests, `SportAnalysisContracts.cs` + `SportsAnalysisWire.cs` + `StringOrStringArrayJsonConverter.cs` + `CognitiveProtocolBuilder.cs` + `ProtocolVocabularyMapper.cs` + `SportsComposer.cs` + `AgentRunContracts.cs` + `AgentRunsController.cs`, the Angular dev-page DTO + component) before naming/coding. Locked the canonical-only contract in one pass to avoid mid-slice renames.
+- `dai-token-tight` -- reporting density.
+- `dai-agent-handoff` -- transfer notes shape.
+
+Skills used (Claude built-ins):
+- `superpowers:test-driven-development` -- RED on the new canonical-only Pydantic field-name tests + the new canonical-only wire tests, then GREEN after the lockstep renames; the broad RED also surfaced legacy-tolerance tests that had to be retargeted to canonical-only doctrine.
+- `superpowers:verification-before-completion` -- full pytest + full dotnet + ASCII check on changed `.cs` / `.py` / `.ts` files; the runtime build was verified clean before touching the tests.
+- `superpowers:systematic-debugging` -- used twice: once for the SportsComposerTests `Assert.Same(phases, ...CognitivePhases)` pass-through assertion that surfaced after the v3 doctrine flipped (retargeted), and once for the wire test that asserted "legacy list[str] yields null" but actually threw because the converter was removed (retargeted as an explicit Throws assertion plus a sibling "yields null micro-actions" test that doesn't include the list[str] perceive shape).
+- `superpowers:planning` / `superpowers:writing-plans` -- consulted; the migration plan already specifies step 7. Locked the sequence in one slice instead of staging.
+
+Skills weakness / sharpening recommendations carried forward:
+1. The migration-step pattern "add canonical surface -> bridge with alias scaffold -> flip prompt -> stamp era constant -> drop legacy surfaces" has now repeated five times. A `dai-implement-with-vault` skill codifying this would beat the interactive grill template.
+2. Wide test-file sweeps for symbol/field renames are still painful: a small `dai-rename-protocol` script (the canonical->legacy substitution map plus the drop list of retired tests) would shorten future renames significantly. Not in scope this slice.
+3. `jera-workspace-skills` left untouched (repo boundary rule honored, no approval to edit).
+
+Naming review result (gate item documented):
+- **DevCore.AiClient renames (canonical-only):**
+  - `SportsCognitivePhases` -> `SportsCognitiveProtocol`
+  - `SportsPerceivePhase` -> `SportsPerceiveProtocol` (Detect / Frame / Aim unchanged)
+  - `SportsInterrogatePhase` -> `SportsInterrogateProtocol`; fields `Balance` -> `Question`, `Reframe` -> `Verify`
+  - `SportsDiscernPhase` -> `SportsDiscernProtocol`; fields `Listen` -> `Contrast`, `Filter` -> `Weigh`, Stress unchanged
+  - `SportsDecidePhase` -> `SportsDecideProtocol`; fields `Calibrate` -> `Justify`, `Posture` -> `Position`, `Voice` -> `Resolve`
+  - `SportsAnalysisResponse.Phases` -> `.Protocol` with `[JsonPropertyName("protocol")]`
+- **Pydantic renames (canonical-only):** matching class + field renames in `app/models/sports.py`; `populate_by_name`, `validation_alias=AliasChoices(...)`, the `.phases` `@property`, `PerceiveScalar` + `_coerce_str_or_str_list`, and the `SportsCognitivePhases` module alias all dropped.
+- **Builder rename:** `CognitiveProtocolBuilder.FromLegacy` -> `FromAnalyzerProtocol` -- the method now consumes the analyzer's canonical `SportsCognitiveProtocol` and produces the runtime `CognitiveProtocol`. The two records live in different namespaces (DevCore.AiClient wire vs DevCore.Api.AgentRuns persistence) and that separation stays intentional; the cross-namespace translation, the deterministic Probe injection, and the Synthesize platform-operational constants are still its job.
+- **Wire DTO renames:** `InterrogatePhaseWire` -> `InterrogateProtocolWire`, `DiscernPhaseWire` -> `DiscernProtocolWire`, `DecidePhaseWire` -> `DecideProtocolWire`, `PerceivePhaseWire` -> `PerceiveProtocolWire`. All legacy JSON property name aliases removed. `CognitiveProtocolWire.Phases` JSON property removed. Cross-block stress fallback in `CognitiveProtocolWire.ToModel()` removed. `[JsonConverter(StringOrStringArrayJsonConverter)]` removed from perceive properties.
+- **Converter file:** `StringOrStringArrayJsonConverter.cs` DELETED (no remaining consumer; the canonical prompt is the only producer of perceive payloads, and the canonical contract is scalar).
+- **Runtime contract field:** `AgentRunExecutionResult.CognitivePhases` removed; `AgentRunArtifactDto.CognitivePhases` removed. The single cognitive persistence surface is `CognitiveProtocol`.
+- **Mapper:** `ProtocolVocabularyMapper.ProjectFromLegacy` removed. `Project()` returns null when `CognitiveProtocol` is absent. The `DiscernStressProtocolView` shape retains its two legacy slots (Angular DTO contract unchanged); they are vestigial and always null.
+- **Parser:** `_parse_phases` -> `_parse_protocol`. Canonical-only field reads. Cross-block stress fallback, perceive list-to-scalar coercion, and the `_pick(canonical, legacy)` helper all dropped. Reads only the `protocol` block key.
+- **Prompt:** the analyzer's `_JSON_SHAPE` flipped from the `phases` block key to the `protocol` block key, and the per-field instruction cross-references flipped from `phases.<protocol>.<field>` to `protocol.<protocol>.<field>`. Only the block-key rename and the cross-reference rename were made; the per-field instruction content, the prohibited-phrase lists, the no-fabrication guardrails, and the field semantics are unchanged.
+- **Angular tiny follow-up:** `cognitivePhases` removed from `AgentRunArtifactDto` (TS type); the dev page's `phaseCards` computed signal now passes `null` (the canonical projection drives all rendering through `protocolBlocks`). No HTML or visual change required because the page already preferred the canonical block and the `phaseCards` rendering only fires when the legacy block was non-null.
+
+### compatibility behavior
+
+- Active runtime: canonical-only. Every cognitive surface (prompt, parser, wire DTO, runtime contract, builder, mapper, persistence, dev page) uses canonical names and the canonical block key.
+- Pre-canonical persisted records (v1, v2): no longer project. v1 (`CognitiveProtocol = null`, only the retired legacy block populated) and v2 (both blocks populated -- the canonical block still works for v2 because `CognitiveProtocol` was added at v2) records that have only the legacy block produce a `null ProtocolView`. v2 records that DO have `CognitiveProtocol` populated still read fine (the canonical path is unchanged).
+- Pre-v3 dev records that block tests or queries can be purged via the untracked dev script `dai/scripts/dev/sports/purge-dev-agent-runs.ps1`. **Not executed this slice.** The user explicitly carried it as out-of-scope. Operators on dev machines can run it locally if needed; the script is not committed.
+- No data migration. No DB schema change.
+- The artifact endpoint's JSON output drops the `cognitivePhases` property (was always nullable on the DTO and is null on every v3 record anyway). Existing Angular consumers were already handling the field as nullable; the dev page reference was updated this slice.
+
+### files changed
+
+dai:
+- `dai/services/agent-service/app/models/sports.py` -- canonical-only Pydantic models. Class renames + field renames; `populate_by_name`/`validation_alias`/`AliasChoices`/`BeforeValidator`/`ConfigDict` imports and `.phases` property and `SportsCognitivePhases` alias and `PerceiveScalar`/`_coerce_str_or_str_list` all dropped.
+- `dai/services/agent-service/app/services/sports_analyzer.py` -- prompt block key flipped to `protocol`; per-field cross-references flipped; parser rewritten as `_parse_protocol` (canonical-only, no `_pick` / `_s_or_list` / cross-block stress fallback); `_parse_response` reads only the `protocol` block; `counter_case` source now `protocol.interrogate.question`, `watch_for` source `protocol.discern.stress`, posture fallback `protocol.decide.position`.
+- `dai/services/agent-service/tests/test_sports_analyzer.py` -- canonical-only test fixtures (`_make_full_protocol`); legacy alias scaffold section, Stress Collapse boundary section, Perceive Scalar Collapse boundary section, and Analyzer Protocol Class Rename back-compat-property tests all removed; new canonical-only block added with canonical-shape tests, structural model-fields guards, parser ignores-legacy tests, and prompt canonical-block assertions.
+- `dai/platform/dotnet/DevCore.AiClient/SportAnalysisContracts.cs` -- canonical analyzer contract; class + field renames; `SportsAnalysisResponse.Protocol` with `[JsonPropertyName("protocol")]`.
+- `dai/platform/dotnet/DevCore.AiClient/SportsAnalysisWire.cs` -- canonical-only wire DTO; only `protocol` block key accepted; only canonical micro-action JSON property names accepted; cross-block stress fallback removed; perceive converter removed.
+- `dai/platform/dotnet/DevCore.AiClient/StringOrStringArrayJsonConverter.cs` -- **DELETED** (no remaining consumer).
+- `dai/platform/dotnet/DevCore.AiClient/FastApiClient.cs` -- comment refresh to reflect canonical-only behavior.
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/CognitiveProtocolBuilder.cs` -- `FromLegacy` -> `FromAnalyzerProtocol`; signature flipped to take `SportsCognitiveProtocol`; canonical pass-through.
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/ProtocolVocabularyMapper.cs` -- `ProjectFromLegacy` dropped; `Project` returns null when `CognitiveProtocol` is null; canonical projection path unchanged.
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/SportsComposer.cs` -- reads `analyzerOutput.Protocol`; calls `FromAnalyzerProtocol`; the `CognitivePhases: null` ctor argument is gone with the field removal.
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/AgentRunContracts.cs` -- `AgentRunExecutionResult.CognitivePhases` removed; `AgentRunArtifactDto.CognitivePhases` removed; comment refresh.
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/CognitiveProtocol.cs` -- comment refresh.
+- `dai/platform/dotnet/DevCore.Api/Controllers/AgentRunsController.cs` -- DTO construction no longer passes `artifact.CognitivePhases`.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/SportsAnalysisWireTests.cs` -- rewritten canonical-only: canonical happy path, null protocol, legacy-block-key ignored, legacy-field-names-inside-canonical-block yields null micro-actions, legacy perceive list[str] now throws at the boundary, structural guard that the wire has no `Phases` property.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/ProtocolVocabularyMapperTests.cs` -- rewritten canonical-only: null result, null CognitiveProtocol, canonical field mapping, canonical stress in Canonical slot with legacy slots null, scalar-to-array round-trip, Probe preservation, every validated position round-trips exactly, Synthesize platform-operational guard.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/CognitiveProtocolBuilderTests.cs` -- mechanical: type names and method name renamed; constructor args use canonical names; assertions unchanged in semantics.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/SportsComposerTests.cs` -- mechanical type renames; `Assert.Null(..CognitivePhases)` lines dropped; the `MakePhases` fixture is canonical-typed.
+- `dai/platform/dotnet/DevCore.Api.Tests/Integration/AgentRunsControllerTests.cs` -- mechanical type renames; v1-record-projects-cleanly test retargeted to "protocolView is null when CognitiveProtocol absent"; `dto.CognitivePhases` assertions dropped; `BuildInspectableArtifact` fixture updated to feed `FromAnalyzerProtocol` for the inspectable path; `nameof(AgentRunArtifactDto.CognitivePhases)` line dropped from the recent-runs DTO surface check.
+- `dai/apps/sports-app/src/app/core/models/agent-run.model.ts` -- `cognitivePhases` field dropped from `AgentRunArtifactDto`; comment refresh.
+- `dai/apps/sports-app/src/app/dev-artifact-review/dev-artifact-review.component.ts` -- `phaseCards` computed now passes null; comment refresh.
+
+dai-vault:
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+
+jera-workspace-skills: untouched (read-only).
+
+### test results
+
+- pytest (`tests/test_sports_analyzer.py`): 100 passed (was 117 from the v3 stamp slice; -17 net after dropping the alias-scaffold + Stress-Collapse boundary + Perceive-Scalar boundary + Analyzer-Protocol-Class-Rename back-compat sections). All canonical-only assertions GREEN.
+- dotnet test (full suite): 256 passed, 0 failed (was 277 from the v3 stamp slice; -21 net after dropping the legacy-acceptance + ProjectFromLegacy + StringOrStringArrayJsonConverter + CognitivePhases-DTO sections plus a few mechanical consolidations). Pre-existing xUnit2013 warning at `AgentRunsControllerTests.cs:588` is unrelated.
+
+### risks
+
+- pre-canonical dev records (v1, v2 with only the legacy block) no longer project. The user explicitly approved disposability. The untracked `purge-dev-agent-runs.ps1` is the operator's path for cleaning a local dev db; it was NOT executed this slice. Severity: low (dev-only).
+- the analyzer prompt's `protocol` block key is a fresh change; the model has not been live-verified against the new prompt this slice. A short calibration spot-check on the next live batch is prudent before any threshold change; confidence math is unchanged so the risk is purely texture/shape. Severity: low-med (texture), low (correctness).
+- the wide rename touches many test fixtures. The full dotnet suite + pytest suite are GREEN, but the change reaches into integration tests via `BuildInspectableArtifact` which now feeds the canonical block through the builder. Severity: low (compile-checked + suite-checked).
+- `DiscernStressProtocolView` retains its two vestigial legacy slots so the Angular DTO contract is unchanged. A future slice may drop them once the dev page is confirmed not to reference them; not in scope here. Severity: low.
+
+### next recommended slice
+
+Calibration spot-check on the new canonical-only analyzer prompt (the `protocol` block key flip is fresh). Run 5-8 live games through the canonical pipeline and confirm the model honors the new block key cleanly. After that, the natural next surfaces are:
+1. Drop the vestigial `DiscernStressProtocolView.LegacyInterrogateStress` / `.LegacyDiscernTest` slots (the Angular dev page renders only the `Canonical` slot today).
+2. Update the harness markdown reporter (`run-artifact-calibration.ps1`) to read the canonical `cognitiveProtocol` block first, closing the long-standing reporter divergence on retired `interrogate.stress` / `discern.test` columns.
+3. Update `dai-vault/02 Platform/architecture/cognitive-factory/protocol-vocabulary-map.md` to mark legacy names retired-from-runtime (migration plan step 8).
+
+### Claude <-> Codex transfer notes
+
+- Repos in play: `dai` (Pydantic 2 files; FastAPI tests; .NET 5 production files + 5 test files; Angular 2 files) and `dai-vault` (this addendum). `jera-workspace-skills` untouched.
+- Re-verify anywhere: `pytest tests/test_sports_analyzer.py` -> 100 passing; `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj` -> 256 passing. No stack/DB/network needed.
+- Canonical-only doctrine: the active runtime accepts only canonical field names and the canonical `protocol` block key. Do NOT reintroduce a legacy alias scaffold for any reason short of a calibration regression that pinpoints the prompt-content change as the cause; the alias surfaces were retired deliberately.
+- Pre-canonical dev records (v1, v2-only-with-legacy-block) no longer project. The dev purge command is `pwsh scripts/dev/sports/purge-dev-agent-runs.ps1` (untracked) -- run it on a dev box when needed; the script is intentionally NOT committed.
+- The builder lives in two namespaces by design: `DevCore.AiClient.SportsCognitiveProtocol` is the wire shape; `DevCore.Api.AgentRuns.CognitiveProtocol` is the persistence shape. Their fields share canonical names but the records are separate types. The builder's job is the cross-namespace translation plus deterministic Probe + Synthesize.
+- Pre-existing untracked `dai/scripts/dev/sports/purge-dev-agent-runs.ps1` is NOT from this slice. Pre-existing untracked `dai-vault` calibration files under `04 Products/sports-v1/calibration/` are NOT from this slice either. Leave both.
+- No PowerShell was edited; no parser/ASCII validation step beyond ASCII checks on changed `.cs` / `.py` / `.ts` files.
+
+status: Canonical Protocol Alias Removal and Contract Rename v1 implemented 2026-05-28. Active runtime is canonical-only. Legacy aliases retired across Pydantic (validation_alias, populate_by_name, `.phases` property, SportsCognitivePhases module alias, PerceiveScalar/BeforeValidator), parser (cross-block stress fallback, legacy field-name reads, legacy block key), .NET wire DTO (legacy field-name JSON aliases, legacy `Phases` block key, cross-block stress fallback), .NET runtime contract (CognitivePhases field on AgentRunExecutionResult + AgentRunArtifactDto), mapper (ProjectFromLegacy), and file system (StringOrStringArrayJsonConverter.cs deleted). Builder renamed FromLegacy -> FromAnalyzerProtocol. Analyzer prompt flipped to `protocol` block key with canonical per-field cross-references. v3 artifact-version behavior unchanged. Angular TS type pruned. pytest 100 (-17). dotnet 256 (-21). next: calibration spot-check on the canonical-only prompt + retire vestigial legacy stress view slots + update calibration harness reporter + mark legacy names retired-from-runtime in the vocabulary map. jera-workspace-skills untouched.
