@@ -9,10 +9,15 @@ This document is the single source of truth for the canonical Cognitive Protocol
 
 The active runtime now accepts and persists only the canonical `protocol` / `CognitiveProtocol` shape:
 
-- prompt block key: `protocol`
-- persisted artifact field: `CognitiveProtocol`
-- analyzer protocol fields: `question`, `verify`, `probe`, `contrast`, `weigh`, `stress`, `justify`, `position`, `resolve`, plus scalar `detect`, `frame`, `aim`
+- prompt block key: `protocol` (unchanged by Protocol Completion Representation v1)
+- persisted artifact field: `CognitiveProtocol` (the platform-completed shape)
+- **model-emitted seed** (`SportsAnalyzerProtocolSeed`, both FastAPI and the .NET wire DTO): the 11 model-owned fields `question`, `verify`, `contrast`, `weigh`, `stress`, `justify`, `position`, `resolve`, plus scalar `detect`, `frame`, `aim`. The model does **not** emit `probe`.
+- **platform-completed** into `CognitiveProtocol`: the seed's 11 fields pass through, plus `interrogate.probe` (deterministic, `CognitiveProtocolBuilder.BuildProbe`) and the Synthesize trio. Completion happens in `CognitiveProtocolBuilder.FromAnalyzerProtocolSeed`.
 - read-side projection: `ProtocolView` from canonical `CognitiveProtocol` only
+
+### model-emitted seed vs platform-completed protocol
+
+`AnalyzerProtocolSeed` is **model-owned**: 11 cognitive station outputs from one analyze call. `CognitiveProtocol` is **platform-completed**: the same 11 plus the one deterministic cognitive station (`interrogate.probe`) and the platform-operational Synthesize trio. The 12 cognitive micro-actions therefore split into **11 model-emitted + 1 deterministic (probe)**; Synthesize (3) is platform-owned and not among the 12. Interrogate is a three-station macro even though the seed carries only `question` + `verify`.
 
 Legacy vocabulary remains documented here only for historical interpretation:
 

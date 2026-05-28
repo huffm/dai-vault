@@ -1774,3 +1774,52 @@ DAI verification skills should use `test-devcore-api-safe.ps1` or `/m:1 /nr:fals
 No local skill guidance was edited because the user did not approve `jera-workspace-skills` changes for this slice.
 
 status: .NET Test Verification Hardening v1 implemented 2026-05-28. Script and docs added. Parser/ASCII, targeted mode, and full mode verified clean. jera-workspace-skills untouched.
+
+## addendum: Protocol Completion Representation v1 (2026-05-28)
+
+Representation slice. No runtime behavior changed. Makes the seed-vs-completed distinction explicit in the type system so Interrogate never reads as a two-station macro.
+
+### doctrine made explicit
+
+- `AnalyzerProtocolSeed` (FastAPI `SportsAnalyzerProtocolSeed` + .NET wire `SportsAnalyzerProtocolSeed`) is **model-owned**: 11 cognitive station outputs from one analyze call.
+- `CognitiveProtocol` (`.NET DevCore.Api.AgentRuns`) is **platform-completed**: the 11 model-emitted stations plus `interrogate.probe` (deterministic) and the Synthesize trio.
+- 12 cognitive micro-actions = **11 model-emitted + 1 deterministic (`interrogate.probe`)**. `interrogate.probe` is completed by `CognitiveProtocolBuilder.BuildProbe` from signal follow-up records; the model never emits it.
+- Synthesize (integrate, compose, deliver) is platform-owned and not among the 12.
+- The completed artifact still contains `interrogate.question`, `interrogate.probe`, and `interrogate.verify`.
+
+### naming review result
+
+Hard rename approved (option 2). The model-emitted types now carry seed terminology in both languages; the completed artifact keeps `CognitiveProtocol`. The wire/prompt json block key stays `"protocol"` (only type names changed).
+
+- FastAPI + .NET wire: `SportsCognitiveProtocol` -> `SportsAnalyzerProtocolSeed`, `SportsPerceiveProtocol` -> `SportsAnalyzerPerceiveSeed`, `SportsInterrogateProtocol` -> `SportsAnalyzerInterrogateSeed`, `SportsDiscernProtocol` -> `SportsAnalyzerDiscernSeed`, `SportsDecideProtocol` -> `SportsAnalyzerDecideSeed`.
+- Completed .NET artifact unchanged: `CognitiveProtocol`, `PerceiveProtocol`, `InterrogateProtocol`, `DiscernProtocol`, `DecideProtocol`, `SynthesizeProtocol`.
+- Builder method: `CognitiveProtocolBuilder.FromAnalyzerProtocol` -> `FromAnalyzerProtocolSeed`.
+
+### files changed
+
+dai:
+- `services/agent-service/app/models/sports.py` -- seed class rename + seed docstrings.
+- `services/agent-service/app/services/sports_analyzer.py` -- seed type rename (imports + usage).
+- `services/agent-service/tests/test_sports_analyzer.py` -- seed rename + 3 new tests (seed parses from `protocol`; seed has question+verify not probe; prompt does not request probe).
+- `platform/dotnet/DevCore.AiClient/SportAnalysisContracts.cs`, `SportsAnalysisWire.cs` -- seed record rename + seed docstrings.
+- `platform/dotnet/DevCore.Api/AgentRuns/CognitiveProtocol.cs` -- fixed stale "probe remains null because no runtime source emits it" comment; completed/seed framing.
+- `platform/dotnet/DevCore.Api/AgentRuns/CognitiveProtocolBuilder.cs`, `SportsComposer.cs`, `AgentRunContracts.cs` -- method rename + completion-doctrine comments.
+- `platform/dotnet/DevCore.Api.Tests/AgentRuns/CognitiveProtocolBuilderTests.cs` -- rename + 3 new completed-shape tests; stale comment/name fixes.
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProtocolRegistryTests.cs` -- 3 new tests (each cognitive macro has 3 stations; interrogate has 3 incl. probe; probe is deterministic, no model call).
+- `platform/dotnet/DevCore.Api.Tests/AgentRuns/SportsComposerTests.cs`, `Integration/AgentRunsControllerTests.cs` -- seed rename.
+
+dai-vault:
+- `02 Platform/architecture/cognitive-factory/protocol-station-blueprint-v1.md`, `protocol-node-specs.md`, `protocol-vocabulary-map.md` -- corrected the 11/1/3 split and added seed-vs-completed terminology.
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills: untouched.
+
+### verification results
+
+- pytest: 103 passed (was 100; +3).
+- safe .NET runner targeted: 64 passed, 0 failed.
+- safe .NET runner full: 262 passed, 0 failed (was 256; +6).
+- No Angular change (the dev artifact surface already rendered Probe); Angular build not required.
+- No confidence-rule, posture, Tool Gateway, schema, MCP, pgvector, Azure, or Kubernetes change.
+
+status: Protocol Completion Representation v1 implemented 2026-05-28. Model-emitted seed renamed to AnalyzerProtocolSeed terminology in both languages; completed CognitiveProtocol unchanged; probe stays deterministic; json key `protocol` unchanged. pytest 103, dotnet 262. jera-workspace-skills untouched.
