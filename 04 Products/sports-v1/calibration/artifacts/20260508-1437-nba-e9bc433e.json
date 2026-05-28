@@ -1,0 +1,82 @@
+{
+  "agentRunId": "e9bc433e-f36b-1410-815b-00373db4b724",
+  "status": "completed",
+  "competition": "nba",
+  "gameDate": "2026-05-08",
+  "groundedSignals": [
+    "rest_schedule",
+    "market"
+  ],
+  "missingSignals": [
+    "sharp_public"
+  ],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Degraded",
+      "note": "retrieve: 2 of 3 signals grounded for nba"
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": [
+        "Philadelphia favored by the market",
+        "Equal rest for both teams"
+      ],
+      "frame": "The Philadelphia 76ers host the New York Knicks with a spread of -1.5.",
+      "aim": [
+        "market positioning",
+        "rest situation"
+      ]
+    },
+    "interrogate": {
+      "balance": "Sharp/public data is missing, so this is a market-only lean.",
+      "stress": "The lack of sharp/public data creates uncertainty in the lean.",
+      "reframe": "Both teams being on equal rest could lead to a competitive matchup."
+    },
+    "discern": {
+      "test": "The lean relies solely on market favor without additional supporting signals.",
+      "listen": "The spread indicates the market has a slight preference for Philadelphia.",
+      "filter": "Market data is present, but sharp/public insights are missing."
+    },
+    "decide": {
+      "calibrate": "The confidence level reflects the market's slight favor and equal rest.",
+      "posture": "monitor",
+      "voice": "This read is based on current signals but should be watched for changes."
+    }
+  },
+  "analyzerConfidence": 0.7,
+  "confidence": 0.63,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The absence of sharp/public data limits the strength of this lean. The market-only signal may not fully capture the matchup dynamics.",
+  "watchFor": "Any significant line movement before the game could indicate changing perceptions.",
+  "whatWouldChangeTheRead": [
+    "Emergence of sharp/public betting data",
+    "A significant injury report affecting key players",
+    "A notable change in the spread before the game"
+  ],
+  "summary": "The Philadelphia 76ers are slightly favored by the market with a -1.5 spread. Both teams are on equal rest with one day off since their last games.",
+  "lean": "Edge toward Philadelphia 76ers based on market favoring them slightly."
+}

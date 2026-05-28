@@ -1,0 +1,160 @@
+{
+  "agentRunId": "04bd433e-f36b-1410-815b-00373db4b724",
+  "status": "completed",
+  "competition": "nba",
+  "gameDate": "2026-05-10",
+  "groundedSignals": [
+    "rest_schedule",
+    "market"
+  ],
+  "missingSignals": [
+    "sharp_public"
+  ],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Degraded",
+      "note": "retrieve: 2 of 3 signals grounded for nba"
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": [
+        "Spurs favored by the market",
+        "Both teams on equal rest"
+      ],
+      "frame": "The Spurs are visiting the Timberwolves with both teams having one day of rest.",
+      "aim": [
+        "market confidence",
+        "equal rest situation"
+      ]
+    },
+    "interrogate": {
+      "balance": "Sharp/public data is missing, so this is a market-only lean.",
+      "stress": "The lack of sharp/public data limits the confidence in the lean.",
+      "reframe": "Equal rest could mean both teams are evenly matched despite market favor."
+    },
+    "discern": {
+      "test": "The lean relies solely on market positioning without additional supporting signals.",
+      "listen": "The spread indicates market confidence in the Spurs' ability to cover.",
+      "filter": "Market data is present, but sharp/public insights are missing."
+    },
+    "decide": {
+      "calibrate": "The confidence level reflects the clear market favor for the Spurs.",
+      "posture": "monitor",
+      "voice": "This read is based on market signals, but uncertainty remains."
+    }
+  },
+  "analyzerConfidence": 0.75,
+  "confidence": 0.675,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The absence of sharp/public data raises questions about the market's reliability. Without this data, the lean is less robust.",
+  "watchFor": "Any movement in the spread before the game could indicate changing market sentiment.",
+  "whatWouldChangeTheRead": [
+    "Sharp/public data becomes available showing significant public support for Timberwolves",
+    "A major injury report change for either team"
+  ],
+  "summary": "The Spurs are favored by 5.5 points, indicating market confidence in their performance. Both teams have equal rest, but the Spurs' market position suggests a stronger expectation for their success.",
+  "lean": "Edge toward San Antonio Spurs based on market favoring them with a -5.5 spread.",
+  "signalAvailability": [
+    {
+      "signal": "rest_schedule",
+      "status": "grounded",
+      "source": "espn",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "directional_only_without_confirmation",
+      "followUpSignals": [
+        "sharp_public",
+        "line_movement"
+      ],
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "provider_returned_empty_odds",
+      "detail": null,
+      "quality": "unavailable",
+      "decisionUse": "missing_confirmation",
+      "followUpSignals": [
+        "line_movement",
+        "market"
+      ],
+      "confidenceEffect": "block_aggressive_posture"
+    }
+  ],
+  "signalFollowUps": [
+    {
+      "triggeredBy": "market",
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "primary_signal_missing",
+      "decisionUse": "missing_confirmation",
+      "detail": "sharp_public was the recommended confirmation but is missing for this run; market remains directional only"
+    },
+    {
+      "triggeredBy": "market",
+      "signal": "line_movement",
+      "status": "not_implemented",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "proxy_candidate",
+      "detail": "line movement may help proxy market confirmation when sharp/public splits are unavailable, but it is not implemented yet"
+    },
+    {
+      "triggeredBy": "sharp_public",
+      "signal": "line_movement",
+      "status": "not_implemented",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "proxy_candidate",
+      "detail": "line movement may help proxy market confirmation when sharp/public splits are unavailable, but it is not implemented yet"
+    },
+    {
+      "triggeredBy": "sharp_public",
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "already_grounded",
+      "decisionUse": "directional_context",
+      "detail": "market can provide direction but not sharp/public confirmation"
+    }
+  ]
+}

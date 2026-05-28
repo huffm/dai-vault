@@ -1,0 +1,81 @@
+{
+  "agentRunId": "f0bc433e-f36b-1410-815b-00373db4b724",
+  "status": "completed",
+  "competition": "nba",
+  "gameDate": "2026-05-09",
+  "groundedSignals": [
+    "rest_schedule",
+    "market"
+  ],
+  "missingSignals": [
+    "sharp_public"
+  ],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Degraded",
+      "note": "retrieve: 2 of 3 signals grounded for nba"
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": [
+        "Cavaliers favored by 4.5 points",
+        "Both teams on equal rest"
+      ],
+      "frame": "The Cleveland Cavaliers host the Detroit Pistons with a spread of -4.5.",
+      "aim": [
+        "market confidence",
+        "rest parity"
+      ]
+    },
+    "interrogate": {
+      "balance": "Sharp/public data is missing, so this is a market-only lean.",
+      "stress": "The lack of sharp/public confirmation raises uncertainty.",
+      "reframe": "Equal rest could lead to a competitive matchup despite the spread."
+    },
+    "discern": {
+      "test": "The lean relies solely on market confidence without supporting signals.",
+      "listen": "The spread implies the market has confidence in the Cavaliers.",
+      "filter": "Market data is present, but sharp/public data is missing."
+    },
+    "decide": {
+      "calibrate": "The confidence level reflects the clear market favoring the Cavaliers.",
+      "posture": "monitor",
+      "voice": "This read is based on available market signals without overconfidence."
+    }
+  },
+  "analyzerConfidence": 0.75,
+  "confidence": 0.675,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The lack of sharp/public data limits the strength of this lean. Without additional signals, the read remains fragile.",
+  "watchFor": "Any movement in the spread before the game could indicate changing market sentiment.",
+  "whatWouldChangeTheRead": [
+    "Sharp/public data showing divergence",
+    "Significant injury news for either team"
+  ],
+  "summary": "The Cleveland Cavaliers are favored by 4.5 points, indicating market confidence in their performance. Both teams have equal rest with one day off since their last game.",
+  "lean": "Edge toward Cleveland Cavaliers based on market favoring them by 4.5 points."
+}

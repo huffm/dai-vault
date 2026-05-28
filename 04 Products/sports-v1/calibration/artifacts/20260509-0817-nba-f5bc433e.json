@@ -1,0 +1,104 @@
+{
+  "agentRunId": "f5bc433e-f36b-1410-815b-00373db4b724",
+  "status": "completed",
+  "competition": "nba",
+  "gameDate": "2026-05-09",
+  "groundedSignals": [
+    "rest_schedule",
+    "market"
+  ],
+  "missingSignals": [
+    "sharp_public"
+  ],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Degraded",
+      "note": "retrieve: 2 of 3 signals grounded for nba"
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": [
+        "Cavaliers favored by the market",
+        "Both teams have equal rest"
+      ],
+      "frame": "The Cavaliers host the Pistons with a -4.5 spread and equal rest.",
+      "aim": [
+        "Market confidence",
+        "Home-court advantage"
+      ]
+    },
+    "interrogate": {
+      "balance": "Sharp/public data is missing, so this is a market-only lean.",
+      "stress": "The lack of sharp/public data introduces uncertainty.",
+      "reframe": "Equal rest could level the playing field despite the spread."
+    },
+    "discern": {
+      "test": "The lean relies solely on market signals without supporting data.",
+      "listen": "The spread suggests the market has confidence in the Cavaliers.",
+      "filter": "Market data is present, but sharp/public data is missing."
+    },
+    "decide": {
+      "calibrate": "Confidence is moderate due to the market's clear direction.",
+      "posture": "monitor",
+      "voice": "This read is based on market signals, but uncertainty remains."
+    }
+  },
+  "analyzerConfidence": 0.75,
+  "confidence": 0.675,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The absence of sharp/public data limits the strength of the lean. Without additional signals, the market-only perspective may not capture the full matchup context.",
+  "watchFor": "Any significant line movement before the game could indicate changing sentiment.",
+  "whatWouldChangeTheRead": [
+    "Emergence of sharp/public data showing a different trend",
+    "A significant injury report affecting key players"
+  ],
+  "summary": "The Cleveland Cavaliers are favored by 4.5 points, indicating market confidence in their performance. Both teams are on equal rest, but the Cavaliers have home-court advantage.",
+  "lean": "Edge toward Cleveland Cavaliers based on market favoring them with a -4.5 spread.",
+  "signalAvailability": [
+    {
+      "signal": "rest_schedule",
+      "status": "grounded",
+      "source": "espn",
+      "reason": "grounded",
+      "detail": null
+    },
+    {
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "grounded",
+      "detail": null
+    },
+    {
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "provider_returned_empty_odds",
+      "detail": null
+    }
+  ]
+}

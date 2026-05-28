@@ -1,19 +1,26 @@
 # protocol vocabulary map
 
 **date:** 2026-05-14
-**status:** doctrine slice 1. canonical vocabulary defined. runtime code unchanged.
+**status:** canonical runtime active. legacy vocabulary retired from runtime.
 
 ## purpose
 
-This document is the single source of truth for the mapping between current runtime vocabulary and the canonical Cognitive Protocol Runtime vocabulary.
+This document is the single source of truth for the canonical Cognitive Protocol Runtime vocabulary and the historical mapping from retired runtime names.
 
-It exists because the canonical names land in doctrine before any code rename. Until the future code slices land:
+The active runtime now accepts and persists only the canonical `protocol` / `CognitiveProtocol` shape:
 
-- current JSON field names, Pydantic models, C# records, prompt blocks, pipeline step labels, and persisted `OutputJson` payloads remain unchanged
+- prompt block key: `protocol`
+- persisted artifact field: `CognitiveProtocol`
+- analyzer protocol fields: `question`, `verify`, `probe`, `contrast`, `weigh`, `stress`, `justify`, `position`, `resolve`, plus scalar `detect`, `frame`, `aim`
+- read-side projection: `ProtocolView` from canonical `CognitiveProtocol` only
+
+Legacy vocabulary remains documented here only for historical interpretation:
+
+- pre-canonical persisted dev records are not rewritten
 - calibration reports written under the legacy vocabulary remain as written
-- any reader can use this table to translate between what the code says and what the doctrine names
+- active readers no longer translate legacy-only records into `ProtocolView`
 
-## canonical vocabulary (target)
+## canonical vocabulary
 
 The Cognitive Protocol Runtime defines four macro protocols, each with three micro-actions, plus a final Synthesize layer.
 
@@ -53,9 +60,9 @@ The Cognitive Protocol Runtime defines four macro protocols, each with three mic
 
 Synthesize is not a fifth macro protocol and is not counted among the 12 cognitive micro-actions. It may keep Integrate, Compose, and Deliver as internal synthesis operations.
 
-## legacy to canonical mapping
+## retired legacy to canonical mapping
 
-Current implementations under `OutputJson.CognitivePhases`, FastAPI Pydantic models, the .NET `CognitivePhases` record, and the `analyze` prompt blocks use the legacy vocabulary below.
+The names below are retired from the active runtime. Use this table only when reading pre-canonical artifacts, old calibration reports, or historical notes.
 
 ### Perceive
 
@@ -69,28 +76,28 @@ Current implementations under `OutputJson.CognitivePhases`, FastAPI Pydantic mod
 
 | legacy field | canonical micro-action | notes |
 |---|---|---|
-| `interrogate.balance` | Interrogate.Question | the strongest counter-case against the lean is the canonical Question output |
-| `interrogate.stress` | Discern.Stress | Stress moves to Discern in the canonical model; legacy emissions stay under interrogate until a future code slice |
-| `interrogate.reframe` | Interrogate.Verify | an alternate explanation tested against staged evidence is the canonical Verify output |
+| `interrogate.balance` | Interrogate.Question | retired runtime name for the strongest counter-case against the lean |
+| `interrogate.stress` | Discern.Stress | retired runtime location; active runtime emits Stress under Discern only |
+| `interrogate.reframe` | Interrogate.Verify | retired runtime name for an alternate explanation tested against staged evidence |
 | `SignalFollowUpRecord[]` (post-2026-05-14, Probe Population v1) | Interrogate.Probe | populated deterministically by `CognitiveProtocolBuilder.BuildProbe` from existing follow-up data. each missing primary signal identified via `Reason = "primary_signal_missing"`, `DecisionUse = "missing_confirmation"`, or `FallbackType = "lateral_proxy"` is mapped through a doctrinal template (one templated sentence per signal). signals without a template are dropped to avoid fabricating injury, form, or travel claims. line_movement is excluded because it is permanently not_implemented. Probe stays null when no template matches. no model call. |
 
 ### Discern
 
 | legacy field | canonical micro-action | notes |
 |---|---|---|
-| `discern.test` | Discern.Stress | the current `test` field already names the strongest challenge to the read; in the canonical model that lives under Stress |
-| `discern.listen` | Discern.Contrast | listening to market or external signals is the canonical Contrast output |
-| `discern.filter` | Discern.Weigh | filter separates grounded from weak; in the canonical model the deterministic weighing is performed by `SignalQualityEvaluator` and the model contribution becomes Weigh |
+| `discern.test` | Discern.Stress | retired runtime name for the strongest challenge to the read |
+| `discern.listen` | Discern.Contrast | retired runtime name for market or external signal interpretation |
+| `discern.filter` | Discern.Weigh | retired runtime name for separating grounded from weak signal |
 
-`SignalQualityEvaluator.Quality`, `DecisionUse`, `FollowUpSignals`, and `ConfidenceEffect` are the deterministic surface of Discern.Weigh. They remain unchanged in this slice.
+`SignalQualityEvaluator.Quality`, `DecisionUse`, `FollowUpSignals`, and `ConfidenceEffect` are the deterministic surface of Discern.Weigh. They remain unchanged.
 
 ### Decide
 
 | legacy field | canonical micro-action | notes |
 |---|---|---|
-| `decide.calibrate` | Decide.Justify | the calibration rationale sentence maps onto Justify |
-| `decide.posture` | Decide.Position | Position is the canonical word; the posture enum and `Read Stance` UI label do not change |
-| `decide.voice` | Decide.Resolve | the framing of the read without hype maps onto Resolve in the canonical model |
+| `decide.calibrate` | Decide.Justify | retired runtime name for the calibration rationale sentence |
+| `decide.posture` | Decide.Position | retired runtime field name; the posture enum and `Read Stance` UI label do not change |
+| `decide.voice` | Decide.Resolve | retired runtime name for framing the read without hype |
 
 The earlier proposal of `Decide.Choose` is rejected. Position is the canonical word. Future code that introduces a `Choose` field is a regression against decision 0004.
 
@@ -99,7 +106,7 @@ The earlier proposal of `Decide.Choose` is rejected. Position is the canonical w
 | legacy concept | canonical operation | notes |
 |---|---|---|
 | `SportsComposer.Compose` | Synthesize.Compose | unchanged in code |
-| integration of validated phase material | Synthesize.Integrate | unchanged in code |
+| integration of validated protocol material | Synthesize.Integrate | unchanged in code |
 | `AgentRunResultDto` mapping and persistence | Synthesize.Deliver | unchanged in code |
 
 ## name collisions resolved by this map
@@ -116,27 +123,28 @@ The Interrogate micro-action that requests further investigation is Probe. Probe
 
 ### Stress
 
-`interrogate.stress` is legacy. The canonical home for Stress is Discern. Until a future code slice renames the field, both readings are correct:
+`interrogate.stress` is legacy and retired from the active runtime. The canonical home for Stress is Discern.
 
-- in code and persisted runs: Stress lives inside `interrogate`
-- in doctrine: Stress lives inside Discern
+- in current code and persisted v3 runs: Stress lives inside `protocol.discern.stress` / `CognitiveProtocol.Discern.Stress`
+- in pre-canonical records and old calibration reports: Stress may appear as `interrogate.stress` or `discern.test`
 
 ### Choose
 
 `Choose` was floated as the Decide micro-action and is rejected. The canonical word is Position. The sports product language depends on Position not reading as a pick.
 
-## lockstep rule for future code slices
+## canonical enforcement rule
 
-When code finally renames any of these fields, .NET and FastAPI must update in lockstep. The relevant surfaces are:
+Do not reintroduce alias scaffolding for the retired names above. Changes to the canonical protocol shape must update FastAPI, .NET, Angular, dev tooling, and vault docs in lockstep. The relevant active surfaces are:
 
 - FastAPI Pydantic models in `dai/services/agent-service/app/models/sports.py`
-  (`SportsCognitivePhases`, `SportsPerceivePhase`, `SportsInterrogatePhase`, `SportsDiscernPhase`, `SportsDecidePhase`)
+  (`SportsCognitiveProtocol`, `SportsPerceiveProtocol`, `SportsInterrogateProtocol`, `SportsDiscernProtocol`, `SportsDecideProtocol`)
 - the analyze prompt body in `dai/services/agent-service/app/services/sports_analyzer.py`
-- the .NET cognitive records and the `SportsAnalysisResponse` shape consumed by the .NET caller
-- `SportsQualityChecker` rules that match against legacy field names
+- the .NET cognitive records and the `SportsAnalysisResponse.Protocol` shape consumed by the .NET caller
+- `SportsQualityChecker` rules that match against canonical field names
 - the artifact inspection endpoint response and the `/dev/artifacts` Angular page
+- dev calibration tooling in `dai/scripts/dev/sports/run-artifact-calibration.ps1`
 
-Persisted `OutputJson` records and calibration markdown written under the legacy vocabulary are not rewritten. Readers translate via this map.
+Persisted `OutputJson` records and calibration markdown written under the legacy vocabulary are not rewritten. Current runtime readers do not project legacy-only records; this map is for human interpretation of historical material.
 
 ## scope guard for this map
 
@@ -146,4 +154,4 @@ This document is the canonical name registry. It does not:
 - enumerate forbidden phrases or guardrails per phase
 - describe the calibration loop
 
-Those concerns live in the per-phase docs, `cognitive-protocol-runtime.md`, and `cognitive-worker-doctrine.md`.
+Those concerns live in the protocol docs, `cognitive-protocol-runtime.md`, and `cognitive-worker-doctrine.md`.

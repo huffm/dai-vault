@@ -1,0 +1,122 @@
+{
+  "agentRunId": "00bd433e-f36b-1410-815b-00373db4b724",
+  "status": "completed",
+  "competition": "nba",
+  "gameDate": "2026-05-09",
+  "groundedSignals": [
+    "rest_schedule",
+    "market"
+  ],
+  "missingSignals": [
+    "sharp_public"
+  ],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Degraded",
+      "note": "retrieve: 2 of 3 signals grounded for nba"
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": [
+        "Oklahoma City Thunder favored by 8.5 points",
+        "Both teams have equal rest"
+      ],
+      "frame": "The Thunder face the Lakers with both teams having one day of rest.",
+      "aim": [
+        "market confidence",
+        "equal rest situation"
+      ]
+    },
+    "interrogate": {
+      "balance": "Sharp/public data is missing, so this is a market-only lean.",
+      "stress": "The lack of sharp/public data creates uncertainty in the lean.",
+      "reframe": "Market confidence may not fully reflect team performance."
+    },
+    "discern": {
+      "test": "The lean relies solely on market positioning without additional signals.",
+      "listen": "The spread indicates strong market confidence in the Thunder.",
+      "filter": "Market data is present, but sharp/public data is missing."
+    },
+    "decide": {
+      "calibrate": "The confidence level reflects clear market favoring the Thunder.",
+      "posture": "monitor",
+      "voice": "This read is based on market signals, so caution is warranted."
+    }
+  },
+  "analyzerConfidence": 0.8,
+  "confidence": 0.7200000000000001,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The absence of sharp/public data limits the strength of this lean. Without additional signals, the market-only perspective may not capture the full picture.",
+  "watchFor": "Any significant line movement before the game could indicate changing confidence.",
+  "whatWouldChangeTheRead": [
+    "Emergence of sharp/public data indicating a different sentiment",
+    "A significant injury report affecting key players"
+  ],
+  "summary": "The Oklahoma City Thunder are favored by 8.5 points, indicating strong market confidence. Both teams are on equal rest, but the Thunder's market position suggests they are seen as the stronger side.",
+  "lean": "Edge toward Oklahoma City Thunder based on market favoring them significantly.",
+  "signalAvailability": [
+    {
+      "signal": "rest_schedule",
+      "status": "grounded",
+      "source": "espn",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "directional_only_without_confirmation",
+      "followUpSignals": [
+        "sharp_public",
+        "line_movement"
+      ],
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "provider_returned_empty_odds",
+      "detail": null,
+      "quality": "unavailable",
+      "decisionUse": "missing_confirmation",
+      "followUpSignals": [
+        "line_movement",
+        "market"
+      ],
+      "confidenceEffect": "block_aggressive_posture"
+    }
+  ]
+}
