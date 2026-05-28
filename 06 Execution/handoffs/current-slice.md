@@ -1726,3 +1726,51 @@ Calibration spot-check on the new canonical-only analyzer prompt (the `protocol`
 - No PowerShell was edited; no parser/ASCII validation step beyond ASCII checks on changed `.cs` / `.py` / `.ts` files.
 
 status: Canonical Protocol Alias Removal and Contract Rename v1 implemented 2026-05-28. Active runtime is canonical-only. Legacy aliases retired across Pydantic (validation_alias, populate_by_name, `.phases` property, SportsCognitivePhases module alias, PerceiveScalar/BeforeValidator), parser (cross-block stress fallback, legacy field-name reads, legacy block key), .NET wire DTO (legacy field-name JSON aliases, legacy `Phases` block key, cross-block stress fallback), .NET runtime contract (CognitivePhases field on AgentRunExecutionResult + AgentRunArtifactDto), mapper (ProjectFromLegacy), and file system (StringOrStringArrayJsonConverter.cs deleted). Builder renamed FromLegacy -> FromAnalyzerProtocol. Analyzer prompt flipped to `protocol` block key with canonical per-field cross-references. v3 artifact-version behavior unchanged. Angular TS type pruned. pytest 100 (-17). dotnet 256 (-21). next: calibration spot-check on the canonical-only prompt + retire vestigial legacy stress view slots + update calibration harness reporter + mark legacy names retired-from-runtime in the vocabulary map. jera-workspace-skills untouched. COMMITTED+PUSHED: dai cc5c924 (feat(protocol): remove legacy analyzer aliases), dai-vault a098ae9 (docs(protocol): document canonical alias removal).
+
+## addendum: .NET Test Verification Hardening v1 (2026-05-28)
+
+Dev tooling slice. No runtime behavior changed. Adds a safe repo-level wrapper for `DevCore.Api.Tests` so agents do not run the unstable full .NET test command blindly when it hangs or returns `Build FAILED` with `0 Error(s)`.
+
+### naming and skills gate
+
+Naming result:
+- script name: `scripts/dev/dotnet/test-devcore-api-safe.ps1`
+- scope: dev-only verification for `platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj`
+- no runtime/domain naming touched
+- no FastAPI prompts, CognitiveProtocol behavior, Tool Gateway behavior, confidence rules, DB schema, Angular behavior, MCP, pgvector, Azure Functions, Kubernetes, or secrets touched
+
+Skills used:
+- `dai-grill-with-vault` -- read existing dev/test docs and current handoff context before placing the script/docs.
+- `dai-token-tight` -- concise status and final report.
+- `dai-agent-handoff` -- this addendum shape.
+- `superpowers:planning` / `superpowers:writing-plans` -- locked the small sequence before edits.
+- `superpowers:test-driven-development` -- script behavior treated as testable: parser validation, targeted mode, full mode.
+- `superpowers:systematic-debugging` -- preserves the discovered failure mode: plain full command can hang or fail without useful output; targeted-first is the diagnostic route.
+- `superpowers:verification-before-completion` -- parser check plus targeted and full script execution before close.
+
+### files changed
+
+dai:
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1` -- new safe runner. Default: targeted tests first, then full suite. Supports `-Targeted`, `-Full`, and prints each command before execution. Every dotnet test command uses `/m:1 /nr:false`.
+- `scripts/dev/dotnet/README.md` -- documents the safe runner and when to use targeted-first.
+- `platform/dotnet/DevCore.Api.Tests/README.md` -- points agents to the safe runner and updates manual commands to use `-v minimal /m:1 /nr:false`.
+
+dai-vault:
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills:
+- untouched.
+
+### verification results
+
+- PowerShell parser validation for `scripts/dev/dotnet/test-devcore-api-safe.ps1`: 0 parser errors; ASCII check passed.
+- `powershell -ExecutionPolicy Bypass -File .\scripts\dev\dotnet\test-devcore-api-safe.ps1 -Targeted`: 64 passed, 0 failed. Command printed before execution; used `/m:1 /nr:false`.
+- `powershell -ExecutionPolicy Bypass -File .\scripts\dev\dotnet\test-devcore-api-safe.ps1 -Full`: 256 passed, 0 failed. Command printed before execution; used `/m:1 /nr:false`.
+
+### skill sharpening recommendation
+
+DAI verification skills should use `test-devcore-api-safe.ps1` or `/m:1 /nr:false` when full dotnet test hangs or returns `Build FAILED` with `0 Error(s)`.
+
+No local skill guidance was edited because the user did not approve `jera-workspace-skills` changes for this slice.
+
+status: .NET Test Verification Hardening v1 implemented 2026-05-28. Script and docs added. Parser/ASCII, targeted mode, and full mode verified clean. jera-workspace-skills untouched.
