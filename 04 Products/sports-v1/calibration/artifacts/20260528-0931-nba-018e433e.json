@@ -1,0 +1,232 @@
+{
+  "agentRunId": "018e433e-f36b-1410-815f-00373db4b724",
+  "status": "completed",
+  "competition": "nba",
+  "gameDate": "2026-06-03",
+  "groundedSignals": [
+    "rest_schedule",
+    "market"
+  ],
+  "missingSignals": [
+    "sharp_public"
+  ],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Degraded",
+      "note": "retrieve: 2 of 3 signals grounded for nba"
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": "The Spurs' home court advantage is significant in this matchup.",
+      "frame": "The Spurs are favored by 4.5 points against the Knicks.",
+      "aim": "The primary factor is the Spurs' home performance and rest advantage."
+    },
+    "interrogate": {
+      "balance": "The Knicks have had more rest, which could benefit them.",
+      "reframe": "However, the Spurs' home court is traditionally strong."
+    },
+    "discern": {
+      "listen": "The market favors the Spurs by 4.5 points, indicating confidence.",
+      "filter": "The Spurs' home advantage is clear, but the Knicks' rest is notable.",
+      "stress": "The read could fail if the Knicks perform exceptionally well despite the rest."
+    },
+    "decide": {
+      "calibrate": "The confidence level reflects the strong home court and market support.",
+      "posture": "monitor",
+      "voice": "This read should be held with caution due to the Knicks' rest."
+    }
+  },
+  "analyzerConfidence": 0.7,
+  "confidence": 0.63,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The Knicks' additional rest could lead to a strong performance, challenging the Spurs.",
+  "watchFor": "Any significant line movement before the game could indicate a shift in sentiment.",
+  "whatWouldChangeTheRead": [
+    "Knicks show strong performance indicators in warm-ups",
+    "Line moves significantly in favor of the Knicks"
+  ],
+  "summary": "The Spurs are favored by 4.5 points, indicating market confidence in their home performance. Additionally, the Spurs have a rest advantage with three days compared to the Knicks' eight days.",
+  "lean": "Edge toward San Antonio Spurs based on home court advantage and rest differential.",
+  "signalAvailability": [
+    {
+      "signal": "rest_schedule",
+      "status": "grounded",
+      "source": "espn",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "directional_only_without_confirmation",
+      "followUpSignals": [
+        "sharp_public",
+        "line_movement"
+      ],
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "no_matching_game",
+      "detail": null,
+      "quality": "unavailable",
+      "decisionUse": "missing_confirmation",
+      "followUpSignals": [
+        "line_movement",
+        "market"
+      ],
+      "confidenceEffect": "block_aggressive_posture"
+    }
+  ],
+  "signalFollowUps": [
+    {
+      "triggeredBy": "market",
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "primary_signal_missing",
+      "decisionUse": "missing_confirmation",
+      "detail": "sharp_public was the recommended confirmation but is missing for this run; market remains directional only",
+      "fallbackType": "unavailable_with_reason",
+      "equivalence": "none",
+      "confidencePermission": "confidence_reduced",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "market",
+      "signal": "line_movement",
+      "status": "not_implemented",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "proxy_candidate",
+      "detail": "line movement is adjacent to market direction; it is the recommended adjacent proxy when sharp_public is missing, but it is not implemented yet and cannot equivalently substitute",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "sharp_public",
+      "signal": "line_movement",
+      "status": "not_implemented",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "proxy_candidate",
+      "detail": "line movement is adjacent to sharp_public (market pressure, not the public/sharp split); it cannot equivalently substitute and it is not implemented yet",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "sharp_public",
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "already_grounded",
+      "decisionUse": "directional_context",
+      "detail": "market provides direction but not the public/sharp split; it is a lateral_proxy and cannot lift confidence on its own",
+      "fallbackType": "lateral_proxy",
+      "equivalence": "lateral",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    }
+  ],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "The Spurs' home court advantage is significant in this matchup."
+      ],
+      "frame": "The Spurs are favored by 4.5 points against the Knicks.",
+      "aim": [
+        "The primary factor is the Spurs' home performance and rest advantage."
+      ]
+    },
+    "interrogate": {
+      "question": "The Knicks have had more rest, which could benefit them.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "However, the Spurs' home court is traditionally strong."
+    },
+    "discern": {
+      "weigh": "The Spurs' home advantage is clear, but the Knicks' rest is notable.",
+      "contrast": "The market favors the Spurs by 4.5 points, indicating confidence.",
+      "stress": {
+        "legacyInterrogateStress": null,
+        "legacyDiscernTest": null,
+        "canonical": "The read could fail if the Knicks perform exceptionally well despite the rest."
+      }
+    },
+    "decide": {
+      "resolve": "This read should be held with caution due to the Knicks' rest.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the strong home court and market support."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v2",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "The Spurs' home court advantage is significant in this matchup.",
+      "frame": "The Spurs are favored by 4.5 points against the Knicks.",
+      "aim": "The primary factor is the Spurs' home performance and rest advantage."
+    },
+    "interrogate": {
+      "question": "The Knicks have had more rest, which could benefit them.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "However, the Spurs' home court is traditionally strong."
+    },
+    "discern": {
+      "weigh": "The Spurs' home advantage is clear, but the Knicks' rest is notable.",
+      "contrast": "The market favors the Spurs by 4.5 points, indicating confidence.",
+      "stress": "The read could fail if the Knicks perform exceptionally well despite the rest."
+    },
+    "decide": {
+      "resolve": "This read should be held with caution due to the Knicks' rest.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the strong home court and market support."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}

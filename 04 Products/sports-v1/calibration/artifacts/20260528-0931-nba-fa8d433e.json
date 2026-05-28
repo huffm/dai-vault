@@ -1,0 +1,232 @@
+{
+  "agentRunId": "fa8d433e-f36b-1410-815f-00373db4b724",
+  "status": "completed",
+  "competition": "nba",
+  "gameDate": "2026-06-03",
+  "groundedSignals": [
+    "rest_schedule",
+    "market"
+  ],
+  "missingSignals": [
+    "sharp_public"
+  ],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Degraded",
+      "note": "retrieve: 2 of 3 signals grounded for nba"
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "cognitivePhases": {
+    "perceive": {
+      "detect": "The Thunder's home court advantage coupled with rest differential is significant.",
+      "frame": "The Thunder are favored by 6.5 points against the Knicks, with differing rest periods.",
+      "aim": "The primary factor is the Thunder's home court advantage."
+    },
+    "interrogate": {
+      "balance": "The Knicks have had more rest, which could favor their performance.",
+      "reframe": "The Knicks' longer rest might help them recover and perform well."
+    },
+    "discern": {
+      "listen": "The market favors the Thunder with a 6.5 point spread.",
+      "filter": "Market confidence is clear, but the Knicks' rest advantage is notable.",
+      "stress": "The read could fail if the Knicks' rest translates into a strong performance."
+    },
+    "decide": {
+      "calibrate": "The confidence level reflects the Thunder's home advantage and market support.",
+      "posture": "monitor",
+      "voice": "This read should be held cautiously, considering the Knicks' rest."
+    }
+  },
+  "analyzerConfidence": 0.75,
+  "confidence": 0.675,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The Knicks' extended rest could lead to a strong performance, challenging the lean.",
+  "watchFor": "Any significant lineup changes or news regarding player availability.",
+  "whatWouldChangeTheRead": [
+    "A major injury to a key player for the Thunder",
+    "A shift in the spread indicating market confidence in the Knicks"
+  ],
+  "summary": "The Oklahoma City Thunder are favored by 6.5 points, indicating market confidence in their home performance. With 3 days of rest compared to the Knicks' 8 days, the Thunder may benefit from fresher legs at home.",
+  "lean": "Edge toward Oklahoma City Thunder based on home court advantage and rest differential.",
+  "signalAvailability": [
+    {
+      "signal": "rest_schedule",
+      "status": "grounded",
+      "source": "espn",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "directional_only_without_confirmation",
+      "followUpSignals": [
+        "sharp_public",
+        "line_movement"
+      ],
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "no_matching_game",
+      "detail": null,
+      "quality": "unavailable",
+      "decisionUse": "missing_confirmation",
+      "followUpSignals": [
+        "line_movement",
+        "market"
+      ],
+      "confidenceEffect": "block_aggressive_posture"
+    }
+  ],
+  "signalFollowUps": [
+    {
+      "triggeredBy": "market",
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "primary_signal_missing",
+      "decisionUse": "missing_confirmation",
+      "detail": "sharp_public was the recommended confirmation but is missing for this run; market remains directional only",
+      "fallbackType": "unavailable_with_reason",
+      "equivalence": "none",
+      "confidencePermission": "confidence_reduced",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "market",
+      "signal": "line_movement",
+      "status": "not_implemented",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "proxy_candidate",
+      "detail": "line movement is adjacent to market direction; it is the recommended adjacent proxy when sharp_public is missing, but it is not implemented yet and cannot equivalently substitute",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "sharp_public",
+      "signal": "line_movement",
+      "status": "not_implemented",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "proxy_candidate",
+      "detail": "line movement is adjacent to sharp_public (market pressure, not the public/sharp split); it cannot equivalently substitute and it is not implemented yet",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "sharp_public",
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "already_grounded",
+      "decisionUse": "directional_context",
+      "detail": "market provides direction but not the public/sharp split; it is a lateral_proxy and cannot lift confidence on its own",
+      "fallbackType": "lateral_proxy",
+      "equivalence": "lateral",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    }
+  ],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "The Thunder's home court advantage coupled with rest differential is significant."
+      ],
+      "frame": "The Thunder are favored by 6.5 points against the Knicks, with differing rest periods.",
+      "aim": [
+        "The primary factor is the Thunder's home court advantage."
+      ]
+    },
+    "interrogate": {
+      "question": "The Knicks have had more rest, which could favor their performance.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "The Knicks' longer rest might help them recover and perform well."
+    },
+    "discern": {
+      "weigh": "Market confidence is clear, but the Knicks' rest advantage is notable.",
+      "contrast": "The market favors the Thunder with a 6.5 point spread.",
+      "stress": {
+        "legacyInterrogateStress": null,
+        "legacyDiscernTest": null,
+        "canonical": "The read could fail if the Knicks' rest translates into a strong performance."
+      }
+    },
+    "decide": {
+      "resolve": "This read should be held cautiously, considering the Knicks' rest.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the Thunder's home advantage and market support."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v2",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "The Thunder's home court advantage coupled with rest differential is significant.",
+      "frame": "The Thunder are favored by 6.5 points against the Knicks, with differing rest periods.",
+      "aim": "The primary factor is the Thunder's home court advantage."
+    },
+    "interrogate": {
+      "question": "The Knicks have had more rest, which could favor their performance.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "The Knicks' longer rest might help them recover and perform well."
+    },
+    "discern": {
+      "weigh": "Market confidence is clear, but the Knicks' rest advantage is notable.",
+      "contrast": "The market favors the Thunder with a 6.5 point spread.",
+      "stress": "The read could fail if the Knicks' rest translates into a strong performance."
+    },
+    "decide": {
+      "resolve": "This read should be held cautiously, considering the Knicks' rest.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the Thunder's home advantage and market support."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}

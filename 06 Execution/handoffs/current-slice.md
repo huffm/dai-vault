@@ -1411,3 +1411,116 @@ Migration plan steps 6 + 7 + the downstream rename, in roughly this order: (a) Q
 - Skill weakness / sharpening recommendations to carry forward: (1) `dai-grill-with-vault`'s closing template still does not match a solo implementation slice -- a dedicated `dai-implement-with-vault` (or `dai-audit`) skill would fit better; (2) a future skill could include a "do not blanket replace_all dotted strings that appear as both prompt labels and attribute access" guard (the Canonical Prompt Pure Rename v1 footgun); (3) a future skill could codify the migration-step pattern "shape change -> add boundary converter -> update contract type -> remove builder helper -> add view round-trip if Angular contract is unchanged".
 
 status: Perceive Detect/Aim Scalar Collapse v1 implemented 2026-05-28. analyzer prompt emits scalar `perceive.detect` / `perceive.aim`; both boundaries collapse legacy `string[]` payloads via `"; "`-join (StringOrStringArrayJsonConverter on the .NET side, BeforeValidator on the Pydantic side); runtime contract canonical-only scalar; builder pass-through; view shape retained as `string[]?` so Angular is untouched; persisted records never rewritten. pytest 117 (+12), dotnet 275 (+9). next: artifact v3 stamp (Q6) + legacy block persistence decision (Q3) + alias removal (step 7) + downstream contract rename. jera-workspace-skills untouched. COMMITTED+PUSHED: dai c7342e6 (feat(protocol): collapse perceive detect aim to scalar fields), dai-vault 3126827 (docs(protocol): document perceive scalar collapse).
+
+## addendum: Canonical Protocol Calibration Spot-Check v1 (2026-05-28)
+
+Observational slice (live runs, no code change). Confirmed the canonical Cognitive Protocol Runtime is healthy end-to-end after the recent migration arc (Canonical Prompt Pure Rename v1 -> `phases -> protocol` rename -> Stress Collapse v1 -> Perceive Detect/Aim Scalar Collapse v1). Three live NBA runs through the full pipeline (reference, retrieve, analyze, compose, persist) produced canonical-shaped artifacts; inspection endpoint and the `protocolView` projection serve cleanly; no first-class runtime dependency remains on the retired field names. No confidence/posture/Tool-Gateway/schema/Angular/MCP/pgvector/Azure/Kubernetes/secrets change; **no v3 stamp landed this slice** (it is the recommended next slice).
+
+### naming and skills gate
+
+Skills used (jera pack, local, read-only):
+- `dai-grill-with-vault` -- read the migration plan Q2 + Q6 entries, the cognitive-factory docs (vocabulary map, station blueprint, node specs), the harness source (`run-artifact-calibration.ps1`), prior calibration notes (2026-05-18 NBA and MLB), and the artifact endpoint contract before bringing up the stack; surfaced the harness markdown reporter's reading of retired `cognitivePhases.interrogate.stress` / `cognitivePhases.discern.test` as a known reporter divergence, not a runtime bug.
+- `dai-token-tight` -- reporting density on the spot-check note and these transfer notes.
+- `dai-agent-handoff` -- shape of these transfer notes.
+
+Skills used (superpowers / Claude built-ins):
+- `superpowers:verification-before-completion` -- every canonical-shape claim grounded in a direct read of the three produced artifact JSONs and the live artifact endpoint response; the `protocolView.discern.stress.Canonical` slot was inspected on a real run; the legacy slots were confirmed null end-to-end. No claim was extrapolated from the test suite alone.
+- `superpowers:writing-plans` -- consulted to keep the spot-check sequence minimal and revertible: stand up stack, run a small batch, inspect, write the note, no code touched.
+- `superpowers:systematic-debugging` -- held in reserve; not needed.
+- `superpowers:planning` -- consulted only enough to confirm v3 is the right next slice; the migration plan already specifies it (Q6).
+
+Skill weakness / sharpening recommendations carried forward:
+1. The harness markdown reporter is the next sharpening surface. A small `dai-calibration-report-canonical` slice (and matching skill) should: read the canonical `cognitiveProtocol` block first, fall back to `cognitivePhases` only for older records, drop the retired field columns (`interrogate.stress`, `discern.test`) from the table, and add the new canonical columns (`interrogate.probe`, `discern.stress.canonical`). One file, no runtime change.
+2. A dedicated `dai-implement-with-vault` (or `dai-spot-check-with-vault`) skill that codifies this exact spot-check shape -- live run + JSON facet table + calibration delta vs prior batch + v3-readiness conclusion + no-code outcome -- would fit operational verification slices better than the interactive grill template.
+3. `jera-workspace-skills` left untouched (repo boundary rule honored, no approval to edit). Confirmed clean at `C:/Users/trolo/source/repos/jera-workspace/jera-workspace-skills`.
+
+Naming decisions (gate item documented):
+- spot-check note filename: `20260528-0931-nba-canonical-protocol-spot-check.md` -- timestamp prefix matches the harness's auto-generated report so they sort together; suffix is descriptive without overloading the harness's own naming convention.
+- the note sits in `dai-vault/04 Products/sports-v1/calibration/` next to the harness output (matches the existing calibration area; no new folder).
+- harness-produced sibling files (auto-named by the script, kept verbatim): `20260528-0931-nba-calibration.md` + three artifact JSONs under `artifacts/20260528-0931-nba-*.json` (canonical names from `run-artifact-calibration.ps1`; no rename).
+- v3 stamp constant name (proposed, not yet committed): `ArtifactVersions.SportsDecisionArtifactV3 = "sports_decision_artifact_v3"` -- mirrors the existing V2 constant; vocabulary already approved in the migration plan Q6.
+
+### artifact shape findings (all 3 runs)
+
+Canonical `cognitiveProtocol` block:
+- `cognitiveProtocol` present on every run; `artifactVersion = sports_decision_artifact_v2` (v3 deliberately not stamped).
+- `perceive.detect` and `perceive.aim` are scalar `string` on every run -- the model writes one sentence per station, no list semantics, no semicolon-joined multi-fact phrasing; the Perceive Scalar Collapse v1 prompt guardrail is being honored at emission.
+- `interrogate` keys are exactly `question`, `probe`, `verify` -- `stress` is absent (Stress Collapse v1 honored at the model boundary, not just at the parser).
+- `interrogate.probe` is non-null on every run because `sharp_public` is missing and the doctrinal probe template fires; the deterministic `BuildProbe(SignalFollowUpRecord[])` path is producing real material.
+- `discern` keys are exactly `weigh`, `contrast`, `stress` -- `test` is absent (single canonical stress source per Collapse v1).
+- `discern.stress` is a single sentence on every run.
+- `decide.position` carries the validated posture enum value (`monitor` on every run) verbatim.
+- `synthesize.{integrate, compose, deliver}` all present.
+
+Legacy compatibility block (`cognitivePhases`, still emitted; Q3 not yet decided): scalar perceive detect/aim, interrogate carries `balance`/`reframe` (no `stress`), discern carries `filter`/`listen`/`stress` (no `test`). The dual-emit invariant still holds.
+
+`protocolView` projection (the read-side surface served to `/dev/artifacts`):
+- `perceive.detect`/`.aim` come through as `string[]` with 1 element -- the canonical scalar wrapped by `SplitJoined` (Angular contract preserved by design per Perceive Scalar Collapse v1).
+- `interrogate.probe` is populated.
+- `discern.stress` is a `DiscernStressProtocolView` with `canonical` populated and both legacy slots null -- end-to-end proof of Stress Collapse v1.
+- `synthesize` carries all three platform-operational descriptions.
+
+### quality warning findings
+
+Runtime `artifactQualityWarnings` was empty on all three runs:
+- the anti-hype gate (rule 6, Decision Artifact Contract v1) did not fire because every run was `posture == "monitor"`; the gate requires `play` + `block_aggressive_posture` and correctly stayed silent.
+- signal-narrative drift and `signals_used` integrity checks were clean.
+- posture validation: every run inside the validated enum, no clamp.
+
+Offline calibration flags (computed by the harness markdown report; distinct from runtime `ArtifactQualityWarnings` per the 2026-05-21 audit): `missing_sharp_public` 3/3, `signal_quality_blocks_aggressive_posture` 3/3, `posture_aligned_with_partial_evidence` 3/3, `counter_case_generic` 2/3, `what_would_change_contains_filler` 1/3, `frame_missing_rest_context` 1/3, `confidence_high_for_partial_evidence` 0/3 (no run reached confidence >= 0.70 -- the prior batch's 0.72 baseline did not repeat here).
+
+### Tool Gateway / telemetry observations
+
+The runs completed end-to-end through the canonical chain (`schedule.matchup_dates` at `platform.reference`; `schedule.basketball.rest_context`, `market.basketball.spread`, `market.sharp_public.split` at `platform.retrieve`; `analysis.sports.matchup_read` at `platform.analyze`). Success at every stage proves the `ProtocolRegistry` startup guard cross-check (Protocol Registry Startup Guard v1) was satisfied at boot and that the scoped DI graph is wiring keyed handlers correctly under load. Structured `ToolGatewayInvocation` log events are emitted per Tool Gateway Correlation and Telemetry v1; this spot-check did not capture live stdout from the .NET API window, but the telemetry path is covered by 4 dedicated tests in the 275-test .NET suite. No `ToolNotAllowed`, `ToolNotRegistered`, or `HandlerError` outcomes inferred from the run results.
+
+### calibration delta vs prior NBA batch
+
+Sample is small on both sides (2 vs 3); treat directionally. Posture distribution identical (all `monitor`). Confidence range lower this batch (0.63 -- 0.675 vs 0.72 prior). Evidence richness identical (2 every run). `confidence_high_for_partial_evidence` dropped from 2/2 to 0/3 because confidence is below 0.70, not because the rule changed. `interrogate_unsupported_claim` dropped to 0/3 from 1/2 -- the canonical prompt may be tightening interrogate quality. `counter_case_generic` rose to 2/3 from 0/2 -- could be a prompt-tightening signal or a sample-size artefact. Next calibration window should aim for take 8+ across NBA and MLB before any threshold change.
+
+### reporter divergence (known, not a runtime issue)
+
+The harness markdown report's `Cognitive Phase Completeness` and `Cognitive Phase Quality` tables show `not recorded` for `interrogate.stress` and `discern.test` on every new run, because the harness reads `cognitivePhases.interrogate.stress` and `cognitivePhases.discern.test`, both of which are intentionally retired after Stress Collapse v1. The actual stress content is in `cognitivePhases.discern.stress` (shown as `recorded`), and the canonical home is `cognitiveProtocol.discern.stress` (the report does not inspect it at all). Reporter limitation, not a runtime regression. Out of scope for this spot-check; carry as a small follow-up slice.
+
+### risks
+
+- the prompt-texture shift (lower confidence range, fewer unsupported-claim flags, more generic counter_case) might mask a real quality regression on `counter_case`. Mitigation: capture another 5-8 run batch within a week and reassess. Severity: low-med.
+- the harness reporter's "not recorded" entries for retired field names could mislead a casual reader. Mitigation: scheduled as the follow-up slice. Severity: low.
+- v2 records (this batch) and v3 records (after the next slice) will coexist in inspection. The mapper preserves both projection paths; `protocolView` will continue to render correctly for both. No data migration. Severity: low.
+
+### is v3 stamp now safe?
+
+Yes. The canonical analyzer is emitting the v3-shaped artifact today (the only thing left to do is mark it with the constant). Every facet of the canonical contract is healthy on every run; the deterministic Probe and Synthesize layers are producing real material; `protocolView.discern.stress.Canonical` is populated and the legacy slots are null end-to-end. The v3 stamp is a marker, not a behavior change; no confidence or posture threshold moves.
+
+### files changed
+
+- `dai-vault/04 Products/sports-v1/calibration/20260528-0931-nba-canonical-protocol-spot-check.md` (new, this slice's primary artifact) -- the spot-check note: shape facets, calibration delta, reporter divergence, v3 readiness conclusion, skills used.
+- `dai-vault/04 Products/sports-v1/calibration/20260528-0931-nba-calibration.md` (new, auto-generated by the harness) -- the harness's own markdown report for the batch.
+- `dai-vault/04 Products/sports-v1/calibration/artifacts/20260528-0931-nba-f48d433e.json`, `...-fa8d433e.json`, `...-018e433e.json` (new, auto-generated by the harness) -- per-run artifact JSONs.
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+
+No `dai` repo changes. No `jera-workspace-skills` changes.
+
+### next recommended slice
+
+Artifact v3 Stamp v1 (migration plan Q6) + legacy `CognitivePhases` persistence decision (migration plan Q3), in one small commit. Recommended sequence:
+
+1. add `ArtifactVersions.SportsDecisionArtifactV3 = "sports_decision_artifact_v3"`.
+2. stamp v3 on the success-path `SportsComposer` result.
+3. decide and apply the legacy `cognitivePhases` persistence policy on v3 records (recommend dropping the legacy block on v3 because the read-side projection already prefers canonical and old records remain readable via `ProjectFromLegacy`).
+4. update the artifact-version label on `/dev/artifacts` and the source-badge text to recognize v3 (Angular text only; no contract change).
+5. small dotnet suite update (artifact-version + composer tests); pytest unaffected.
+
+After that: plan step 7 (alias removal, including the perceive `StringOrStringArrayJsonConverter` once a calibration window confirms no legacy array payloads remain) and the downstream `.NET` contract record rename (`SportsCognitivePhases -> SportsCognitiveProtocol`).
+
+Parallel candidate (separate, smaller): teach `run-artifact-calibration.ps1` to read the canonical `cognitiveProtocol` block first and fall back to `cognitivePhases` for older records, closing the reporter divergence.
+
+### Claude <-> Codex transfer notes
+
+- Repos in play: `dai-vault` (1 new spot-check note + 1 harness markdown + 3 artifact JSONs + this addendum). `dai` and `jera-workspace-skills` untouched.
+- Stack state at the end of this slice: Docker Desktop running, `devcore-sql` container up, `.NET` API on `:5007` and FastAPI on `:8000` running in separate PowerShell windows. The next agent can either continue with the v3 stamp slice (no stack needed -- pure code + tests) or stop the stack via `scripts/dev/sports/stop-sports-dev.ps1`.
+- To re-verify the canonical shape on any machine: run the harness with `-Force` against the current stack, then inspect one of the produced artifact JSONs for `cognitiveProtocol.perceive.detect` (must be `string`), `cognitiveProtocol.interrogate` keys (must be `["question","probe","verify"]`), `cognitiveProtocol.discern` keys (must be `["weigh","contrast","stress"]`), and `protocolView.discern.stress.canonical` (must be non-null with the legacy slots null on the same call).
+- The harness markdown reporter is known-stale on `interrogate.stress` and `discern.test`. Do NOT interpret its "not recorded" entries on those columns as a runtime regression. The canonical truth is in the JSON.
+- Pre-existing untracked `dai-vault` calibration files (2026-05-08 / 05-09 / 05-10 NBA + their artifact JSONs) are NOT from this slice; leave them.
+- No PowerShell was edited; no parser/ASCII validation step required. The harness was run, not modified.
+
+status: Canonical Protocol Calibration Spot-Check v1 completed 2026-05-28. 3 live NBA runs through the canonical pipeline; cognitiveProtocol shape healthy end-to-end (scalar perceive, single discern.stress, no interrogate.stress / discern.test, populated probe, clean protocolView); runtime quality gates correctly silent on monitor postures; calibration delta directional only at n=3. v3 stamp is now safe. next: artifact v3 stamp + legacy block persistence decision. jera-workspace-skills untouched.
