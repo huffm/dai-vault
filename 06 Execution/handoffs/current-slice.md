@@ -1868,3 +1868,69 @@ jera-workspace-skills: untouched.
 - No confidence/posture/Tool-Gateway/schema/MCP/pgvector/Azure/Kubernetes/prompt change.
 
 status: Retire Vestigial Stress View Slots v1 implemented 2026-05-29. DiscernStressProtocolView wrapper removed; read-side discern.stress is a single string in C# and Angular; canonical discern.stress station and runtime contract unchanged. dotnet 262, Angular build clean. jera-workspace-skills untouched.
+
+## addendum: Per-Station Tool Gateway Policy v1 (2026-05-29)
+
+Tool Gateway slice. The analyzer call is not split and the runtime pipeline is unchanged. Teaches the gateway to authorize canonical station-id callers (for future Protocol Node Runner work) while preserving current stage-sentinel behavior exactly.
+
+### skills used
+
+- Local jera-workspace-skills/dai (read-only): dai-grill-with-vault (read code+vault before touching the security boundary), dai-token-tight, dai-agent-handoff. Pack not edited.
+- superpowers: writing-plans (designed against real code before editing the gateway), verification-before-completion (all results below are fresh runs), test-driven-development (policy + gateway tests). systematic-debugging not needed.
+
+### naming decisions
+
+Accepted the candidates: `IProtocolToolAccessPolicy` / `ProtocolToolAccessPolicy`, with method `IsAllowed(ToolDefinition tool, string protocolNode)`. Placed in `DevCore.Api.Protocols` next to `ProtocolRegistryValidator` (the policy is the runtime dual of that test-only validator and reuses its `ApplicableStageSentinel`). No tool ids or station ids changed.
+
+### files changed
+
+dai:
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolToolAccessPolicy.cs` -- NEW. The policy + interface + static `Default` built from `ProtocolRegistry.Default()`.
+- `platform/dotnet/DevCore.Api/Tools/ToolGateway.cs` -- resolve `IProtocolToolAccessPolicy` from the injected IServiceProvider (fallback to `ProtocolToolAccessPolicy.Default`); replace the inline `AllowedProtocolNodes.Contains` check with `policy.IsAllowed`. Constructor signature unchanged.
+- `platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- register `IProtocolToolAccessPolicy` singleton.
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProtocolToolAccessPolicyTests.cs` -- NEW. 8 unit tests.
+- `platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayAnalyzeTests.cs` -- 1 new gateway test: a station-id caller (interrogate.question) routes the analyze tool through successfully.
+
+dai-vault:
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills: untouched.
+
+### policy behavior
+
+`IsAllowed(tool, node)`:
+1. If `node` is a registered station id (in ProtocolRegistry): allow only if the station card lists the tool in AllowedTools AND the tool's AllowedProtocolNodes contains the exact station id OR the station's applicable stage sentinel (`ProtocolRegistryValidator.ApplicableStageSentinel`). A station whose card omits the tool fails closed.
+2. Otherwise (a platform stage sentinel, or any other id): exact match against the tool's AllowedProtocolNodes -- identical to the v1 gateway. Unknown station-like ids are not in the registry, so they fall here and fail closed.
+
+### compatibility behavior
+
+- platform.reference / platform.retrieve / platform.analyze callers are unchanged (path 2 exact match). All existing allow and deny gateway tests pass unchanged.
+- Today every runtime caller passes a stage sentinel, so the station-id path is dormant in production; it only affects future station-id callers.
+- The gateway still throws ToolNotRegistered / ToolNotAllowedForProtocolNode with the same fields, and the denied/not_registered/handler_error telemetry outcomes are preserved (only the allow decision moved into the policy).
+- The startup guard (ProtocolRegistryValidator) is unchanged and still green.
+
+### test results
+
+- safe .NET runner targeted: 64 passed, 0 failed.
+- safe .NET runner full: 271 passed, 0 failed (was 262; +8 policy unit tests, +1 gateway station-id success test).
+- No Python change -> pytest not run. No Angular change -> Angular build not run.
+
+### risks
+
+Low. The gateway authorization decision was extracted to a policy that is a strict superset of the old behavior for non-station nodes and adds a fail-closed station-id path. Reuses the already-validated `ApplicableStageSentinel` logic. No tool/station id changes, no pipeline split, no prompt/confidence/posture/schema change. Reversible (revert the gateway line + remove the policy registration).
+
+### next recommended slice
+
+Protocol Node Runner v1 groundwork: introduce a caller that actually passes station ids through the gateway (e.g., a deterministic station such as a future memory-backed interrogate.probe), now that the policy authorizes them. Alternatively, promote `ProtocolRegistryValidator` from test-only/startup-guard to also back the policy's manifest so there is a single source.
+
+### Claude/Codex transfer notes
+
+- The policy is dormant for production callers; do not expect behavior change in current runs. To exercise it, pass a `ToolInvocationContext.ProtocolNode` equal to a `StationIds.*` value whose card lists the tool.
+- The gateway resolves the policy from IServiceProvider with a `ProtocolToolAccessPolicy.Default` fallback, so test service graphs need no policy registration. Production registers it in `AddDaiToolGateway`.
+- Do not split the analyzer call, do not make the model emit probe, do not change FastAPI prompt/confidence/posture in follow-ups unless explicitly scoped.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Per-Station Tool Gateway Policy v1 implemented 2026-05-29. ProtocolToolAccessPolicy added and wired into ToolGateway; station-id callers authorized via station card + applicable stage sentinel; stage-sentinel behavior and gateway telemetry preserved; analyzer call not split. dotnet 271 (targeted 64), no Python/Angular change. jera-workspace-skills untouched.
