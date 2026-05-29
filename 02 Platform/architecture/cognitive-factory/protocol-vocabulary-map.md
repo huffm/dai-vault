@@ -94,6 +94,8 @@ The names below are retired from the active runtime. Use this table only when re
 | `discern.listen` | Discern.Contrast | retired runtime name for market or external signal interpretation |
 | `discern.filter` | Discern.Weigh | retired runtime name for separating grounded from weak signal |
 
+Read-side note (Retire Vestigial Stress View Slots v1, 2026-05-29): the projection DTO once nested stress in a `DiscernStressProtocolView { Canonical }` wrapper (a holdover from when `interrogate.stress` and `discern.test` were separate sources). With a single canonical stress source, that wrapper is retired -- `DiscernProtocolView.Stress` is now a plain string and the dev artifact page renders it as one "Stress" field with no "Canonical Stress" sub-label. No endpoint or dev surface advertises `interrogate.stress` or `discern.test` as active fields.
+
 `SignalQualityEvaluator.Quality`, `DecisionUse`, `FollowUpSignals`, and `ConfidenceEffect` are the deterministic surface of Discern.Weigh. They remain unchanged.
 
 ### Decide

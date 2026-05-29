@@ -1823,3 +1823,48 @@ jera-workspace-skills: untouched.
 - No confidence-rule, posture, Tool Gateway, schema, MCP, pgvector, Azure, or Kubernetes change.
 
 status: Protocol Completion Representation v1 implemented 2026-05-28. Model-emitted seed renamed to AnalyzerProtocolSeed terminology in both languages; completed CognitiveProtocol unchanged; probe stays deterministic; json key `protocol` unchanged. pytest 103, dotnet 262. jera-workspace-skills untouched.
+
+## addendum: Retire Vestigial Stress View Slots v1 (2026-05-29)
+
+Cleanup slice. No runtime behavior changed. Removes the vestigial read-side stress wrapper so no endpoint or dev surface advertises retired stress sources.
+
+### what was vestigial
+
+The named legacy slots `LegacyInterrogateStress` / `LegacyDiscernTest` did not exist (already removed in Stress Collapse v1 / Canonical Alias Removal v1). The remaining vestige was the projection wrapper `DiscernStressProtocolView { Canonical }` (a holdover from when interrogate.stress and discern.test were separate stress sources) and the Angular "Canonical Stress" sub-label. With one canonical stress source, the wrapper implied multiplicity that no longer exists.
+
+### change
+
+- `DiscernProtocolView.Stress` collapsed from `DiscernStressProtocolView` to a plain `string?`, matching Weigh and Contrast. The `DiscernStressProtocolView` record was deleted (C# and the Angular DTO type).
+- `ProtocolVocabularyMapper` now sets `Stress: protocol.Discern?.Stress` directly (no wrapper).
+- Angular dev artifact page renders Stress as one normal "Stress" field; the `stressField` helper and the "Canonical Stress" sub-label were removed.
+- The completed runtime contract (`CognitiveProtocol.Discern.Stress`), the canonical `discern.stress` station (`StationIds.DiscernStress`), confidence, posture, and the FastAPI prompt are untouched.
+- Projection is request-time only and not persisted, so no migration; old dev runs are disposable pre-launch.
+
+### naming review result
+
+`DiscernProtocolView` now has three uniform `string?` fields (Weigh, Contrast, Stress). No new names introduced; the misleading nested wrapper removed. No surface advertises `interrogate.stress` or `discern.test` as active runtime fields.
+
+### files changed
+
+dai:
+- `platform/dotnet/DevCore.Api/AgentRuns/CognitiveProtocolView.cs` -- collapse Stress to string; delete DiscernStressProtocolView; comment update.
+- `platform/dotnet/DevCore.Api/AgentRuns/ProtocolVocabularyMapper.cs` -- surface stress directly.
+- `platform/dotnet/DevCore.Api.Tests/AgentRuns/ProtocolVocabularyMapperTests.cs`, `Integration/AgentRunsControllerTests.cs` -- assert `Discern.Stress` as a string.
+- `apps/sports-app/src/app/core/models/agent-run.model.ts` -- drop DiscernStressProtocolView type; stress is string.
+- `apps/sports-app/src/app/dev-artifact-review/dev-artifact-review.component.ts` -- render Stress as a plain field; remove stressField helper.
+
+dai-vault:
+- `02 Platform/architecture/cognitive-factory/protocol-vocabulary-map.md` -- read-side note that the stress wrapper is retired.
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills: untouched.
+
+### verification results
+
+- safe .NET runner targeted: 64 passed, 0 failed.
+- safe .NET runner full: 262 passed, 0 failed.
+- Angular build: bundle generation complete, 0 errors (dev-artifact-review-component rebuilt).
+- No Python change -> pytest not run.
+- No confidence/posture/Tool-Gateway/schema/MCP/pgvector/Azure/Kubernetes/prompt change.
+
+status: Retire Vestigial Stress View Slots v1 implemented 2026-05-29. DiscernStressProtocolView wrapper removed; read-side discern.stress is a single string in C# and Angular; canonical discern.stress station and runtime contract unchanged. dotnet 262, Angular build clean. jera-workspace-skills untouched.
