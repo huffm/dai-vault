@@ -1934,3 +1934,63 @@ Protocol Node Runner v1 groundwork: introduce a caller that actually passes stat
 Untouched (read-only this slice).
 
 status: Per-Station Tool Gateway Policy v1 implemented 2026-05-29. ProtocolToolAccessPolicy added and wired into ToolGateway; station-id callers authorized via station card + applicable stage sentinel; stage-sentinel behavior and gateway telemetry preserved; analyzer call not split. dotnet 271 (targeted 64), no Python/Angular change. jera-workspace-skills untouched.
+
+## addendum: Canonical Calibration Reporter v1 (2026-05-29)
+
+Reporting/docs slice. No runtime behavior changed; no .NET, Python, or Angular change. The calibration harness was already migrated to canonical naming in the protocol-cleanup checkpoint; this slice verifies that, documents the canonical protocol surface, and makes the harness ASCII-only.
+
+### inspection result
+
+`scripts/dev/sports/run-artifact-calibration.ps1` already reads the canonical persisted `cognitiveProtocol` (7 reads) and contains zero retired tokens (no `cognitivePhases`, `interrogate.stress`, `discern.test`, `stress.canonical`, or legacy action names balance/reframe/listen/filter/calibrate/voice). The Cognitive Protocol Completeness and Cognitive Protocol Quality tables already use the 12 canonical micro-actions; the assessment flags already use canonical names (contrast_missing_with_external_signal, protocol_unsupported_claim). So tasks 2 and 3 were already satisfied by the checkpoint; no retired-field logic remained to remove.
+
+### naming/reporting review result
+
+No new identifiers introduced. Kept the canonical field names. The Synthesize trio (integrate, compose, deliver) is platform-owned and constant per run, so it is intentionally NOT added as per-run columns (item 4 "where useful" -> a documentation note is the useful form, not noise columns).
+
+### files changed
+
+dai:
+- `scripts/dev/sports/run-artifact-calibration.ps1` -- added a canonical-only clarifying comment above the completeness table and a markdown note in the report (reads canonical cognitiveProtocol; interrogate.probe is platform-completed deterministic; synthesize is platform-owned and not a per-run column). Converted the 28 pre-existing non-ascii report glyphs (em-dash, middot) to ASCII "-" so the harness is ASCII-only; future reports use "-" for not-recorded cells. Historical exports are not regenerated.
+- `scripts/dev/sports/README.md` -- documented that the protocol tables read canonical cognitiveProtocol, that synthesize is platform-owned, and that retired fields are not presented as active.
+
+dai-vault:
+- `06 Execution/handoffs/current-slice.md` -- this addendum. Historical calibration exports under `04 Products/sports-v1/calibration/` are preserved unchanged (item 5).
+
+### reporter behavior
+
+- Reads `entry.Artifact.cognitiveProtocol` (canonical persisted v3 surface). Records without it (older `cognitivePhases` exports, or failure records) render as not-recorded rows -- no retired field is read or presented as active.
+- The two protocol tables show the 12 cognitive micro-actions. interrogate.probe is shown (platform-completed). Synthesize is documented as platform-owned, not a per-run column.
+
+### compatibility behavior for old exports
+
+- Historical calibration markdown and artifact JSON files in the vault are untouched (not rewritten).
+- Old saved artifacts that carry `cognitivePhases` (pre-rename) simply render as not-recorded in the cognitive tables when re-read, which is the correct canonical-only behavior; they are not reinterpreted.
+- The em-dash -> "-" change affects only future generated reports, not existing files.
+
+### verification results
+
+- PowerShell parser validation: 0 errors.
+- ASCII validation: 0 non-ascii bytes (was 28 lines of em-dash/middot; now ASCII-only).
+- Static canonical audit: reads cognitiveProtocol only; zero retired-field reads.
+- Dry-run/export: the harness has a `-DryRun` switch, but it fetches upcoming games from the live platform API before the dry-run exit, so a real export requires the running API plus billable model calls. Not run offline; validated via parser + ASCII + static audit instead.
+- No .NET/Python/Angular change -> those test suites not run.
+
+### risks
+
+Very low. Documentation + comment additions plus a cosmetic non-ascii-to-ascii conversion of report placeholder glyphs. No logic, field-read, confidence, posture, prompt, gateway, registry, schema, or Angular change. Historical exports preserved.
+
+### next recommended slice
+
+Either Protocol Node Runner v1 groundwork (a caller that passes station ids through the now-station-aware Tool Gateway), or a live calibration batch (run the harness against the running platform to confirm a real v3 report renders the canonical tables end-to-end) when the dev API is up.
+
+### Claude/Codex transfer notes
+
+- The harness reads canonical `cognitiveProtocol` from the live artifact endpoint; it does not read retired fields. Do not reintroduce a `cognitivePhases` fallback.
+- To run a real calibration export: start the platform API, then `scripts/dev/sports/run-artifact-calibration.ps1 -Competition nba -Take 5` (each run is a billable model call; use `-DryRun` to list games without creating runs).
+- Synthesize is platform-owned and constant; do not add it as per-run columns.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Canonical Calibration Reporter v1 implemented 2026-05-29. Harness verified canonical (reads cognitiveProtocol, zero retired tokens); added canonical/synthesize documentation note + comment; converted report glyphs to ASCII (parser 0 errors, 0 non-ascii). Historical exports preserved. No .NET/Python/Angular change. jera-workspace-skills untouched.
