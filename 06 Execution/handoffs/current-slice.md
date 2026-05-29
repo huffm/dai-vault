@@ -2047,3 +2047,29 @@ Either add `#requires -version 7` to run-artifact-calibration.ps1 (tiny hygiene 
 Untouched (read-only this slice).
 
 status: Live Canonical v3 Calibration Batch v1 completed 2026-05-29. 8 MLB runs (+1 NFL smoke), all completed; all artifacts v3 with canonical cognitiveProtocol, no retired fields; probe deterministic (populated on missing-market NFL run, null on fully-grounded MLB runs); reporter renders canonical tables, ASCII-clean. Tool Gateway and artifact endpoint confirmed end-to-end. No code change. jera-workspace-skills untouched.
+
+## addendum: Calibration Script PowerShell 7 Guard v1 (2026-05-29)
+
+Tiny hygiene slice. Resolves the standing note from the live-batch slice: run-artifact-calibration.ps1 uses PowerShell 7 syntax (?. and ??) but lacked a version guard, so launching it with Windows PowerShell 5.1 produced cryptic parse errors instead of a clear message.
+
+### change
+
+- Added `#requires -version 7` as the first line of `scripts/dev/sports/run-artifact-calibration.ps1` (matches purge-dev-agent-runs.ps1), plus a one-line comment noting the ?./?? dependency. No logic change.
+- README unchanged: it already invokes the harness with `pwsh` (not `powershell`), so it does not imply 5.1 compatibility (task 6 condition not met).
+
+### verification
+
+- ASCII: 0 non-ascii bytes.
+- PowerShell parser: 0 errors.
+- Guard behavior: Windows PowerShell 5.1 now refuses with a clear "#requires statement for Windows PowerShell 7.0 ... does not match ... 5.1" error instead of parse errors; `pwsh -DryRun` runs normally (fetched games, "would create 5 run(s). no runs created.") with no billable model calls.
+- No live batch run (task 8). No runtime/protocol/gateway/confidence/posture/Angular/schema change.
+
+### risks
+
+Negligible. A declarative `#requires` directive only; callers already use pwsh.
+
+### next recommended slice
+
+Protocol Node Runner v1 groundwork (a caller that passes station ids through the station-aware Tool Gateway), or reconcile-calibration-outcomes.ps1 once the 2026-05-29 games settle.
+
+status: Calibration Script PowerShell 7 Guard v1 implemented 2026-05-29. Added #requires -version 7 to run-artifact-calibration.ps1; ASCII 0, parser 0; 5.1 refuses cleanly, pwsh dry-run runs (no billing). README unchanged (already pwsh). jera-workspace-skills untouched.
