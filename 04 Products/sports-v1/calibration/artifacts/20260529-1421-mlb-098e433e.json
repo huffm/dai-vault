@@ -1,0 +1,128 @@
+{
+  "agentRunId": "098e433e-f36b-1410-815f-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-05-29",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [
+    "signals_used contains bullpen but bullpen was not grounded",
+    "signals_used contains lineup_form but lineup_form was not grounded",
+    "signals_used contains ballpark but ballpark was not grounded"
+  ],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Degraded",
+      "note": "signals_used contains bullpen but bullpen was not grounded; signals_used contains lineup_form but lineup_form was not grounded; signals_used contains ballpark but ballpark was not grounded"
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.5,
+  "confidence": 0.5,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The uncertainty around the starters' handedness may skew expectations.",
+  "watchFor": "Any announcements regarding the handedness of the starters.",
+  "whatWouldChangeTheRead": [
+    "Confirmation of the handedness of both starters",
+    "Emergence of significant lineup changes",
+    "Notable bullpen news or fatigue reports"
+  ],
+  "summary": "Both teams have evenly matched starters with unknown handedness advantages. The bullpens and lineups show no significant trends that favor one side over the other.",
+  "lean": "Signals are split",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "The matchup features two unknown handedness pitchers."
+      ],
+      "frame": "The Minnesota Twins face the Pittsburgh Pirates with both starters being ?HP.",
+      "aim": [
+        "The primary factor is the uncertainty of the starters' handedness."
+      ]
+    },
+    "interrogate": {
+      "question": "The lack of clarity on handedness could impact performance expectations.",
+      "probe": null,
+      "verify": "Both teams have balanced lineups, making it hard to favor one."
+    },
+    "discern": {
+      "weigh": "Starting pitching details are missing; lineup trends are absent.",
+      "contrast": null,
+      "stress": "The read could fail if handedness advantages are revealed."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution until more information is available.",
+      "position": "monitor",
+      "justify": "Confidence is low due to the uncertainty surrounding the starters."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "The matchup features two unknown handedness pitchers.",
+      "frame": "The Minnesota Twins face the Pittsburgh Pirates with both starters being ?HP.",
+      "aim": "The primary factor is the uncertainty of the starters' handedness."
+    },
+    "interrogate": {
+      "question": "The lack of clarity on handedness could impact performance expectations.",
+      "probe": null,
+      "verify": "Both teams have balanced lineups, making it hard to favor one."
+    },
+    "discern": {
+      "weigh": "Starting pitching details are missing; lineup trends are absent.",
+      "contrast": null,
+      "stress": "The read could fail if handedness advantages are revealed."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution until more information is available.",
+      "position": "monitor",
+      "justify": "Confidence is low due to the uncertainty surrounding the starters."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}

@@ -1994,3 +1994,56 @@ Either Protocol Node Runner v1 groundwork (a caller that passes station ids thro
 Untouched (read-only this slice).
 
 status: Canonical Calibration Reporter v1 implemented 2026-05-29. Harness verified canonical (reads cognitiveProtocol, zero retired tokens); added canonical/synthesize documentation note + comment; converted report glyphs to ASCII (parser 0 errors, 0 non-ascii). Historical exports preserved. No .NET/Python/Angular change. jera-workspace-skills untouched.
+
+## addendum: Live Canonical v3 Calibration Batch v1 (2026-05-29)
+
+Live verification slice. No code changed. Ran the real pipeline end-to-end against the running stack to confirm artifact v3, canonical CognitiveProtocol, deterministic probe, and the canonical reporter, all on freshly generated runs.
+
+### stack / smoke
+
+- devcore-sql: docker container up (port 1433). Outbound egress to OpenAI + odds/espn/mlb providers confirmed reachable.
+- Started agent-service (pre-existing instance already on :8000) and a fresh .NET platform API (:5007) from current canonical source. Angular not needed.
+- test-sports-dev.ps1 smoke: 5/5 passed (agent ping, direct analyze, stub-detection, unsupported-competition 400 gate, full chain via .NET created a completed run).
+- Note: run-artifact-calibration.ps1 uses PowerShell 7 syntax (?. and ??) but lacks a `#requires -version 7` line, so it must be run with `pwsh` not Windows PowerShell 5.1. Not fixed here (no-code-change slice); flagged as a tiny follow-up.
+
+### runs generated
+
+8 MLB runs (2026-05-29 slate), all status completed:
+068e433e, 098e433e, 0c8e433e, 0f8e433e, 158e433e, 178e433e, 198e433e, 1c8e433e. Plus the smoke full-chain run 028e433e (NFL).
+
+### artifact + canonical findings
+
+- All 8 batch artifacts: artifactVersion = sports_decision_artifact_v3; cognitiveProtocol present; no cognitivePhases key; interrogate = {question, probe, verify}; discern = {weigh, contrast, stress}; decide = {resolve, position, justify}; synthesize = {integrate, compose, deliver} carrying the platform-operation constants. Zero retired-shape hits (no cognitivePhases, interrogate.stress, discern.test, stress.canonical).
+- Protocol fields carry real model content (e.g. perceive.detect "two right-handed starters with no clear edge"; decide.position monitor).
+- interrogate.probe is deterministic: null on the 8 MLB runs because starting_pitching grounded and missingSignals was empty (no missing-primary follow-up). On the NFL smoke run (028e433e) missingSignals was {market, sharp_public} and probe populated deterministically with the market template: "Market signal missing; directional read should rely on schedule and situational context." Both the populated and null paths are confirmed correct.
+- synthesize is acknowledged as platform-owned (constant "platform operation: ..." strings), not model-emitted.
+
+### reporter (end-to-end confirmed)
+
+20260529-1421-mlb-calibration.md rendered with the canonical "Cognitive Protocol Completeness" and "Cognitive Protocol Quality" tables over the 12 canonical micro-actions, the canonical/synthesize note, 0 retired tokens, and 0 non-ascii bytes. The Canonical Calibration Reporter v1 changes are verified against live data.
+
+### Tool Gateway
+
+Every run (8 batch + smoke full chain) completed, so the analysis.sports.matchup_read tool was authorized and invoked through the gateway at the platform.analyze stage end-to-end. No gateway behavior was changed this slice.
+
+### artifact endpoint
+
+Read cleanly: the smoke artifact was fetched directly via GET /api/agent-runs/{id}/artifact, and the harness fetched all 8 batch artifacts via the same endpoint without error.
+
+### blockers
+
+None. One minor operational note: the harness must be launched with `pwsh` (PS7) due to ?./?? syntax without a version guard.
+
+### environment left running
+
+The fresh .NET platform API (:5007) and the pre-existing agent service (:8000) were left running; stop with scripts/dev/sports/stop-sports-dev.ps1 when done. devcore-sql left up.
+
+### next recommended slice
+
+Either add `#requires -version 7` to run-artifact-calibration.ps1 (tiny hygiene fix matching purge-dev-agent-runs.ps1), or Protocol Node Runner v1 groundwork (a caller that passes station ids through the now station-aware Tool Gateway). A reconciliation pass (reconcile-calibration-outcomes.ps1) once these games settle is also available.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Live Canonical v3 Calibration Batch v1 completed 2026-05-29. 8 MLB runs (+1 NFL smoke), all completed; all artifacts v3 with canonical cognitiveProtocol, no retired fields; probe deterministic (populated on missing-market NFL run, null on fully-grounded MLB runs); reporter renders canonical tables, ASCII-clean. Tool Gateway and artifact endpoint confirmed end-to-end. No code change. jera-workspace-skills untouched.

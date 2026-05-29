@@ -1,0 +1,123 @@
+{
+  "agentRunId": "1c8e433e-f36b-1410-815f-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-05-29",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The Cubs could perform well against Pallante, challenging the lean.",
+  "watchFor": "Any significant lineup changes for the Cubs before the game.",
+  "whatWouldChangeTheRead": [
+    "Cubs lineup shows strong recent performance against right-handers",
+    "Pallante's performance metrics become available"
+  ],
+  "summary": "The Cardinals benefit from a starting pitching edge with Andre Pallante facing a Cubs lineup that may struggle against right-handed pitchers. This matchup could favor the home team in terms of pitching effectiveness.",
+  "lean": "Edge toward Cardinals based on starting pitching advantage with Pallante's handedness against Cubs lineup.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Pallante's handedness may exploit Cubs' weaknesses."
+      ],
+      "frame": "The matchup features the Cubs visiting the Cardinals with Pallante starting against Imanaga.",
+      "aim": [
+        "The primary factor is the starting pitching matchup."
+      ]
+    },
+    "interrogate": {
+      "question": "The Cubs could counter with strong offensive performance despite the pitching edge.",
+      "probe": null,
+      "verify": "The Cubs' lineup may have recent success against right-handed pitchers."
+    },
+    "discern": {
+      "weigh": "Starting pitching is confirmed; other signals are missing.",
+      "contrast": "Market confidence may reflect the Cardinals' home advantage.",
+      "stress": "The read could fail if the Cubs' offense performs unexpectedly well."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, acknowledging potential offensive surprises.",
+      "position": "monitor",
+      "justify": "The confidence level reflects a clear edge in starting pitching."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Pallante's handedness may exploit Cubs' weaknesses.",
+      "frame": "The matchup features the Cubs visiting the Cardinals with Pallante starting against Imanaga.",
+      "aim": "The primary factor is the starting pitching matchup."
+    },
+    "interrogate": {
+      "question": "The Cubs could counter with strong offensive performance despite the pitching edge.",
+      "probe": null,
+      "verify": "The Cubs' lineup may have recent success against right-handed pitchers."
+    },
+    "discern": {
+      "weigh": "Starting pitching is confirmed; other signals are missing.",
+      "contrast": "Market confidence may reflect the Cardinals' home advantage.",
+      "stress": "The read could fail if the Cubs' offense performs unexpectedly well."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, acknowledging potential offensive surprises.",
+      "position": "monitor",
+      "justify": "The confidence level reflects a clear edge in starting pitching."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "agentRunId": "178e433e-f36b-1410-815f-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-05-29",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [
+    "signals_used contains bullpen but bullpen was not grounded",
+    "signals_used contains lineup_form but lineup_form was not grounded",
+    "signals_used contains ballpark but ballpark was not grounded"
+  ],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Degraded",
+      "note": "signals_used contains bullpen but bullpen was not grounded; signals_used contains lineup_form but lineup_form was not grounded; signals_used contains ballpark but ballpark was not grounded"
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.65,
+  "confidence": 0.65,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The workload of both bullpens could lead to late-game vulnerabilities, making this a fragile read.",
+  "watchFor": "Any significant changes in bullpen usage leading up to the game.",
+  "whatWouldChangeTheRead": [
+    "A significant injury to a key bullpen pitcher for either team.",
+    "A lineup change that introduces a strong hitter.",
+    "Market movement indicating a shift in confidence."
+  ],
+  "summary": "Both teams have solid pitching matchups with no clear edge. The bullpens and lineups show mixed signals, contributing to a balanced outlook.",
+  "lean": "Signals are split",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "The starting pitchers are evenly matched with no handedness advantage."
+      ],
+      "frame": "The Angels face the Rays in Tampa with both starters being right-handed.",
+      "aim": [
+        "The balance in starting pitching is the primary factor."
+      ]
+    },
+    "interrogate": {
+      "question": "The bullpens may be overworked, impacting late-game performance.",
+      "probe": null,
+      "verify": "The absence of hitting streaks or slumps could lead to unpredictable offense."
+    },
+    "discern": {
+      "weigh": "Starting pitching is grounded, but bullpen workload is a concern.",
+      "contrast": "Market data is not provided, so no external signal is available.",
+      "stress": "The read could fail if one bullpen significantly underperforms."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution as variables may shift.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the balanced nature of the matchup."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "The starting pitchers are evenly matched with no handedness advantage.",
+      "frame": "The Angels face the Rays in Tampa with both starters being right-handed.",
+      "aim": "The balance in starting pitching is the primary factor."
+    },
+    "interrogate": {
+      "question": "The bullpens may be overworked, impacting late-game performance.",
+      "probe": null,
+      "verify": "The absence of hitting streaks or slumps could lead to unpredictable offense."
+    },
+    "discern": {
+      "weigh": "Starting pitching is grounded, but bullpen workload is a concern.",
+      "contrast": "Market data is not provided, so no external signal is available.",
+      "stress": "The read could fail if one bullpen significantly underperforms."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution as variables may shift.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the balanced nature of the matchup."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}

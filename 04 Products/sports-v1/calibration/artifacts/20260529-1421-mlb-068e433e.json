@@ -1,0 +1,128 @@
+{
+  "agentRunId": "068e433e-f36b-1410-815f-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-05-29",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [
+    "signals_used contains bullpen but bullpen was not grounded",
+    "signals_used contains lineup_form but lineup_form was not grounded",
+    "signals_used contains ballpark but ballpark was not grounded"
+  ],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Degraded",
+      "note": "signals_used contains bullpen but bullpen was not grounded; signals_used contains lineup_form but lineup_form was not grounded; signals_used contains ballpark but ballpark was not grounded"
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.6,
+  "confidence": 0.6,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The absence of sharp/public data makes this a market-only lean.",
+  "watchFor": "Any significant lineup changes or injury updates before the game.",
+  "whatWouldChangeTheRead": [
+    "A notable injury to a key player on either team",
+    "A significant shift in the starting pitching matchup",
+    "Market movement indicating strong public sentiment"
+  ],
+  "summary": "Both teams have solid starting pitchers in Chris Paddack and Grant Holmes, with no clear handedness advantage. The bullpen workload and lineup form may influence the game, but overall signals do not favor either side distinctly.",
+  "lean": "Signals are split.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "The matchup features two right-handed starters with no clear edge."
+      ],
+      "frame": "The Braves face the Reds in Cincinnati with both starters being right-handed.",
+      "aim": [
+        "The primary factor is the effectiveness of the starting pitchers."
+      ]
+    },
+    "interrogate": {
+      "question": "There is no clear advantage for either team in this matchup.",
+      "probe": null,
+      "verify": "Both teams have balanced lineups that could perform well against right-handed pitching."
+    },
+    "discern": {
+      "weigh": "Starting pitching is grounded, but lineup form and market signals are missing.",
+      "contrast": "Market data is not provided, so no external signals are available.",
+      "stress": "The read could fail if one lineup significantly underperforms."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, as both teams are evenly matched.",
+      "position": "monitor",
+      "justify": "Confidence is moderate due to the balanced nature of the matchup."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "The matchup features two right-handed starters with no clear edge.",
+      "frame": "The Braves face the Reds in Cincinnati with both starters being right-handed.",
+      "aim": "The primary factor is the effectiveness of the starting pitchers."
+    },
+    "interrogate": {
+      "question": "There is no clear advantage for either team in this matchup.",
+      "probe": null,
+      "verify": "Both teams have balanced lineups that could perform well against right-handed pitching."
+    },
+    "discern": {
+      "weigh": "Starting pitching is grounded, but lineup form and market signals are missing.",
+      "contrast": "Market data is not provided, so no external signals are available.",
+      "stress": "The read could fail if one lineup significantly underperforms."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, as both teams are evenly matched.",
+      "position": "monitor",
+      "justify": "Confidence is moderate due to the balanced nature of the matchup."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}

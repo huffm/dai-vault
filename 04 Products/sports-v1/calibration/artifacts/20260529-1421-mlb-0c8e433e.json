@@ -1,0 +1,127 @@
+{
+  "agentRunId": "0c8e433e-f36b-1410-815f-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-05-29",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [
+    "signals_used contains bullpen but bullpen was not grounded",
+    "signals_used contains lineup_form but lineup_form was not grounded"
+  ],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Degraded",
+      "note": "signals_used contains bullpen but bullpen was not grounded; signals_used contains lineup_form but lineup_form was not grounded"
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The Nationals' home advantage and lineup depth could pose a challenge to the Padres.",
+  "watchFor": "Any significant lineup changes for the Nationals before the game.",
+  "whatWouldChangeTheRead": [
+    "A significant injury to a key Padres player",
+    "A surprising performance from the Nationals' lineup",
+    "Changes in bullpen availability for either team"
+  ],
+  "summary": "The Padres have a starting pitching edge with Lucas Giolito, while the Nationals may face challenges in their lineup. Additionally, bullpen workload could impact the game dynamics.",
+  "lean": "Edge toward Padres based on starting pitching advantage.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "The starting pitching matchup favors the Padres with Giolito."
+      ],
+      "frame": "The Padres face the Nationals in a matchup featuring Giolito and Schultz.",
+      "aim": [
+        "Starting pitching effectiveness will be crucial in this game."
+      ]
+    },
+    "interrogate": {
+      "question": "The Nationals could counter with home field advantage and lineup depth.",
+      "probe": null,
+      "verify": "The Padres' bullpen workload could be a concern if the game is close."
+    },
+    "discern": {
+      "weigh": "Starting pitching signals are strong, but lineup performance for the Nationals is weak.",
+      "contrast": "Market confidence may reflect the Padres' stronger pitching.",
+      "stress": "The read could fail if the Nationals' lineup unexpectedly performs well."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, watching for lineup changes or bullpen usage.",
+      "position": "monitor",
+      "justify": "The confidence level is high due to the clear starting pitching advantage."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "The starting pitching matchup favors the Padres with Giolito.",
+      "frame": "The Padres face the Nationals in a matchup featuring Giolito and Schultz.",
+      "aim": "Starting pitching effectiveness will be crucial in this game."
+    },
+    "interrogate": {
+      "question": "The Nationals could counter with home field advantage and lineup depth.",
+      "probe": null,
+      "verify": "The Padres' bullpen workload could be a concern if the game is close."
+    },
+    "discern": {
+      "weigh": "Starting pitching signals are strong, but lineup performance for the Nationals is weak.",
+      "contrast": "Market confidence may reflect the Padres' stronger pitching.",
+      "stress": "The read could fail if the Nationals' lineup unexpectedly performs well."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, watching for lineup changes or bullpen usage.",
+      "position": "monitor",
+      "justify": "The confidence level is high due to the clear starting pitching advantage."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}

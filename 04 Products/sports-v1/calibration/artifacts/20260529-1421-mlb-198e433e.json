@@ -1,0 +1,127 @@
+{
+  "agentRunId": "198e433e-f36b-1410-815f-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-05-29",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [
+    "signals_used contains bullpen but bullpen was not grounded",
+    "signals_used contains lineup_form but lineup_form was not grounded",
+    "signals_used contains ballpark but ballpark was not grounded"
+  ],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Degraded",
+      "note": "signals_used contains bullpen but bullpen was not grounded; signals_used contains lineup_form but lineup_form was not grounded; signals_used contains ballpark but ballpark was not grounded"
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The Marlins' offense could surprise if they find early success against Peralta.",
+  "watchFor": "Any last-minute changes to the starting pitchers or lineups.",
+  "whatWouldChangeTheRead": [
+    "A significant injury to either starting pitcher",
+    "A lineup change that strengthens the Marlins' offense"
+  ],
+  "summary": "Freddy Peralta presents a potential advantage against the Marlins' lineup. The Mets' bullpen has been more reliable recently, while the Marlins have struggled offensively. The ballpark conditions may also favor the Mets' hitting style.",
+  "lean": "Edge toward Mets based on starting pitching advantage with Freddy Peralta.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Freddy Peralta's matchup against the Marlins' lineup is key."
+      ],
+      "frame": "The Mets host the Marlins with Freddy Peralta starting.",
+      "aim": [
+        "Starting pitching effectiveness will likely dictate the game's outcome."
+      ]
+    },
+    "interrogate": {
+      "question": "The Marlins could exploit any weaknesses in Peralta's game.",
+      "probe": null,
+      "verify": "The Mets' bullpen depth may mitigate any starter issues."
+    },
+    "discern": {
+      "weigh": "Starting pitching signals are strong; lineup performance is mixed.",
+      "contrast": "Market confidence may reflect the Mets' home advantage.",
+      "stress": "A sudden change in Peralta's performance could alter the read."
+    },
+    "decide": {
+      "resolve": "Stay aware of any last-minute changes to the starting pitchers.",
+      "position": "monitor",
+      "justify": "The evidence supports a lean toward the Mets due to starting pitching."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Freddy Peralta's matchup against the Marlins' lineup is key.",
+      "frame": "The Mets host the Marlins with Freddy Peralta starting.",
+      "aim": "Starting pitching effectiveness will likely dictate the game's outcome."
+    },
+    "interrogate": {
+      "question": "The Marlins could exploit any weaknesses in Peralta's game.",
+      "probe": null,
+      "verify": "The Mets' bullpen depth may mitigate any starter issues."
+    },
+    "discern": {
+      "weigh": "Starting pitching signals are strong; lineup performance is mixed.",
+      "contrast": "Market confidence may reflect the Mets' home advantage.",
+      "stress": "A sudden change in Peralta's performance could alter the read."
+    },
+    "decide": {
+      "resolve": "Stay aware of any last-minute changes to the starting pitchers.",
+      "position": "monitor",
+      "justify": "The evidence supports a lean toward the Mets due to starting pitching."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}
