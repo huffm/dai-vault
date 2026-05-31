@@ -2073,3 +2073,60 @@ Negligible. A declarative `#requires` directive only; callers already use pwsh.
 Protocol Node Runner v1 groundwork (a caller that passes station ids through the station-aware Tool Gateway), or reconcile-calibration-outcomes.ps1 once the 2026-05-29 games settle.
 
 status: Calibration Script PowerShell 7 Guard v1 implemented 2026-05-29. Added #requires -version 7 to run-artifact-calibration.ps1; ASCII 0, parser 0; 5.1 refuses cleanly, pwsh dry-run runs (no billing). README unchanged (already pwsh). jera-workspace-skills untouched.
+
+## addendum: Protocol Node Runner v1 Groundwork (2026-05-31)
+
+Groundwork slice. No model call, no analyzer split, no artifact-output change, no production pipeline path wired. Adds the smallest useful abstraction for a future per-station executor.
+
+### naming decisions
+
+Accepted all five candidate names: `IProtocolNodeRunner`, `ProtocolNodeRunner`, `ProtocolNodeExecutionContext`, `ProtocolNodeExecutionResult`, `ProtocolNodeExecutionStatus`. "Execution" here means station resolution + tool-access preparation, NOT model execution (documented in the file header). Placed in DevCore.Api.Protocols next to ProtocolRegistry / ProtocolToolAccessPolicy, reusing the policy for tool authorization.
+
+### files changed
+
+dai:
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolNodeRunner.cs` -- NEW. IProtocolNodeRunner + ProtocolNodeRunner + ProtocolNodeExecutionContext (StationId + reserved ToolInvocationContext) + ProtocolNodeExecutionResult (Status, Station, AllowedTools) + ProtocolNodeExecutionStatus (Resolved | UnknownStation). Static Default built from the canonical manifests.
+- `platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- register IProtocolNodeRunner singleton wired to ProtocolRegistry.Default + the policy + the tool registry (no Program.cs change).
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProtocolNodeRunnerTests.cs` -- NEW. 7 tests.
+- `platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs` -- +1 test resolving IProtocolNodeRunner through the real Program.cs graph.
+
+dai-vault:
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills: untouched.
+
+### runner behavior
+
+- Resolve(stationId | ProtocolNodeExecutionContext) -> ProtocolNodeExecutionResult. Known station -> Status=Resolved with the card and its AllowedTools. Unknown station -> Status=UnknownStation, null card, empty tools (fail closed).
+- IsToolAllowed(stationId, toolId): fail closed for an unknown station or an unregistered tool; otherwise defers to ProtocolToolAccessPolicy.IsAllowed (which enforces station-card AllowedTools membership and the exact-node-or-sentinel grant). It does not invoke the gateway or run anything.
+
+### what is intentionally NOT wired yet
+
+- No execute method; the runner only resolves and answers access questions. No model call, no tool invocation.
+- Not called from SportsRetriever, SportsAnalyzer, or SportsComposer, or any controller. ProtocolNodeExecutionContext.ToolContext is reserved for the future executor and unused in v1.
+- ToolGateway behavior, telemetry, ProtocolRegistry, and the startup guard are unchanged.
+
+### tests
+
+- safe .NET targeted: 64 passed, 0 failed.
+- safe .NET full: 279 passed, 0 failed (was 271; +7 runner unit tests, +1 DI-resolution test). Existing ProtocolToolAccessPolicy tests and the startup guard still green.
+
+### risks
+
+Low. Additive types + one DI registration; no existing behavior changed. The runner is dormant (nothing calls it). Reusing the already-tested policy keeps authorization logic single-sourced. Reversible (delete the file + the one registration + tests).
+
+### next slice
+
+Give the runner an actual execute path for a deterministic station first (e.g., a memory-backed interrogate.probe behind a flag), driving a station-id call through the gateway with the prepared ProtocolNodeExecutionContext -- still without splitting the analyze call. Or wire the runner read-only into a diagnostics/inspection surface.
+
+### Claude/Codex transfer notes
+
+- The runner is groundwork only and dormant; do not expect any runtime/pipeline behavior change. Do not wire it into SportsRetriever/SportsAnalyzer/SportsComposer without a dedicated slice.
+- Tool authorization is single-sourced in ProtocolToolAccessPolicy; the runner delegates to it. Add new station/tool grants in ProtocolRegistry + ToolRegistry, not in the runner.
+- ProtocolNodeExecutionContext.ToolContext exists for the future executor (run/tenant/correlation for gateway calls) and is intentionally unused now.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Protocol Node Runner v1 Groundwork implemented 2026-05-31. Added IProtocolNodeRunner/ProtocolNodeRunner + execution context/result/status types in DevCore.Api.Protocols; resolves station cards, exposes allowed tools, delegates tool authorization to ProtocolToolAccessPolicy, fails closed for unknown stations/tools. DI-registered, not wired into any pipeline. dotnet 279 (targeted 64). No model/prompt/gateway/confidence/posture/schema/Angular change. jera-workspace-skills untouched.
