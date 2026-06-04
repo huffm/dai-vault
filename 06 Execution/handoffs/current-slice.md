@@ -3032,3 +3032,145 @@ Recommended next slice: Probe Refresh Synthesize Preview v1, still derived and n
 Clean before changes and untouched after changes. Skill files were read only; no edits made.
 
 status: Probe Refresh Decide Recommendation v1 implemented 2026-06-04. Added a dormant, deterministic `IProbeRefreshDecideRecommendation`/`ProbeRefreshDecideRecommendation` seam that maps `ProbeRefreshDiscernAssessment` plus explicit `ProbeRefreshExistingReadContext` into `ProbeRefreshDecisionRecommendation`. Behavior is conservative (`Hold`, `Decrease`, safer monitor/wait, optional cautious `Increase` only when explicitly allowed), never recommends `play`, and never updates confidence/posture/artifact. DI singleton + resolution test. dotnet 366 full, targeted 64. No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
+
+## addendum: Probe Refresh Synthesize Preview v1 (2026-06-04)
+
+Synthesize preview slice -- the "synthesize previews" step of the dormant probe-refresh chain (probe requests -> decision selects -> authorization confirms -> retrieve fetches -> perceive receives -> discern re-weighs -> decide recommends -> synthesize previews -> artifact mutation later only if explicitly scoped). This slice adds a dormant, non-mutating preview seam that consumes `ProbeRefreshPerceiveIntakeResult` or `PerceiveRefreshView`, `ProbeRefreshDiscernAssessment`, and `ProbeRefreshDecisionRecommendation`, then produces a derived `ProbeRefreshSynthesizePreviewResult`. It is not artifact merge, not persistence, not production pipeline wiring, not an analyze split, and not a confidence/posture/synthesize mutation.
+
+### naming and skills gate
+
+Required baseline before coding:
+
+- `dai`: clean, HEAD `a4fd7af feat(protocol): add probe refresh decide recommendation seam`.
+- `dai-vault`: clean, HEAD `eb3831b docs(protocol): document probe refresh decide recommendation`.
+- `jera-workspace-skills`: clean.
+
+Local skills inspected and applied manually:
+
+- `dai-grill-with-vault`: used to read repo/vault doctrine before naming the preview seam.
+- `dai-agent-handoff`: used to shape this addendum and transfer notes.
+- `dai-token-tight`: applied manually for concise reporting.
+- `dai-write-skill`: read as a boundary check; no skill files were edited, and runtime code was allowed only because the slice explicitly requested DAI runtime implementation.
+
+Requested superpowers-style guidance applied manually: planning, naming review, systematic debugging, test-driven coverage, verification before completion, and writing-plans discipline. The requested "Naming and Skills Gate" was run manually: no exact local `Naming and Skills Gate` skill exists in `jera-workspace-skills`, so the gate was interpreted as local skill inspection, clean-state verification, and explicit naming review before coding.
+
+Skill sharpening recommendation: add a small local DAI skill or checklist for "probe-refresh derived seam gate" in a future approved skills-maintenance session. It should require clean prior-slice state, stage-verb naming, explicit non-mutation fields, structural no-gateway/no-protocol tests, and vault handoff notes. Not applied here because `jera-workspace-skills` edits were not approved.
+
+### naming decisions
+
+- `IProbeRefreshSynthesizePreview` / `ProbeRefreshSynthesizePreview`: service/seam name. Chosen to name the stage verb (`synthesize`) and the preview-only output, not artifact mutation.
+- `ProbeRefreshSynthesizePreviewResult`: returned value object. Chosen over `ProbeRefreshPresentationPreview` to keep the probe-refresh family prefix and station verb.
+- `ProbeRefreshSynthesizePreviewStatus`: `PreviewCreated`, `NoRefreshInput`, `NoDiscernAssessment`, `NoDecisionRecommendation`, `UnsupportedInput`, `InvalidInput`.
+- Result fields use preview-language names: `Headline`, `WhatChanged`, `WhyItMatters`, `RecommendationSummary`, `RemainingLimitation`, and `ShouldSurfaceToUser`.
+
+### files changed
+
+dai:
+
+- `platform/dotnet/DevCore.Api/Protocols/ProbeRefreshSynthesizePreview.cs` -- new preview status enum, result record, interface, and deterministic implementation.
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRefreshSynthesizePreviewTests.cs` -- new coverage for missing inputs, complete preview creation, intake overload, required preview fields, no cognitive/synthesize protocol mutation, no tool gateway dependency, and no changed-artifact/posture/confidence language.
+- `platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- registers the synthesize preview seam as a singleton dormant service.
+- `platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs` -- adds application-service resolution coverage.
+
+dai-vault:
+
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills:
+
+- untouched.
+
+### synthesize preview contract summary
+
+`IProbeRefreshSynthesizePreview` exposes:
+
+- `Preview(ProbeRefreshPerceiveIntakeResult? intake, ProbeRefreshDiscernAssessment? assessment, ProbeRefreshDecisionRecommendation? recommendation)`
+- `Preview(PerceiveRefreshView? view, ProbeRefreshDiscernAssessment? assessment, ProbeRefreshDecisionRecommendation? recommendation, string? requestedSignalKey = null)`
+
+`ProbeRefreshSynthesizePreviewResult` carries:
+
+- `Status`
+- `RequestedSignalKey`
+- `ToolId`
+- `Headline`
+- `WhatChanged`
+- `WhyItMatters`
+- `RecommendationSummary`
+- `RemainingLimitation`
+- `ShouldSurfaceToUser`
+- `Reason`
+- `ErrorMessage`
+- `IsPreviewCreated`
+
+### synthesize preview behavior
+
+- Missing/null/non-received perceive refresh input returns `NoRefreshInput`.
+- Missing/null/no-refresh discern assessment returns `NoDiscernAssessment`.
+- Missing/null/no-assessment decide recommendation returns `NoDecisionRecommendation`.
+- Blank refresh view fields (`SignalKey`, `ToolId`, `ContextType`, or `PerceivedSummary`) return `InvalidInput`.
+- Invalid discern or decide inputs return `InvalidInput`.
+- Unsupported discern or decide status returns `UnsupportedInput`.
+- Complete supported inputs return `PreviewCreated`.
+- Preview text says what refreshed signal was received, what Discern assessed, what Decide recommends, and what limitation remains.
+- Preview text stays conditional/preview-only. It does not say the artifact changed, posture changed, confidence changed, or that a final result was updated.
+- `ShouldSurfaceToUser` is true only for grounded, non-unknown supported preview inputs. Ungrounded or unknown inputs can still produce a preview but fail conservative for surfacing.
+
+### supported input coverage
+
+The v1 preview supports the current derived probe-refresh outputs:
+
+- `ProbeRefreshPerceiveIntakeResult.Status == Received` with a non-null `PerceiveRefreshView`.
+- Direct `PerceiveRefreshView` for all current intake signal/context families.
+- `ProbeRefreshDiscernAssessment.Status == Assessed`.
+- `ProbeRefreshDecisionRecommendation` statuses that are not missing, invalid, or unsupported.
+
+Current signal/context coverage flows through the existing intake/reweigh chain:
+
+- `rest_schedule` / `basketball_rest_context`.
+- `sharp_public` / `sharp_public_split`.
+- `market` / `football_market_spread`.
+- `market` / `basketball_market_spread`.
+- `starting_pitching` / `mlb_probable_starters`.
+
+### what is intentionally not wired yet
+
+- No artifact merge and no mutation of `SportsRunArtifact`, `AgentRunExecutionResult`, `CognitiveProtocol`, or `SynthesizeProtocol`.
+- No confidence mutation and no posture mutation.
+- No `CognitiveProtocol.Synthesize` update.
+- No production pipeline consumer.
+- No Tool Gateway call, model call, external call, or persistence call.
+- No FastAPI prompt, model-call count, database schema, Angular, MCP, pgvector, Azure Functions, Kubernetes, or production secret change.
+
+### tests
+
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshSynthesizePreviewTests /m:1 /nr:false` -- pass, 12 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshDecideRecommendationTests /m:1 /nr:false` -- pass, 11 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshDiscernReweighTests /m:1 /nr:false` -- pass, 11 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshPerceiveIntakeTests /m:1 /nr:false` -- pass, 12 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ToolGatewayDIRegistrationTests /m:1 /nr:false` -- pass, 12 passed.
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Targeted` -- pass, 64 passed.
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Full` -- pass, 379 passed.
+- No PowerShell files changed, so PowerShell parser/ascii validation was not required.
+- No Python/FastAPI change -> pytest not run. No Angular change -> Angular build not run.
+
+### risks
+
+Low. The seam is additive, pure, and dormant. Main risk: future callers could present preview text as a merged artifact update. The result deliberately uses preview-only language and the seam has no `CognitiveProtocol`, `SynthesizeProtocol`, artifact, persistence, model, or gateway dependency. Future risk: `ShouldSurfaceToUser` may need product-specific policy once there is a real UI or merge path; v1 keeps that conservative.
+
+### next slice
+
+Recommended next slice: Probe Refresh Artifact Merge Contract v1, still non-mutating. Define the merge authority, feature flag, audit/telemetry shape, allowed mutated fields, and rollback behavior before any code updates persisted artifacts or delivered results.
+
+### claude/codex transfer notes
+
+- This seam previews only; it does not update `SynthesizeProtocol`, persisted artifact state, confidence, or posture.
+- Keep preview text conditional. Do not state that a final result changed.
+- Do not wire this into production behavior without a dedicated merge authority and audit slice.
+- Do not add tool gateway/model dependencies to synthesize preview; structural tests guard this.
+- If a future UI consumes the preview, keep `ShouldSurfaceToUser` conservative and product-scoped.
+
+### jera-workspace-skills status
+
+Clean before changes and untouched after changes. Skill files were read only; no edits made.
+
+status: Probe Refresh Synthesize Preview v1 implemented 2026-06-04. Added a dormant, deterministic `IProbeRefreshSynthesizePreview`/`ProbeRefreshSynthesizePreview` seam that maps derived perceive/discern/decide refresh outputs into `ProbeRefreshSynthesizePreviewResult`. Behavior is preview-only, conditional, and non-mutating; it never updates confidence/posture/artifact or `SynthesizeProtocol`. DI singleton + resolution test. dotnet 379 full, targeted 64. No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
