@@ -2514,3 +2514,88 @@ The "executor fetches later" step: a flagged, still-dormant executor that takes 
 Untouched (read-only this slice). Sharpening idea logged above (an explicit "permission-matrix change = STOP" item for dai-grill-with-vault); not applied without approval.
 
 status: Probe Refresh Tool Authorization v1 implemented 2026-06-04. Added IProbeRefreshAuthorizationService/ProbeRefreshAuthorizationService + ProbeRefreshAuthorization/ProbeRefreshAuthorizationResult/ProbeRefreshAuthorizationStatus in DevCore.Api.Protocols; deterministic AuthorizeCandidate/Authorize defers the allow/deny decision to ProtocolToolAccessPolicy, fails closed for unknown node/tool, tool-not-on-card, and policy denial. Architecture decision: refresh tools authorize at platform.retrieve, NOT interrogate.probe (probe does not retrieve) -- zero manifest change, fail-closed preserved. DI-registered, dormant. dotnet 320 (targeted 64). No analyzer split, no prompt/confidence/posture/artifact/gateway/schema/Angular/MCP change. jera-workspace-skills untouched.
+
+## addendum: Probe Refresh Executor v1 (2026-06-04)
+
+Executor slice -- the "retrieve fetches" step of the doctrine chain (probe requests -> decision selects -> authorization confirms -> retrieve fetches -> perceive receives later). A dormant orchestrator takes an Authorized ProbeRefreshAuthorization and invokes EXACTLY ONE candidate retrieve tool through the Tool Gateway with ProtocolNode = platform.retrieve, returning the fetched context as a value object. It MERGES NOTHING into the artifact, persists nothing, re-runs no cognitive station, and is disabled by default. No analyze split, no prompt/confidence/posture change, no schema/Angular/MCP/pgvector/Functions/Kubernetes touch.
+
+### pre-coding repo-state check
+
+Verified before any change: dai and dai-vault both clean and in sync with origin; Probe Refresh Tool Authorization v1 (`bde457a`) committed and tracked. Proceeded.
+
+### skills used
+
+- superpowers: writing-plans / planning (designed the per-tool typed dispatch + flag seam against the real gateway/handlers before coding), test-driven-development (all status branches tested first with a recording fake gateway), systematic-debugging on standby (dev-host DLL-lock check ran first; none running), verification-before-completion (fresh safe-runner runs below).
+- Local jera-workspace-skills/dai (read-only): dai-grill-with-vault -- used to verify the typed-input contract was constructible from existing context BEFORE committing to the design (the slice's stated stop-or-proceed risk). Confirmed: all candidate retrieve tools take a simple matchup record, so no stop-and-report was needed. dai-token-tight, dai-agent-handoff. Pack not edited.
+- Skill sharpening note: dai-grill-with-vault again earned its keep by front-loading the "can the input be built cleanly?" question. No weakness found. Same sharpening idea as last slice stands (an explicit input-contract / permission-matrix STOP checklist item); not applied without approval.
+
+### input-contract finding (the stated stop-or-proceed gate)
+
+The candidate retrieve tools' typed handler inputs are clean and uniform: MatchupRetrievalInput(Competition, HomeTeam, AwayTeam, GameDate) for schedule.basketball.rest_context and market.sharp_public.split; MarketSpreadInput(same shape) for market.football.spread and market.basketball.spread; MlbProbableStartersInput(HomeTeam, AwayTeam, GameDate) for pitching.mlb.probable_starters. All are constructible from a matchup context, so the executor proceeds (no hack, no stop-and-report). Outputs are heterogeneous (BasketballScheduleContext?, SharpPublicLookupResult, FootballMarketContext?, BasketballMarketContext?, MlbStarterContext?), so the executor type-erases them into ProbeRefreshFetchedContext.
+
+### naming decisions
+
+- `IProbeRefreshExecutor` / `ProbeRefreshExecutor`, `ProbeRefreshExecutionRequest` (matchup fields + optional run/tenant/correlation), `ProbeRefreshExecutionResult`, `ProbeRefreshExecutionStatus { Executed, Disabled, NotAuthorized, NoCandidateTool, UnsupportedTool, ToolInvocationFailed }`, `ProbeRefreshFetchedContext` (ToolId, ContextType, Payload).
+- Added `ProbeRefreshExecutorOptions(bool Enabled = false)` as the config/flag seam, default DISABLED. The executor is registered Scoped (not Singleton) because it depends on the scoped IToolGateway; there is therefore no static Default (tests construct it with a fake gateway). No station/tool ids changed.
+- Placement: DevCore.Api.Protocols, next to the decision/authorization seams.
+
+### files changed
+
+dai:
+- `platform/dotnet/DevCore.Api/Protocols/ProbeRefreshExecutor.cs` -- NEW. The options record, status enum, ProbeRefreshFetchedContext / ProbeRefreshExecutionRequest / ProbeRefreshExecutionResult records, IProbeRefreshExecutor + ProbeRefreshExecutor with the per-tool typed gateway dispatch.
+- `platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- register IProbeRefreshExecutor scoped + disabled (no Program.cs change).
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRefreshExecutorTests.cs` -- NEW. 8 tests with a recording fake gateway.
+- `platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs` -- +1 resolution test.
+
+dai-vault:
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+No manifest or gateway/policy change: ToolGateway, ProtocolToolAccessPolicy, ToolRegistry, ProtocolRegistry are untouched. The gateway remains the runtime authority.
+
+### executor contract summary
+
+`ExecuteAsync(ProbeRefreshAuthorization authorization, ProbeRefreshExecutionRequest request, ct)` -> `ProbeRefreshExecutionResult { Status; RequestedSignalKey; CandidateToolId; ProtocolNode (always platform.retrieve); FetchedContext (ProbeRefreshFetchedContext?); Reason; ErrorMessage; IsExecuted }`. Order of gates: disabled -> Disabled; authorization not Authorized -> NotAuthorized; null candidate -> NoCandidateTool; unsupported tool -> UnsupportedTool; missing matchup input -> ToolInvocationFailed (no gateway call); else build typed input, call gateway at platform.retrieve, Executed (or ToolInvocationFailed if the gateway throws).
+
+### executor behavior
+
+- Disabled by default: with Enabled=false the executor never calls the gateway and returns Disabled. Production DI registers it disabled.
+- Only an Authorized authorization with a supported candidate tool and present matchup input reaches the gateway. The gateway is always called with ProtocolNode = platform.retrieve and NEVER with interrogate.probe.
+- On success: Executed with FetchedContext = { ToolId, runtime ContextType, type-erased Payload }. On a gateway throw (handler error, or the gateway's own policy re-check denying the tool -- an authorization/gateway disagreement): ToolInvocationFailed with the exception message, not a silent fetch. ToolGateway telemetry is preserved (the executor adds no logging and changes none).
+
+### supported tools in v1
+
+schedule.basketball.rest_context, market.sharp_public.split, market.football.spread, market.basketball.spread, pitching.mlb.probable_starters -- exactly the candidate retrieve tools ProbeRefreshDecision can emit, each with a clean typed input. Any other tool id (reference/analyze tools, unknown ids) is UnsupportedTool and never reaches the gateway.
+
+### what is intentionally not wired yet
+
+- No artifact merge: the fetched context is returned, never written to the artifact or persisted. The merge -> Discern re-weigh -> Decide update chain is a later slice.
+- No production pipeline consumer; DI-registered (scoped, disabled) + a resolution test only. No Perceive/Discern/Decide re-run, no analyze split.
+- Flag wiring to real config (appsettings) is deferred; the seam (ProbeRefreshExecutorOptions) exists and defaults disabled. Enabling it in a real environment would make a real platform.retrieve fetch -- intended future behavior, not this slice.
+
+### tests
+
+- safe .NET targeted: 64 passed, 0 failed.
+- safe .NET full: 329 passed, 0 failed (was 320; +8 executor tests, +1 DI-resolution test). Cover: no gateway call when not Authorized; no gateway call when disabled; gateway called with platform.retrieve when Authorized; gateway never called with interrogate.probe; fetched context returned from a fake gateway response (type-erased with ContextType); ToolInvocationFailed when the gateway throws; UnsupportedTool for a tool with no v1 input contract; NoCandidateTool for a null candidate. Existing ProbeRefreshAuthorization and ToolGateway tests stay green.
+- Full runner returned a normal pass (no "Build FAILED with 0 Error(s)" hang). No DevCore.Api.exe host was running (lock check ran first). No Python change -> pytest not run. No Angular change -> Angular build not run.
+
+### risks
+
+Low-to-moderate. This is the first seam in the chain that CAN call the Tool Gateway, so the guardrails carry the weight: disabled by default, gateway only after Authorized, fixed platform.retrieve node, no merge/persistence. The gateway re-checks the policy independently, so the executor cannot fetch anything platform.retrieve does not permit (defense in depth). Risk if a future caller enables the flag in production without the merge/observability story -- mitigated by default-disabled and the dormant registration. Reversible (delete the executor + the registration + tests). The type-erased Payload (object?) is a deliberate v1 simplification; the merge slice will route by ContextType/ToolId.
+
+### next slice
+
+The "perceive receives" step: a still-dormant, flagged merger that takes a ProbeRefreshFetchedContext and produces an updated Perceive/retrieval view WITHOUT mutating the persisted artifact (a new derived view or a copy), proving the fetched context can re-enter the read. Then, separately, Discern re-weigh and Decide posture update. Keep confidence/posture/persistence untouched until a slice explicitly scopes them. Do not split the analyze call. Also consider wiring ProbeRefreshExecutorOptions to real config (appsettings) behind a per-tenant flag, still default disabled.
+
+### Claude/Codex transfer notes
+
+- The executor is dormant (disabled by default) and merges nothing. It is the first chain seam that can call the gateway -- do not enable it in production without the merge + observability slice.
+- It always calls the gateway at platform.retrieve and never at interrogate.probe; the architecture boundary from the previous slice holds. Do not add a path that passes a cognitive station id to the gateway for a retrieve tool.
+- Supported tools are the five candidate retrieve tools with clean typed input. Adding a tool means adding a typed dispatch arm (input record + InvokeAsync<TInput,TOutput>) and the tool to SupportsTool, nothing else.
+- The gateway remains the runtime authority and re-checks the policy; an Authorized authorization that the gateway would deny surfaces as ToolInvocationFailed (the architecture-guard "report the mismatch" path), never a silent fetch.
+- The executor is Scoped (depends on the scoped IToolGateway); do not make it a singleton.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice). Sharpening idea logged (input-contract / permission-matrix STOP checklist for dai-grill-with-vault); not applied without approval.
+
+status: Probe Refresh Executor v1 implemented 2026-06-04. Added IProbeRefreshExecutor/ProbeRefreshExecutor + ProbeRefreshExecutionRequest/Result/Status + ProbeRefreshFetchedContext + ProbeRefreshExecutorOptions in DevCore.Api.Protocols; invokes exactly one Authorized candidate retrieve tool through ToolGateway at platform.retrieve (never interrogate.probe), returns type-erased fetched context, merges/persists nothing, disabled by default. Five supported retrieve tools; UnsupportedTool/NotAuthorized/Disabled/NoCandidateTool/ToolInvocationFailed fail closed. DI scoped + disabled, dormant. dotnet 329 (targeted 64). No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
