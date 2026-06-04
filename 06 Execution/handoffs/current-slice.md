@@ -2599,3 +2599,154 @@ The "perceive receives" step: a still-dormant, flagged merger that takes a Probe
 Untouched (read-only this slice). Sharpening idea logged (input-contract / permission-matrix STOP checklist for dai-grill-with-vault); not applied without approval.
 
 status: Probe Refresh Executor v1 implemented 2026-06-04. Added IProbeRefreshExecutor/ProbeRefreshExecutor + ProbeRefreshExecutionRequest/Result/Status + ProbeRefreshFetchedContext + ProbeRefreshExecutorOptions in DevCore.Api.Protocols; invokes exactly one Authorized candidate retrieve tool through ToolGateway at platform.retrieve (never interrogate.probe), returns type-erased fetched context, merges/persists nothing, disabled by default. Five supported retrieve tools; UnsupportedTool/NotAuthorized/Disabled/NoCandidateTool/ToolInvocationFailed fail closed. DI scoped + disabled, dormant. dotnet 329 (targeted 64). No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
+
+## addendum: Probe Refresh Perceive Intake v1 (2026-06-04)
+
+Perceive-intake slice -- the "perceive receives" step of the doctrine chain (probe requests -> decision selects -> authorization confirms -> retrieve fetches -> perceive receives -> discern re-weighs later -> decide updates later). This slice adds a dormant, non-mutating intake seam that converts a `ProbeRefreshFetchedContext` or `ProbeRefreshExecutionResult` into a derived `PerceiveRefreshView`. It is not artifact merge, not persistence, not a production pipeline change, not an analyze split, and not a confidence or posture change.
+
+### picked up from claude partial handoff
+
+This was picked up from a partial Claude handoff after usage limits stopped the prior session halfway through the slice. The existing partial work was inspected before editing and continued because it was coherent, in scope, and already aligned with the executor contract.
+
+### pre-change repo state
+
+Required status checks before editing:
+
+- `dai`: dirty with four files:
+  - `M platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs`
+  - `M platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs`
+  - `?? platform/dotnet/DevCore.Api/Protocols/ProbeRefreshPerceiveIntake.cs`
+  - `?? platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRefreshPerceiveIntakeTests.cs`
+- `dai-vault`: clean.
+- `jera-workspace-skills`: clean.
+
+### partial work classification
+
+- In-scope partial work: all four dirty `dai` files above. They added the intake contract/service, intake tests, and low-risk DI registration + resolution coverage.
+- Unrelated: none.
+- Unknown: none.
+- Action taken: continued Claude's partial work; did not overwrite or revert it. Tightened comments to the workspace lowercase/ascii rule and made the nullable execution-result overload explicit.
+
+### skills and guidance used
+
+- Local `jera-workspace-skills` read-only guidance:
+  - `dai-grill-with-vault`: applied manually to check repo/vault doctrine before changing code.
+  - `dai-agent-handoff`: used to shape this transfer addendum.
+  - `dai-token-tight`: used for concise implementation notes.
+- Requested engineering guidance applied manually: planning, test-driven coverage, systematic debugging, verification before completion, and handoff documentation.
+- No `jera-workspace-skills` files were modified.
+
+### naming decisions
+
+- Accepted Claude's boring, doctrine-aligned names:
+  - `IProbeRefreshPerceiveIntake` / `ProbeRefreshPerceiveIntake`
+  - `ProbeRefreshPerceiveIntakeResult`
+  - `ProbeRefreshPerceiveIntakeStatus`
+  - `PerceiveRefreshView`
+- Statuses: `Received`, `NoContext`, `UnsupportedContext`, `InvalidPayload`.
+- Contract accepts both `ProbeRefreshExecutionResult?` and `ProbeRefreshFetchedContext?`. That follows the existing executor contract: execution metadata carries requested signal/tool ids, while fetched context carries the type-erased payload.
+- Placement: `DevCore.Api.Protocols`, next to the decision, authorization, and executor seams.
+- DI lifetime: singleton instance via `ProbeRefreshPerceiveIntake.Default`. The service is pure and dependency-free. It is registered only as a dormant application service; no pipeline path calls it.
+
+### files changed
+
+dai:
+
+- `platform/dotnet/DevCore.Api/Protocols/ProbeRefreshPerceiveIntake.cs` -- new intake status enum, derived view/result records, interface, and deterministic implementation.
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRefreshPerceiveIntakeTests.cs` -- new coverage for no-context, all supported fetched context types, unsupported context, invalid payload, no cognitive protocol coupling, and no tool gateway dependency.
+- `platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- registers the intake as a singleton dormant seam.
+- `platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs` -- adds an application-service resolution test.
+
+dai-vault:
+
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills:
+
+- untouched.
+
+### intake contract summary
+
+`IProbeRefreshPerceiveIntake` exposes:
+
+- `Receive(ProbeRefreshExecutionResult? execution)`
+- `Receive(ProbeRefreshFetchedContext? fetched, string? requestedSignalKey = null)`
+
+`ProbeRefreshPerceiveIntakeResult` carries:
+
+- `Status`
+- `RequestedSignalKey`
+- `ToolId`
+- `RawContextType`
+- `View`
+- `Reason`
+- `ErrorMessage`
+- `IsReceived`
+
+`PerceiveRefreshView` carries:
+
+- `SignalKey`
+- `ToolId`
+- `ContextType`
+- `HasContext`
+- `PerceivedSummary`
+
+### intake behavior
+
+- `NoContext`: execution did not fetch, fetched context is null, or payload is null.
+- `Received`: supported tool id and expected typed payload map to a derived `PerceiveRefreshView`.
+- `UnsupportedContext`: non-null payload with a tool id that has no v1 intake mapping.
+- `InvalidPayload`: supported tool id with a payload that is not the expected executor output type.
+- Sharp/public missing results are `Received` with `HasContext = false` because the handler returns a non-null `SharpPublicLookupResult` wrapper that carries status/reason even when no grounded split exists.
+- The implementation makes no tool gateway call, no model call, no external call, no persistence call, and mutates no artifact or `CognitiveProtocol`.
+
+### supported context coverage
+
+The v1 intake covers exactly the executor's supported tools:
+
+- `schedule.basketball.rest_context` -> `BasketballScheduleContext` -> signal `rest_schedule`, context type `basketball_rest_context`.
+- `market.sharp_public.split` -> `SharpPublicLookupResult` -> signal `sharp_public`, context type `sharp_public_split`.
+- `market.football.spread` -> `FootballMarketContext` -> signal `market`, context type `football_market_spread`.
+- `market.basketball.spread` -> `BasketballMarketContext` -> signal `market`, context type `basketball_market_spread`.
+- `pitching.mlb.probable_starters` -> `MlbStarterContext` -> signal `starting_pitching`, context type `mlb_probable_starters`.
+
+### what is intentionally not wired yet
+
+- No artifact merge and no mutation of `SportsRunArtifact`, `AgentRunExecutionResult`, `CognitiveProtocol`, or `SportsCollectorOutput`.
+- No production pipeline consumer.
+- No Perceive, Discern, Decide, or Synthesize re-run.
+- No confidence rule, posture behavior, model-call count, FastAPI prompt, database schema, Tool Gateway behavior, Angular, MCP, pgvector, Azure Functions, Kubernetes, or production secret change.
+- No typed-payload normalization beyond safe pattern matching against the executor's current output shapes.
+
+### tests
+
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Targeted` -- pass, 64 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshPerceiveIntakeTests /m:1 /nr:false` -- pass, 12 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshExecutorTests /m:1 /nr:false` -- pass, 8 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ToolGatewayDIRegistrationTests /m:1 /nr:false` -- pass, 9 passed.
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Full` -- pass, 342 passed.
+- A transient build-artifact lock occurred only when two `dotnet test` filters were launched in parallel against the same test project (`MvcTestingAppManifest.json` in use). Sequential reruns passed. Do not run these filters in parallel against this project.
+- No PowerShell files changed, so PowerShell parser/ascii validation was not required.
+- No Python/FastAPI change -> pytest not run. No Angular change -> Angular build not run.
+
+### risks
+
+Low. The slice is additive and dormant. The main risk is future drift between executor output types and intake pattern matches; adding a new executor tool or changing an output type must update the intake mapping and tests. The summary strings are deterministic derived text and not persisted, but a later consumer must not treat them as model judgment. DI registration is low risk because the service has no dependencies and no caller path.
+
+### next slice
+
+Recommended next slice: Probe Refresh Discern Re-weigh v1. Consume `PerceiveRefreshView` as a derived read-side input and produce a non-mutating `DiscernRefreshAssessment` (or similarly boring name) that re-weighs evidence quality without changing confidence, posture, persistence, or the artifact. Keep it dormant and test-only until a later slice explicitly scopes artifact merge/decision update.
+
+### claude/codex transfer notes
+
+- The intake is a receiver/view seam only. It does not fetch, merge, persist, or re-run cognition.
+- Keep the chain ordered: executor returns fetched context; intake derives a perceive-facing view; discern and decide are later derived-view slices.
+- Do not wire this into production pipeline behavior without a dedicated merge/observability slice.
+- If typed payload extraction becomes unclear in a future tool, stop and define the missing input/output contract instead of string-parsing payloads.
+- Do not add tool gateway/model dependencies to the intake; structural tests guard this.
+
+### jera-workspace-skills status
+
+Clean before changes and untouched after changes. Skill files were read only; no edits made.
+
+status: Probe Refresh Perceive Intake v1 implemented 2026-06-04. Added a dormant, deterministic `IProbeRefreshPerceiveIntake`/`ProbeRefreshPerceiveIntake` seam that maps executor fetched contexts into `PerceiveRefreshView` for all five executor-supported context types, fails closed for unsupported/mismatched payloads, and mutates/persists/calls nothing. DI singleton + resolution test. dotnet 342 full, targeted 64. No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
