@@ -2199,3 +2199,70 @@ Give the runner an actual execute path for a deterministic station first (e.g. a
 Untouched (read-only this slice).
 
 status: Protocol Node Runner Diagnostics v1 implemented 2026-06-04. Added IProtocolStationDiagnostics/ProtocolStationDiagnostics + ProtocolStationDiagnostic / ProtocolToolPermissionDiagnostic / ProtocolToolPermissionStatus in DevCore.Api.Protocols; read-only DescribeStation + CheckTool over the dormant runner, Allowed delegated to ProtocolToolAccessPolicy, fails closed for unknown stations/tools, no HTTP endpoint. DI-registered, not wired into any pipeline. dotnet 287 (targeted 64). No model/prompt/gateway/confidence/posture/artifact/schema/Angular/MCP change. jera-workspace-skills untouched.
+
+## addendum: Protocol Node Runner Deterministic Execute Path v1 (2026-06-04)
+
+Execute-path slice. Gives the dormant runner ONE real deterministic execution path -- interrogate.probe -- and nothing else. No analyzer split, no model call, no FastAPI/prompt change, no confidence/posture change, no artifact mutation, no Tool Gateway behavior change, no schema/Angular/MCP/pgvector/Functions/Kubernetes touch. The path is test-driven only and is NOT wired into the live sports pipeline; SportsComposer still builds probe directly via CognitiveProtocolBuilder.
+
+### skills used
+
+- superpowers: writing-plans / planning (designed the execute seam against real code before editing), test-driven-development (execute tests written first against the canonical manifests + the real builder), verification-before-completion (all results below are fresh safe-runner runs). systematic-debugging used briefly to triage a build-time DLL lock (a running DevCore.Api.exe dev host held the output assemblies; stopped it, not a code fault).
+- Local jera-workspace-skills/dai (read-only): dai-grill-with-vault, dai-token-tight, dai-agent-handoff. Pack not edited.
+
+### naming decisions
+
+- `ExecuteAsync(ProtocolNodeExecutionPayload, CancellationToken)` chosen over `TryExecuteAsync`: the result object carries an explicit Status, so Try/bool-out semantics are redundant and do not compose with async. The async signature is the stable seam for a future executor whose stations drive the gateway (blueprint section 10 marks interrogate.probe as the first station slated for a governed async memory tool); v1 does zero async work (implemented via Task.FromResult, documented in the method).
+- `ProtocolNodeExecutionPayload` (StationId + optional FollowUps + reserved ToolContext) and `ProtocolNodeExecutionOutput` (Status + StationId + Output) accepted as the input/output value objects.
+- Extended the existing `ProtocolNodeExecutionStatus` enum with `Executed` + `UnsupportedStation` rather than adding a near-identical twin enum, sharing the single `UnknownStation` fail-closed value across the resolve and execute paths. No station ids or tool ids changed.
+
+### files changed
+
+dai:
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolNodeRunner.cs` -- extended ProtocolNodeExecutionStatus (Executed, UnsupportedStation); added ProtocolNodeExecutionPayload + ProtocolNodeExecutionOutput records; added IProtocolNodeRunner.ExecuteAsync + the implementation. The probe build delegates to CognitiveProtocolBuilder.BuildProbe (internal, same assembly) so the runner and the production compose path are single-sourced.
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProtocolNodeExecuteTests.cs` -- NEW. 6 tests.
+
+dai-vault:
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills: untouched.
+
+### execute behavior
+
+`ExecuteAsync(payload)` -> `ProtocolNodeExecutionOutput`:
+- unknown station id -> Status=UnknownStation, null Output (fail closed; shares the value with Resolve).
+- registered station other than interrogate.probe (model-emitted stations, the synthesize trio) -> Status=UnsupportedStation, null Output.
+- interrogate.probe -> Status=Executed, Output = CognitiveProtocolBuilder.BuildProbe(payload.FollowUps). Output is null when no doctrinal probe gap exists (exact existing builder behavior -- the platform never invents probe). No model call, no tool/gateway call, no external api call, no persistence.
+
+### what is intentionally not wired yet
+
+- No live pipeline wiring. SportsComposer.Compose still calls CognitiveProtocolBuilder.FromAnalyzerProtocolSeed directly and has no IProtocolNodeRunner dependency (asserted by a structural test). The runner remains dormant in production.
+- No second station. Only interrogate.probe executes; the synthesize trio (also deterministic) is intentionally left UnsupportedStation in v1.
+- ProtocolNodeExecutionPayload.ToolContext and the CancellationToken are reserved seams for the future gateway-driven executor; v1 uses neither.
+- ToolGateway, ProtocolToolAccessPolicy, ProtocolRegistry, the startup guard, the diagnostics surface, and DI registrations are all unchanged.
+
+### tests
+
+- safe .NET targeted: 64 passed, 0 failed.
+- safe .NET full: 293 passed, 0 failed (was 287; +6 execute tests). The 6 cover: probe returns deterministic output from follow-up data (equals the builder); probe returns null output for null and empty follow-ups; unknown station fails closed; unsupported known station (a model station and a synthesize station) returns UnsupportedStation; execute does not depend on IToolGateway (structural reflection assertion + a live probe run); production compose path (SportsComposer) is not wired to IProtocolNodeRunner (structural reflection assertion). Existing diagnostics, runner-groundwork, and ProtocolToolAccessPolicy tests stay green.
+- A build-time DLL lock from a running DevCore.Api.exe dev host was cleared (process stopped) before the runs; not a code issue. No Python change -> pytest not run. No Angular change -> Angular build not run.
+
+### risks
+
+Low. Purely additive: new value objects + two enum members + one method, plus tests. No existing behavior changed; the runner stays dormant in production. Probe logic is delegated, not re-implemented, so the runner and SportsComposer cannot drift. Two structural tests guard against accidental future wiring (gateway into the runner; runner into the composer). Reversible (revert the runner additions + delete the test).
+
+### next slice
+
+Either (a) give interrogate.probe a governed, async, memory-backed augmentation behind a per-tenant flag -- the first real use of the async seam and ProtocolNodeExecutionPayload.ToolContext, driving memory.prior_runs.search through the gateway (blueprint section 10); or (b) only when a deliberate slice approves it, wire ExecuteAsync(interrogate.probe) into SportsComposer behind a flag and prove output parity with the current direct builder call before flipping. Do not split the analyze call.
+
+### Claude/Codex transfer notes
+
+- The execute path is deterministic, dormant, and test-only; do not wire it into SportsComposer/SportsAnalyzer/SportsRetriever without a dedicated slice that proves probe parity first.
+- Probe is single-sourced in CognitiveProtocolBuilder.BuildProbe; the runner delegates to it. Add probe template/gap logic there, not in the runner.
+- ExecuteAsync is async by signature only in v1 (Task.FromResult); the seam exists for the future gateway/memory-backed executor. Do not add blocking or external calls to the deterministic path.
+- UnsupportedStation is deliberate for every station except interrogate.probe, including the deterministic synthesize trio.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Protocol Node Runner Deterministic Execute Path v1 implemented 2026-06-04. Added ExecuteAsync + ProtocolNodeExecutionPayload/ProtocolNodeExecutionOutput and extended ProtocolNodeExecutionStatus (Executed, UnsupportedStation) in DevCore.Api.Protocols; interrogate.probe runs deterministically via CognitiveProtocolBuilder.BuildProbe (no model/tool/gateway/external/persistence), unknown stations fail closed, all other stations UnsupportedStation. Not wired into SportsComposer (structural test guards it). dotnet 293 (targeted 64). No analyzer split, no prompt/confidence/posture/artifact/schema/Angular/MCP change. jera-workspace-skills untouched.
