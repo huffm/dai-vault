@@ -2882,3 +2882,153 @@ Recommended next slice: Probe Refresh Decide Update v1, still derived and non-mu
 Clean before changes and untouched after changes. Skill files were read only; no edits made.
 
 status: Probe Refresh Discern Re-weigh v1 implemented 2026-06-04. Added a dormant, deterministic `IProbeRefreshDiscernReweigh`/`ProbeRefreshDiscernReweigh` seam that maps `PerceiveRefreshView` into `ProbeRefreshDiscernAssessment` for the five intake-supported signal/context families. Effects are conservative (`Neutral`, `NeedsHumanReview`, `Unknown`) and never update confidence/posture/artifact. DI singleton + resolution test. dotnet 354 full, targeted 64. No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
+
+## addendum: Probe Refresh Decide Recommendation v1 (2026-06-04)
+
+Decide recommendation slice -- the "decide recommends" step of the dormant probe-refresh chain (probe requests -> decision selects -> authorization confirms -> retrieve fetches -> perceive receives -> discern re-weighs -> decide recommends -> synthesize presents later). This slice adds a dormant, non-mutating recommendation seam that consumes `ProbeRefreshDiscernAssessment` plus explicit existing-read context and produces a derived `ProbeRefreshDecisionRecommendation`. It is not artifact merge, not persistence, not production pipeline wiring, not an analyze split, and not a confidence or posture mutation.
+
+### naming and skills gate
+
+Required baseline before coding:
+
+- `dai`: clean, HEAD `d7d2e38 feat(protocol): add probe refresh discern reweigh seam`.
+- `dai-vault`: clean, HEAD `bcbd329 docs(protocol): document probe refresh discern reweigh`.
+- `jera-workspace-skills`: clean.
+
+Local skills inspected and applied manually:
+
+- `dai-agent-handoff`: used to shape this addendum and transfer notes.
+- `dai-token-tight`: applied manually for compact final reporting.
+- `dai-write-skill`: read as a boundary check; no skill files were edited, and runtime code was allowed only because the slice explicitly requested DAI runtime implementation.
+
+Requested superpowers-style guidance applied manually: planning, naming review, systematic debugging, test-driven coverage, verification before completion, and writing-plans discipline. The requested "Naming and Skills Gate" was run manually: no exact local `Naming and Skills Gate` skill exists in `jera-workspace-skills`, so the gate was interpreted as repo-state verification plus explicit naming review before coding.
+
+### naming decisions
+
+- `IProbeRefreshDecideRecommendation` / `ProbeRefreshDecideRecommendation`: service/seam name. Chosen to name the stage verb (`decide`) and the non-mutating output (`recommendation`), not an update.
+- `ProbeRefreshDecisionRecommendation`: returned value object. Chosen over `ProbeRefreshDecideRecommendationResult` because the product is a decision recommendation, not a service result wrapper.
+- `ProbeRefreshExistingReadContext`: explicit current-read input. Keeps current posture/confidence/lean context outside global state and prevents inference from persisted artifact shape.
+- `ProbeRefreshDecideRecommendationStatus`: `Recommended`, `NoAssessment`, `NoChangeRecommended`, `UnsupportedAssessment`, `InvalidInput`.
+- `ProbeRefreshDecideConfidenceDirection`: `Increase`, `Decrease`, `Hold`, `Unknown`.
+- `ProbeRefreshDecideRecommendationEffect`: `KeepPosition`, `MoveToMonitor`, `MoveToWait`, `MoveToPass`, `MoveToAvoid`, `NeedsHumanReview`, `Unknown`.
+
+### files changed
+
+dai:
+
+- `platform/dotnet/DevCore.Api/Protocols/ProbeRefreshDecideRecommendation.cs` -- new existing-read context, recommendation status/confidence/effect enums, recommendation record, interface, and deterministic implementation.
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRefreshDecideRecommendationTests.cs` -- new coverage for no assessment, neutral, human-review, unknown, weakening, supporting, high-confidence guard, unsupported assessment, invalid current position, no cognitive protocol mutation, and no tool gateway dependency.
+- `platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- registers the decide recommendation seam as a singleton dormant service.
+- `platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs` -- adds application-service resolution coverage.
+
+dai-vault:
+
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills:
+
+- untouched.
+
+### decide recommendation contract summary
+
+`IProbeRefreshDecideRecommendation` exposes:
+
+- `Recommend(ProbeRefreshDiscernAssessment? assessment, ProbeRefreshExistingReadContext? existingRead)`
+
+`ProbeRefreshExistingReadContext` carries:
+
+- `CurrentPosition`
+- `CurrentConfidenceBand`
+- `CurrentLeanSide`
+- `AllowsConfidenceIncrease`
+
+`ProbeRefreshDecisionRecommendation` carries:
+
+- `Status`
+- `RequestedSignalKey`
+- `ToolId`
+- `CurrentPosition`
+- `RecommendedPosition`
+- `ShouldChangePosition`
+- `ConfidenceDirection`
+- `Reason`
+- `Limitation`
+- `Effect`
+- `ErrorMessage`
+- `IsRecommended`
+
+### recommendation behavior
+
+- Missing/null discern assessment returns `NoAssessment`.
+- Invalid discern assessment returns `InvalidInput`.
+- Non-assessed/unsupported discern status returns `UnsupportedAssessment`.
+- Explicit current position is required for assessed inputs and must be one of `play`, `pass`, `monitor`, `wait`, `compare`, or `avoid`.
+- `Neutral` recommends holding current position with confidence direction `Hold`.
+- `Unknown` fails conservative with no position change and confidence direction `Unknown`.
+- `NeedsHumanReview` never recommends an aggressive posture. It moves `play` to `monitor`, moves `compare` to `wait`, and otherwise holds current position.
+- `WeakensRead` recommends safer posture or confidence direction `Decrease`: `play`/`compare` move to `monitor`, `monitor` moves to `wait`, and already conservative positions hold.
+- `SupportsRead` keeps current position. It never recommends `play` in v1. It may recommend confidence direction `Increase` only when the explicit existing-read context sets `AllowsConfidenceIncrease = true` and current confidence band is not `high`.
+- Already-high confidence is not raised from refreshed evidence in v1.
+
+The implementation makes no tool gateway call, no model call, no external call, no persistence call, and mutates no artifact, `CognitiveProtocol`, confidence, or posture.
+
+### supported assessment coverage
+
+The v1 recommendation seam handles all current `ProbeRefreshDiscernEffect` values:
+
+- `Neutral` -> keep current position, confidence `Hold`.
+- `NeedsHumanReview` -> move aggressive/compare positions to safer review positions or hold conservative positions.
+- `Unknown` -> fail closed with no change.
+- `WeakensRead` -> safer posture or confidence `Decrease`.
+- `SupportsRead` -> hold position; optional cautious confidence `Increase` only when explicitly allowed and not already high.
+
+Assessment statuses covered:
+
+- `Assessed` -> effect-specific recommendation.
+- `NoRefreshView`/null -> `NoAssessment`.
+- `UnsupportedSignal` -> `UnsupportedAssessment`.
+- `InvalidInput` -> `InvalidInput`.
+
+### what is intentionally not wired yet
+
+- No artifact merge and no mutation of `SportsRunArtifact`, `AgentRunExecutionResult`, `CognitiveProtocol`, or `DecideProtocol`.
+- No confidence mutation and no posture mutation.
+- No `CognitiveProtocol.Decide` update.
+- No `Synthesize` update.
+- No production pipeline consumer.
+- No Tool Gateway call, model call, external call, or persistence call.
+- No FastAPI prompt, model-call count, database schema, Angular, MCP, pgvector, Azure Functions, Kubernetes, or production secret change.
+
+### tests
+
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshDecideRecommendationTests /m:1 /nr:false` -- pass, 11 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshDiscernReweighTests /m:1 /nr:false` -- pass, 11 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshPerceiveIntakeTests /m:1 /nr:false` -- pass, 12 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshExecutorTests /m:1 /nr:false` -- pass, 8 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ToolGatewayDIRegistrationTests /m:1 /nr:false` -- pass, 11 passed.
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Targeted` -- pass, 64 passed.
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Full` -- pass, 366 passed.
+- No PowerShell files changed, so PowerShell parser/ascii validation was not required.
+- No Python/FastAPI change -> pytest not run. No Angular change -> Angular build not run.
+
+### risks
+
+Low. The seam is additive, pure, and dormant. Main risk: future callers could misread a recommendation as permission to mutate the persisted decision. This slice returns a value object only and intentionally avoids `CognitiveProtocol` inputs/outputs. Another risk is overusing `SupportsRead`; v1 only allows a cautious confidence-direction recommendation when explicit context permits it and never moves to `play`.
+
+### next slice
+
+Recommended next slice: Probe Refresh Synthesize Preview v1, still derived and non-mutating. Consume the decide recommendation and produce a preview-only presentation fragment that can explain "what refreshed evidence would recommend" without updating the persisted artifact, confidence, posture, or delivered result.
+
+### claude/codex transfer notes
+
+- This seam recommends only; it does not update `DecideProtocol`, confidence, posture, or persisted artifact state.
+- Keep `ProbeRefreshExistingReadContext` explicit. Do not infer current posture/confidence/lean from global state.
+- Do not wire this into production behavior without a dedicated merge/observability slice.
+- Do not add tool gateway/model dependencies to decide recommendation; structural tests guard this.
+- If a future slice wants real posture mutation, first define the merge authority, audit trail, and artifact-version behavior.
+
+### jera-workspace-skills status
+
+Clean before changes and untouched after changes. Skill files were read only; no edits made.
+
+status: Probe Refresh Decide Recommendation v1 implemented 2026-06-04. Added a dormant, deterministic `IProbeRefreshDecideRecommendation`/`ProbeRefreshDecideRecommendation` seam that maps `ProbeRefreshDiscernAssessment` plus explicit `ProbeRefreshExistingReadContext` into `ProbeRefreshDecisionRecommendation`. Behavior is conservative (`Hold`, `Decrease`, safer monitor/wait, optional cautious `Increase` only when explicitly allowed), never recommends `play`, and never updates confidence/posture/artifact. DI singleton + resolution test. dotnet 366 full, targeted 64. No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
