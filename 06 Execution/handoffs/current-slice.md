@@ -2750,3 +2750,135 @@ Recommended next slice: Probe Refresh Discern Re-weigh v1. Consume `PerceiveRefr
 Clean before changes and untouched after changes. Skill files were read only; no edits made.
 
 status: Probe Refresh Perceive Intake v1 implemented 2026-06-04. Added a dormant, deterministic `IProbeRefreshPerceiveIntake`/`ProbeRefreshPerceiveIntake` seam that maps executor fetched contexts into `PerceiveRefreshView` for all five executor-supported context types, fails closed for unsupported/mismatched payloads, and mutates/persists/calls nothing. DI singleton + resolution test. dotnet 342 full, targeted 64. No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
+
+## addendum: Probe Refresh Discern Re-weigh v1 (2026-06-04)
+
+Discern re-weigh slice -- the "discern re-weighs" step of the dormant probe-refresh chain (probe requests -> decision selects -> authorization confirms -> retrieve fetches -> perceive receives -> discern re-weighs -> decide updates later -> synthesize presents later). This slice adds a dormant, non-mutating assessment seam that consumes `PerceiveRefreshView` or `ProbeRefreshPerceiveIntakeResult` and produces a derived `ProbeRefreshDiscernAssessment`. It is not artifact merge, not persistence, not production pipeline wiring, not an analyze split, and not a confidence or posture change.
+
+### naming and skills gate
+
+Required baseline before coding:
+
+- `dai`: clean, HEAD `dddfbdc feat(protocol): add probe refresh perceive intake seam`.
+- `dai-vault`: clean, HEAD `a04e2ea docs(protocol): document probe refresh perceive intake`.
+- `jera-workspace-skills`: clean.
+
+Local skills inspected and applied manually:
+
+- `dai-grill-with-vault`: read repo/vault doctrine before changing code; confirmed Discern can evaluate evidence quality but this slice must not mutate artifact/confidence/posture or call gateway/model.
+- `dai-agent-handoff`: used to shape this addendum.
+- `dai-token-tight`: used for compact implementation/reporting notes.
+
+Requested superpowers-style guidance applied manually: planning, naming review, test-driven coverage, systematic debugging, verification before completion, and writing-plans discipline. No `jera-workspace-skills` files were modified.
+
+Skill sharpening recommendation: add an explicit "probe-refresh derived seam naming gate" checklist to local DAI skills in a future approved skill-maintenance session. It should require naming the stage verb (`receive`, `reweigh`, `decide`) and explicitly rejecting artifact mutation before code. Not applied here because skill edits were not approved.
+
+### naming decisions
+
+- `IProbeRefreshDiscernReweigh` / `ProbeRefreshDiscernReweigh`: service/seam name. Kept `Reweigh` without a hyphen to match .NET type naming.
+- `ProbeRefreshDiscernAssessment`: returned derived assessment. Chosen over `DiscernRefreshAssessment` to keep the probe-refresh family prefix with decision/authorization/executor/intake seams.
+- `ProbeRefreshDiscernAssessmentStatus`: `Assessed`, `NoRefreshView`, `UnsupportedSignal`, `InvalidInput`.
+- `ProbeRefreshDiscernEffect`: `SupportsRead`, `WeakensRead`, `Neutral`, `NeedsHumanReview`, `Unknown`.
+- Contract accepts both `ProbeRefreshPerceiveIntakeResult?` and `PerceiveRefreshView?`. The intake-result overload preserves requested signal metadata; the direct-view overload keeps the seam testable and useful.
+
+### files changed
+
+dai:
+
+- `platform/dotnet/DevCore.Api/Protocols/ProbeRefreshDiscernReweigh.cs` -- new status/effect enums, assessment record, interface, and deterministic implementation.
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRefreshDiscernReweighTests.cs` -- new tests for no view, unsupported signal, five supported context families, ungrounded view, confidence/posture non-change, no cognitive protocol mutation, and no tool gateway dependency.
+- `platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- registers the re-weigh seam as a singleton dormant service.
+- `platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs` -- adds application-service resolution coverage.
+
+dai-vault:
+
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills:
+
+- untouched.
+
+### discern re-weigh contract summary
+
+`IProbeRefreshDiscernReweigh` exposes:
+
+- `Assess(ProbeRefreshPerceiveIntakeResult? intake)`
+- `Assess(PerceiveRefreshView? view, string? requestedSignalKey = null)`
+
+`ProbeRefreshDiscernAssessment` carries:
+
+- `Status`
+- `RequestedSignalKey`
+- `ToolId`
+- `SignalKey`
+- `Assessment`
+- `Effect`
+- `Limitation`
+- `SupportsExistingRead`
+- `WeakensExistingRead`
+- `Reason`
+- `ErrorMessage`
+- `IsAssessed`
+
+### re-weigh behavior
+
+- `NoRefreshView`: no intake result, non-received intake result, or no `PerceiveRefreshView`.
+- `InvalidInput`: view exists but required fields (`SignalKey`, `ToolId`, `ContextType`) are blank.
+- `UnsupportedSignal`: signal key has no v1 assessment mapping.
+- `Assessed`: known refreshed signal is converted into a derived assessment.
+- Ungrounded views (`HasContext = false`) are assessed with `Effect = Unknown` and no support/weakening flag.
+- Basketball rest and mlb probable starters produce `Neutral` because the derived view alone is not enough to determine support or contradiction.
+- Sharp/public and market spread produce `NeedsHumanReview` because they require comparison against market/original read side before support or weakening can be determined.
+- `SupportsRead` and `WeakensRead` are reserved in the enum but not emitted in v1 because this seam deliberately has no original read, lean side, confidence, or posture input.
+
+### supported signal/context coverage
+
+The v1 re-weigh seam covers the current `PerceiveRefreshView` signal keys produced by intake:
+
+- `rest_schedule` from `basketball_rest_context`.
+- `sharp_public` from `sharp_public_split`.
+- `market` from `football_market_spread`.
+- `market` from `basketball_market_spread`.
+- `starting_pitching` from `mlb_probable_starters`.
+
+### what is intentionally not wired yet
+
+- No artifact merge and no mutation of `SportsRunArtifact`, `AgentRunExecutionResult`, `CognitiveProtocol`, or `DiscernProtocol`.
+- No confidence or posture update.
+- No `Decide` update and no `Synthesize` update.
+- No production pipeline consumer.
+- No Tool Gateway call, model call, external call, or persistence call.
+- No FastAPI prompt, model-call count, database schema, Angular, MCP, pgvector, Azure Functions, Kubernetes, or production secret change.
+
+### tests
+
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshDiscernReweighTests /m:1 /nr:false` -- pass, 11 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshPerceiveIntakeTests /m:1 /nr:false` -- pass, 12 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshExecutorTests /m:1 /nr:false` -- pass, 8 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ToolGatewayDIRegistrationTests /m:1 /nr:false` -- pass, 10 passed.
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Targeted` -- pass, 64 passed.
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Full` -- pass, 354 passed.
+- No PowerShell files changed, so PowerShell parser/ascii validation was not required.
+- No Python/FastAPI change -> pytest not run. No Angular change -> Angular build not run.
+
+### risks
+
+Low. The seam is additive, pure, and dormant. Main risk: consumers may overread `NeedsHumanReview` as a decision signal. It is not; it is a derived evidence-quality assessment only. Support/weakening is intentionally not determined until a later slice supplies original read/side context. Future drift risk: if `PerceiveRefreshView.SignalKey` or context labels change, update re-weigh mappings and tests.
+
+### next slice
+
+Recommended next slice: Probe Refresh Decide Update v1, still derived and non-mutating. It should consume `ProbeRefreshDiscernAssessment` plus explicit existing-read context and produce a `ProbeRefreshDecisionUpdate` recommendation without changing persisted artifact, confidence, posture, or synthesize output until a later merge slice explicitly scopes those mutations.
+
+### claude/codex transfer notes
+
+- This seam evaluates refreshed evidence quality only. It does not decide a lean, confidence, posture, or artifact update.
+- Keep support/weakening conservative. Without original read side and comparison context, use `Neutral`, `Unknown`, or `NeedsHumanReview`.
+- Do not add tool gateway/model dependencies to re-weigh; structural tests guard this.
+- Do not wire into production behavior without a dedicated merge/observability slice.
+- If a future caller wants `SupportsRead`/`WeakensRead`, first define the input contract for original read side, market side, and comparison rules. Do not infer from summary strings.
+
+### jera-workspace-skills status
+
+Clean before changes and untouched after changes. Skill files were read only; no edits made.
+
+status: Probe Refresh Discern Re-weigh v1 implemented 2026-06-04. Added a dormant, deterministic `IProbeRefreshDiscernReweigh`/`ProbeRefreshDiscernReweigh` seam that maps `PerceiveRefreshView` into `ProbeRefreshDiscernAssessment` for the five intake-supported signal/context families. Effects are conservative (`Neutral`, `NeedsHumanReview`, `Unknown`) and never update confidence/posture/artifact. DI singleton + resolution test. dotnet 354 full, targeted 64. No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
