@@ -2426,3 +2426,91 @@ The "Tool Gateway permits / Perceive refresh receives" step: a still-flagged, st
 Untouched (read-only this slice).
 
 status: Probe Refresh Decision v1 implemented 2026-06-04. Added IProbeRefreshDecisionService/ProbeRefreshDecisionService + ProbeRefreshDecision/ProbeRefreshCandidate/ProbeRefreshDecisionStatus in DevCore.Api.Protocols; deterministic Decide(ProbeRequest, competitionCode) maps canonical signals (alias-normalized) to candidate retrieve tool ids gated by CompetitionCatalog.ExpectedSignalNames, fails closed to null candidate, no gateway/fetch/persistence. DI-registered, dormant. dotnet 310 (targeted 64). No analyzer split, no prompt/confidence/posture/artifact/gateway/schema/Angular/MCP change. jera-workspace-skills untouched.
+
+## addendum: Probe Refresh Tool Authorization v1 (2026-06-04)
+
+Authorization-seam slice. Implements the "policy permits" step of the doctrine chain (probe requests -> decision selects -> policy permits -> executor fetches later -> perceive receives later). A deterministic read-only service takes a ProbeRefreshDecision candidate + a protocol node and decides whether the candidate tool is authorized, using ProtocolToolAccessPolicy as the authority. It makes NO Tool Gateway call, NO handler call, NO fetch, mutates nothing, persists nothing. No analyzer split, no prompt/confidence/posture change, no schema/Angular/MCP/pgvector/Functions/Kubernetes touch. Dormant: no production pipeline path calls it.
+
+### pre-coding repo-state check
+
+Verified before any change: dai and dai-vault both clean and in sync with origin; Probe Refresh Decision v1 (`7b356b3`) committed and tracked. Proceeded.
+
+### skills used
+
+- superpowers: writing-plans / planning (designed the authorization algorithm against the real policy + station cards before coding), test-driven-development (all status branches tested first), systematic-debugging on standby (dev-host DLL-lock check ran first; none running), verification-before-completion (fresh safe-runner runs below).
+- Local jera-workspace-skills/dai (read-only): dai-grill-with-vault -- drove the candidate-tool vs probe-card architecture reconciliation BEFORE coding (exactly its purpose: read repo + vault, reconcile, do not hack). dai-token-tight, dai-agent-handoff. Pack not edited.
+- Skill sharpening note: dai-grill-with-vault earned its keep here by forcing the mismatch to the surface instead of silently patching the manifest. No weakness found this slice. A future sharpening could add an explicit "permission-matrix change = STOP and report" checklist item, since that was the load-bearing guardrail.
+
+### architecture finding (the candidate-tool vs probe-card mismatch -- decided, not hacked)
+
+interrogate.probe's station card has empty AllowedTools and AllowedModelCall = None (applicable stage sentinel = null). The candidate refresh tools are platform.retrieve tools (AllowedProtocolNodes = { platform.retrieve }). Decision, as principal engineer: do NOT add the refresh tools to the probe card and do NOT modify ToolRegistry. Either change would (a) contradict doctrine "Probe may recommend investigation; it does not retrieve" (protocol-node-specs.md) and (b) widen the live Tool Gateway permission matrix (adding interrogate.probe to a retrieve tool's AllowedProtocolNodes), which is explicitly out of bounds. The doctrinally correct authorizing node for a refresh is the retrieve executor stage platform.retrieve, where these tools are already permitted. So authorizing against the DEFAULT interrogate.probe correctly fails closed with ToolNotOnStationCard (probe requests, it does not retrieve); the future executor authorizes against platform.retrieve. Zero manifest changes; fail-closed preserved. Both halves are proven by tests.
+
+### naming decisions
+
+- `ProbeRefreshAuthorization` (per-candidate row: StationId, RequestedSignalKey, CandidateToolId, IsAuthorized, Status, Reason), `ProbeRefreshAuthorizationResult` (wrapper: StationId + Authorizations + AnyAuthorized), `ProbeRefreshAuthorizationStatus` (Authorized, NoCandidateTool, UnknownStation, UnknownTool, ToolNotOnStationCard, DeniedByPolicy, NoRefreshWarranted).
+- `IProbeRefreshAuthorizationService` / `ProbeRefreshAuthorizationService` with `Authorize(ProbeRefreshDecision, string? stationId = null)` and `AuthorizeCandidate(ProbeRefreshCandidate, string stationId)`.
+- The contract's station_id is a protocol node (a station id OR a documented platform sentinel), defaulting to interrogate.probe. No station ids or tool ids changed.
+- Placement: DevCore.Api.Protocols, next to ProbeRefreshDecisionService and ProtocolToolAccessPolicy. DI-registered like the runner/diagnostics/decision seams.
+
+### files changed
+
+dai:
+- `platform/dotnet/DevCore.Api/Protocols/ProbeRefreshAuthorizationService.cs` -- NEW. ProbeRefreshAuthorizationStatus enum, ProbeRefreshAuthorization + ProbeRefreshAuthorizationResult records, IProbeRefreshAuthorizationService + ProbeRefreshAuthorizationService + static Default. Uses ProtocolToolAccessPolicy as the final authority; decomposes failure reasons via station-card + ToolRegistry + DocumentedStageSentinels.
+- `platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- register IProbeRefreshAuthorizationService singleton (no Program.cs change).
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRefreshAuthorizationTests.cs` -- NEW. 9 tests.
+- `platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs` -- +1 resolution test.
+
+dai-vault:
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+No manifest files changed: ProtocolRegistry (station cards) and ToolRegistry are untouched -- the architecture finding above is why.
+
+jera-workspace-skills: untouched.
+
+### authorization contract summary
+
+`ProbeRefreshAuthorization { string StationId; string? RequestedSignalKey; string? CandidateToolId; bool IsAuthorized; ProbeRefreshAuthorizationStatus Status; string Reason }`.
+`ProbeRefreshAuthorizationResult { string StationId; IReadOnlyList<ProbeRefreshAuthorization> Authorizations; bool AnyAuthorized }`.
+AuthorizeCandidate(candidate, node) algorithm: null tool -> NoCandidateTool; node not a station and not a documented sentinel -> UnknownStation; tool not registered -> UnknownTool; registered station whose card omits the tool -> ToolNotOnStationCard; else ProtocolToolAccessPolicy.IsAllowed decides Authorized vs DeniedByPolicy. Authorize(decision) returns NoRefreshWarranted when decision.Status != RefreshWarranted, otherwise one row per candidate.
+
+### authorization behavior
+
+- decision not RefreshWarranted -> single NoRefreshWarranted row, AnyAuthorized false.
+- candidate with null tool -> NoCandidateTool.
+- unknown node -> UnknownStation; unknown tool -> UnknownTool (both fail closed).
+- interrogate.probe + a candidate retrieve tool -> ToolNotOnStationCard (correct: probe does not retrieve).
+- platform.analyze (or any sentinel the tool does not list) + a retrieve tool -> DeniedByPolicy.
+- platform.retrieve + a retrieve tool the policy permits -> Authorized. The Authorized result is always gated by ProtocolToolAccessPolicy.IsAllowed -- the service never authorizes anything the policy would deny.
+
+### what is intentionally not wired yet
+
+- No Tool Gateway call, no handler call, no fetch, no Perceive call. The seam decides; it does not permit-at-runtime or fetch.
+- No production pipeline consumer; DI-registered + a resolution test only. ProbeRequest, ProbeRefreshDecision, and the v3 artifact are unchanged; nothing is persisted.
+- No manifest change: interrogate.probe's card and the retrieve tools' AllowedProtocolNodes are untouched (see the architecture finding).
+
+### tests
+
+- safe .NET targeted: 64 passed, 0 failed.
+- safe .NET full: 320 passed, 0 failed (was 310; +9 authorization tests, +1 DI-resolution test). Cover: Authorized at platform.retrieve; NoRefreshWarranted for a non-warranted decision; NoCandidateTool for a null tool; UnknownStation; UnknownTool; ToolNotOnStationCard for interrogate.probe (the architecture rule); DeniedByPolicy at platform.analyze; an end-to-end test proving default-probe fails closed while the retrieve stage authorizes; and a structural assertion that the service has no IToolGateway dependency. Existing ProbeRefreshDecision and ProtocolToolAccessPolicy tests stay green.
+- No DevCore.Api.exe host was running (lock check ran first). No Python change -> pytest not run. No Angular change -> Angular build not run.
+
+### risks
+
+Low. Additive: one new service file + one DI registration + tests, no manifest change. ProtocolToolAccessPolicy remains the single authority; the service only decomposes failure reasons and never authorizes anything the policy denies. Fail-closed at every branch. Structural no-gateway test guards future wiring. Reversible (delete the service + the registration + tests). The deliberate non-change to the probe card means a real targeted refresh must run at platform.retrieve, not as a probe-station tool call -- recorded here so the executor slice builds the right caller context.
+
+### next slice
+
+The "executor fetches later" step: a flagged, still-dormant executor that takes an Authorized ProbeRefreshAuthorization (node = platform.retrieve) and drives that ONE candidate tool through the Tool Gateway with a proper ToolInvocationContext (ProtocolNode = platform.retrieve, run/tenant/correlation), returning the fetched context WITHOUT merging it into the artifact yet. Prove gateway authorization + telemetry on the targeted call before any merge; keep it behind a flag and off the production pipeline. Then a later slice handles Perceive-refresh merge -> Discern re-weigh. Do not split the analyze call.
+
+### Claude/Codex transfer notes
+
+- The authorization seam is deterministic, dormant, and not persisted. It decides; it does not permit-at-runtime or fetch. Do not wire it into the gateway or retrieval without the dedicated executor slice.
+- The authorizing node for a refresh is platform.retrieve, NOT interrogate.probe. interrogate.probe is the requesting/provenance station and correctly fails closed (ToolNotOnStationCard). Do NOT "fix" that by adding retrieve tools to the probe card or adding interrogate.probe to the tools' AllowedProtocolNodes -- that contradicts doctrine and changes the live gateway matrix.
+- ProtocolToolAccessPolicy is the single authority; the service decomposes reasons but defers the allow/deny decision to it. Add new station/tool grants in ProtocolRegistry + ToolRegistry, not here.
+- The executor slice should construct a ToolInvocationContext with ProtocolNode = platform.retrieve and pass it to IToolGateway.InvokeAsync; the authorization seam already confirms that node authorizes the candidate.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice). Sharpening idea logged above (an explicit "permission-matrix change = STOP" item for dai-grill-with-vault); not applied without approval.
+
+status: Probe Refresh Tool Authorization v1 implemented 2026-06-04. Added IProbeRefreshAuthorizationService/ProbeRefreshAuthorizationService + ProbeRefreshAuthorization/ProbeRefreshAuthorizationResult/ProbeRefreshAuthorizationStatus in DevCore.Api.Protocols; deterministic AuthorizeCandidate/Authorize defers the allow/deny decision to ProtocolToolAccessPolicy, fails closed for unknown node/tool, tool-not-on-card, and policy denial. Architecture decision: refresh tools authorize at platform.retrieve, NOT interrogate.probe (probe does not retrieve) -- zero manifest change, fail-closed preserved. DI-registered, dormant. dotnet 320 (targeted 64). No analyzer split, no prompt/confidence/posture/artifact/gateway/schema/Angular/MCP change. jera-workspace-skills untouched.
