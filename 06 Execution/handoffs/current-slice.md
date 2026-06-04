@@ -2344,3 +2344,85 @@ Introduce the platform orchestrator seam that CONSUMES a ProbeRequest read-only 
 Untouched (read-only this slice).
 
 status: ProbeRequest Contract v1 implemented 2026-06-04. Added ProbeRequest/ProbeRequestSignal + ProbeRequestStatus/ProbePriority/ProbeConfidenceEffect in DevCore.Api.AgentRuns; CognitiveProtocolBuilder.BuildProbeRequest projects the same gap set as BuildProbe (string output byte-identical, single-sourced via MissingProbeSignals); ProtocolNodeRunner.ExecuteAsync(interrogate.probe) exposes the ProbeRequest on an additive nullable field. Deterministic, fetches nothing, dormant, not persisted. dotnet 300 (targeted 64). No analyzer split, no prompt/confidence/posture/artifact-persistence/gateway/schema/Angular/MCP change. jera-workspace-skills untouched.
+
+## addendum: Probe Refresh Decision v1 (2026-06-04)
+
+Orchestrator-seam slice. Implements the "orchestrator decides" step of the doctrine chain (probe requests -> orchestrator decides -> Tool Gateway permits -> Perceive refresh receives). A deterministic read-only service consumes a ProbeRequest + a competition code and decides whether a targeted refresh is warranted, mapping each requested signal to a candidate retrieve tool id using competition context. It does NOT fetch, does NOT invoke the Tool Gateway, mutates no ProbeRequest, mutates no artifact, and persists nothing. No analyzer split, no prompt/confidence/posture change, no schema/Angular/MCP/pgvector/Functions/Kubernetes touch. Dormant: no production pipeline path calls it.
+
+### skills used
+
+- superpowers: writing-plans / planning (designed the contract + the signal->tool mapping against CompetitionCatalog + ToolRegistry first), test-driven-development (mapping, fail-closed, and no-gateway tests written first), verification-before-completion (fresh safe-runner runs below), systematic-debugging on standby (proactively cleared the dev-host DLL-lock check before building; none running).
+- Local jera-workspace-skills/dai (read-only): dai-grill-with-vault (reconciled the rest_fatigue/rest_schedule vocabulary before designing), dai-token-tight, dai-agent-handoff. Pack not edited.
+
+### naming decisions
+
+- `ProbeRefreshDecision` (singular handoff: Status + IsRefreshWarranted + Competition + Candidates) and `ProbeRefreshCandidate` (per-signal: RequestedSignalKey + nullable CandidateToolId + Reason + Priority + ConfidenceEffect).
+- `ProbeRefreshDecisionStatus { RefreshWarranted, NoRefreshNeeded, NoProbeRequested }`.
+- `IProbeRefreshDecisionService` / `ProbeRefreshDecisionService` with `Decide(ProbeRequest, string competitionCode)`.
+- `is_refresh_warranted` is a computed `IsRefreshWarranted` (== Status == RefreshWarranted); `candidate_tool_id` is nullable and null means "no candidate / unsupported" -- this avoids a second per-candidate enum. Reason/Priority/ConfidenceEffect are carried through from the originating ProbeRequestSignal.
+- Reconciliation (important): ProbeRequest signal keys are platform-canonical (rest_schedule, market, sharp_public, starting_pitching -- produced by MissingProbeSignals). The slice brief's "rest_fatigue" is the analyzer-side alias (SportsQualityChecker.SignalAliases). The service normalizes aliases to canonical before mapping (mirroring that alias map), so both vocabularies resolve. Refreshability is gated by CompetitionCatalog.ExpectedSignalNames, which correctly yields no candidate for sharp_public+mlb, starting_pitching+nba, etc.
+- Placement: DevCore.Api.Protocols (the orchestration seam over probe output, next to ProtocolNodeRunner). DI-registered like the runner/diagnostics (low-risk, deterministic, reads only static manifests).
+
+### files changed
+
+dai:
+- `platform/dotnet/DevCore.Api/Protocols/ProbeRefreshDecisionService.cs` -- NEW. ProbeRefreshDecisionStatus enum, ProbeRefreshCandidate + ProbeRefreshDecision records, IProbeRefreshDecisionService + ProbeRefreshDecisionService + static Default, the alias-normalization + competition-gated signal->tool mapping with registry fail-close.
+- `platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- register IProbeRefreshDecisionService singleton wired to IToolRegistry (no Program.cs change).
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRefreshDecisionTests.cs` -- NEW. 9 tests.
+- `platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs` -- +1 test resolving IProbeRefreshDecisionService through the real Program.cs graph.
+
+dai-vault:
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills: untouched.
+
+### ProbeRefreshDecision summary
+
+`ProbeRefreshDecision { ProbeRefreshDecisionStatus Status; string Competition; IReadOnlyList<ProbeRefreshCandidate> Candidates; bool IsRefreshWarranted }`.
+`ProbeRefreshCandidate { string RequestedSignalKey; string? CandidateToolId; string Reason; ProbePriority Priority; ProbeConfidenceEffect ConfidenceEffect }`.
+Mapping (canonical signal + competition sport family -> retrieve tool id; null when unsupported):
+- sharp_public + (nfl/ncaaf/nba/ncaamb) -> market.sharp_public.split
+- starting_pitching + mlb (baseball) -> pitching.mlb.probable_starters
+- rest_schedule + (nba/ncaamb) (basketball) -> schedule.basketball.rest_context
+- market + (nfl/ncaaf) (football) -> market.football.spread; market + (nba/ncaamb) (basketball) -> market.basketball.spread
+- everything else (signal not grounded for the competition, unknown competition, unmapped pair, or a tool id not in the registry) -> null candidate.
+
+### decision behavior
+
+- ProbeRequest.NoneNeeded (or empty signals) -> Status=NoProbeRequested, IsRefreshWarranted=false, empty Candidates.
+- Probe requested signals, at least one maps to a registered candidate tool -> Status=RefreshWarranted; each candidate carries its CandidateToolId (or null where that signal had no tool).
+- Probe requested signals but none map for the competition -> Status=NoRefreshNeeded, all CandidateToolId null.
+- Every fail-closed branch returns a null candidate, never a throw: unknown competition, a signal the competition does not ground, an unmapped (signal, sport family) pair, or a mapped tool id that is somehow not in ToolRegistry.
+
+### what is intentionally not wired yet
+
+- No Tool Gateway call, no fetch, no retrieve, no Perceive call. The service only reads static manifests (CompetitionCatalog, ToolRegistry) to resolve and fail-close candidate tool ids.
+- No production pipeline consumer. Nothing calls Decide in a run; the service is dormant (DI-registered + a resolution test only). ProbeRequest and the v3 artifact are unchanged; ProbeRefreshDecision is not persisted.
+- CandidateToolId is a proposal only; actually invoking a targeted retrieve through the gateway is a later slice ("Tool Gateway permits / Perceive refresh receives").
+
+### tests
+
+- safe .NET targeted: 64 passed, 0 failed.
+- safe .NET full: 310 passed, 0 failed (was 300; +9 decision tests, +1 DI-resolution test). Cover: sharp_public->split for nba and nfl; starting_pitching->probable_starters for mlb; rest signal->rest_context for nba via both the canonical key and the rest_fatigue alias; market->football/basketball spread by sport; unsupported signal and wrong-competition signal both yield null candidate + NoRefreshNeeded; NoProbeNeeded -> NoProbeRequested; reason/priority/confidence_effect carried through; and a structural assertion that the service has no IToolGateway dependency. Existing probe-request/runner/diagnostics/policy tests stay green.
+- No DevCore.Api.exe host was running (lock check ran first). No Python change -> pytest not run. No Angular change -> Angular build not run.
+
+### risks
+
+Low. Additive: one new service file + one DI registration + tests. Deterministic, reads only static manifests, no gateway/fetch/persistence. Fail-closed at every mapping branch. The structural no-gateway test guards against future accidental wiring. Reversible (delete the service + the registration + tests). Note: the alias map is a small second copy of SportsQualityChecker.SignalAliases; if the canonical signal vocabulary changes, update both (a future slice could promote a single shared signal-alias source).
+
+### next recommended slice
+
+The "Tool Gateway permits / Perceive refresh receives" step: a still-flagged, still-dormant executor that takes a RefreshWarranted ProbeRefreshDecision and drives ONE candidate tool through the Tool Gateway with a proper ToolInvocationContext (platform.retrieve), returning the fetched context without merging it into the artifact yet. Keep it off the production pipeline and behind a flag; prove gateway authorization + telemetry before any artifact merge. Do not split the analyze call.
+
+### Claude/Codex transfer notes
+
+- ProbeRefreshDecisionService is deterministic, dormant, and not persisted. It proposes tool ids; it does not permit or fetch. Do not wire it into retrieval or the gateway without the dedicated executor slice.
+- Signal keys flowing from a real ProbeRequest are platform-canonical (rest_schedule, not rest_fatigue). The service normalizes analyzer aliases defensively; keep the alias map aligned with SportsQualityChecker.SignalAliases if either changes.
+- Refreshability is competition-gated by CompetitionCatalog.ExpectedSignalNames; add new (signal, sport family) -> tool mappings in ResolveCandidateToolId and the corresponding ExpectedSignalNames, not in the runner or probe layer.
+- The candidate tool id is confirmed against ToolRegistry (metadata read, not a gateway call) so an unmapped or stale id fails closed to null.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Probe Refresh Decision v1 implemented 2026-06-04. Added IProbeRefreshDecisionService/ProbeRefreshDecisionService + ProbeRefreshDecision/ProbeRefreshCandidate/ProbeRefreshDecisionStatus in DevCore.Api.Protocols; deterministic Decide(ProbeRequest, competitionCode) maps canonical signals (alias-normalized) to candidate retrieve tool ids gated by CompetitionCatalog.ExpectedSignalNames, fails closed to null candidate, no gateway/fetch/persistence. DI-registered, dormant. dotnet 310 (targeted 64). No analyzer split, no prompt/confidence/posture/artifact/gateway/schema/Angular/MCP change. jera-workspace-skills untouched.
