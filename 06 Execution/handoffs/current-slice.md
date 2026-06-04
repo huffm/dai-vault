@@ -2266,3 +2266,81 @@ Either (a) give interrogate.probe a governed, async, memory-backed augmentation 
 Untouched (read-only this slice).
 
 status: Protocol Node Runner Deterministic Execute Path v1 implemented 2026-06-04. Added ExecuteAsync + ProtocolNodeExecutionPayload/ProtocolNodeExecutionOutput and extended ProtocolNodeExecutionStatus (Executed, UnsupportedStation) in DevCore.Api.Protocols; interrogate.probe runs deterministically via CognitiveProtocolBuilder.BuildProbe (no model/tool/gateway/external/persistence), unknown stations fail closed, all other stations UnsupportedStation. Not wired into SportsComposer (structural test guards it). dotnet 293 (targeted 64). No analyzer split, no prompt/confidence/posture/artifact/schema/Angular/MCP change. jera-workspace-skills untouched.
+
+## addendum: ProbeRequest Contract v1 (2026-06-04)
+
+Contract slice. Gives interrogate.probe a structured, deterministic ProbeRequest handoff alongside its existing string output, so a future platform orchestrator can decide whether to run a targeted Perceive/retrieve refresh. Probe identifies gaps; it does NOT fetch, does NOT invoke Perceive, and does NOT invoke the Tool Gateway. No analyzer split, no model call, no FastAPI/prompt change, no confidence/posture change, no artifact persistence change, no Tool Gateway behavior change, no schema/Angular/MCP/pgvector/Functions/Kubernetes touch. The contract is dormant: nothing in the production pipeline reads it.
+
+### skills used
+
+- superpowers: writing-plans / planning (designed the contract + single-source mapping against real code first), test-driven-development (contract, mapping, and execute-exposure tests written first), verification-before-completion (all results below are fresh safe-runner runs), systematic-debugging on standby. 
+- Local jera-workspace-skills/dai (read-only): dai-grill-with-vault (read node-specs + blueprint + builder before designing), dai-token-tight, dai-agent-handoff. Pack not edited.
+
+### naming decisions
+
+- `ProbeRequest` is the singular handoff object (Status + Signals), matching the doctrine "a future handoff object from Interrogate to platform orchestration"; this makes "no probe needed" a natural `Status = NoProbeNeeded` with empty Signals.
+- `ProbeRequestSignal` (new sub-type) carries the per-signal detail: SignalKey, Reason, SuggestedToolId, Priority, ConfidenceEffect. It is a projection of SignalFollowUpRecord, not a duplicate of it.
+- Enums as proposed: `ProbeRequestStatus { Requested, NoProbeNeeded }`, `ProbePriority { Low, Normal, High }`, `ProbeConfidenceEffect { None, Dampens, Reduces }`.
+- `Reason` is a string carrying the existing SignalFollowUpRecord vocabulary (primary_signal_missing / missing_confirmation / lateral_proxy) -- reuse, not a parallel enum.
+- `SuggestedToolId` is nullable and null in v1: the templated signals are sport-specific tools and the probe layer has no competition context, so the orchestrator resolves the tool later.
+- Placement: DevCore.Api.AgentRuns (next to SignalFollowUpRecord and CognitiveProtocolBuilder), with the mapping in CognitiveProtocolBuilder so probe semantics stay single-owner and there is no Protocols<->AgentRuns namespace cycle. The runner (already -> AgentRuns) only exposes it.
+
+### files changed
+
+dai:
+- `platform/dotnet/DevCore.Api/AgentRuns/ProbeRequest.cs` -- NEW. ProbeRequest + ProbeRequestSignal records, ProbeRequestStatus / ProbePriority / ProbeConfidenceEffect enums, ProbeRequest.NoneNeeded.
+- `platform/dotnet/DevCore.Api/AgentRuns/CognitiveProtocolBuilder.cs` -- extracted the shared gap detection into internal MissingProbeSignals(followUps) (ordered, template-known); BuildProbe now maps that set to sentences (string output byte-identical to v1); added internal BuildProbeRequest(followUps) + the per-signal derivation (BuildProbeRequestSignal, MapConfidenceEffect).
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolNodeRunner.cs` -- added a nullable `ProbeRequest? ProbeRequest` to ProtocolNodeExecutionOutput (additive, defaults null) and its Executed factory; ExecuteAsync(interrogate.probe) now also builds and exposes the ProbeRequest. String Output unchanged.
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRequestTests.cs` -- NEW. 7 tests.
+
+dai-vault:
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+cognitive-factory docs: not modified. The two doctrine points the slice brief asked to capture are already present in protocol-node-specs.md -- the Interrogate ordering question -> probe -> verify (node table, "Interrogate" row) and "Probe may recommend investigation; it does not retrieve" (Boundaries section, and the Probe spec facets 1/5/11). The new "future Perceive refresh is orchestrator-owned" framing is forward-looking (the orchestrator does not exist yet), so it is recorded here in the execution handoff rather than promoted into fixed doctrine prematurely.
+
+jera-workspace-skills: untouched.
+
+### ProbeRequest contract summary
+
+`ProbeRequest { ProbeRequestStatus Status; IReadOnlyList<ProbeRequestSignal> Signals; bool IsRequested; static NoneNeeded }`.
+`ProbeRequestSignal { string SignalKey; string Reason; string? SuggestedToolId; ProbePriority Priority; ProbeConfidenceEffect ConfidenceEffect }`.
+Mapping (CognitiveProtocolBuilder.BuildProbeRequest): the gap set is exactly MissingProbeSignals (the same ordered, template-known set BuildProbe uses), so structured and string forms cannot diverge. For each signal the strongest matching follow-up rule sets Reason + Priority -- hard-missing primary -> (primary_signal_missing, High); missing confirmation -> (missing_confirmation, Normal); lateral proxy filling the parent -> (lateral_proxy, Normal). ConfidenceEffect maps from the record's ConfidencePermission (confidence_dampened/conservative -> Dampens; confidence_reduced -> Reduces; else None). No gap -> ProbeRequest.NoneNeeded.
+
+### behavior summary
+
+- CognitiveProtocolBuilder.BuildProbe: unchanged string output (refactored to read the shared MissingProbeSignals set; SportsComposerTests stay green, confirming byte-identical probe in the compose path).
+- CognitiveProtocolBuilder.BuildProbeRequest: new deterministic structured projection. No model/tool/gateway/external/persistence.
+- ProtocolNodeRunner.ExecuteAsync(interrogate.probe): returns Status=Executed with the unchanged string Output AND the new ProbeRequest. Unknown station -> UnknownStation (Output null, ProbeRequest null); any other registered station -> UnsupportedStation (both null). Resolve/IsToolAllowed unchanged.
+
+### what is intentionally not wired yet
+
+- No fetch, no retrieve, no Perceive call, no Tool Gateway call. ProbeRequest is data only.
+- No production pipeline consumer. SportsComposer still calls CognitiveProtocolBuilder.FromAnalyzerProtocolSeed and does not read ProbeRequest; the runner stays dormant. No persisted artifact carries ProbeRequest (it is not added to AgentRunExecutionResult or the v3 artifact this slice).
+- SuggestedToolId is the seam for orchestrator tool resolution; null in v1. Priority/ConfidenceEffect are descriptive only and change no confidence rule.
+
+### tests
+
+- safe .NET targeted: 64 passed, 0 failed (includes SportsComposerTests -> probe string output unchanged).
+- safe .NET full: 300 passed, 0 failed (was 293; +7 ProbeRequest tests). Cover: represent missing sharp_public; represent no-probe-needed (null and empty follow-ups); map confidence effect + lateral-proxy parent mapping from follow-up data; execute exposes the request without changing the string output; execute with no gap exposes NoProbeNeeded + null string; unknown station unchanged (no request); unsupported station unchanged (no request). Existing probe/runner/diagnostics/policy tests stay green.
+- A build-time DLL lock check ran first (no DevCore.Api.exe host was running this time). No Python change -> pytest not run. No Angular change -> Angular build not run.
+
+### risks
+
+Low. Additive: a new DTO file, two enum-bearing records, one shared internal helper extraction (output-preserving), one nullable field on the execute output, plus tests. BuildProbe output is byte-identical (guarded by SportsComposerTests). The structured and string forms are single-sourced through MissingProbeSignals and cannot drift. Nothing production reads ProbeRequest; reversible (revert the builder additions + the runner field + delete ProbeRequest.cs and the test).
+
+### next recommended slice
+
+Introduce the platform orchestrator seam that CONSUMES a ProbeRequest read-only and decides (deterministically, behind a flag, still no fetch) whether a targeted refresh is warranted -- e.g. a ProbeRefreshDecision that maps each requested signal to a candidate retrieve tool id using competition context, without invoking the gateway yet. Only after that, a separate slice may actually drive the gateway for a single targeted refresh. Do not split the analyze call; do not wire ProbeRequest into the persisted artifact until a slice explicitly justifies persistence.
+
+### Claude/Codex transfer notes
+
+- ProbeRequest is deterministic, dormant, and not persisted. Do not wire it into retrieval, Perceive, or the Tool Gateway without a dedicated orchestrator slice.
+- Probe semantics are single-sourced in CognitiveProtocolBuilder: MissingProbeSignals is the one gap set; BuildProbe and BuildProbeRequest both read it. Add probe gap/template logic there, never in the runner or the DTO.
+- SuggestedToolId is intentionally null in v1; populate it in the orchestrator slice where competition context exists, not in the probe layer.
+- The string probe Output is the contract downstream code (compose, projection) still depends on; keep it byte-identical when touching BuildProbe.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: ProbeRequest Contract v1 implemented 2026-06-04. Added ProbeRequest/ProbeRequestSignal + ProbeRequestStatus/ProbePriority/ProbeConfidenceEffect in DevCore.Api.AgentRuns; CognitiveProtocolBuilder.BuildProbeRequest projects the same gap set as BuildProbe (string output byte-identical, single-sourced via MissingProbeSignals); ProtocolNodeRunner.ExecuteAsync(interrogate.probe) exposes the ProbeRequest on an additive nullable field. Deterministic, fetches nothing, dormant, not persisted. dotnet 300 (targeted 64). No analyzer split, no prompt/confidence/posture/artifact-persistence/gateway/schema/Angular/MCP change. jera-workspace-skills untouched.
