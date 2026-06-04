@@ -2130,3 +2130,72 @@ Give the runner an actual execute path for a deterministic station first (e.g., 
 Untouched (read-only this slice).
 
 status: Protocol Node Runner v1 Groundwork implemented 2026-05-31. Added IProtocolNodeRunner/ProtocolNodeRunner + execution context/result/status types in DevCore.Api.Protocols; resolves station cards, exposes allowed tools, delegates tool authorization to ProtocolToolAccessPolicy, fails closed for unknown stations/tools. DI-registered, not wired into any pipeline. dotnet 279 (targeted 64). No model/prompt/gateway/confidence/posture/schema/Angular change. jera-workspace-skills untouched.
+
+## addendum: Protocol Node Runner Diagnostics v1 (2026-06-04)
+
+Read-only diagnostics slice. No model call, no tool invocation, no artifact mutation, no analyzer split, no production pipeline path wired, no HTTP endpoint. Adds the smallest read-only inspection surface over the dormant Protocol Node Runner so a developer (today: a unit test) can confirm station resolution and tool-permission behavior are understandable before the runner gets a real execute path. This is the "wire the runner read-only into a diagnostics/inspection surface" branch the groundwork addendum named.
+
+### skills used
+
+- superpowers: test-driven-development (diagnostics tests written first against the canonical manifests, then the service), verification-before-completion (all results below are fresh safe-runner runs). brainstorming/systematic-debugging/frontend-design not needed (locked brief, no bug, no UI).
+- Local jera-workspace-skills/dai (read-only): dai-grill-with-vault (read code + blueprint + handoff before touching the boundary), dai-token-tight, dai-agent-handoff (this addendum shape). Pack not edited.
+
+### naming review result
+
+Chose Option 1 (service-level only, no HTTP controller). No established read-only dev diagnostics endpoint pattern exists (the only Dev controller, DevProvisionController, is a DB-mutating provisioning endpoint), so an endpoint was not added. Names follow the DevCore.Api.Protocols precedent:
+- `IProtocolStationDiagnostics` / `ProtocolStationDiagnostics` -- read-only diagnostics service, placed next to ProtocolNodeRunner / ProtocolToolAccessPolicy.
+- `ProtocolStationDiagnostic` -- flat station-card snapshot record (Found, StationId, MacroProtocol, MicroAction, Purpose, AllowedModelCall, CostClass, AllowedTools, TelemetryTags, QualityGates).
+- `ProtocolToolPermissionDiagnostic` -- tool-permission answer record (StationId, ToolId, Allowed, Status).
+- `ProtocolToolPermissionStatus` -- enum: Allowed | UnknownStation | UnknownTool | ToolNotOnStationCard | DeniedByPolicy.
+- Methods: `DescribeStation(stationId)`, `CheckTool(stationId, toolId)`. No tool ids or station ids changed.
+
+### files changed
+
+dai:
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolStationDiagnostics.cs` -- NEW. The service + interface + the two DTO records + the status enum + a static `Default` built from `ProtocolNodeRunner.Default` and `ToolRegistry.Default()`.
+- `platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- register `IProtocolStationDiagnostics` singleton wired to the runner + the tool registry (no Program.cs change).
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProtocolStationDiagnosticsTests.cs` -- NEW. 7 tests.
+- `platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs` -- +1 test resolving IProtocolStationDiagnostics through the real Program.cs graph.
+
+dai-vault:
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills: untouched.
+
+### diagnostics behavior
+
+- `DescribeStation(stationId)` -> `ProtocolStationDiagnostic`. Known station: Found=true with a flat projection of the card (station id, macro protocol, micro action, purpose, model-call, cost class, allowed tools, telemetry tags, quality gates). Unknown station: a clear not-found shape (Found=false, null card fields, empty lists).
+- `CheckTool(stationId, toolId)` -> `ProtocolToolPermissionDiagnostic`. `Allowed` is authoritative -- it comes straight from `ProtocolNodeRunner.IsToolAllowed` (which defers to `ProtocolToolAccessPolicy`); the diagnostics service makes no second authorization decision. `Status` is explanatory color derived from observable facts: Allowed / UnknownStation / UnknownTool / ToolNotOnStationCard / DeniedByPolicy.
+- It never touches IToolGateway, calls no model, runs no tool handler, and mutates nothing.
+
+### compatibility behavior
+
+- Purely additive: one new file, one DI registration, plus tests. No existing type or behavior changed. Authorization stays single-sourced in ProtocolToolAccessPolicy via the runner.
+- The runner, the policy, ProtocolRegistry, the startup guard, ToolGateway, and its telemetry are all unchanged.
+- Dormant: nothing in SportsRetriever / SportsAnalyzer / SportsComposer or any controller calls the diagnostics service. No public HTTP surface. No FastAPI prompt, model-call count, confidence rule, posture behavior, artifact output, or schema change. No Angular, MCP, pgvector, Azure Functions, or Kubernetes change.
+
+### tests
+
+- safe .NET targeted: 64 passed, 0 failed.
+- safe .NET full: 287 passed, 0 failed (was 279; +7 diagnostics unit tests, +1 DI-resolution test). The 7 diagnostics tests cover: known station card; allowed tools surfaced; allowed=true when station/card/policy agree; false for a tool not on the card (ToolNotOnStationCard); false for an unknown tool id (UnknownTool, fail closed); unknown station described cleanly (Found=false); unknown station tool-check fails closed (UnknownStation).
+- No Python change -> pytest not run. No Angular change -> Angular build not run.
+
+### risks
+
+Low. Additive read-only service + one DI registration; no existing behavior changed and the runner stays dormant. The Allowed decision is delegated, not re-implemented, so it cannot drift from the policy; the Status enum is explanatory only. Reversible (delete the file + the one registration + tests).
+
+### next recommended slice
+
+Give the runner an actual execute path for a deterministic station first (e.g. a memory-backed interrogate.probe behind a flag), driving a station-id call through the gateway with the prepared ProtocolNodeExecutionContext -- still without splitting the analyze call. If a human-facing inspection surface is later wanted, add a dev-only (env.IsDevelopment + shared-secret gated, read-only GET) endpoint over IProtocolStationDiagnostics, mirroring DevProvisionController's gating but without DB access.
+
+### Claude/Codex transfer notes
+
+- Diagnostics is read-only and dormant; do not expect any runtime/pipeline behavior change. Do not add an HTTP endpoint or wire it into the sports pipeline without a dedicated slice.
+- Tool authorization remains single-sourced in ProtocolToolAccessPolicy; diagnostics delegates the Allowed boolean to ProtocolNodeRunner.IsToolAllowed. The Status enum is explanatory only -- do not treat it as a second permission system.
+- Add new station/tool grants in ProtocolRegistry + ToolRegistry, not in the diagnostics service.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Protocol Node Runner Diagnostics v1 implemented 2026-06-04. Added IProtocolStationDiagnostics/ProtocolStationDiagnostics + ProtocolStationDiagnostic / ProtocolToolPermissionDiagnostic / ProtocolToolPermissionStatus in DevCore.Api.Protocols; read-only DescribeStation + CheckTool over the dormant runner, Allowed delegated to ProtocolToolAccessPolicy, fails closed for unknown stations/tools, no HTTP endpoint. DI-registered, not wired into any pipeline. dotnet 287 (targeted 64). No model/prompt/gateway/confidence/posture/artifact/schema/Angular/MCP change. jera-workspace-skills untouched.
