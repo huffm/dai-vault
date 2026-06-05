@@ -4360,3 +4360,83 @@ Probe Refresh Chain Activation Readiness Review v1: use diagnostics to inventory
 Untouched.
 
 status: Probe Refresh Chain Diagnostics v1 implemented 2026-06-05. Added IProbeRefreshChainDiagnostics/ProbeRefreshChainDiagnostics + diagnostic report/safety/step records in DevCore.Api.Protocols; singleton DI registration; 13 diagnostics tests plus DI resolution. Diagnostics only: no endpoint, no pipeline wiring, no gateway/model call, no DB write, no artifact merge/mutation, no confidence/posture/lean change, no schema change. dotnet 500 (targeted 64). Ledger entry 13 updated; activation remains deferred. jera-workspace-skills untouched.
+
+## addendum: Probe Refresh Chain Activation Readiness Review v1 (2026-06-05)
+
+Docs-only readiness review before any probe-refresh activation, writer, endpoint, or production wiring. No runtime code changed. No endpoint, chain execution, production pipeline consumer, artifact mutation, confidence/posture/lean mutation, Tool Gateway/model/external call, DB write, schema/FastAPI/Angular/MCP/pgvector/Azure/Kubernetes/secrets change.
+
+### pre-change repo-state check
+
+Verified before changes: <DAI_REPO_ROOT>, <DAI_VAULT_ROOT>, and <JERA_SKILLS_ROOT> were clean and in sync with origin. Probe Refresh Chain Diagnostics v1 had landed at dai f1a6671 and dai-vault 8db4843.
+
+### skills/guidance used
+
+- superpowers: planning / writing-plans (readiness sections and checklist), verification-before-completion (git status, doc/path checks), systematic-debugging on standby. No code change, so TDD did not apply.
+- Local <JERA_SKILLS_ROOT> guidance applied manually and read-only: dai-grill-with-vault, dai-agent-handoff, dai-token-tight, dai-write-skill. Pack not edited.
+- Skill sharpening note: no new weakness found. The existing placeholder convention kept local-path hygiene explicit.
+
+### docs/code decision
+
+Docs-only. The shipped `ProbeRefreshChainDiagnostics` already supplies the service-level inspection surface; adding a readiness value object would duplicate vault doctrine without changing runtime behavior. No code was added.
+
+### files changed
+
+dai: untouched.
+
+dai-vault:
+- `02 Platform/architecture/cognitive-factory/probe-refresh-chain-activation-readiness-v1.md` -- NEW. Activation readiness review and checklist.
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` -- entry 13 status updated to note readiness review complete while activation remains deferred.
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills: untouched.
+
+### naming decisions
+
+- Document: `probe-refresh-chain-activation-readiness-v1.md`.
+- Section names: Current dormant chain, Safe-by-default guarantees, Activation blockers, Required feature flags, Required telemetry/diagnostics, Tenant/run/idempotency boundaries, Protected fields, Audit/store/read requirements, Allowed future activation scope, Explicitly forbidden activation scope, Readiness checklist, Recommended next slices.
+- Status vocabulary in the checklist: `ready` for shipped prerequisites, `blocked` for activation blockers. No activation/executor service names were introduced.
+
+### readiness review summary
+
+The review records that the chain is ready for planning a future limited dev activation, but not ready for runtime activation. Safe defaults, diagnostics, audit contract/store/read, idempotency, tenant/run boundaries, and protected-field guards are present. Activation remains blocked by missing production consumer, endpoint decision, config-bound feature flags, runtime telemetry emission, operator review surface, merge writer, rollback execution, tenant/Stripe economic boundary, and calibration proof for confidence/posture changes.
+
+### safe-by-default guarantees captured
+
+`Enabled=false`, `AllowGatewayExecution=false`, `PersistAuditRecord=false`, artifact mutation false, confidence/posture/lean mutation false, executor disabled by default, gateway constrained to `platform.retrieve`, diagnostics inspect only supplied options/results, and audit persistence remains ledger-only and opt-in.
+
+### protected fields captured
+
+confidence, posture, lean, artifact version, tenant, run id, raw retrieved signals overwrite, and historical audit deletion.
+
+### explicitly forbidden activation scope
+
+Direct Interrogate -> Perceive self-invocation, direct tool power on `interrogate.probe`, production activation without tenant/auth boundary, mutation without audit record, posture/confidence changes without calibration proof, public endpoint without explicit gate, artifact overwrite without rollback, audit store as artifact writer, gateway execution outside `platform.retrieve`, and unrelated FastAPI/Angular/schema/cloud/secrets changes.
+
+### deferred ledger updates
+
+Entry 13 remains Deferred. It now records Activation Readiness Review v1 as shipped and lists the remaining blockers: entries 1-3, feature-flag/config design, telemetry emission, operator review, tenant/economic gating, and product approval. No new ledger item was added.
+
+### verification
+
+Docs-only: no .NET tests required or run. Runtime files untouched. Schema/migration files untouched. New/added docs scanned for exact local path and local account-name patterns. ASCII check run against the new readiness doc.
+
+### risks
+
+Low. Documentation only. Main risk is staleness: if activation, telemetry, or writer slices change the boundaries, update the readiness doc and ledger in the same slice.
+
+### next slice
+
+Probe Refresh Limited Dev Activation Plan v1: design the config and tenant-scoped feature flags for dev/local activation only, still with no production wiring or artifact mutation.
+
+### Claude/Codex transfer notes
+
+- Do not start activation from this review alone. Treat it as the readiness gate.
+- Keep chain activation separate from merge writer, telemetry emission, and operator review surface.
+- Keep <JERA_SKILLS_ROOT> read-only unless explicitly approved.
+- Use placeholders in reports/docs.
+
+### jera-workspace-skills status
+
+Untouched.
+
+status: Probe Refresh Chain Activation Readiness Review v1 implemented 2026-06-05. Added a docs-only readiness review in dai-vault with safe defaults, blockers, required flags, telemetry/diagnostics needs, tenant/run/idempotency boundaries, protected fields, audit requirements, allowed limited activation scope, forbidden activation scope, checklist, and next slices. No runtime code, no tests required, no endpoint, no pipeline wiring, no DB/schema/FastAPI/Angular/cloud/secrets change. Ledger entry 13 updated but remains Deferred. jera-workspace-skills untouched.
