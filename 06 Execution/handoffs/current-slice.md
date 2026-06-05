@@ -4034,3 +4034,93 @@ Validation:
 Recommended next slice remains Probe Refresh Merge Audit Read Surface v1, internal/dev-only read by idempotency key and tenant/run.
 
 status: Local Path Placeholder Hygiene v1 implemented 2026-06-05. Added gitignored local path-map convention and a committed placeholder-only template. No real local path map committed. jera-workspace-skills untouched.
+
+## addendum: Probe Refresh Merge Audit Read Surface v1 (2026-06-05)
+
+Read-side slice for the probe-refresh merge audit ledger. Adds a tenant-safe, validating read facade over the committed ProbeRefreshMergeAuditStore: read one record by tenant-scoped idempotency key, or read a tenant + run history. Read-only and deterministic: no write, no merge, no artifact mutation, no AgentRun mutation, no Tool Gateway call, no model/external call, no schema change. Dormant: no production pipeline path and no HTTP endpoint added.
+
+### pre-coding repo-state check
+
+Verified before any change: <DAI_REPO_ROOT>, <DAI_VAULT_ROOT>, and <JERA_SKILLS_ROOT> all clean and in sync with origin. Probe Refresh Merge Audit Store v1 committed (dai 3ce4a69, "persist probe refresh merge audit records") and its files tracked. Proceeded.
+
+### skills/guidance used
+
+- superpowers: writing-plans / planning, test-driven-development (DB-backed tests for every status and boundary), systematic-debugging on standby (dev-host DLL-lock check ran first; none running), verification-before-completion (fresh safe-runner runs below).
+- Local jera-workspace-skills/dai (read-only, guidance applied manually): dai-grill-with-vault -- inspected the committed store/contract/entity first, which surfaced that the store's GetByIdempotencyKeyAsync is NOT tenant-scoped (the load-bearing finding for this slice). dai-token-tight, dai-agent-handoff. Pack not edited.
+- Skill sharpening note: dai-grill-with-vault earned its keep (read-before-build caught the non-tenant-scoped query). Standing sharpening idea: an explicit tenant-scope / cross-tenant-leak checklist item for read surfaces.
+
+### audit store/persistence pattern found
+
+ProbeRefreshMergeAuditStore (DevCore.Api.Protocols, scoped, AppDbContext-backed) already exposes the reads this slice needs: GetByIdempotencyKeyAsync(string idempotencyKey) returning a single record (keyed on the globally-unique idempotency key, NOT tenant-scoped) and GetByRunAsync(long tenantKey, Guid runId) returning a list tenant-scoped and ordered by CreatedAtUtc ascending then ledger key. The idempotency key embeds TenantKey, so cross-tenant key collisions are impossible. The read service reuses both methods rather than duplicating EF queries.
+
+### naming decisions
+
+- IProbeRefreshMergeAuditReadService / ProbeRefreshMergeAuditReadService; ProbeRefreshMergeAuditReadResult (single idempotency read); ProbeRefreshMergeAuditRunHistory (tenant+run list with Count); ProbeRefreshMergeAuditReadStatus.
+- TenantMismatch deliberately REJECTED from the status enum: every path that would return it leaks cross-tenant existence, which the brief says to avoid. A cross-tenant idempotency hit returns NotFound. Statuses = Found, NotFound, InvalidInput.
+- Strongly-typed long tenantKey / Guid runId (not the candidate string signatures) to match the entity and the existing store.
+- ProbeRefreshMergeAuditSummary deferred: not needed for the narrow surface; RunHistory carries Count.
+
+### files changed
+
+dai:
+- platform/dotnet/DevCore.Api/Protocols/ProbeRefreshMergeAuditReadService.cs -- NEW. Read status enum, ProbeRefreshMergeAuditReadResult + ProbeRefreshMergeAuditRunHistory records, interface + service (delegates to the store; adds validation + tenant guard + status results).
+- platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs -- register IProbeRefreshMergeAuditReadService scoped.
+- platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRefreshMergeAuditReadServiceTests.cs -- NEW. 14 DB-backed tests (in-memory EF).
+- platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs -- +1 resolution test.
+
+No EF schema/migration change (reuses the existing ProbeRefreshMergeAudits DbSet and store queries; no new entity, index, or model-snapshot churn). No PowerShell file change.
+
+dai-vault: 06 Execution/handoffs/current-slice.md -- this addendum. jera-workspace-skills: untouched.
+
+### read surface summary
+
+- GetByIdempotencyKeyAsync(long tenantKey, string? idempotencyKey) -> ProbeRefreshMergeAuditReadResult { Status, TenantKey, IdempotencyKey, Record, Reason, ErrorMessage; IsFound }.
+- GetByRunAsync(long tenantKey, Guid runId) -> ProbeRefreshMergeAuditRunHistory { Status, TenantKey, RunId, Records, Count, Reason, ErrorMessage; IsFound }.
+
+### tenant/idempotency/run boundary behavior
+
+- tenantKey <= 0 -> InvalidInput (both reads). Empty idempotency key -> InvalidInput. Guid.Empty run id -> InvalidInput.
+- Idempotency read is tenant-scoped via a post-fetch tenant guard: the store fetches by the globally-unique key, then the service returns the record ONLY if record.TenantKey == requested tenant; otherwise NotFound. A record owned by another tenant reads as NotFound -- no cross-tenant existence leak, no TenantMismatch status.
+- Run read delegates to the already tenant-scoped store query, so another tenant's or another run's rows are never returned.
+- Unknown key / empty run -> NotFound. Reads use AsNoTracking and never write, never update timestamps, never touch AgentRun rows.
+
+### ordering behavior
+
+Run history is ordered by CreatedAtUtc ascending (oldest first), then ledger key ascending -- inherited unchanged from the store. Proven by a test that inserts the later record first and asserts time order, not insertion order.
+
+### endpoint decision
+
+No HTTP endpoint added. Service-level read only. A dev-only gated endpoint was considered and declined for this slice (unnecessary to prove the read surface; would widen the tenant-isolation surface). If added later it must be env-gated (development/admin), non-public, and tenant-scoped from caller identity, not a query parameter.
+
+### what is intentionally not wired yet
+
+- No production pipeline consumer; DI-registered (scoped) + resolution test only.
+- No HTTP endpoint, no Angular, no merge execution, no artifact/AgentRun write, no confidence/posture/lean mutation, no analyze split.
+- ProbeRefreshMergeAuditSummary / store-result metadata summarization deferred.
+
+### tests
+
+- safe .NET targeted: 64 passed, 0 failed.
+- safe .NET full: 472 passed, 0 failed (includes +14 read-surface tests and +1 DI-resolution test). Cover read-by-key returns record; key read tenant-scoped (NotFound for another tenant); unknown key NotFound; missing tenant/idempotency InvalidInput; read-by-run returns run rows; run read excludes other tenant and other run; missing run id / missing tenant InvalidInput; run history CreatedAtUtc ascending (later row inserted first); read does not mutate audit rows; read does not update AgentRun rows; read service has no IToolGateway dependency. Existing audit store + contract tests stay green.
+- Full runner normal pass (no "Build FAILED with 0 Error(s)" hang). No EF migration added; no PowerShell file changed. No Python/Angular change.
+
+### risks
+
+Low. Additive read-only facade + one scoped DI registration + tests; no schema change, no store change. Tenant isolation enforced by the post-fetch guard and the store's tenant-scoped run query; the no-TenantMismatch decision removes a cross-tenant leak vector. Reversible. Note: the idempotency read materializes one globally-unique row before the tenant guard; it is never returned cross-tenant, but a future hardening could push the tenant filter into the query.
+
+### next slice
+
+A future merge persistence/writer slice (still dormant, flagged) that consumes a ReadyForPersistCandidate audit record and projects an actual artifact write behind a feature flag, with rollback from the before-payload reference -- or a dev-only gated read endpoint over this service if an operator inspection surface is needed first. Keep confidence/posture/lean and artifact persistence untouched; do not split the analyze call.
+
+### Claude/Codex transfer notes
+
+- The read service is read-only and dormant; it reuses the store's queries and adds validation + a tenant guard. Do not add a write path or HTTP endpoint without a dedicated, gated slice.
+- Idempotency reads are tenant-scoped at the service boundary (post-fetch guard) because the store method is keyed on the globally-unique key only. Keep that guard; a cross-tenant hit must remain NotFound (never TenantMismatch).
+- Run history ordering is CreatedAtUtc ascending; preserve it if the store query changes.
+- No migration was added; the read surface needs none.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice). Sharpening idea logged; not applied without approval.
+
+status: Probe Refresh Merge Audit Read Surface v1 implemented 2026-06-05. Added IProbeRefreshMergeAuditReadService/ProbeRefreshMergeAuditReadService + ProbeRefreshMergeAuditReadResult/ProbeRefreshMergeAuditRunHistory/ProbeRefreshMergeAuditReadStatus in DevCore.Api.Protocols; tenant-safe read by idempotency key (post-fetch tenant guard, cross-tenant -> NotFound, no TenantMismatch) and by tenant+run (ordered CreatedAtUtc asc), reusing the store's queries. Read-only, no schema change, DI scoped, dormant, no HTTP endpoint. dotnet 472 (targeted 64). No merge/artifact/AgentRun write, no confidence/posture/lean mutation, no gateway/model call, no analyze split. jera-workspace-skills untouched.
