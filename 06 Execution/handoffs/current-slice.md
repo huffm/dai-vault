@@ -3174,3 +3174,174 @@ Recommended next slice: Probe Refresh Artifact Merge Contract v1, still non-muta
 Clean before changes and untouched after changes. Skill files were read only; no edits made.
 
 status: Probe Refresh Synthesize Preview v1 implemented 2026-06-04. Added a dormant, deterministic `IProbeRefreshSynthesizePreview`/`ProbeRefreshSynthesizePreview` seam that maps derived perceive/discern/decide refresh outputs into `ProbeRefreshSynthesizePreviewResult`. Behavior is preview-only, conditional, and non-mutating; it never updates confidence/posture/artifact or `SynthesizeProtocol`. DI singleton + resolution test. dotnet 379 full, targeted 64. No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
+
+## addendum: Probe Refresh Artifact Merge Contract v1 (2026-06-04)
+
+Artifact merge contract slice -- the dormant governance contract after synthesize preview and before any future artifact mutation. This slice defines who/what may merge, what may change, what must never change automatically, before/after audit data, rollback representation, feature-flag gating, and tenant/run boundaries. It creates merge plans only. It does not merge, persist, mutate artifacts, update confidence/posture/lean, call a model, call the Tool Gateway, split analyze, or wire production behavior.
+
+### naming and skills gate
+
+Required baseline before coding:
+
+- `dai`: clean, HEAD `fe95a15 feat(protocol): add probe refresh synthesize preview seam`.
+- `dai-vault`: clean, HEAD `fda4895 docs(protocol): document probe refresh synthesize preview`.
+- `jera-workspace-skills`: clean.
+
+Local skills inspected and applied manually:
+
+- `dai-grill-with-vault`: used to read repo/vault doctrine before naming the merge contract.
+- `dai-agent-handoff`: used to shape this addendum and transfer notes.
+- `dai-token-tight`: applied manually for concise reporting.
+- `dai-write-skill`: read as a boundary check; no skill files were edited, and runtime code was allowed only because the slice explicitly requested DAI runtime implementation.
+
+Requested superpowers-style guidance applied manually: planning, naming review, systematic debugging, test-driven coverage, verification before completion, and writing-plans discipline. The requested "Naming and Skills Gate" was run manually: no exact local `Naming and Skills Gate` skill exists in `jera-workspace-skills`, so the gate was interpreted as local skill inspection, clean-state verification, and explicit naming review before coding.
+
+Skill sharpening recommendation: add a small local DAI skill or checklist for "probe-refresh artifact merge gate" in a future approved skills-maintenance session. It should require a clean prior slice, stage-verb naming, default-disabled feature flag, explicit allowed/forbidden mutation lists, before/after audit, rollback representation, structural no-gateway/no-protocol tests, and vault handoff notes. Not applied here because `jera-workspace-skills` edits were not approved.
+
+### naming decisions
+
+- `IProbeRefreshArtifactMergePlanner` / `ProbeRefreshArtifactMergePlanner`: service/seam name. Chosen to name plan creation, not merge execution.
+- `ProbeRefreshArtifactMergePlan`: top-level returned contract. Chosen over `Contract` as the primary return type because future executors can review a concrete plan without implying mutation.
+- `ProbeRefreshArtifactMergeOptions`: feature flag and authority inputs.
+- `ProbeRefreshArtifactMergeContext`: explicit tenant/run/source-artifact boundary input plus optional existing field values for audit before-values.
+- `ProbeRefreshArtifactMergeAudit`: before/after audit envelope.
+- `ProbeRefreshMergeRollbackPlan`: rollback representation.
+- `ProbeRefreshArtifactMergeStatus`: `Planned`, `Disabled`, `NotEligible`, `NoPreview`, `UnsafeChange`, `InvalidInput`.
+- `ProbeRefreshMergeAuthority`: `None`, `PlatformOnly`, `TenantFlagRequired`, `ManualReviewRequired`.
+
+### files changed
+
+dai:
+
+- `platform/dotnet/DevCore.Api/Protocols/ProbeRefreshArtifactMergeContract.cs` -- new merge status/authority/change enums, options/context/audit/rollback/plan records, interface, and deterministic planner.
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRefreshArtifactMergeContractTests.cs` -- new coverage for no preview, disabled flag, planned contract, authority, allowed/forbidden categories, protected fields, audit, rollback, no context mutation, and no Tool Gateway dependency.
+- `platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- registers the planner as a singleton dormant service.
+- `platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs` -- adds application-service resolution coverage.
+
+dai-vault:
+
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills:
+
+- untouched.
+
+### merge contract summary
+
+`IProbeRefreshArtifactMergePlanner` exposes:
+
+- `Plan(ProbeRefreshSynthesizePreviewResult? preview, ProbeRefreshArtifactMergeContext? context = null, ProbeRefreshArtifactMergeOptions? options = null)`
+
+`ProbeRefreshArtifactMergePlan` carries:
+
+- `Status`
+- `MergeAuthority`
+- `FeatureFlagKey`
+- `TenantKey`
+- `RunId`
+- `SourceArtifactVersion`
+- `RequestedSignalKey`
+- `AllowedChanges`
+- `ForbiddenChanges`
+- `ProposedChanges`
+- `Audit`
+- `Rollback`
+- `Reason`
+- `ErrorMessage`
+- `IsPlanned`
+
+Default behavior is disabled. A planned result requires a created synthesize preview, `ArtifactMergeEnabled = true`, explicit non-`None` merge authority, tenant key, run id, and source artifact version.
+
+### allowed and forbidden changes
+
+Allowed categories:
+
+- `PerceiveRefreshView`
+- `DiscernRefreshAssessment`
+- `DecideRecommendation`
+- `SynthesizePreview`
+- `QualityWarning`
+- `RefreshMetadata`
+
+Forbidden categories:
+
+- `RawRetrievedSignalsOverwrite`
+- `ConfidenceMutation`
+- `PostureMutation`
+- `LeanMutation`
+- `ArtifactVersionMutation`
+- `TenantMutation`
+- `RunIdMutation`
+- `HistoricalAuditDeletion`
+
+The v1 proposed field paths are restricted to `probeRefresh.*` metadata/preview paths such as requested signal key, tool id, preview headline, what changed, why it matters, recommendation summary, remaining limitation, and surfacing flag. Proposed changes deliberately do not include confidence, posture, lean, artifact version, tenant key, or run id.
+
+### audit and rollback
+
+`ProbeRefreshArtifactMergeAudit` records:
+
+- tenant key
+- run id
+- source artifact version
+- requested signal key
+- proposed field path
+- allowed change category
+- before value
+- after value
+
+Before values come from optional `ProbeRefreshArtifactMergeContext.ExistingFieldValues`; missing before values remain null. The planner only copies values into the audit and never edits the supplied context or dictionary.
+
+`ProbeRefreshMergeRollbackPlan` is always present. For planned changes it uses `restore_audited_before_values` and lists every proposed field path that a later merge executor would restore. This is representation only; no rollback is executed in this slice.
+
+### feature flag and default behavior
+
+Feature flag key:
+
+- `ProbeRefresh:ArtifactMergeEnabled`
+
+Default options:
+
+- `ArtifactMergeEnabled = false`
+- `MergeAuthority = ManualReviewRequired`
+
+If no options are supplied, the planner returns `Disabled`. If the flag is enabled without valid tenant/run/source-artifact boundary data, the planner returns `InvalidInput`. If authority is `None` while enabled, the planner returns `UnsafeChange`.
+
+### what is intentionally not wired yet
+
+- No artifact merge and no mutation of `SportsRunArtifact`, `AgentRunExecutionResult`, `CognitiveProtocol`, or `SynthesizeProtocol`.
+- No confidence mutation, posture mutation, lean mutation, or artifact-version mutation.
+- No production pipeline consumer.
+- No Tool Gateway call, model call, external call, or persistence call.
+- No FastAPI prompt, model-call count, database schema, Angular, MCP, pgvector, Azure Functions, Kubernetes, or production secret change.
+
+### tests
+
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshArtifactMergeContractTests /m:1 /nr:false` -- pass, 14 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter "FullyQualifiedName~ProbeRefreshArtifactMergeContractTests|FullyQualifiedName~ProbeRefreshSynthesizePreviewTests|FullyQualifiedName~ProbeRefreshDecideRecommendationTests|FullyQualifiedName~ProbeRefreshDiscernReweighTests|FullyQualifiedName~ProbeRefreshPerceiveIntakeTests|FullyQualifiedName~ToolGatewayDIRegistrationTests" /m:1 /nr:false` -- pass, 73 passed.
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Targeted` -- pass, 64 passed.
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Full` -- pass, 394 passed.
+- A plain multi-node `dotnet build`/`dotnet test` path returned `Build FAILED` with `0 Error(s)` before switching to the repo-documented safe runner. The safe runner exists for this exact local MSBuild behavior and passed.
+- No PowerShell files changed, so PowerShell parser/ascii validation was not required.
+- No Python/FastAPI change -> pytest not run. No Angular change -> Angular build not run.
+
+### risks
+
+Low. The seam is additive, pure, default-disabled, and dormant. Main future risk: a merge executor could treat `Planned` as permission to mutate protected fields. The contract counters that with explicit forbidden categories, `probeRefresh.*` proposed paths only, mandatory audit and rollback representation, and tenant/run/source-artifact boundaries. Another future risk is policy ambiguity between `TenantFlagRequired` and `ManualReviewRequired`; v1 records the authority but does not enforce a real executor policy.
+
+### next slice
+
+Recommended next slice: Probe Refresh Merge Review/Telemetry v1, still non-mutating. Add a read-only review surface or telemetry envelope that records and inspects merge plans without applying them. Do not implement artifact mutation until review, authorization, and observability semantics are explicit.
+
+### claude/codex transfer notes
+
+- This seam plans only; it does not apply the plan or update persisted artifact state.
+- Keep `ProbeRefreshArtifactMergeOptions` default-disabled.
+- Keep proposed paths inside `probeRefresh.*` metadata unless a later slice explicitly expands the contract.
+- Do not add Tool Gateway/model dependencies to the merge planner; structural tests guard this.
+- Do not wire this into production behavior without a dedicated merge executor, audit persistence, and rollback test slice.
+
+### jera-workspace-skills status
+
+Clean before changes and untouched after changes. Skill files were read only; no edits made.
+
+status: Probe Refresh Artifact Merge Contract v1 implemented 2026-06-04. Added a dormant, deterministic `IProbeRefreshArtifactMergePlanner`/`ProbeRefreshArtifactMergePlanner` seam that maps `ProbeRefreshSynthesizePreviewResult` plus explicit context/options into `ProbeRefreshArtifactMergePlan`. Behavior is feature-flagged, audit-bearing, rollback-represented, default-disabled, and non-mutating; it never updates confidence/posture/lean/artifact or `SynthesizeProtocol`. DI singleton + resolution test. dotnet 394 full, targeted 64. No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
