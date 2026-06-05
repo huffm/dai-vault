@@ -3835,3 +3835,152 @@ Recommended next slice: Probe Refresh Merge Audit Store v1. Add the database ent
 Clean before changes and untouched after changes. Skill files were read only; no edits made.
 
 status: Probe Refresh Merge Audit Persistence Contract v1 implemented 2026-06-05. Added a dormant, deterministic `IProbeRefreshMergeAuditFactory`/`ProbeRefreshMergeAuditFactory` seam that maps a reviewed dry-run projection into a durable-audit envelope contract with idempotency, payload references, rollback, retention, and boundary checks. Behavior is contract-only, default-blocking, and non-mutating; it never updates confidence/posture/lean/artifact and never persists the audit record. DI singleton + resolution test. dotnet 441 full, targeted 64. No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
+
+## addendum: Probe Refresh Merge Audit Store v1 (2026-06-05)
+
+First persistence slice for the probe-refresh merge chain. This slice persists `ProbeRefreshMergeAuditRecord` rows only, idempotently by key, so future merge attempts have an audit ledger before artifact mutation exists. It does not merge, mutate artifacts, update confidence/posture/lean, call a model, call the Tool Gateway, split analyze, or wire production behavior.
+
+### naming and skills gate
+
+Required baseline before coding:
+
+- `dai`: clean, HEAD `1c217569357af557ca2b0a96a8bfa078f1ca63d8`.
+- `dai-vault`: clean, HEAD `8155f57e04b3cae99560e78160fbb821d2fd20bc`.
+- `jera-workspace-skills`: clean.
+
+Local skills inspected and applied manually:
+
+- `dai-grill-with-vault`: used to read repo/vault doctrine and persistence conventions before naming the store.
+- `dai-agent-handoff`: used to shape this addendum and transfer notes.
+- `dai-token-tight`: applied manually for concise reporting.
+- `dai-write-skill`: read as a boundary check; no skill files were edited, and runtime code was allowed only because the slice explicitly requested DAI runtime implementation.
+
+Requested superpowers-style guidance applied manually: planning, naming review, systematic debugging, test-driven development, verification before completion, and writing-plans discipline. The requested "Naming and Skills Gate" was run manually: no exact local `Naming and Skills Gate` skill exists in `jera-workspace-skills`, so the gate was interpreted as local skill inspection, clean-state verification, persistence-pattern inspection, and explicit naming review before coding.
+
+Skill sharpening recommendation: create a local DAI "probe-refresh persistence slice gate" skill in a future approved skills-maintenance session. The repeated workflow is now specific enough: verify prior slice commits, inspect EF/migration pattern, name dormant persistence surfaces, add idempotency/tenant-run tests, generate isolated migration, run safe .NET verification, and update `current-slice.md`.
+
+### persistence pattern found
+
+Persistence is EF Core:
+
+- domain entities live in `dai/platform/dotnet/DevCore.Domain`.
+- `AppDbContext` and migrations live in `dai/platform/dotnet/DevCore.Data`.
+- API-side services inject `AppDbContext` directly or through scoped services.
+- migrations are established under `DevCore.Data/Migrations` and model shape is configured in `AppDbContext.OnModelCreating`.
+
+### naming decisions
+
+- `ProbeRefreshMergeAuditEntity`: EF/domain row for the audit ledger.
+- `IProbeRefreshMergeAuditStore` / `ProbeRefreshMergeAuditStore`: scoped API-side store/repository. Chosen over writer/executor names because it stores audit rows only.
+- `ProbeRefreshMergeAuditStoreResult`: returned result carrying status, record, and error message.
+- `ProbeRefreshMergeAuditStoreStatus`: `Inserted`, `Existing`, `Invalid`.
+
+### files changed
+
+dai:
+
+- `platform/dotnet/DevCore.Domain/Agentic/ProbeRefreshMergeAuditEntity.cs` -- new EF entity for audit ledger rows.
+- `platform/dotnet/DevCore.Data/AppDbContext.cs` -- `DbSet` plus table mapping, required fields, JSON columns, and indexes.
+- `platform/dotnet/DevCore.Data/Migrations/20260605123908_AddProbeRefreshMergeAuditStore.cs` -- creates `ProbeRefreshMergeAudits`.
+- `platform/dotnet/DevCore.Data/Migrations/20260605123908_AddProbeRefreshMergeAuditStore.Designer.cs` -- generated migration model.
+- `platform/dotnet/DevCore.Data/Migrations/AppDbContextModelSnapshot.cs` -- generated snapshot update.
+- `platform/dotnet/DevCore.Api/Protocols/ProbeRefreshMergeAuditStore.cs` -- new scoped store, idempotent insert logic, and entity/contract mapper.
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRefreshMergeAuditStoreTests.cs` -- focused persistence tests.
+- `platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- scoped dormant store DI registration.
+- `platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs` -- store resolution test.
+
+dai-vault:
+
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills:
+
+- untouched.
+
+### table/entity behavior
+
+`ProbeRefreshMergeAudits` stores:
+
+- surrogate key: `ProbeRefreshMergeAuditKey`.
+- required logical ids: `AuditId`, `IdempotencyKey`, `TenantKey`, `RunId`.
+- metadata: `CorrelationId`, `SourceArtifactVersion`, `SourceArtifactId`, `RequestedSignalKey`, `CandidateToolId`, `CreatedAtUtc`, `CreatedBy`.
+- status fields: `MergePlanStatus`, `MergeReviewStatus`, `DryRunStatus`, `AuditStatus`, `MergeAuthority`.
+- JSON payloads: `AllowedChangesJson`, `ForbiddenChangesJson`, `ProposedChangesJson`, `BeforePayloadJson`, `AfterPayloadJson`, `RollbackJson`, `RetentionJson`.
+- review text: `Reason`, nullable `ErrorMessage`.
+- `ProposedChangeHash` so the idempotency record can round-trip.
+
+The table intentionally has no foreign key to `AgentRuns`, no cascade path, and no artifact column. It is an audit ledger, not an artifact writer.
+
+### idempotent store behavior
+
+`IProbeRefreshMergeAuditStore` exposes:
+
+- `StoreAsync(ProbeRefreshMergeAuditRecord? record, CancellationToken ct)`
+- `GetByIdempotencyKeyAsync(string idempotencyKey, CancellationToken ct)`
+- `GetByRunAsync(long tenantKey, Guid runId, CancellationToken ct)`
+
+Store behavior:
+
+- missing tenant key, run id, audit id, or idempotency key -> `Invalid`, no insert.
+- new idempotency key -> insert row and return `Inserted`.
+- duplicate idempotency key -> return existing row and `Existing`.
+- duplicate writes do not overwrite the existing audit row.
+- `DbUpdateException` from a race on the unique key is handled by clearing the tracker and reading the existing row.
+
+### tenant/run boundary behavior
+
+Tenant/run are required at the store boundary and indexed together. They are treated as the economic/artifact boundary for audit lookup. The store does not infer tenant/run from `AgentRun`, and it does not update or join artifact rows.
+
+### indexes, constraints, and migration
+
+Migration: `20260605123908_AddProbeRefreshMergeAuditStore`.
+
+Generated schema changes are isolated to:
+
+- create table `ProbeRefreshMergeAudits`.
+- unique index on `AuditId`.
+- unique index on `IdempotencyKey`.
+- non-unique index on `{ TenantKey, RunId }`.
+
+No unrelated schema change was generated. EF tooling note: plain `dotnet build platform/dotnet/DevCore.Api/DevCore.Api.csproj --no-restore -v minimal` returned `Build FAILED` with `0 Error(s)`. Retrying with `/m:1 /nr:false` succeeded, then `dotnet ef migrations add ... --no-build` generated the migration.
+
+### what is intentionally not wired yet
+
+- No artifact merge and no mutation of `SportsRunArtifact`, `AgentRun.OutputJson`, `AgentRunExecutionResult`, `CognitiveProtocol`, or `SynthesizeProtocol`.
+- No confidence mutation, posture mutation, lean mutation, or artifact-version mutation.
+- No production pipeline consumer.
+- No Tool Gateway call, model call, external call, structured log emission, metrics emission, artifact write, or merge result write.
+- No FastAPI prompt, model-call count, Angular, MCP, pgvector, Azure Functions, Kubernetes, or production secret change.
+
+### tests
+
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshMergeAuditStoreTests /m:1 /nr:false` -- pass, 15 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter "FullyQualifiedName~ProbeRefreshMergeAuditStoreTests|FullyQualifiedName~ProbeRefreshMergeAuditPersistenceContractTests|FullyQualifiedName~ProbeRefreshMergeDryRunExecutorTests|FullyQualifiedName~ProbeRefreshMergeReviewTests|FullyQualifiedName~ProbeRefreshArtifactMergeContractTests|FullyQualifiedName~ToolGatewayDIRegistrationTests" /m:1 /nr:false` -- pass, 90 passed.
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Targeted` -- pass, 64 passed.
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Full` -- pass, 457 passed.
+- Migration compile check: `dotnet build platform/dotnet/DevCore.Api/DevCore.Api.csproj --no-restore -v minimal /m:1 /nr:false` -- pass.
+- No PowerShell files changed, so PowerShell parser/ascii validation was not required.
+- No Python/FastAPI change -> pytest not run. No Angular change -> Angular build not run.
+
+### risks
+
+Low to medium. This is the first persistence slice, so the risk is schema inertia: table/field names will become durable. Mitigation: names explicitly say audit store, not merge executor, and the migration contains no artifact FK/write path. Another risk is JSON payload queryability; v1 chooses inspectable serialized payloads to preserve the full contract without over-modeling, and indexed lookup stays on idempotency and tenant/run.
+
+### next slice
+
+Recommended next slice: Probe Refresh Merge Audit Read Surface v1. Add a dev/internal read-only inspection endpoint or service for audit rows by tenant/run/idempotency so reviewers can inspect persisted audit evidence before any artifact mutation slice exists.
+
+### claude/codex transfer notes
+
+- The audit store is dormant but registered; no pipeline calls it.
+- `IdempotencyKey` is the logical uniqueness boundary.
+- `TenantKey + RunId` is the lookup boundary.
+- Do not add artifact writes to this store.
+- Do not overwrite rows on duplicate idempotency keys.
+- If the next slice adds a read surface, keep it internal/dev-only and tenant-scoped. Do not expose merge execution.
+
+### jera-workspace-skills status
+
+Clean before changes and untouched after changes. Skill files were read only; no edits made.
+
+status: Probe Refresh Merge Audit Store v1 implemented 2026-06-05. Added `ProbeRefreshMergeAudits` EF table/entity/migration and a dormant scoped `IProbeRefreshMergeAuditStore` that inserts audit records idempotently, returns existing rows for duplicate idempotency keys, preserves rollback/retention/payload JSON, and never mutates `AgentRun` artifacts. DI scoped registration + resolution test. dotnet 457 full, targeted 64. No artifact merge, no confidence/posture/lean mutation, no Tool Gateway/model/FastAPI/Angular/MCP/pgvector/Azure/Kubernetes/secrets change. jera-workspace-skills untouched.
