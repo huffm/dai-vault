@@ -3651,3 +3651,187 @@ Recommended next slice: Probe Refresh Merge Audit Persistence Contract v1, still
 Clean before changes and untouched after changes. Skill files were read only; no edits made.
 
 status: Probe Refresh Merge Dry-Run Executor v1 implemented 2026-06-05. Added a dormant, deterministic `IProbeRefreshMergeDryRunExecutor`/`ProbeRefreshMergeDryRunExecutor` seam that maps a reviewed merge plan into projected allowed changes plus existing audit/rollback representation. Behavior is dry-run-only, projection-only, default-blocking, and non-mutating; it never updates confidence/posture/lean/artifact or persists dry-run output. DI singleton + resolution test. dotnet 421 full, targeted 64. No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
+
+## addendum: Probe Refresh Merge Audit Persistence Contract v1 (2026-06-05)
+
+Merge audit persistence contract slice -- the dormant audit envelope after `ProbeRefreshMergeDryRunExecutor` and before any persistence writer or artifact mutation. This slice defines the record shape a future writer would persist: audit id, idempotency key, tenant/run/correlation boundaries, before/after payload references, rollback record, retention shape, protected-field blocking, and readiness status. It does not merge, persist, mutate artifacts, update confidence/posture/lean, call a model, call the Tool Gateway, split analyze, or wire production behavior.
+
+### naming and skills gate
+
+Required baseline before coding:
+
+- `dai`: clean, HEAD `6e850fd feat(protocol): add probe refresh merge dry-run executor`.
+- `dai-vault`: clean, HEAD `6bd8a72 docs(protocol): document probe refresh merge dry-run`.
+- `jera-workspace-skills`: clean.
+
+Local skills inspected and applied manually:
+
+- `dai-grill-with-vault`: used to read repo/vault doctrine before naming the audit contract.
+- `dai-agent-handoff`: used to shape this addendum and transfer notes.
+- `dai-token-tight`: applied manually for concise reporting.
+- `dai-write-skill`: read as a boundary check; no skill files were edited, and runtime code was allowed only because the slice explicitly requested DAI runtime implementation.
+
+Requested superpowers-style guidance applied manually: planning, naming review, systematic debugging, test-driven development, verification before completion, and writing-plans discipline. The requested "Naming and Skills Gate" was run manually: no exact local `Naming and Skills Gate` skill exists in `jera-workspace-skills`, so the gate was interpreted as local skill inspection, clean-state verification, and explicit naming review before coding.
+
+### naming decisions
+
+- `ProbeRefreshMergeAuditRecord`: top-level durable-audit envelope. Chosen over writer/repository names because this slice defines contract only.
+- `IProbeRefreshMergeAuditFactory` / `ProbeRefreshMergeAuditFactory`: pure factory for the envelope. It returns a value object only and has no persistence dependency.
+- `ProbeRefreshMergeIdempotencyKey`: deterministic duplicate-write prevention key.
+- `ProbeRefreshMergePayloadReference`: before/after payload reference shape.
+- `ProbeRefreshMergeRollbackRecord`: rollback strategy and prior payload reference.
+- `ProbeRefreshMergeAuditRetention`: explicit retention/cleanup shape.
+- `ProbeRefreshMergeAuditStatus`: `Planned`, `Reviewed`, `DryRunProjected`, `ReadyForManualReview`, `ReadyForPersistCandidate`, `Blocked`, `Invalid`.
+
+### files changed
+
+dai:
+
+- `platform/dotnet/DevCore.Api/Protocols/ProbeRefreshMergeAuditPersistenceContract.cs` -- new audit statuses, request, audit record, idempotency key, payload reference, rollback record, retention record, interface, and deterministic factory.
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRefreshMergeAuditPersistenceContractTests.cs` -- new coverage for ready audit creation, tenant/run/correlation fields, deterministic idempotency, fail-closed missing boundaries, protected confidence/posture/lean blocks, before/after payload refs, rollback, retention, no input mutation, and no persistence/Tool Gateway dependency.
+- `platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- registers the audit factory as a singleton dormant service.
+- `platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs` -- adds application-service resolution coverage.
+
+dai-vault:
+
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills:
+
+- untouched.
+
+### audit contract behavior
+
+`IProbeRefreshMergeAuditFactory` exposes:
+
+- `Create(ProbeRefreshMergeAuditRequest? request)`
+
+`ProbeRefreshMergeAuditRecord` carries:
+
+- `AuditId`
+- `IdempotencyKey`
+- `TenantKey`
+- `RunId`
+- `CorrelationId`
+- `SourceArtifactVersion`
+- `SourceArtifactId`
+- `SourceRunId`
+- `RequestedSignalKey`
+- `MergePlanStatus`
+- `MergeReviewStatus`
+- `DryRunStatus`
+- `MergeAuthority`
+- `CreatedAtUtc`
+- `CreatedBy`
+- `AllowedChanges`
+- `ForbiddenChanges`
+- `ProposedChanges`
+- `BeforePayload`
+- `AfterPayload`
+- `Rollback`
+- `Retention`
+- `Reason`
+- `Status`
+- `ErrorMessage`
+
+Valid planned + review-passed + projected dry-run inputs produce `Status = ReadyForPersistCandidate`. This means "a later writer may consider persisting this audit envelope," not permission to mutate an artifact.
+
+### idempotency behavior
+
+`ProbeRefreshMergeIdempotencyKey` includes:
+
+- tenant key
+- run id
+- requested signal key
+- candidate tool id
+- source artifact version
+- proposed-change hash
+- deterministic value string
+
+The key is deterministic for the same merge input and does not include `CreatedAtUtc`, so retries do not create a different duplicate-write key. A different requested signal key creates a different idempotency key.
+
+### tenant, run, and correlation boundaries
+
+The factory fails closed with `Status = Invalid` when tenant key, run id, source artifact version, audit data, or matching plan/review/dry-run boundaries are missing or mismatched. Correlation id is carried as metadata from the explicit request first, then dry-run, then review; it is not used to authorize writes.
+
+### payload references
+
+The contract represents payloads by reference shape only:
+
+- before payload: inline summary + deterministic hash of audited before values.
+- after payload: inline summary + deterministic hash of projected after values.
+- storage kind is `InlineSummary` today.
+- `ExternalUri` is nullable and remains null in this contract-only slice.
+
+No full artifact copy is constructed.
+
+### rollback and retention
+
+Rollback is represented as:
+
+- rollback strategy, defaulting to `restore_audited_before_values`.
+- previous payload reference pointing at the before payload.
+- rollback reason.
+- `RequiresManualReview = true` by default.
+
+Retention is represented as:
+
+- retention policy.
+- optional expiration timestamp.
+- `DeleteAfterMergeSuperseded` flag.
+
+The slice only defines these values. It does not delete, expire, archive, or restore anything.
+
+### protected fields
+
+The audit factory blocks readiness when proposed changes target protected paths containing:
+
+- `confidence`
+- `posture`
+- `lean`
+- `artifactVersion`
+- `tenantKey` / `tenant`
+- `runId`
+- `rawRetrievedSignals`, `rawSignals`, or `retrievedSignals`
+- audit deletion markers
+
+Protected-field proposals return `Status = Blocked` and `IsReadyForPersistCandidate = false`.
+
+### what is intentionally not wired yet
+
+- No artifact merge and no mutation of `SportsRunArtifact`, `AgentRunExecutionResult`, `CognitiveProtocol`, or `SynthesizeProtocol`.
+- No confidence mutation, posture mutation, lean mutation, or artifact-version mutation.
+- No production pipeline consumer.
+- No Tool Gateway call, model call, external call, structured log emission, metrics emission, persistence call, database write, migration, repository, or transaction.
+- No FastAPI prompt, model-call count, database schema, Angular, MCP, pgvector, Azure Functions, Kubernetes, or production secret change.
+
+### tests
+
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshMergeAuditPersistenceContractTests /m:1 /nr:false` -- pass, 19 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter "FullyQualifiedName~ProbeRefreshMergeAuditPersistenceContractTests|FullyQualifiedName~ProbeRefreshMergeDryRunExecutorTests|FullyQualifiedName~ProbeRefreshMergeReviewTests|FullyQualifiedName~ProbeRefreshArtifactMergeContractTests|FullyQualifiedName~ToolGatewayDIRegistrationTests" /m:1 /nr:false` -- pass, 74 passed.
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Targeted` -- pass, 64 passed.
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Full` -- pass, 441 passed.
+- No PowerShell files changed, so PowerShell parser/ascii validation was not required.
+- No Python/FastAPI change -> pytest not run. No Angular change -> Angular build not run.
+
+### risks
+
+Low. The seam is additive, pure, and dormant. Main future risk: a later writer could interpret `ReadyForPersistCandidate` as permission to mutate the artifact. This slice keeps the status scoped to audit-envelope persistence consideration only and writes nothing. Another risk is protected-field matching by path string; it is conservative for the protected names, but a real writer should enforce typed mutation categories inside the transaction.
+
+### next slice
+
+Recommended next slice: Probe Refresh Merge Audit Store v1. Add the database entity/migration/repository for idempotent audit-record persistence only, using this contract as the input. Keep artifact mutation deferred until the audit store, idempotent upsert behavior, tenant/run transaction boundary, and rollback-read path are tested.
+
+### claude/codex transfer notes
+
+- This seam creates audit envelopes only. It does not persist them.
+- Keep the idempotency key independent of `CreatedAtUtc`.
+- Keep `ReadyForPersistCandidate` narrower than merge permission.
+- Keep rollback manual-review default true.
+- If a future audit store consumes this record, it must still enforce tenant/run/source-artifact boundaries, idempotency, unique constraints, transaction scope, retention policy, rollback-read support, and protected-field blocking.
+
+### jera-workspace-skills status
+
+Clean before changes and untouched after changes. Skill files were read only; no edits made.
+
+status: Probe Refresh Merge Audit Persistence Contract v1 implemented 2026-06-05. Added a dormant, deterministic `IProbeRefreshMergeAuditFactory`/`ProbeRefreshMergeAuditFactory` seam that maps a reviewed dry-run projection into a durable-audit envelope contract with idempotency, payload references, rollback, retention, and boundary checks. Behavior is contract-only, default-blocking, and non-mutating; it never updates confidence/posture/lean/artifact and never persists the audit record. DI singleton + resolution test. dotnet 441 full, targeted 64. No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
