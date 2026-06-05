@@ -3,3 +3,6 @@
 .obsidian/cache/
 .DS_Store
 Thumbs.db
+
+# local agent path maps (machine-specific; use the committed example template, not real paths)
+.local/

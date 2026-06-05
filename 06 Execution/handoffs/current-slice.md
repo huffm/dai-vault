@@ -3984,3 +3984,53 @@ Recommended next slice: Probe Refresh Merge Audit Read Surface v1. Add a dev/int
 Clean before changes and untouched after changes. Skill files were read only; no edits made.
 
 status: Probe Refresh Merge Audit Store v1 implemented 2026-06-05. Added `ProbeRefreshMergeAudits` EF table/entity/migration and a dormant scoped `IProbeRefreshMergeAuditStore` that inserts audit records idempotently, returns existing rows for duplicate idempotency keys, preserves rollback/retention/payload JSON, and never mutates `AgentRun` artifacts. DI scoped registration + resolution test. dotnet 457 full, targeted 64. No artifact merge, no confidence/posture/lean mutation, no Tool Gateway/model/FastAPI/Angular/MCP/pgvector/Azure/Kubernetes/secrets change. jera-workspace-skills untouched.
+
+## addendum: Local Path Placeholder Hygiene v1 (2026-06-05)
+
+Repo-hygiene slice. No runtime code, product behavior, prompts, protocol runtime, Tool Gateway, database, Angular, artifact persistence, MCP, pgvector, Azure Functions, Kubernetes, secrets, or skill-pack files changed.
+
+### convention
+
+Future prompts, handoff notes, and final reports should prefer placeholders over exact local paths:
+
+- `<DAI_WORKSPACE_ROOT>`
+- `<DAI_REPO_ROOT>`
+- `<DAI_VAULT_ROOT>`
+- `<JERA_WORKSPACE_ROOT>`
+- `<JERA_SKILLS_ROOT>`
+
+Local agents may resolve these placeholders from a machine-specific path map such as `.local/agent-paths.md`. The `.local/` directory is gitignored and must not contain committed docs. Committed examples must use placeholders and fake paths only.
+
+### files changed
+
+dai:
+
+- `.gitignore` -- ignores `.local/` for local-only agent path maps.
+- `docs/examples/agent-paths.example.md` -- committed example path-map template with placeholders and fake paths only.
+
+dai-vault:
+
+- `.gitignore` -- ignores `.local/` for local-only agent path maps.
+- `06 Execution/handoffs/current-slice.md` -- this convention note.
+
+jera-workspace-skills:
+
+- untouched.
+
+### skills and validation notes
+
+Local skills inspected and applied manually: `dai-grill-with-vault`, `dai-agent-handoff`, `dai-token-tight`, and `dai-write-skill`. The skill weakness remains the same: this repeated repo-hygiene gate would benefit from a dedicated local DAI repo-hygiene/privacy skill, but no skill files were edited.
+
+Historical handoff entries were not rewritten. Current-slice history had pre-existing exact local path mentions; this slice adds no new exact local path or username in added lines.
+
+Validation:
+
+- `.local/agent-paths.md` is ignored in both `dai` and `dai-vault`.
+- added lines contain no real local username or exact repo path.
+- no .NET, PowerShell, Python, or Angular tests were needed because no runtime or script files changed.
+
+### next slice
+
+Recommended next slice remains Probe Refresh Merge Audit Read Surface v1, internal/dev-only read by idempotency key and tenant/run.
+
+status: Local Path Placeholder Hygiene v1 implemented 2026-06-05. Added gitignored local path-map convention and a committed placeholder-only template. No real local path map committed. jera-workspace-skills untouched.
