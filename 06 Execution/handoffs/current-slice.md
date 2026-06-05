@@ -3492,3 +3492,162 @@ Recommended next slice: Probe Refresh Merge Dry-Run Executor v1, still non-mutat
 Clean before changes and untouched after changes. Skill files were read only; no edits made.
 
 status: Probe Refresh Merge Review/Telemetry v1 implemented 2026-06-04. Added a dormant, deterministic `IProbeRefreshMergeReview`/`ProbeRefreshMergeReview` seam that maps `ProbeRefreshArtifactMergePlan` plus optional correlation context into `ProbeRefreshMergeReviewResult` and `ProbeRefreshMergeTelemetryEvent`. Behavior is review-only, value-object telemetry-only, default-conservative, and non-mutating; it never updates confidence/posture/lean/artifact or emits real telemetry. DI singleton + resolution test. dotnet 406 full, targeted 64. No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
+
+## addendum: Probe Refresh Merge Dry-Run Executor v1 (2026-06-05)
+
+Merge dry-run slice -- the dormant projection seam after `ProbeRefreshMergeReview` and before any future artifact mutation. This slice consumes a reviewed `ProbeRefreshArtifactMergePlan` and projects the allowed proposed changes, audit, and rollback data that a later executor could consider. It does not merge, persist, mutate artifacts, update confidence/posture/lean, call a model, call the Tool Gateway, split analyze, or wire production behavior.
+
+### naming and skills gate
+
+Required baseline before coding:
+
+- `dai`: clean, HEAD `00ccf43 feat(protocol): add probe refresh merge review seam`.
+- `dai-vault`: clean, HEAD `14dc327 docs(protocol): document probe refresh merge review`.
+- `jera-workspace-skills`: clean.
+
+Local skills inspected and applied manually:
+
+- `dai-grill-with-vault`: used to read repo/vault doctrine before naming the dry-run seam.
+- `dai-agent-handoff`: used to shape this addendum and transfer notes.
+- `dai-token-tight`: applied manually for concise reporting.
+- `dai-write-skill`: read as a boundary check; no skill files were edited, and runtime code was allowed only because the slice explicitly requested DAI runtime implementation.
+
+Requested superpowers-style guidance applied manually: planning, naming review, systematic debugging, test-driven development, verification before completion, and writing-plans discipline. The requested "Naming and Skills Gate" was run manually: no exact local `Naming and Skills Gate` skill exists in `jera-workspace-skills`, so the gate was interpreted as local skill inspection, clean-state verification, and explicit naming review before coding.
+
+Skill sharpening recommendation: add a local DAI "probe-refresh merge slice gate" skill in a future approved skills-maintenance session. The repeated workflow now covers merge contract, review/telemetry, and dry-run: verify clean prior slice, choose non-mutating names, add structural no-gateway tests, run safe .NET verification, and update `current-slice.md`.
+
+### naming decisions
+
+- `IProbeRefreshMergeDryRunExecutor` / `ProbeRefreshMergeDryRunExecutor`: service/seam name. Chosen to name dry-run projection, not persistence or execution against storage.
+- `ProbeRefreshMergeDryRunRequest`: input envelope carrying merge plan, merge review, optional source snapshot, tenant/run/correlation metadata.
+- `ProbeRefreshMergeDryRunResult`: returned value object carrying status, `WouldMerge`, projected artifact/proposed changes, audit, rollback, reason, and error message.
+- `ProbeRefreshMergeDryRunStatus`: `Projected`, `ReviewNotPassed`, `NoMergePlan`, `NoReview`, `UnsafePlan`, `InvalidInput`.
+- `ProbeRefreshProjectedArtifact`: projection wrapper. It explicitly sets `IsFullArtifactCopy = false` because the merge plan does not yet carry enough typed artifact data to construct a safe full artifact copy.
+- `ProbeRefreshProjectedChange`: projected allowed before/after field change.
+- `ProbeRefreshSourceArtifactSnapshot`: optional protected-field snapshot used only to prove dry-run does not mutate or rewrite confidence/posture/lean/artifact version.
+
+### files changed
+
+dai:
+
+- `platform/dotnet/DevCore.Api/Protocols/ProbeRefreshMergeDryRunExecutor.cs` -- new dry-run statuses, source snapshot, request, projected artifact/change records, result record, interface, and deterministic executor.
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRefreshMergeDryRunExecutorTests.cs` -- new coverage for missing plan, missing review, review not passed, `MayMerge=false`, unsafe plan, projected result, projected changes, audit, rollback, no source mutation, forbidden confidence/posture/lean proposals, and no Tool Gateway dependency.
+- `platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- registers the dry-run executor as a singleton dormant service.
+- `platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs` -- adds application-service resolution coverage.
+
+dai-vault:
+
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills:
+
+- untouched.
+
+### dry-run behavior
+
+`IProbeRefreshMergeDryRunExecutor` exposes:
+
+- `Execute(ProbeRefreshMergeDryRunRequest? request)`
+
+`ProbeRefreshMergeDryRunResult` carries:
+
+- `Status`
+- `WouldMerge`
+- `TenantKey`
+- `RunId`
+- `CorrelationId`
+- `SourceArtifactVersion`
+- `ProjectedArtifact`
+- `ProjectedChanges`
+- `Audit`
+- `Rollback`
+- `Reason`
+- `ErrorMessage`
+- `IsProjected`
+
+Rules:
+
+- Missing request -> `InvalidInput`.
+- Missing merge plan -> `NoMergePlan`.
+- Missing review -> `NoReview`.
+- Unsafe plan/review -> `UnsafePlan`.
+- Review not passed or `MayMerge=false` -> `ReviewNotPassed`.
+- Non-planned merge plan with passed review -> `InvalidInput`.
+- Valid planned + review-passed + `MayMerge=true` -> `Projected`, `WouldMerge=true`.
+
+### projection behavior
+
+The dry-run executor projects only `ProbeRefreshMergeFieldChange` values whose categories are listed in `plan.AllowedChanges` and whose field path is not protected. The current merge plan does not include enough typed artifact data to build a full copied `AgentRunExecutionResult`, so the slice intentionally returns a `ProbeRefreshProjectedArtifact` with `IsFullArtifactCopy = false` and a projected change list.
+
+Projected changes preserve:
+
+- allowed category
+- field path
+- before value
+- after value
+- reason
+
+Optional `ProbeRefreshSourceArtifactSnapshot` values for artifact version, confidence, posture, and lean are carried forward unchanged on the projected artifact wrapper. They are not overwritten by projected changes.
+
+### audit and rollback behavior
+
+For all plan-present outcomes, the dry-run result carries through the plan's existing:
+
+- `ProbeRefreshArtifactMergeAudit`
+- `ProbeRefreshMergeRollbackPlan`
+
+The dry-run executor does not create or persist a new audit row, and it does not execute rollback. It only surfaces the reviewable audit/rollback representation already present on the merge plan.
+
+### protected fields
+
+The dry-run executor does not project field paths containing:
+
+- `confidence`
+- `posture`
+- `lean`
+- `artifactVersion`
+- `tenantKey` / `tenant`
+- `runId`
+- `rawRetrievedSignals`, `rawSignals`, or `retrievedSignals`
+- audit deletion markers
+
+If a review-passed input is paired with a plan that includes a protected field path, dry-run returns `UnsafePlan`, `WouldMerge=false`, and does not include the protected field in `ProjectedChanges`.
+
+### what is intentionally not wired yet
+
+- No artifact merge and no mutation of `SportsRunArtifact`, `AgentRunExecutionResult`, `CognitiveProtocol`, or `SynthesizeProtocol`.
+- No confidence mutation, posture mutation, lean mutation, or artifact-version mutation.
+- No production pipeline consumer.
+- No Tool Gateway call, model call, external call, structured log emission, metrics emission, persistence call, or database write.
+- No FastAPI prompt, model-call count, database schema, Angular, MCP, pgvector, Azure Functions, Kubernetes, or production secret change.
+
+### tests
+
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshMergeDryRunExecutorTests /m:1 /nr:false` -- pass, 14 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter "FullyQualifiedName~ProbeRefreshMergeDryRunExecutorTests|FullyQualifiedName~ProbeRefreshMergeReviewTests|FullyQualifiedName~ProbeRefreshArtifactMergeContractTests|FullyQualifiedName~ToolGatewayDIRegistrationTests" /m:1 /nr:false` -- pass, 54 passed.
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Targeted` -- pass, 64 passed.
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Full` -- pass, 421 passed.
+- No PowerShell files changed, so PowerShell parser/ascii validation was not required.
+- No Python/FastAPI change -> pytest not run. No Angular change -> Angular build not run.
+
+### risks
+
+Low. The seam is additive, pure, and dormant. Main future risk: a later executor could mistake `WouldMerge=true` for write authorization. This slice names it dry-run only and constructs no full artifact copy. Another risk is protected-field matching by field path; v1 is conservative for the protected names, but a real writer should enforce typed mutation categories and transaction/audit checks.
+
+### next slice
+
+Recommended next slice: Probe Refresh Merge Audit Persistence Contract v1, still non-mutating. Define the durable audit row/envelope, idempotency key, tenant/run ownership checks, and rollback persistence shape before any artifact mutation is implemented.
+
+### claude/codex transfer notes
+
+- This seam projects only. It does not apply a plan or persist dry-run output.
+- Keep `ProbeRefreshProjectedArtifact.IsFullArtifactCopy = false` until the merge plan carries typed artifact data.
+- Keep `WouldMerge=false` unless status is `Projected`.
+- Keep confidence/posture/lean/artifact version as protected carried-forward snapshot values, not projected mutations.
+- If a future writer consumes dry-run output, it must still re-check review status, tenant/run/source-artifact boundaries, protected fields, idempotency, transaction scope, and rollback persistence.
+
+### jera-workspace-skills status
+
+Clean before changes and untouched after changes. Skill files were read only; no edits made.
+
+status: Probe Refresh Merge Dry-Run Executor v1 implemented 2026-06-05. Added a dormant, deterministic `IProbeRefreshMergeDryRunExecutor`/`ProbeRefreshMergeDryRunExecutor` seam that maps a reviewed merge plan into projected allowed changes plus existing audit/rollback representation. Behavior is dry-run-only, projection-only, default-blocking, and non-mutating; it never updates confidence/posture/lean/artifact or persists dry-run output. DI singleton + resolution test. dotnet 421 full, targeted 64. No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
