@@ -3345,3 +3345,150 @@ Recommended next slice: Probe Refresh Merge Review/Telemetry v1, still non-mutat
 Clean before changes and untouched after changes. Skill files were read only; no edits made.
 
 status: Probe Refresh Artifact Merge Contract v1 implemented 2026-06-04. Added a dormant, deterministic `IProbeRefreshArtifactMergePlanner`/`ProbeRefreshArtifactMergePlanner` seam that maps `ProbeRefreshSynthesizePreviewResult` plus explicit context/options into `ProbeRefreshArtifactMergePlan`. Behavior is feature-flagged, audit-bearing, rollback-represented, default-disabled, and non-mutating; it never updates confidence/posture/lean/artifact or `SynthesizeProtocol`. DI singleton + resolution test. dotnet 394 full, targeted 64. No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
+
+## addendum: Probe Refresh Merge Review/Telemetry v1 (2026-06-04)
+
+Merge review/telemetry slice -- the dormant review seam after `ProbeRefreshArtifactMergePlan` and before any future artifact mutation. This slice reviews a merge plan, returns a structured telemetry event shape, and decides whether a later executor could consider automatic merge. It does not merge, persist, mutate artifacts, update confidence/posture/lean, call a model, call the Tool Gateway, split analyze, or wire production behavior.
+
+### naming and skills gate
+
+Required baseline before coding:
+
+- `dai`: clean, HEAD `534b48b feat(protocol): define probe refresh artifact merge contract`.
+- `dai-vault`: clean, HEAD `81b5338 docs(protocol): document probe refresh artifact merge contract`.
+- `jera-workspace-skills`: clean.
+
+Local skills inspected and applied manually:
+
+- `dai-grill-with-vault`: used to read repo/vault doctrine before naming the review seam.
+- `dai-agent-handoff`: used to shape this addendum and transfer notes.
+- `dai-token-tight`: applied manually for concise reporting.
+- `dai-write-skill`: read as a boundary check; no skill files were edited, and runtime code was allowed only because the slice explicitly requested DAI runtime implementation.
+
+Requested superpowers-style guidance applied manually: planning, naming review, systematic debugging, test-driven development, verification before completion, and writing-plans discipline. The requested "Naming and Skills Gate" was run manually: no exact local `Naming and Skills Gate` skill exists in `jera-workspace-skills`, so the gate was interpreted as local skill inspection, clean-state verification, and explicit naming review before coding.
+
+### naming decisions
+
+- `IProbeRefreshMergeReview` / `ProbeRefreshMergeReview`: service/seam name. Chosen to name review, not execution.
+- `ProbeRefreshMergeReviewResult`: returned value object carrying review status, manual-review flag, merge permission, block reasons, and telemetry event.
+- `ProbeRefreshMergeReviewStatus`: `ReviewPassed`, `ReviewBlocked`, `ManualReviewRequired`, `NoMergePlan`, `Disabled`, `UnsafePlan`, `InvalidInput`.
+- `ProbeRefreshMergeReviewReason`: structured block/manual-review reasons.
+- `ProbeRefreshMergeTelemetryEvent`: returned telemetry shape. Chosen over structured logging because this slice should not add a metrics/logging dependency or production behavior.
+- `ProbeRefreshMergeReviewContext`: correlation metadata input only.
+
+### files changed
+
+dai:
+
+- `platform/dotnet/DevCore.Api/Protocols/ProbeRefreshMergeReview.cs` -- new review statuses, reasons, context, telemetry event, result record, interface, and deterministic reviewer.
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRefreshMergeReviewTests.cs` -- new coverage for missing plan, disabled plan, manual review, passed review, telemetry fields, forbidden confidence/posture/lean proposals, unsafe plan, no mutation, and no Tool Gateway dependency.
+- `platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- registers the review seam as a singleton dormant service.
+- `platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs` -- adds application-service resolution coverage.
+
+dai-vault:
+
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills:
+
+- untouched.
+
+### review behavior
+
+`IProbeRefreshMergeReview` exposes:
+
+- `Review(ProbeRefreshArtifactMergePlan? plan, ProbeRefreshMergeReviewContext? context = null)`
+
+`ProbeRefreshMergeReviewResult` carries:
+
+- `Status`
+- `MayMerge`
+- `RequiresManualReview`
+- `TenantKey`
+- `RunId`
+- `CorrelationId`
+- `SourceArtifactVersion`
+- `RequestedSignalKey`
+- `MergePlanStatus`
+- `MergeAuthority`
+- `BlockedReasons`
+- `TelemetryEvent`
+- `Reason`
+- `ErrorMessage`
+- `IsReviewPassed`
+
+Default behavior is conservative: `MayMerge = false` unless the plan is `Planned`, has valid tenant/run/source-artifact/audit boundaries, proposes no forbidden field, and uses `PlatformOnly` or `TenantFlagRequired` authority. `ManualReviewRequired` authority is represented as `Status = ManualReviewRequired`, `RequiresManualReview = true`, and `MayMerge = false`.
+
+### telemetry shape
+
+`ProbeRefreshMergeTelemetryEvent` is returned on every review result. Event name:
+
+- `ProbeRefreshMergeReview`
+
+Fields:
+
+- `RunId`
+- `TenantKey`
+- `CorrelationId`
+- `RequestedSignalKey`
+- `MergePlanStatus`
+- `ReviewStatus`
+- `MayMerge`
+- `RequiresManualReview`
+- `AllowedChangeCount`
+- `ForbiddenChangeCount`
+- `ProposedChangeCount`
+
+No structured logging or metrics system was added. The event is a value object only.
+
+### blocking rules
+
+- Missing merge plan -> `NoMergePlan`, `MayMerge = false`.
+- Disabled merge plan -> `Disabled`, `MayMerge = false`.
+- Unsafe merge plan -> `UnsafePlan`, `MayMerge = false`.
+- Invalid-input merge plan -> `InvalidInput`, `MayMerge = false`.
+- Non-planned merge plan -> `ReviewBlocked`, `MayMerge = false`.
+- Missing or mismatched tenant/run/source-artifact/audit boundary data -> `InvalidInput`, `MayMerge = false`.
+- `ManualReviewRequired` authority -> `ManualReviewRequired`, `RequiresManualReview = true`, `MayMerge = false`.
+- `PlatformOnly` or `TenantFlagRequired` may pass only when the plan is otherwise safe.
+- Proposed `confidence`, `posture`, or `lean` field mutation always blocks automatic review.
+- Proposed artifact-version, tenant, run-id, raw retrieved signals, or audit-deletion field mutation also blocks automatic review.
+
+### what is intentionally not wired yet
+
+- No artifact merge and no mutation of `SportsRunArtifact`, `AgentRunExecutionResult`, `CognitiveProtocol`, or `SynthesizeProtocol`.
+- No confidence mutation, posture mutation, lean mutation, or artifact-version mutation.
+- No production pipeline consumer.
+- No Tool Gateway call, model call, external call, structured log emission, metrics emission, or persistence call.
+- No FastAPI prompt, model-call count, database schema, Angular, MCP, pgvector, Azure Functions, Kubernetes, or production secret change.
+
+### tests
+
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~ProbeRefreshMergeReviewTests /m:1 /nr:false` -- pass, 11 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter "FullyQualifiedName~ProbeRefreshMergeReviewTests|FullyQualifiedName~ProbeRefreshArtifactMergeContractTests|FullyQualifiedName~ProbeRefreshSynthesizePreviewTests|FullyQualifiedName~ToolGatewayDIRegistrationTests" /m:1 /nr:false` -- pass, 51 passed.
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Targeted` -- pass, 64 passed.
+- `scripts/dev/dotnet/test-devcore-api-safe.ps1 -Full` -- pass, 406 passed.
+- No PowerShell files changed, so PowerShell parser/ascii validation was not required.
+- No Python/FastAPI change -> pytest not run. No Angular change -> Angular build not run.
+
+### risks
+
+Low. The seam is additive, pure, and dormant. Main future risk: a later executor could treat `ReviewPassed` as direct permission to mutate without its own transaction/audit checks. This slice keeps `ReviewPassed` as "could consider" only and writes nothing. Another risk is field-path matching for forbidden proposals; it is conservative for the protected fields named by the contract, but a real executor should enforce typed mutation categories instead of relying only on strings.
+
+### next slice
+
+Recommended next slice: Probe Refresh Merge Dry-Run Executor v1, still non-mutating. Consume a merge plan plus review result and produce a would-apply diff that proves the exact artifact paths and rollback data before any persistence or artifact update is allowed.
+
+### claude/codex transfer notes
+
+- This seam reviews only; it does not apply a plan or emit real telemetry.
+- Keep `MayMerge = false` unless status is `ReviewPassed`.
+- Keep `ManualReviewRequired` separate from `ReviewPassed`; manual review is not automatic merge permission.
+- Do not add Tool Gateway/model/logging/persistence dependencies to merge review; structural tests guard gateway absence.
+- If a future dry-run or executor slice consumes this result, it must still re-check tenant/run/source-artifact boundaries and protected fields.
+
+### jera-workspace-skills status
+
+Clean before changes and untouched after changes. Skill files were read only; no edits made.
+
+status: Probe Refresh Merge Review/Telemetry v1 implemented 2026-06-04. Added a dormant, deterministic `IProbeRefreshMergeReview`/`ProbeRefreshMergeReview` seam that maps `ProbeRefreshArtifactMergePlan` plus optional correlation context into `ProbeRefreshMergeReviewResult` and `ProbeRefreshMergeTelemetryEvent`. Behavior is review-only, value-object telemetry-only, default-conservative, and non-mutating; it never updates confidence/posture/lean/artifact or emits real telemetry. DI singleton + resolution test. dotnet 406 full, targeted 64. No analyzer split, no prompt/confidence/posture/artifact/gateway-behavior/schema/Angular/MCP change. jera-workspace-skills untouched.
