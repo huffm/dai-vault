@@ -4124,3 +4124,55 @@ A future merge persistence/writer slice (still dormant, flagged) that consumes a
 Untouched (read-only this slice). Sharpening idea logged; not applied without approval.
 
 status: Probe Refresh Merge Audit Read Surface v1 implemented 2026-06-05. Added IProbeRefreshMergeAuditReadService/ProbeRefreshMergeAuditReadService + ProbeRefreshMergeAuditReadResult/ProbeRefreshMergeAuditRunHistory/ProbeRefreshMergeAuditReadStatus in DevCore.Api.Protocols; tenant-safe read by idempotency key (post-fetch tenant guard, cross-tenant -> NotFound, no TenantMismatch) and by tenant+run (ordered CreatedAtUtc asc), reusing the store's queries. Read-only, no schema change, DI scoped, dormant, no HTTP endpoint. dotnet 472 (targeted 64). No merge/artifact/AgentRun write, no confidence/posture/lean mutation, no gateway/model call, no analyze split. jera-workspace-skills untouched.
+
+## addendum: Deferred Runtime Decisions Ledger v1 (2026-06-05)
+
+Docs-only slice. No runtime code, no tests, no schema/Angular/gateway change. Created a durable index of consciously deferred runtime decisions so deferral stays a choice, not drift.
+
+### skills/guidance used
+
+- superpowers: planning / writing-plans (entry schema designed before writing), verification-before-completion (git + path checks).
+- Local jera-workspace-skills/dai (read-only, guidance applied manually): dai-grill-with-vault (located the right home + cross-refs), dai-token-tight (operational entries, not philosophical), dai-agent-handoff (this addendum). Pack not edited.
+
+### files changed
+
+dai-vault:
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` -- NEW. The ledger: one row per deferred decision with Decision / Current choice / Why deferred / Revisit trigger / Proposed future slice / Risk if forgotten / Status, plus how-to-use and maintenance notes.
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+dai: untouched. jera-workspace-skills: untouched.
+
+### deferred decisions captured (12)
+
+1. Interrogate requests; orchestrator (not Interrogate) triggers any Perceive refresh.
+2. ProbeRefreshExecutor activation (default-disabled flag).
+3. Probe-refresh artifact mutation / merge writer.
+4. Confidence / posture / lean mutation (forbidden; protected-field guard).
+5. Decide recommendation vs actual Decide mutation.
+6. Synthesize preview vs user-facing final artifact.
+7. Audit persistence vs artifact persistence.
+8. Dev-only audit read endpoint (declined this slice).
+9. pgvector / memory-backed probe.
+10. Kubernetes / AKS / Azure Functions deployment.
+11. Tenant / Stripe / economic boundary integration.
+12. Calibration proof before posture-threshold changes.
+
+### verification
+
+- git status --short for dai-vault shows only the new ledger and this handoff.
+- No exact local paths added (placeholders used in any path reference).
+- Docs only; no .NET tests required or run.
+
+### risks
+
+Low. Documentation only. Main risk is staleness: the ledger must be updated when a slice resolves an entry or a handoff creates a new deferral. Maintenance note in the ledger records this.
+
+### next slice
+
+The deferred chain is fully indexed. The next runtime slice is the merge writer track (entry 3): a dormant, flagged Probe Refresh Merge Writer v1 that consumes a ReadyForPersistCandidate audit record and projects an artifact write behind a feature flag with rollback from the before-payload reference. Keep confidence/posture/lean and artifact persistence untouched until that slice explicitly scopes them.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Deferred Runtime Decisions Ledger v1 implemented 2026-06-05. Added deferred-runtime-decisions-ledger-v1.md in 02 Platform/architecture/cognitive-factory capturing 12 deferred runtime decisions (Decision/Current choice/Why deferred/Revisit trigger/Proposed future slice/Risk if forgotten/Status). Docs only; no runtime code, no tests, no schema/gateway/Angular change. Placeholders only, no exact local paths. jera-workspace-skills untouched.
