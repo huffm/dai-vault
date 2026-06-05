@@ -121,6 +121,15 @@
 - **Risk if forgotten:** a threshold is changed on intuition or on a refresh signal, undermining calibration credibility.
 - **Status:** Deferred -- standing decision recorded in handoffs; gates flag only.
 
+### 13. Probe-refresh chain assembly activation
+- **Decision:** whether the assembled probe-refresh chain runs in production.
+- **Current choice:** the chain is assembled into one orchestration object (`ProbeRefreshChainAssembly`) but is disabled by default (options `Enabled = false`), makes no gateway call unless `AllowGatewayExecution = true` and the executor is enabled, persists only the audit ledger row when `PersistAuditRecord = true`, mutates no artifact, and is wired into no pipeline and no endpoint.
+- **Why deferred:** activation depends on the still-open upstream deferrals -- executor activation (entry 2), the merge writer (entry 3), and the orchestrator trigger (entry 1) -- and on a product decision to run it.
+- **Revisit trigger:** entries 1-3 resolve and there is a real need to run the chain within or after a run.
+- **Proposed future slice:** Probe Refresh Chain Activation v1 (orchestrator-driven, flagged, after the merge writer).
+- **Risk if forgotten:** the dormant assembly is mistaken for live behavior, or is enabled before the writer/observability/trigger story exists.
+- **Status:** Deferred -- assembly shipped, dormant. Entries 1-4 and 9-12 remain unresolved by this slice.
+
 ## Maintenance
 
 - When a slice resolves an entry, set Status to `Resolved (<slice name>, <date>)` and keep the row.

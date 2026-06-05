@@ -4176,3 +4176,96 @@ The deferred chain is fully indexed. The next runtime slice is the merge writer 
 Untouched (read-only this slice).
 
 status: Deferred Runtime Decisions Ledger v1 implemented 2026-06-05. Added deferred-runtime-decisions-ledger-v1.md in 02 Platform/architecture/cognitive-factory capturing 12 deferred runtime decisions (Decision/Current choice/Why deferred/Revisit trigger/Proposed future slice/Risk if forgotten/Status). Docs only; no runtime code, no tests, no schema/gateway/Angular change. Placeholders only, no exact local paths. jera-workspace-skills untouched.
+
+## addendum: Probe Refresh Chain Assembly v1 (2026-06-05)
+
+Assembly slice. Composes the dormant probe-refresh seams into one end-to-end orchestration object (ProbeRefreshChainAssembly). Proves the factory line can be assembled without mutating the artifact or wiring into production. Disabled by default, deterministic, no gateway call by default, no artifact mutation, no confidence/posture/lean change, no endpoint, no analyze split.
+
+### pre-coding repo-state check
+
+Verified clean and in sync before changes: <DAI_REPO_ROOT>, <DAI_VAULT_ROOT>, <JERA_SKILLS_ROOT>. Deferred Runtime Decisions Ledger v1 committed (dai-vault b7a181f). Probe Refresh Merge Audit Read Surface v1 committed (dai 3e86daf). All prior seams present and read before composing.
+
+### skills/guidance used
+
+- superpowers: planning / writing-plans (sequenced the 13-step orchestration + failure-status mapping against the real seam contracts), test-driven-development (fake executor + real in-memory store), systematic-debugging on standby (dev-host lock check; none running), verification-before-completion (fresh runs below).
+- Local jera-workspace-skills/dai (read-only): dai-grill-with-vault (read every seam contract before composing -- surfaced that NotAuthorized is unreachable through the real seams), dai-token-tight, dai-agent-handoff. Pack not edited.
+- Skill sharpening note: dai-grill-with-vault earned its keep again. No weakness found.
+
+### naming decisions
+
+- IProbeRefreshChainAssembly / ProbeRefreshChainAssembly; ProbeRefreshChainAssemblyRequest; ProbeRefreshChainAssemblyResult; ProbeRefreshChainAssemblyStatus; ProbeRefreshChainAssemblyOptions; ProbeRefreshChainStepResult (compact per-step trace); ProbeRefreshChainArtifactContext (matchup + source-artifact inputs).
+- Added a safe-default MergeAuthority option (default ManualReviewRequired). Mutation flags (AllowArtifactMutation / AllowConfidenceMutation / AllowPostureMutation / AllowLeanMutation) are carried, default false, and are INERT in v1 (no writer reads them).
+- Seams are optionally injectable (default to their static Default); DI passes only the required executor + store, while tests inject a fake seam to drive a specific branch.
+
+### files changed
+
+dai:
+- platform/dotnet/DevCore.Api/Protocols/ProbeRefreshChainAssembly.cs -- NEW. Status enum, options/request/result/step/artifact-context records, interface + service composing decision -> authorization -> executor -> intake -> discern -> decide -> synthesize -> merge plan -> review -> dry-run -> audit -> (optional) store.
+- platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs -- register IProbeRefreshChainAssembly scoped.
+- platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRefreshChainAssemblyTests.cs -- NEW. 13 tests (fake executor, in-memory store).
+- platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs -- +1 resolution test.
+
+No EF schema/migration change; no PowerShell change. No existing seam behavior changed.
+
+dai-vault:
+- 02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md -- added entry 13 (chain assembly activation deferral); entries 1-4 and 9-12 left unresolved.
+- 06 Execution/handoffs/current-slice.md -- this addendum.
+
+jera-workspace-skills: untouched.
+
+### chain assembly contract summary
+
+AssembleAsync(ProbeRefreshChainAssemblyRequest) -> ProbeRefreshChainAssemblyResult. Request carries ProbeRequest, CompetitionCode, ExistingRead, ArtifactContext (home/away/date + source artifact version/snapshot/id + existing field values), tenant/run/correlation/createdBy/createdAt, and Options. Result carries every seam output (decision, authorization result + authorized candidate, execution, intake, discern, decide, synthesize, merge plan, review, dry-run, audit record, store result), a per-step trace, status, reason, and tenant/run/correlation metadata.
+
+### options/default behavior
+
+Enabled=false, AllowGatewayExecution=false, PersistAuditRecord=false, MergeAuthority=ManualReviewRequired, all mutation flags false. Disabled by default; with default options the chain returns Disabled and calls no downstream seam.
+
+### assembly behavior summary
+
+Disabled when not enabled. NoProbeRequested when probe is null/NoProbeNeeded. NoRefreshWarranted when the decision warrants no refresh. NotAuthorized when no candidate authorizes at platform.retrieve (defensive; see below). ExecutionSkipped when AllowGatewayExecution=false (or the executor is disabled) -- the default enabled path stops here. With AllowGatewayExecution=true and a successful execution, the chain runs intake -> discern -> decide -> synthesize -> merge plan -> review -> dry-run -> audit, and persists the audit row only when PersistAuditRecord=true. Each failure stops with a specific status and a partial result; the step trace records how far it reached. The executor is always called at platform.retrieve, never at a cognitive station.
+
+### how far the chain assembles
+
+End to end through the audit record (status Assembled). With the default MergeAuthority=ManualReviewRequired: review=ManualReviewRequired, dry-run=ReviewNotPassed, audit=ReadyForManualReview -- the full line assembles conservatively with nothing auto-merging. With MergeAuthority=PlatformOnly: review passes, dry-run=Projected, audit=ReadyForPersistCandidate. NotAuthorized is a defensive branch: with the real decision+authorization a RefreshWarranted decision always authorizes at platform.retrieve, so it is unreachable through the real seams (tested via an injected fake authorization service).
+
+### audit store behavior
+
+PersistAuditRecord=false builds the audit record but writes nothing (asserted: zero rows). PersistAuditRecord=true uses the existing ProbeRefreshMergeAuditStore idempotency: first assembly Inserted, repeat assembly Existing, one row total. No DB migration; reuses the existing ProbeRefreshMergeAudits table.
+
+### protected fields
+
+Confidence, posture, lean, artifact version, tenant key, run id, raw retrieved signals, and historical audit deletion are forbidden mutations. The assembly only ever proposes preview metadata (RefreshMetadata / SynthesizePreview / QualityWarning / DecideRecommendation field paths), so no protected field is proposed or projected; the merge planner's forbidden-change list, the review forbidden-field guard, and the dry-run forbidden-field filter all remain in force. Tests assert no proposed/projected change touches a confidence/posture/lean path and that the supplied source-artifact snapshot is unchanged.
+
+### what is intentionally not wired yet
+
+- Disabled by default; no production pipeline consumer (DI-registered scoped + a resolution test only).
+- No HTTP endpoint, no Angular, no artifact mutation, no merge writer, no confidence/posture/lean change, no analyze split.
+- Gateway execution requires both the assembly option and an enabled executor; both default off. Mutation flags are inert.
+
+### tests
+
+- safe .NET targeted: 64 passed, 0 failed.
+- safe .NET full: 486 passed, 0 failed (was 472; +13 assembly tests, +1 DI-resolution test). Cover: disabled returns Disabled and calls nothing; NoProbeNeeded -> NoProbeRequested; no refresh warranted -> NoRefreshWarranted; injected no-auth -> NotAuthorized; default enabled run does not call the executor and records ExecutionSkipped; fake execution assembles through the audit record; plan/review/dry-run/audit produced; PlatformOnly authority passes review and projects the dry-run; persist=false writes nothing; persist=true writes once and is idempotent; tenant/run/correlation metadata carried; snapshot and protected fields never mutated; no http endpoint and no IToolGateway dependency. Existing audit read/store/dry-run/review/merge contract tests stay green.
+- Full runner returned a normal pass (no "Build FAILED with 0 Error(s)" hang). No DevCore.Api.exe host running. No Python/Angular change.
+
+### risks
+
+Low-to-moderate. The assembly can call the gateway via the executor, but only when both the assembly option and the executor are enabled, both default off. It mutates nothing and persists only the audit row (idempotent) when asked. It reuses existing seams unchanged. The largest surface is the result object; that is read-only data. Reversible (delete the assembly + registration + tests). NotAuthorized is unreachable through real seams today -- kept as a defensive branch for future tools that do not list platform.retrieve.
+
+### next slice
+
+Probe Refresh Merge Writer v1 (ledger entry 3): a dormant, flagged writer that consumes a ReadyForPersistCandidate audit record and projects an actual artifact write behind a feature flag with rollback from the before-payload reference. Only after that should chain activation (ledger entry 13) be considered. Keep confidence/posture/lean and artifact persistence untouched until those slices scope them; do not split the analyze call.
+
+### Claude/Codex transfer notes
+
+- The assembly is dormant (disabled by default) and reuses the existing seams via their static Defaults (deterministic seams) plus the injected scoped executor + store. Do not enable it in production without the merge writer + activation slices.
+- It authorizes and executes only at platform.retrieve, never at a cognitive station -- the standing boundary holds.
+- Merge PLANNING is enabled inside the assembly to produce a dormant plan; this is not artifact mutation. The mutation flags are inert; do not use them to mutate anything until a writer exists.
+- NotAuthorized is defensive; today every RefreshWarranted decision authorizes at platform.retrieve.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Probe Refresh Chain Assembly v1 implemented 2026-06-05. Added IProbeRefreshChainAssembly/ProbeRefreshChainAssembly + request/result/options/status/step/artifact-context records in DevCore.Api.Protocols; composes decision -> authorization -> executor -> intake -> discern -> decide -> synthesize -> merge plan -> review -> dry-run -> audit -> optional store into one dormant orchestration result. Disabled by default; gateway execution and audit persistence both opt-in; no artifact mutation, no confidence/posture/lean change, no endpoint, no schema change. dotnet 486 (targeted 64). Ledger entry 13 added; entries 1-4 and 9-12 unresolved. jera-workspace-skills untouched.
