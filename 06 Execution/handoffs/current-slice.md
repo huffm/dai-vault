@@ -4269,3 +4269,94 @@ Probe Refresh Merge Writer v1 (ledger entry 3): a dormant, flagged writer that c
 Untouched (read-only this slice).
 
 status: Probe Refresh Chain Assembly v1 implemented 2026-06-05. Added IProbeRefreshChainAssembly/ProbeRefreshChainAssembly + request/result/options/status/step/artifact-context records in DevCore.Api.Protocols; composes decision -> authorization -> executor -> intake -> discern -> decide -> synthesize -> merge plan -> review -> dry-run -> audit -> optional store into one dormant orchestration result. Disabled by default; gateway execution and audit persistence both opt-in; no artifact mutation, no confidence/posture/lean change, no endpoint, no schema change. dotnet 486 (targeted 64). Ledger entry 13 added; entries 1-4 and 9-12 unresolved. jera-workspace-skills untouched.
+
+## addendum: Probe Refresh Chain Diagnostics v1 (2026-06-05)
+
+Diagnostics-only slice. Adds a dormant service-level inspection surface for probe-refresh chain options and already-created assembly results. It does not run the chain, call the Tool Gateway, write the audit store, mutate artifacts, merge anything, change confidence/posture/lean, expose an endpoint, or wire into a production pipeline.
+
+### pre-coding repo-state check
+
+Verified before changes: <DAI_REPO_ROOT>, <DAI_VAULT_ROOT>, and <JERA_SKILLS_ROOT> were clean and in sync with origin. Probe Refresh Chain Assembly v1 was committed at dai 0304372 and dai-vault 9961a75.
+
+### skills/guidance used
+
+- superpowers: planning / writing-plans (naming and report shape before coding), test-driven-development (diagnostic behavior tests first against the new service surface), systematic-debugging (used after a direct filtered test returned no useful output), verification-before-completion (safe targeted/full runners + git/path checks).
+- Local <JERA_SKILLS_ROOT> guidance applied manually: dai-grill-with-vault, dai-agent-handoff, dai-token-tight, dai-write-skill. Pack not edited.
+- Skill sharpening note: the repo-hygiene/privacy pattern is now covered by the local placeholder convention; no skill change made.
+
+### naming decisions
+
+- Chosen: `IProbeRefreshChainDiagnostics`, `ProbeRefreshChainDiagnostics`, `ProbeRefreshChainDiagnosticReport`, `ProbeRefreshChainDiagnosticStatus`, `ProbeRefreshChainSafetySummary`, `ProbeRefreshChainStepDiagnostic`.
+- Statuses: `SafeByDefault`, `EnabledButNonMutating`, `GatewayExecutionAllowed`, `AuditPersistenceAllowed`, `UnsafeMutationAllowed`, `ResultInspected`, `InvalidInput`.
+- Avoided activation/executor/writer names because this slice only inspects options/results.
+
+### files changed
+
+dai:
+- `platform/dotnet/DevCore.Api/Protocols/ProbeRefreshChainDiagnostics.cs` -- NEW. Read-only diagnostics contract, report records, safety summary, step diagnostics, and implementation.
+- `platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- registers `IProbeRefreshChainDiagnostics` as singleton.
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRefreshChainDiagnosticsTests.cs` -- NEW. 13 focused diagnostics tests.
+- `platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs` -- +1 DI resolution test.
+
+dai-vault:
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` -- entry 13 status updated to note diagnostics shipped, activation still deferred.
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills: untouched.
+
+### diagnostics contract summary
+
+- `DescribeOptions(ProbeRefreshChainAssemblyOptions?)` classifies safety posture from options only.
+- `DescribeResult(ProbeRefreshChainAssemblyResult?)` summarizes an existing result only: final status, step counts, completed/skipped/failed steps, and whether gateway execution or audit-store action is present in the inspected result.
+- `DescribeSafetyDefaults()` reports the default disabled, non-mutating posture.
+
+### safety/default behavior
+
+Default options report `SafeByDefault`: disabled, no gateway call, no audit persistence, no artifact mutation, no confidence/posture/lean mutation. `Enabled=true` with all execution/persistence/mutation flags off reports `EnabledButNonMutating`. `AllowGatewayExecution=true` and `PersistAuditRecord=true` are surfaced explicitly. Any mutation flag produces `UnsafeMutationAllowed` plus warnings.
+
+### protected fields surfaced
+
+Diagnostics always returns the protected field boundary: confidence, posture, lean, artifact-version, tenant, run-id, raw-retrieved-signals-overwrite, historical-audit-deletion.
+
+### endpoint decision
+
+No endpoint added. Service-level only. A diagnostics endpoint would be a separate gated slice; none was needed to satisfy this inspection surface.
+
+### what is intentionally not wired yet
+
+- No production pipeline consumer.
+- No chain execution from diagnostics.
+- No Tool Gateway call, no model/external call, no DB write, no audit-store write.
+- No artifact writer, merge executor, confidence/posture/lean mutation, Angular work, FastAPI prompt change, analyze split, schema migration, MCP, pgvector, Azure Functions, Kubernetes, or secrets change.
+
+### tests
+
+- A direct filtered `dotnet test ... --filter ProbeRefreshChainDiagnosticsTests` returned exit code 1 with no useful output after a long wait, so verification switched to the repo safe runner.
+- safe .NET targeted: 64 passed, 0 failed.
+- safe .NET full: 500 passed, 0 failed. Covers new diagnostics tests plus existing chain assembly and audit read/store tests.
+- No EF/database files changed. No PowerShell files changed, so no PowerShell parser validation required.
+
+### deferred ledger updates
+
+Updated ledger entry 13 status from assembly-only dormant to assembly + diagnostics shipped, dormant. No new deferral row added. Activation remains deferred behind the orchestrator trigger, executor activation, merge writer, and readiness decision.
+
+### risks
+
+Low. Additive pure service + singleton DI registration + tests. The report exposes whether options/results imply gateway or audit-store activity, but it does not cause either. Main residual risk is semantic drift if future activation adds fields not reflected in diagnostics; update diagnostics in the activation/readiness slice.
+
+### next slice
+
+Probe Refresh Chain Activation Readiness Review v1: use diagnostics to inventory remaining blockers and decide the exact activation preconditions before any writer or production wiring is attempted.
+
+### Claude/Codex transfer notes
+
+- Diagnostics inspect only supplied options/results. Do not call `IProbeRefreshChainAssembly` from diagnostics.
+- Keep the protected-field list aligned with merge review/dry-run guards if those guards change.
+- If a future endpoint is requested, keep it dev/admin gated and tenant-safe; do not make it public.
+- Use placeholders in reports/docs and keep <JERA_SKILLS_ROOT> read-only unless explicitly approved.
+
+### jera-workspace-skills status
+
+Untouched.
+
+status: Probe Refresh Chain Diagnostics v1 implemented 2026-06-05. Added IProbeRefreshChainDiagnostics/ProbeRefreshChainDiagnostics + diagnostic report/safety/step records in DevCore.Api.Protocols; singleton DI registration; 13 diagnostics tests plus DI resolution. Diagnostics only: no endpoint, no pipeline wiring, no gateway/model call, no DB write, no artifact merge/mutation, no confidence/posture/lean change, no schema change. dotnet 500 (targeted 64). Ledger entry 13 updated; activation remains deferred. jera-workspace-skills untouched.

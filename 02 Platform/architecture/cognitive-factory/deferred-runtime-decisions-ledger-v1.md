@@ -128,7 +128,7 @@
 - **Revisit trigger:** entries 1-3 resolve and there is a real need to run the chain within or after a run.
 - **Proposed future slice:** Probe Refresh Chain Activation v1 (orchestrator-driven, flagged, after the merge writer).
 - **Risk if forgotten:** the dormant assembly is mistaken for live behavior, or is enabled before the writer/observability/trigger story exists.
-- **Status:** Deferred -- assembly shipped, dormant. Entries 1-4 and 9-12 remain unresolved by this slice.
+- **Status:** Deferred -- assembly and diagnostics shipped, dormant. Diagnostics inspect options/results only; activation still waits on entries 1-3 and the readiness decision.
 
 ## Maintenance
 
