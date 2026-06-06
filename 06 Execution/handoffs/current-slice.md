@@ -4632,3 +4632,93 @@ Protocol Diagnostics Rollup v1 (the backup from the balance review): a read-only
 Untouched (read-only this slice).
 
 status: Generic Station Result Envelope v1 implemented 2026-06-06. Added generic `ProtocolResultEnvelope<TStatus>` + `ProtocolResultDisposition` and `ProtocolStepTrace` + `ProtocolStepOutcome` in DevCore.Api.Protocols, plus `ProbeRefreshChainTraceMapping`. Re-expressed only the chain step trace: diagnostics classify through the generic trace (output unchanged) and `ProbeRefreshChainAssemblyResult` exposes a computed `StepTraces` projection. Zero behavior change; the 15 seam result records were not retrofitted. dotnet 513 (targeted 64), +13 new tests. No model/prompt/gateway/confidence/posture/artifact/endpoint/schema/migration/Angular/MCP change. Ledger entry 14 progressed (generic shape landed; broader genericization still deferred pending a second consumer). jera-workspace-skills untouched.
+
+## addendum: Protocol Diagnostics Rollup v1 (2026-06-06)
+
+Read-only inspection slice. Adds a protocol diagnostics rollup that summarizes the protocol runtime's health and maturity WITHOUT executing anything, composing the existing inspection surfaces rather than duplicating their rules. No execution, no Tool Gateway call, no model call, no DB write, no artifact/confidence/posture/lean mutation, no production pipeline wiring, no endpoint, no activation, no merge writer. Behavior-preserving: no existing diagnostics behavior changed.
+
+### pre-change repo-state check
+
+Verified clean before changes: <DAI_REPO_ROOT> (main), <DAI_VAULT_ROOT> (main), <JERA_SKILLS_ROOT> (main). Generic Station Result Envelope v1 confirmed committed (dai 4275083, dai-vault 5316895).
+
+### skills/guidance used
+
+- superpowers: test-driven-development (13 tests against the brief's enumerated cases written with the contract, then run via the safe runner), writing-plans / planning (mapped the rollup onto existing surfaces before coding so it composes, not duplicates), verification-before-completion (all results below are fresh safe-runner runs). systematic-debugging not needed -- no failure surfaced. frontend-design not applicable (no endpoint, no UI).
+- Local <JERA_SKILLS_ROOT>/dai (read-only, pack not edited): dai-grill-with-vault (inspected ProtocolStationDiagnostics, ProtocolRegistryValidator, ProtocolNodeRunner, ProbeRefreshChainDiagnostics before designing, per "inspect existing diagnostics before adding anything" + "prefer composing existing diagnostics over duplicating rules"), dai-token-tight, dai-agent-handoff (this addendum). dai-write-skill not used.
+- Available but not applicable: dai-signal-follow-up-diagnostics (run signal coverage, not runtime rollup).
+- Skill sharpening note: no weakness found. dai-grill-with-vault's read-first discipline is exactly why the card<->tool finding rule is composed from the existing ProtocolRegistryValidator (single-card validation) instead of being re-implemented in the rollup -- the rule cannot drift.
+
+### naming review result
+
+- `ProtocolDiagnosticsRollup` + `IProtocolDiagnosticsRollup` chosen over `ProtocolStationDiagnosticRollup`: the rollup spans runtime + stations + chain result, not stations alone.
+- Methods: `DescribeRuntime()`, `DescribeStation(string stationId)`, `DescribeChainResult(ProbeRefreshChainAssemblyResult?)`.
+- `ProtocolDiagnosticsRollupReport` (runtime), `ProtocolStationRollup` (per-station), `ProtocolChainResultRollup` (optional chain-result), `ProtocolRuntimeDiagnosticFinding`.
+- `ProtocolDiagnosticsRollupStatus` { Healthy, Warnings, Blocked, InvalidInput }; `ProtocolDiagnosticSeverity` { Info, Warning, Error }.
+- Used `MicroAction` (the existing card field name) rather than the brief's candidate `MicroProtocol`, to stay consistent with `ProtocolStationCard` / `ProtocolStationDiagnostic`.
+- Rejected a `ProtocolDiagnosticsRollupSummary` separate type: the report record already is the summary.
+
+### files changed
+
+dai:
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolDiagnosticsRollup.cs` -- NEW. The rollup service + interface + report/station/chain-result records + finding record + status/severity enums + a static `Default` wired to the canonical manifests.
+- `platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- MOD. Register `IProtocolDiagnosticsRollup` singleton wired to the existing singletons (no Program.cs change).
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProtocolDiagnosticsRollupTests.cs` -- NEW. 12 tests.
+- `platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs` -- MOD. +1 test resolving `IProtocolDiagnosticsRollup` through the real Program.cs graph.
+
+dai-vault:
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+- deferred-runtime-decisions-ledger-v1.md -- intentionally NOT changed (this slice changes no deferral; entry 14 is about genericizing seam logic, which this rollup does not touch).
+
+jera-workspace-skills: untouched.
+
+### diagnostics rollup behavior
+
+`DescribeRuntime()` enumerates the 15 registry station cards and returns a report with: overall `Status` (Healthy/Warnings/Blocked), `StationCount`, `KnownStationCount`, `SupportedExecutionStationCount`, `ToolAwareStationCount`, `DiagnosticFindingCount`, the aggregated `Findings`, the per-station `Stations` rows, and `ProtectedFields` (surfaced from `ProbeRefreshChainDiagnostics.DescribeSafetyDefaults().Safety`). Findings are aggregated from per-station manifest cross-checks; a consistent manifest yields none -> Healthy.
+
+### station rollup behavior
+
+`DescribeStation(stationId)` returns a `ProtocolStationRollup`: `IsKnown`, `HasStationCard`, `HasRunnerSupport`, `HasToolPolicy`, `AllowedToolCount`, `ModelCallRule`, `CostClass`, `QualityGateCount`, `FindingCount`, `Findings`. It composes `ProtocolStationDiagnostics.DescribeStation` for the snapshot and `ProtocolRegistryValidator.Validate([card], tools)` for findings, so neither rule is re-implemented.
+
+### chain-result rollup behavior
+
+`DescribeChainResult(result)` summarizes the result's generic `StepTraces` (from Generic Station Result Envelope v1) into Reached/Skipped/Failed/Blocked counts. A trace with a failed or blocked step -> Blocked; an all-reached/skipped trace -> Healthy (an intentional skip is not unhealthy, mirroring ProbeRefreshChainDiagnostics). Null input -> InvalidInput. It inspects an existing result; it never replays the chain.
+
+### unsupported station behavior
+
+Runner execution support is reported, not exercised: only `interrogate.probe` has a deterministic `ExecuteAsync` path today (mirrored as a static supported-id set, so the rollup does NOT call `ExecuteAsync`). All other stations report `HasRunnerSupport = false`, which is NOT a finding and leaves the runtime Healthy. Stations with no allowed tools (the deterministic stations) report `HasToolPolicy = false` and are likewise not failures.
+
+### what is intentionally not wired yet
+
+No HTTP endpoint. No production pipeline path calls the rollup. No seam result was migrated onto `ProtocolResultEnvelope<TStatus>` (that remains the deferred broader-genericization work). The rollup is dormant, available infrastructure for a future dev/admin inspection caller.
+
+### tests
+
+- safe .NET targeted: 64 passed, 0 failed (also confirms the new code compiles through the full build graph).
+- safe .NET full: 526 passed, 0 failed (was 513; +12 rollup tests, +1 DI-resolution test). All existing ProtocolStationDiagnostics, ProbeRefreshChainDiagnostics, and Generic Station Result Envelope tests still green.
+- new tests cover: runtime counts/known stations; station rollups included; interrogate.probe runner-supported + SupportedExecutionStationCount=1; unsupported stations not failing; protected fields surfaced; known station IsKnown=true; unknown station IsKnown=false (Info finding); tool-aware allowed-tool counts; an injected unregistered-tool card -> Error finding + Blocked; chain-result summary of step outcomes; null chain result -> InvalidInput; failed chain step -> Blocked.
+- No Python/Angular/PowerShell/EF/schema change -> those validations not applicable.
+
+### deferred ledger updates
+
+None. This slice changes no deferral. Entry 14 (genericizing the probe-specific intake/re-weigh/recommendation logic) is unaffected -- the rollup composes diagnostics; it does not generalize station logic. Activation, merge writer, and artifact/confidence/posture/lean mutation remain deferred.
+
+### risks
+
+Low. Additive read-only service + one DI registration + tests; no existing behavior changed. Findings and protected fields are composed from existing single-sourced surfaces (ProtocolRegistryValidator, ProbeRefreshChainDiagnostics), so they cannot drift. Reversible (delete the new file + the one registration + tests, revert the DI test). Residual: the runner-supported station set is mirrored as a constant -- if the runner gains a second deterministic station, update both (a comment points to ProtocolNodeRunner).
+
+### next slice
+
+Either adopt `ProtocolResultEnvelope<TStatus>` in one freshly-touched seam to validate the contract against a real second consumer (progressing ledger entry 14), or a dev/admin-only, env-gated read-only inspection endpoint over `IProtocolDiagnosticsRollup` (mirroring the previously-declined audit-read-endpoint gating, ledger entry 8) if an operator need appears.
+
+### Claude/Codex transfer notes
+
+- The rollup is read-only and dormant; do not expect any runtime/pipeline change and do not add an HTTP endpoint without a dedicated, env-gated slice.
+- Findings rules are single-sourced: the card<->tool check comes from ProtocolRegistryValidator, protected fields from ProbeRefreshChainDiagnostics. Add new findings by composing existing surfaces, not by re-implementing rules in the rollup.
+- Runner execution support is a mirrored constant (interrogate.probe). Keep it in sync with ProtocolNodeRunner.ExecuteAsync; do not call ExecuteAsync from the rollup (it must not execute).
+- Keep <JERA_SKILLS_ROOT> read-only unless explicitly approved. Use placeholders in reports/docs.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Protocol Diagnostics Rollup v1 implemented 2026-06-06. Added IProtocolDiagnosticsRollup/ProtocolDiagnosticsRollup in DevCore.Api.Protocols: a read-only DescribeRuntime/DescribeStation/DescribeChainResult rollup composing ProtocolRegistry, ProtocolStationDiagnostics, ProtocolRegistryValidator, ProbeRefreshChainDiagnostics, and the generic ProtocolStepTrace. Reports station counts, runner support (interrogate.probe only, not executed), tool-awareness, protected fields, and manifest-mismatch findings; runs nothing. DI-registered, no endpoint, no pipeline path calls it. dotnet 526 (targeted 64), +13 tests. No model/prompt/gateway/confidence/posture/artifact/schema/migration/Angular/MCP change. Ledger unchanged (no deferral changed). jera-workspace-skills untouched.
