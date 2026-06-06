@@ -137,7 +137,7 @@
 - **Revisit trigger:** the Generic Station Result Envelope v1 slice lands AND a second, non-probe consumer of signal intake / re-weigh / recommendation appears.
 - **Proposed future slice:** Generic Station Result Envelope v1 (the result-shape harvest, recommended next); later a `PerceiveSignalIntake` / generic Decide policy guard only once a second use case exists.
 - **Risk if forgotten:** a second consumer copies `ProbeRefreshPerceiveIntake` wholesale (forking sports payload logic into the platform), or the probe-specific logic is prematurely lifted into shared infrastructure and ossifies on one niche.
-- **Status:** Deferred. Recorded by Factory Line Balance Review v1 (2026-06-06). See `factory-line-balance-review-v1.md`.
+- **Status:** Deferred -- generic result/trace shape shipped, dormant. Recorded by Factory Line Balance Review v1 (2026-06-06). Progressed by Generic Station Result Envelope v1 (2026-06-06): the shared `ProtocolResultEnvelope<TStatus>` and `ProtocolStepTrace` contracts landed in DevCore.Api.Protocols, and the chain step trace was re-expressed against the trace (diagnostics + assembly accessor). The 15 seam result records were NOT retrofitted and the probe-specific intake/re-weigh/recommendation *logic* was NOT generalized -- broader genericization stays deferred until a second, non-probe consumer exists. See `factory-line-balance-review-v1.md`.
 
 ## Maintenance
 

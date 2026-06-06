@@ -4537,3 +4537,98 @@ Low. Documentation only. Main risk is staleness: if the recommended envelope sli
 Untouched.
 
 status: Factory Line Balance Review v1 implemented 2026-06-06. Added a docs-only cognitive-factory architecture assessment mapping macro-protocol/station maturity against the dormant interrogate.probe refresh chain, identifying the deep-at-one-station imbalance, harvestable patterns (result envelope, step trace), overbuilt/underbuilt areas, and reaffirming the activation/merge-writer/mutation deferrals. Primary recommendation: Generic Station Result Envelope v1; backup: Protocol Diagnostics Rollup v1. Ledger entry 14 added; entries 1-6, 13 reaffirmed Deferred. No runtime code, no tests required, no endpoint/pipeline/DB/schema/FastAPI/Angular/cloud/secrets change. jera-workspace-skills untouched.
+
+## addendum: Generic Station Result Envelope v1 (2026-06-06)
+
+Platform-contract slice. Harvests the result/step shape that recurs across the probe-refresh chain into generic, domain-agnostic types in DevCore.Api.Protocols, and re-expresses only the safest subset (the chain step trace) against them with zero behavior change. No production pipeline wiring, no artifact/confidence/posture/lean mutation, no Tool Gateway behavior change, no model call, no endpoint, no activation, no merge writer, no DB/schema/migration/FastAPI/Angular/MCP/pgvector/Functions/Kubernetes/secrets change.
+
+### pre-change repo-state check
+
+Verified clean before changes: <DAI_REPO_ROOT> (main), <DAI_VAULT_ROOT> (main), <JERA_SKILLS_ROOT> (main). Factory Line Balance Review v1 confirmed committed (dai-vault 6234e05).
+
+### skills/guidance used
+
+- superpowers: test-driven-development (the 13 new tests written against the brief's enumerated cases alongside the small contract types, then run via the safe runner), writing-plans / planning (designed the contract against the actually-repeated shapes before coding), verification-before-completion (all results below are fresh safe-runner runs). systematic-debugging not needed -- no failure surfaced. frontend-design not applicable.
+- Local <JERA_SKILLS_ROOT>/dai (read-only, pack not edited): dai-grill-with-vault (inspected existing result shapes before designing, per "do not create a speculative abstraction beyond what is already repeated"), dai-token-tight, dai-agent-handoff (this addendum shape). dai-write-skill not used -- no skill authored.
+- Available but not applicable: dai-signal-follow-up-diagnostics (about run signal coverage, not result envelopes).
+- Skill sharpening note: no weakness found. dai-grill-with-vault's "read before designing" discipline directly prevented over-abstraction here -- the envelope was deliberately added as available infrastructure without retrofitting the 15 seam records, because reading them showed each carries its own status enum that must not be forced into one.
+
+### naming review result
+
+- `ProtocolResultEnvelope<TStatus>` (generic over the seam's own status enum) chosen over the non-generic `ProtocolResultEnvelope`: every seam has its own status enum, so generic keeps the domain status while adding shared classification. Rejected forcing one global status enum (brief rule).
+- `ProtocolResultDisposition` enum { Success, Skipped, Blocked, Failure } as the shared coarse classification; the four IsX helpers are computed from it so they cannot drift. Chosen over four independent stored bools.
+- Dropped the candidate `IsTerminal` helper: no existing seam uses a terminal/transient concept, so adding it would be speculative. Documented in the type.
+- `ProtocolStepTrace` + `ProtocolStepOutcome` enum { Reached, Skipped, Failed, Blocked } for the per-step trace. Collapsed the candidate `Reason`/`Status` step fields into a single `Detail` (the human outcome text) plus `ErrorMessage`, to avoid an ambiguous double text field. `Reached` is a computed helper, not a stored bool.
+- `ProbeRefreshChainTraceMapping.ToProtocolStepTrace(...)` extension as the single-sourced domain->generic mapper, kept in a domain file so the generic types carry no probe-refresh references (development-contract separation).
+- Rejected `ProtocolResultMetadata` / `ProtocolResultFactory` as separate types: metadata is a plain optional dictionary field and construction is covered by the envelope's static factory methods; separate types would be ceremony.
+
+### files changed
+
+dai:
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolResultEnvelope.cs` -- NEW. Generic `ProtocolResultEnvelope<TStatus>` + `ProtocolResultDisposition` + Success/Skipped/Blocked/Failure factories. No domain references.
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolStepTrace.cs` -- NEW. Generic `ProtocolStepTrace` + `ProtocolStepOutcome`. No domain references.
+- `platform/dotnet/DevCore.Api/Protocols/ProbeRefreshChainTraceMapping.cs` -- NEW. `ToProtocolStepTrace` extension; single-sources the reached/skipped/failed classification lifted from the diagnostics inline check.
+- `platform/dotnet/DevCore.Api/Protocols/ProbeRefreshChainDiagnostics.cs` -- MOD. `ToDiagnostic` now classifies through the generic trace instead of an inline substring check; removed the now-duplicate private `IsSkippedOutcome`. Output record and all values unchanged.
+- `platform/dotnet/DevCore.Api/Protocols/ProbeRefreshChainAssembly.cs` -- MOD. Added a computed `StepTraces` accessor on `ProbeRefreshChainAssemblyResult` (projects the stored `Steps` to generic traces; `Steps` itself unchanged).
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProtocolResultEnvelopeTests.cs` -- NEW. 5 tests.
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProtocolStepTraceTests.cs` -- NEW. 8 tests.
+
+dai-vault:
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` -- entry 14 status progressed.
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills: untouched.
+
+### generic envelope behavior
+
+`ProtocolResultEnvelope<TStatus>` carries the seam's own status enum value, a `ProtocolResultDisposition` (Success/Skipped/Blocked/Failure), a `Reason`, an optional `ErrorMessage`, and optional `Metadata`. `IsSuccess/IsSkipped/IsBlocked/IsFailure` are computed from the disposition. Static factories (`Success`, `Skipped`, `Blocked`, `Failure`) construct each disposition so callers express intent. It is generic over any `struct, Enum` status, so a seam composes it without abandoning its domain statuses.
+
+### step trace behavior
+
+`ProtocolStepTrace(Step, Outcome, Detail?, ErrorMessage?)` with `ProtocolStepOutcome` Reached/Skipped/Failed/Blocked and computed `IsReached/IsSkipped/IsFailed/IsBlocked`. `ProbeRefreshChainTraceMapping.ToProtocolStepTrace` maps a chain step: reached -> Reached; not reached with an outcome containing "skipped"/"disabled" -> Skipped; otherwise -> Failed. Blocked is intentionally not produced from a chain step, preserving the existing diagnostics behavior that counts a blocked (not-reached) review step as failed.
+
+### what was re-expressed
+
+Only the chain step trace, the safest subset:
+- `ProbeRefreshChainDiagnostics.ToDiagnostic` classifies via the generic trace; the `ProbeRefreshChainStepDiagnostic` output record and every value it produces are unchanged.
+- `ProbeRefreshChainAssemblyResult` gains a computed `StepTraces` projection; the stored `Steps` field and the `ProbeRefreshChainStepResult` record are unchanged.
+
+### compatibility behavior
+
+Zero behavior change. No existing record field, constructor, or enum value was removed or renamed. The diagnostics classification is identical (same counts, same enum lumping of blocked-as-failed) -- the substring check was lifted, not altered. The 15 probe-refresh seam result records were intentionally NOT retrofitted onto the envelope: each keeps its own status enum and IsX helper. The envelope and trace are available infrastructure plus one re-expression, adopted further only when a second consumer justifies it.
+
+### what intentionally remains domain-specific
+
+The 15 `ProbeRefresh*` seam result records and their status enums; the probe-refresh-specific intake/re-weigh/recommendation logic; the merge half. Only the result/trace *shape* is generic, not any station *logic*.
+
+### what is intentionally not wired yet
+
+No seam result record was migrated to `ProtocolResultEnvelope<TStatus>` (would be a large surface change for no behavior gain on one consumer). No production pipeline, endpoint, gateway call, writer, or activation. The envelope is not yet consumed by any seam beyond being available; the trace has exactly two consumers (diagnostics + the assembly accessor).
+
+### tests
+
+- safe .NET targeted: 64 passed, 0 failed (also confirms the new types compile through the full build graph).
+- safe .NET full: 513 passed, 0 failed (was 500 before this slice; +5 envelope tests, +8 step-trace tests). All existing probe-refresh chain, diagnostics, and assembly tests still green.
+- new tests cover: envelope success/skipped/failure(with error)/blocked + metadata; step trace reached/skipped/failed/blocked; chain step mapping reached/skipped/failed; the assembly `StepTraces` accessor projects without mutating `Steps`.
+- No Python change -> pytest not run. No Angular change -> Angular build not run. No PowerShell file changed -> no parser validation needed. No EF/schema/migration change.
+
+### risks
+
+Low. Additive generic types + one behavior-preserving classification lift + one computed accessor. The classification is now single-sourced (mapping), so diagnostics and the accessor cannot drift. Reversible (delete the three new files, revert the two edits, delete the two test files). Main residual risk is future scope creep: someone retrofits all 15 seams onto the envelope at once -- do that incrementally, behind tests, only as seams are touched for other reasons.
+
+### next slice
+
+Protocol Diagnostics Rollup v1 (the backup from the balance review): a read-only generic diagnostics rollup unifying the fragmenting diagnostics/telemetry/step-trace surfaces, now that the generic trace exists to roll up. Alternatively, adopt `ProtocolResultEnvelope<TStatus>` in one freshly-touched seam to validate the contract against a real second consumer before broader rollout.
+
+### Claude/Codex transfer notes
+
+- The envelope is available infrastructure, not yet a required base type. Do NOT mass-migrate the 15 seam results onto it; adopt incrementally behind tests as seams are touched.
+- The reached/skipped/failed classification is single-sourced in `ProbeRefreshChainTraceMapping`. Change it there, not inline in diagnostics.
+- Blocked is deliberately absent from the chain mapping to preserve existing diagnostics counts; do not "fix" it without updating the diagnostics tests intentionally.
+- Keep <JERA_SKILLS_ROOT> read-only unless explicitly approved. Use placeholders in reports/docs.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Generic Station Result Envelope v1 implemented 2026-06-06. Added generic `ProtocolResultEnvelope<TStatus>` + `ProtocolResultDisposition` and `ProtocolStepTrace` + `ProtocolStepOutcome` in DevCore.Api.Protocols, plus `ProbeRefreshChainTraceMapping`. Re-expressed only the chain step trace: diagnostics classify through the generic trace (output unchanged) and `ProbeRefreshChainAssemblyResult` exposes a computed `StepTraces` projection. Zero behavior change; the 15 seam result records were not retrofitted. dotnet 513 (targeted 64), +13 new tests. No model/prompt/gateway/confidence/posture/artifact/endpoint/schema/migration/Angular/MCP change. Ledger entry 14 progressed (generic shape landed; broader genericization still deferred pending a second consumer). jera-workspace-skills untouched.
