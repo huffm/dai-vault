@@ -5101,3 +5101,111 @@ Perceive Signal Intake Runtime Consumer v1 only if there is an actual read-only 
 Untouched (read-only this slice).
 
 status: Perceive Signal Observation Collector v1 implemented 2026-06-06. Added read-only collection of analyzer seed and platform refresh `PerceiveSignalObservation` values into `PerceiveSignalObservationSet`, with source counts and rejected-candidate reporting. No production routing, no model/prompt/gateway/confidence/posture/artifact/endpoint/schema/migration/Angular/MCP change. dotnet 572 (targeted 64), +11 tests. Ledger entry 15 progressed but remains Deferred. jera-workspace-skills untouched.
+
+## addendum: Discern Station Runner Groundwork v1 (2026-06-06)
+
+Dormant platform-runner groundwork slice. Adds a deterministic, read-only Discern station runner shape for `discern.weigh`, `discern.contrast`, and `discern.stress`. Behavior-preserving: no production pipeline wiring, no `ProtocolNodeRunner` wiring, no endpoint, no model call, no Tool Gateway call, no FastAPI prompt change, no Angular change, no DB/schema change, no artifact mutation, no `CognitiveProtocol` mutation, no merge writer, and no confidence/posture/lean mutation.
+
+### pre-change repo-state and ahead check
+
+Verified clean before changes: <DAI_REPO_ROOT> (main, ahead 2), <DAI_VAULT_ROOT> (main, ahead 2), <JERA_SKILLS_ROOT> (main, not ahead). Recent local Perceive commits were present locally: <DAI_REPO_ROOT> `c240a73`, `50c05f5`, `012d9da`; <DAI_VAULT_ROOT> `d3a0dc9`, `b1ab223`, `35a489c`.
+
+### skills/guidance used
+
+- Local <JERA_SKILLS_ROOT>/dai (read-only): dai-grill-with-vault (read Discern protocol shapes, `ProtocolNodeRunner`, probe-refresh re-weigh, tests, factory review, handoff, and ledger before naming/design), dai-token-tight, dai-agent-handoff. dai-write-skill was inspected only for boundary/doc-writing discipline.
+- superpowers-style guidance applied manually: planning / writing-plans, test-driven-development, systematic-debugging, verification-before-completion.
+- Naming and Skills Gate completed before coding: local skills inspected, repo states/ahead checks verified, prior Perceive commits verified, Discern runner/result/status names reviewed, and development skills kept separate from runtime cognitive protocols.
+
+### naming review result
+
+Chosen: `DiscernStationRunner`, `IDiscernStationRunner`, `DiscernStationExecutionRequest`, `DiscernStationExecutionResult`, `DiscernStationAssessment`, and `DiscernStationAssessmentStatus`.
+
+Rejected: probe-refresh-specific names and production-routing names. The runner is a static-default dormant helper, not DI-registered and not wired into `ProtocolNodeRunner`.
+
+### files changed
+
+dai:
+- `<DAI_REPO_ROOT>/platform/dotnet/DevCore.Api/Protocols/DiscernStationRunner.cs` -- NEW. Dormant Discern runner contract, request, assessment, result, status, envelope, and step trace projections.
+- `<DAI_REPO_ROOT>/platform/dotnet/DevCore.Api.Tests/Protocols/DiscernStationRunnerTests.cs` -- NEW. 16 tests.
+
+dai-vault:
+- `<DAI_VAULT_ROOT>/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` -- entry 16 added, Deferred.
+- `<DAI_VAULT_ROOT>/06 Execution/handoffs/current-slice.md` -- this addendum.
+
+<JERA_SKILLS_ROOT>: untouched.
+
+### discern runner groundwork summary
+
+`DiscernStationRunner` accepts a `DiscernStationExecutionRequest` with station id, optional current Discern text, optional normalized Perceive signal observations, optional read-context metadata, and optional tenant/run/correlation identifiers. It returns a `DiscernStationExecutionResult` only. It does not interpret sports domains, does not make recommendations, and does not mutate the source protocol or artifact.
+
+### supported station behavior
+
+Supported station ids:
+- `discern.weigh`
+- `discern.contrast`
+- `discern.stress`
+
+Status behavior:
+- blank/null request or station id -> `InvalidInput`
+- unknown station -> `UnsupportedStation`
+- supported station with no current text, no observations, and no read context -> `NoInput`
+- supported station with any input/context -> `Assessed`
+
+Assessment summaries are deterministic placeholders only:
+- `discern.weigh` -> "Discern weigh input available for platform assessment."
+- `discern.contrast` -> "Discern contrast input available for platform assessment."
+- `discern.stress` -> "Discern stress input available for platform assessment."
+
+### envelope and step trace behavior
+
+`DiscernStationExecutionResult.Envelope` maps:
+- `Assessed` -> `Success`
+- `NoInput` -> `Skipped`
+- `UnsupportedStation` -> `Blocked`
+- `InvalidInput` -> `Failure`
+
+`DiscernStationExecutionResult.StepTrace` maps:
+- `Assessed` -> `Reached`
+- `NoInput` -> `Skipped`
+- `UnsupportedStation` -> `Blocked`
+- `InvalidInput` -> `Failed`
+
+### compatibility behavior
+
+Zero runtime behavior change. `ProtocolNodeRunner` still reports Discern stations as unsupported. `ProbeRefreshDiscernReweigh` remains unchanged and probe-refresh-specific. `CognitiveProtocol`, analyzer output, artifacts, DB/schema, FastAPI prompts, Angular, Tool Gateway behavior, model call count, confidence/posture/lean rules, and merge behavior are unchanged.
+
+### what intentionally remains unwired
+
+No production caller, no endpoint, no activation, no `ProtocolNodeRunner` integration, no analyzer seed routing, no probe-refresh re-weigh replacement, no artifact mutation, no confidence/posture/lean mutation, no MCP/pgvector/Azure Functions/Kubernetes/tenant-Stripe change.
+
+### tests
+
+- `<DAI_REPO_ROOT>/scripts/dev/dotnet/test-devcore-api-safe.ps1 -Targeted` -- pass: 64 passed, 0 failed.
+- `<DAI_REPO_ROOT>/scripts/dev/dotnet/test-devcore-api-safe.ps1 -Full` -- pass: 588 passed, 0 failed (was 572; +16).
+
+New tests cover blank station, unknown station, no-input for each supported station, assessed result for each supported station, signal-observation input, read-context input, empty read context, envelope mapping, step trace mapping, source `CognitiveProtocol` non-mutation, no Tool Gateway dependency, and `ProtocolNodeRunner` remaining unsupported for Discern.
+
+### deferred ledger updates
+
+Entry 16 added: Discern station runner groundwork vs production Discern execution. It remains Deferred. Generic Discern re-weigh is not marked resolved; direct Interrogate -> Perceive refresh, activation, merge writer, artifact mutation, confidence/posture/lean mutation, memory/pgvector, Kubernetes/AKS, tenant/Stripe, and calibration threshold changes remain deferred.
+
+### risks
+
+Low. Additive dormant value objects and deterministic runner plus tests. Residual risk: future consumers could treat placeholder assessment summaries as domain reasoning unless the next runtime-consumer slice keeps them inspection-only or replaces them with an explicitly approved deterministic assessment policy.
+
+### next slice
+
+Discern Station Runner Adoption v1 only if there is an actual read-only caller. Otherwise continue the factory line balance work on the next underbuilt station. Do not start production execution, probe-refresh replacement, or confidence/posture mutation without a dedicated approval.
+
+### Claude/Codex transfer notes
+
+- `DiscernStationRunner` is dormant groundwork. Do not wire it into `ProtocolNodeRunner`, `SportsComposer`, artifacts, or probe-refresh without a dedicated runtime-consumer slice.
+- Keep `ProbeRefreshDiscernReweigh` probe-refresh-specific until a second non-probe consumer creates real reuse pressure.
+- The runner accepts normalized Perceive observations as context, but it does not inspect or re-weight them.
+- Keep <JERA_SKILLS_ROOT> read-only unless explicitly approved. Use placeholders in reports/docs.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Discern Station Runner Groundwork v1 implemented 2026-06-06. Added dormant deterministic Discern runner contracts for `discern.weigh`, `discern.contrast`, and `discern.stress`, with envelope and step trace projections. No production routing, no model/prompt/gateway/confidence/posture/artifact/endpoint/schema/migration/Angular/MCP change. dotnet 588 (targeted 64), +16 tests. Ledger entry 16 added and remains Deferred. jera-workspace-skills untouched.
