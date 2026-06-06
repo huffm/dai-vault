@@ -4916,3 +4916,95 @@ Perceive Signal Intake Adoption v1: wire read-only projections from analyzer see
 Untouched (read-only this slice).
 
 status: Perceive Signal Intake Standardization v1 implemented 2026-06-06. Added generic Perceive signal observation/context/source/origin/intake/result contracts plus one-way probe-refresh projection. No production wiring, no model/prompt/gateway/confidence/posture/artifact/endpoint/schema/migration/Angular/MCP change. dotnet 551 (targeted 64), +12 tests. Ledger entry 14 progressed and entry 15 added for deferred adoption. jera-workspace-skills untouched.
+
+## addendum: Perceive Signal Intake Adoption v1 (2026-06-06)
+
+Projection-adoption slice. Proves analyzer seed/model-emitted Perceive fields and probe-refresh/platform-refreshed Perceive views can both speak the same `PerceiveSignalObservation` language. Behavior-preserving: no production pipeline wiring, no analyzer seed routing, no endpoint, no model call, no Tool Gateway call, no FastAPI prompt change, no Angular change, no DB/schema change, no artifact mutation, no CognitiveProtocol mutation, no merge writer, and no confidence/posture/lean mutation.
+
+### pre-change repo-state and ahead check
+
+Verified clean before changes: <DAI_REPO_ROOT> (main), <DAI_VAULT_ROOT> (main), <JERA_SKILLS_ROOT> (main). Ahead-of-origin status before changes: all three showed `main...origin/main` with no ahead/behind markers. Perceive Signal Intake Standardization v1 was present locally: dai `012d9da977882097142481644c4105c861634403`; dai-vault `35a489cddfe9762b53324c796d44b68d283bea12`.
+
+### skills/guidance used
+
+- Local <JERA_SKILLS_ROOT>/dai (read-only): dai-grill-with-vault (read analyzer seed, completed protocol, probe-refresh projection, tests, and ledger before naming/design), dai-token-tight, dai-agent-handoff. dai-write-skill was inspected only for boundary/doc-writing discipline.
+- superpowers-style guidance applied manually: planning / writing-plans, test-driven-development, systematic-debugging, verification-before-completion.
+- Naming and Skills Gate completed before coding: local skills inspected, repo states/ahead checks verified, previous commits verified, projection names reviewed, and development skills kept separate from runtime cognitive protocols.
+
+### naming review result
+
+Chosen: `AnalyzerSeedPerceiveSignalProjection` and `ToAnalyzerSeedPerceiveSignalObservations(...)` for analyzer/model-emitted Perceive projections. This distinguishes analyzer seed/model-emitted data from existing `ProbeRefreshPerceiveSignalProjection` platform refresh data.
+
+Rejected: `CognitiveProtocolPerceiveSignalProjection` and `PerceiveProtocolSignalProjection` as primary names because they describe the source type but not the analyzer-seed/model-emitted origin. No aggregation helper was added; combining lists in tests was enough and avoided widening the slice.
+
+### files changed
+
+dai:
+- `<DAI_REPO_ROOT>/platform/dotnet/DevCore.Api/Protocols/AnalyzerSeedPerceiveSignalProjection.cs` -- NEW. Read-only projection from `CognitiveProtocol?` / `PerceiveProtocol?` into analyzer-seed observations.
+- `<DAI_REPO_ROOT>/platform/dotnet/DevCore.Api.Tests/Protocols/AnalyzerSeedPerceiveSignalProjectionTests.cs` -- NEW. 10 tests covering analyzer seed and platform refresh projection compatibility.
+
+dai-vault:
+- `<DAI_VAULT_ROOT>/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` -- entry 15 progressed, still Deferred.
+- `<DAI_VAULT_ROOT>/06 Execution/handoffs/current-slice.md` -- this addendum.
+
+<JERA_SKILLS_ROOT>: untouched.
+
+### analyzer seed projection behavior
+
+`AnalyzerSeedPerceiveSignalProjection` projects the completed protocol's model-emitted Perceive fields without changing the source protocol. It accepts `PerceiveProtocol?` or `CognitiveProtocol?` and returns `IReadOnlyList<PerceiveSignalObservation>`.
+
+Mappings:
+- `PerceiveProtocol.Detect` -> signal key `perceive.detect`
+- `PerceiveProtocol.Frame` -> signal key `perceive.frame`
+- `PerceiveProtocol.Aim` -> signal key `perceive.aim`
+- each nonblank field's text -> `Summary`
+- `SourceKind = AnalyzerSeed`
+- `Origin = ModelEmitted`
+- `ContextType = analyzer_seed_perceive`
+- `RawContextType = PerceiveProtocol`
+
+Null Perceive/CognitiveProtocol returns an empty list. Blank fields are skipped. Optional tenant/run/correlation/observed-at/metadata can be supplied but are not required.
+
+### probe-refresh projection behavior
+
+Existing `ProbeRefreshPerceiveSignalProjection` stayed intact. Tests now prove probe-refresh views still produce `SourceKind = PlatformRefresh`, `Origin = ToolFetched`, preserve signal key, and preserve source tool id. Analyzer seed and probe-refresh projections both produce the same `PerceiveSignalObservation` record type.
+
+### compatibility behavior
+
+Zero runtime behavior change. No production caller consumes the new analyzer projection. No analyzer output is routed through the generic intake. No `CognitiveProtocol`, `PerceiveProtocol`, `ProbeRefreshPerceiveIntake`, artifact, DB/schema, FastAPI prompt, Angular surface, Tool Gateway behavior, model call count, confidence/posture/lean rule, or merge behavior changed.
+
+### what intentionally remains unwired
+
+No runtime consumer, no endpoint, no activation, no direct Interrogate -> Perceive loop, no analyzer seed routing, no probe-refresh replacement, no artifact mutation, no confidence/posture/lean mutation, no MCP/pgvector/Azure Functions/Kubernetes/tenant-Stripe change.
+
+### tests
+
+- `<DAI_REPO_ROOT>/scripts/dev/dotnet/test-devcore-api-safe.ps1 -Targeted` -- pass: 64 passed, 0 failed.
+- `<DAI_REPO_ROOT>/scripts/dev/dotnet/test-devcore-api-safe.ps1 -Full` -- pass: 561 passed, 0 failed (was 551; +10).
+
+New tests cover analyzer seed projection from existing Perceive fields, analyzer source/origin, summary preservation, optional run metadata, null Perceive/CognitiveProtocol -> empty list, blank fields skipped, completed CognitiveProtocol projection, no source mutation, probe-refresh PlatformRefresh projection, and shared `PerceiveSignalObservation` contract across analyzer seed + probe refresh.
+
+### deferred ledger updates
+
+Entry 15 progressed and remains Deferred. Analyzer seed/model-emitted Perceive fields and probe-refresh/platform-refreshed Perceive views now project into the generic contract, but production routing is still deferred. Direct Interrogate -> Perceive refresh, activation, merge writer, artifact mutation, confidence/posture/lean mutation, memory/pgvector, Kubernetes/AKS, tenant/Stripe, and calibration threshold changes remain deferred.
+
+### risks
+
+Low. Additive read-only projection plus tests. The main residual risk is field-path signal key semantics: `perceive.detect`, `perceive.frame`, and `perceive.aim` intentionally avoid inferring domain signal categories, but a future runtime consumer must decide whether it wants field-path observations, domain signal observations, or both.
+
+### next slice
+
+Perceive Signal Intake Runtime Consumer v1: add a read-only consumer of the normalized observations if there is an actual caller, still without model/gateway calls, artifact writes, prompt/schema/Angular changes, or confidence/posture/lean mutation. Do not start activation or routing until that slice is explicitly approved.
+
+### Claude/Codex transfer notes
+
+- `AnalyzerSeedPerceiveSignalProjection` is projection-only infrastructure. Do not wire it into `SportsComposer`, the artifact endpoint, or the probe-refresh chain without a dedicated runtime-consumer slice.
+- Field-path signal keys are deliberate. Do not parse `Detect`/`Aim` text to infer `market`, `sharp_public`, or other domain signal keys.
+- `ProbeRefreshPerceiveSignalProjection` remains the platform refresh projection; do not replace `ProbeRefreshPerceiveIntakeResult`.
+- Keep <JERA_SKILLS_ROOT> read-only unless explicitly approved. Use placeholders in reports/docs.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Perceive Signal Intake Adoption v1 implemented 2026-06-06. Added read-only analyzer seed/model-emitted Perceive projection into `PerceiveSignalObservation`, kept probe-refresh projection intact, and proved both sources share the same contract. No production routing, no model/prompt/gateway/confidence/posture/artifact/endpoint/schema/migration/Angular/MCP change. dotnet 561 (targeted 64), +10 tests. Ledger entry 15 progressed but remains Deferred. jera-workspace-skills untouched.
