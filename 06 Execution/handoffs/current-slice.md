@@ -4812,3 +4812,107 @@ Either adopt the envelope in a second, different-shaped seam (e.g. ProbeRefreshE
 Untouched (read-only this slice).
 
 status: Probe Refresh Merge Review Envelope Adoption v1 implemented 2026-06-06. Added ProbeRefreshMergeReviewResult.ToEnvelope() projecting the domain status to ProtocolResultDisposition (ReviewPassed->Success; ManualReviewRequired/ReviewBlocked/UnsafePlan->Blocked; Disabled/NoMergePlan->Skipped; InvalidInput->Failure) while preserving every domain field. One seam adopted, not a migration; the other 14 seam results and the probe-specific station logic are unchanged. dotnet 539 (targeted 64), +13 tests. No model/prompt/gateway/confidence/posture/artifact/endpoint/schema/migration/Angular/MCP change. Ledger entry 14 progressed again (first real seam adopted the envelope; broader genericization still deferred). jera-workspace-skills untouched.
+
+## addendum: Perceive Signal Intake Standardization v1 (2026-06-06)
+
+Contract slice. Adds a small generic Perceive signal intake contract that normalizes signal observations from analyzer seeds, platform refreshes, tools, manual input, and future memory sources. Behavior-preserving: no production pipeline wiring, no endpoint, no model call, no Tool Gateway call, no FastAPI prompt change, no Angular change, no DB/schema change, no artifact mutation, no merge writer, and no confidence/posture/lean mutation.
+
+### pre-change repo-state check
+
+Verified clean before changes: <DAI_REPO_ROOT> (main), <DAI_VAULT_ROOT> (main), <JERA_SKILLS_ROOT> (main). Recent commits confirmed present: dai `9dbc5d7104d5870cca3da8249127a2316ecd937c`; dai-vault `50fb1620b00e9feb2d6f1b45a595e2cfe761c62f`. <JERA_SKILLS_ROOT> was read-only and remained untouched.
+
+### skills/guidance used
+
+- Local <JERA_SKILLS_ROOT>/dai (read-only): dai-grill-with-vault (read Perceive/probe-refresh code and vault docs before design), dai-token-tight, dai-agent-handoff. dai-write-skill was inspected for boundary/doc-writing discipline but not used to create or edit skills.
+- superpowers-style guidance applied manually: planning / writing-plans, test-driven-development, systematic-debugging, verification-before-completion.
+- Naming and Skills Gate completed before coding: skills inspected, repo states checked, recent commits verified, names reviewed, and runtime cognitive protocols kept separate from development skills.
+
+### naming review result
+
+Chosen: `PerceiveSignalIntake`, `IPerceiveSignalIntake`, `PerceiveSignalObservation`, `PerceiveSignalSource`, `PerceiveSignalOrigin`, `PerceiveSignalContext`, `PerceiveSignalIntakeStatus`, `PerceiveSignalIntakeResult`.
+
+Rejected for v1: `PerceiveSignalEvidence` and confidence/evidence-strength vocabulary. Existing behavior only needs `Summary` plus `HasSignalContext`; adding strength/confidence terms would imply confidence behavior this slice forbids.
+
+### files changed
+
+dai:
+- `<DAI_REPO_ROOT>/platform/dotnet/DevCore.Api/Protocols/PerceiveSignalIntake.cs` -- NEW. Generic source/origin/context/observation/result contract, validation intake, and envelope projection.
+- `<DAI_REPO_ROOT>/platform/dotnet/DevCore.Api/Protocols/ProbeRefreshPerceiveSignalProjection.cs` -- NEW. One-way projection from `PerceiveRefreshView` / `ProbeRefreshPerceiveIntakeResult` into the generic contract.
+- `<DAI_REPO_ROOT>/platform/dotnet/DevCore.Api.Tests/Protocols/PerceiveSignalIntakeTests.cs` -- NEW. 12 tests.
+
+dai-vault:
+- `<DAI_VAULT_ROOT>/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` -- entry 14 progressed; new entry 15 added for Perceive signal intake adoption.
+- `<DAI_VAULT_ROOT>/06 Execution/handoffs/current-slice.md` -- this addendum.
+
+<JERA_SKILLS_ROOT>: untouched.
+
+### contract summary
+
+`PerceiveSignalObservation` is the normalized input: `SignalKey`, `SourceKind`, `Origin`, `Summary`, `Context`, `HasSignalContext`, and optional `Metadata`. `PerceiveSignalContext` carries optional tenant/run/correlation/source-tool/context metadata: `TenantKey`, `RunId`, `CorrelationId`, `SourceToolId`, `ContextType`, `RawContextType`, `ObservedAtUtc`, and `Metadata`.
+
+`PerceiveSignalIntake.Receive(...)` validates only the generic shape: null observation -> `NoSignal`; blank signal key -> `InvalidInput`; blank summary -> `NoSignal`; otherwise trims key/summary and returns `Received`. `PerceiveSignalIntakeResult.ToEnvelope()` maps Received->Success, NoSignal/UnsupportedSignal->Skipped, InvalidInput->Failure.
+
+### source/origin model
+
+`PerceiveSignalSource`: `AnalyzerSeed`, `PlatformRefresh`, `ManualInput`, `HistoricalMemory`, `Unknown`.
+
+`PerceiveSignalOrigin`: `ModelEmitted`, `PlatformDerived`, `ToolFetched`, `UserProvided`, `Unknown`.
+
+Analyzer seed signals are represented as `AnalyzerSeed` + `ModelEmitted`. Platform refreshes can be `PlatformRefresh` + `PlatformDerived`; fetched tool context is `PlatformRefresh` + `ToolFetched`. Manual placeholders are `ManualInput` + `UserProvided`. Memory is named but not wired.
+
+### projection behavior
+
+`PerceiveRefreshView.ToPerceiveSignalObservation(...)` maps:
+- `SignalKey` -> `SignalKey`
+- `ToolId` -> `Context.SourceToolId`
+- `ContextType` -> `Context.ContextType`
+- `PerceivedSummary` -> `Summary`
+- `HasContext` -> `HasSignalContext`
+- source/origin -> `PlatformRefresh` / `ToolFetched`
+
+`ProbeRefreshPerceiveIntakeResult.ToPerceiveSignalIntakeResult(...)` preserves `RawContextType` and fails closed: NoContext->NoSignal, UnsupportedContext->UnsupportedSignal, InvalidPayload->InvalidInput. The projection is one-way, additive, and unconsumed by the chain.
+
+### compatibility behavior
+
+Zero runtime behavior change. `ProbeRefreshPerceiveIntakeResult` and `PerceiveRefreshView` remain intact. No constructor/enum/field was removed or renamed. `CognitiveProtocol`, `PerceiveProtocol`, FastAPI analyzer seed parsing, Tool Gateway behavior, DB schema, Angular, and production artifact merge/write behavior are unchanged.
+
+### what remains probe-refresh-specific
+
+The sports `ToolIds.*` switch, typed payload recovery, and deterministic context summaries stay in `ProbeRefreshPerceiveIntake`. `ProbeRefreshDiscernReweigh`, `ProbeRefreshDecideRecommendation`, `ProbeRefreshSynthesizePreview`, merge planning/review/dry-run/audit, and the chain assembly remain probe-refresh-specific and dormant.
+
+### what is intentionally not wired yet
+
+No production caller consumes `PerceiveSignalIntake`. Analyzer seed observations are not routed through it. Probe-refresh still uses its own result in the chain. No direct Interrogate -> Perceive loop, executor activation, merge writer, artifact mutation, confidence/posture/lean mutation, endpoint, schema, prompt, Angular, MCP, pgvector, Kubernetes/AKS, or tenant/Stripe change landed.
+
+### tests
+
+- `<DAI_REPO_ROOT>/scripts/dev/dotnet/test-devcore-api-safe.ps1 -Targeted` -- pass: 64 passed, 0 failed.
+- direct filtered diagnostic run: `dotnet test <DAI_REPO_ROOT>/platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter FullyQualifiedName~PerceiveSignalIntakeTests` returned exit 1 with no output after a long wait; no leftover `dotnet`/`testhost` processes were found. The safe full run below covered the new tests successfully.
+- `<DAI_REPO_ROOT>/scripts/dev/dotnet/test-devcore-api-safe.ps1 -Full` -- pass: 551 passed, 0 failed (was 539; +12).
+
+New tests cover analyzer seed observation, platform refresh observation, tool-fetched observation, manual/user-provided placeholder, missing signal key -> InvalidInput, empty summary -> NoSignal, UnsupportedSignal envelope mapping, projection preserving signal key/tool/context type/raw type, projection immutability, non-received probe-refresh fail-closed mapping, and Received envelope metadata.
+
+### deferred ledger updates
+
+Entry 14 progressed: the generic Perceive signal intake contract/projection shipped, but probe-refresh logic and other seam logic are not generalized. New entry 15 added: Perceive signal intake adoption across analyzer seed and refreshed context remains Deferred. Direct Interrogate -> Perceive refresh, activation, merge writer, artifact mutation, confidence/posture/lean mutation, memory/pgvector, Kubernetes/AKS, tenant/Stripe, and calibration threshold changes remain deferred.
+
+### risks
+
+Low. Additive value objects, a stateless validator, one-way projection, and tests. Residual risk is adoption ambiguity: without a follow-up adoption slice, future callers could still bypass the generic shape. No behavior changes means no immediate runtime risk.
+
+### next slice
+
+Perceive Signal Intake Adoption v1: wire read-only projections from analyzer seed and probe-refresh into the generic contract without changing model prompts, call counts, Tool Gateway behavior, artifacts, confidence/posture/lean, endpoints, schema, or Angular. Keep it projection-only unless a separate activation slice approves runtime use.
+
+### Claude/Codex transfer notes
+
+- Treat `PerceiveSignalIntake` as dormant infrastructure. Do not replace `ProbeRefreshPerceiveIntakeResult` or retrofit the chain without a dedicated adoption slice.
+- Keep source/origin separate: source says where the observation enters from; origin says who/what produced it.
+- Do not add confidence/evidence-strength fields unless a calibration-safe behavior slice explicitly needs them.
+- Keep <JERA_SKILLS_ROOT> read-only unless explicitly approved. Use placeholders in reports/docs.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Perceive Signal Intake Standardization v1 implemented 2026-06-06. Added generic Perceive signal observation/context/source/origin/intake/result contracts plus one-way probe-refresh projection. No production wiring, no model/prompt/gateway/confidence/posture/artifact/endpoint/schema/migration/Angular/MCP change. dotnet 551 (targeted 64), +12 tests. Ledger entry 14 progressed and entry 15 added for deferred adoption. jera-workspace-skills untouched.
