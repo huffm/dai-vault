@@ -4722,3 +4722,93 @@ Either adopt `ProtocolResultEnvelope<TStatus>` in one freshly-touched seam to va
 Untouched (read-only this slice).
 
 status: Protocol Diagnostics Rollup v1 implemented 2026-06-06. Added IProtocolDiagnosticsRollup/ProtocolDiagnosticsRollup in DevCore.Api.Protocols: a read-only DescribeRuntime/DescribeStation/DescribeChainResult rollup composing ProtocolRegistry, ProtocolStationDiagnostics, ProtocolRegistryValidator, ProbeRefreshChainDiagnostics, and the generic ProtocolStepTrace. Reports station counts, runner support (interrogate.probe only, not executed), tool-awareness, protected fields, and manifest-mismatch findings; runs nothing. DI-registered, no endpoint, no pipeline path calls it. dotnet 526 (targeted 64), +13 tests. No model/prompt/gateway/confidence/posture/artifact/schema/migration/Angular/MCP change. Ledger unchanged (no deferral changed). jera-workspace-skills untouched.
+
+## addendum: Probe Refresh Merge Review Envelope Adoption v1 (2026-06-06)
+
+Envelope-adoption slice. Adopts the generic `ProtocolResultEnvelope<TStatus>` (Generic Station Result Envelope v1) in exactly ONE real probe-refresh seam -- merge review -- to prove the contract against production-shaped code without mass migration. Behavior-preserving: the domain result, its status enum, and all domain fields stay intact; the envelope is an additive computed projection. No activation, no endpoint, no Tool Gateway/model/external call, no DB/schema change, no FastAPI/Angular change, no artifact/confidence/posture/lean mutation, no merge writer.
+
+### pre-change repo-state check
+
+Verified clean before changes: <DAI_REPO_ROOT> (main), <DAI_VAULT_ROOT> (main), <JERA_SKILLS_ROOT> (main). Generic Station Result Envelope v1 confirmed committed (dai 4275083); Protocol Diagnostics Rollup v1 also landed (dai c36fb20) and was inspected -- not depended on by this slice.
+
+### skills/guidance used
+
+- superpowers: test-driven-development (13 mapping/preservation tests written with the projection, then run via the safe runner), writing-plans / planning (mapped the status->disposition table and chose conservative dispositions before coding), verification-before-completion (fresh safe-runner runs below). systematic-debugging not needed.
+- Local <JERA_SKILLS_ROOT>/dai (read-only, pack not edited): dai-grill-with-vault (read the merge review seam + its tests + the envelope before mapping, per "if ProbeRefreshMergeReviewResult is not a clean candidate, stop and report" -- it was clean: read-only, governance-oriented, no fetch/persist/mutation), dai-token-tight, dai-agent-handoff. dai-write-skill not used.
+- Available but not applicable: dai-signal-follow-up-diagnostics.
+- Skill sharpening note: no weakness found. The read-first discipline confirmed merge review was the right first adopter (pure governance result, statuses map cleanly to dispositions) before any code was written.
+
+### naming review result
+
+- `ToEnvelope()` method chosen over an `Envelope { get; }` property: it constructs a projection via a switch, and a method reads as work/construction (matching the codebase's use of computed properties only for trivial booleans like `IsReviewPassed`). Rejected `AsEnvelope` / `ToProtocolResultEnvelope()` (verbose) and a separate `ProbeRefreshMergeReviewEnvelopeMapper` type (a local method keeps the mapping next to the result it projects).
+- Private `DispositionFor(status)` switch as the single mapping point, with a conservative `_ => Failure` default for any future status.
+
+### files changed
+
+dai:
+- `platform/dotnet/DevCore.Api/Protocols/ProbeRefreshMergeReview.cs` -- MOD. Added `ToEnvelope()` + private `DispositionFor` on `ProbeRefreshMergeReviewResult`. No field removed/renamed; the status enum and all domain fields are unchanged.
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProbeRefreshMergeReviewEnvelopeTests.cs` -- NEW. 13 tests (7 status->disposition theory cases + status/reason/error preservation + two real-reviewer-driven cases).
+
+dai-vault:
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` -- entry 14 progressed again (first real seam adopted the envelope).
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills: untouched.
+
+### envelope adoption summary
+
+`ProbeRefreshMergeReviewResult.ToEnvelope()` returns `ProtocolResultEnvelope<ProbeRefreshMergeReviewStatus>` carrying the original domain `Status`, the mapped `Disposition`, the existing `Reason`, and the existing `ErrorMessage`. It is computed on access; the result record's shape and every domain field are unchanged.
+
+### status-to-disposition mapping
+
+- ReviewPassed -> Success (review cleared the plan).
+- ManualReviewRequired -> Blocked (a governance hold/human gate, not an error).
+- ReviewBlocked -> Blocked (policy blocked, e.g. a forbidden proposed change).
+- UnsafePlan -> Blocked (recognized plan whose authority/state cannot pass automatic review; the review ran and said no -- a governance block, not a crash).
+- Disabled -> Skipped (merge off; review intentionally bypassed).
+- NoMergePlan -> Skipped (no plan supplied: an expected non-ready state, distinct from the malformed-input case, so not a Failure).
+- InvalidInput -> Failure (plan input malformed before review could decide).
+
+### compatibility behavior
+
+Zero behavior change. No field, constructor, or enum value removed or renamed. `MayMerge`, `RequiresManualReview`, `BlockedReasons`, `TelemetryEvent`, and `IsReviewPassed` all remain. Existing merge review tests are untouched and still pass; the envelope tests are additive.
+
+### why only one seam was adopted
+
+The slice brief scopes adoption to exactly one seam to validate the contract against real, production-shaped code before any broad rollout. Merge review was chosen because it is read-only, governance-oriented, and does not fetch, persist, or mutate -- so its statuses map cleanly to dispositions with no behavioral risk. Migrating the other 14 seams now would be a large surface change for no behavior gain and would re-open the genericization the balance review deliberately staged.
+
+### what intentionally remains domain-specific
+
+The `ProbeRefreshMergeReviewStatus` enum, the `ProbeRefreshMergeReviewReason` taxonomy, `MayMerge` / `RequiresManualReview` / `BlockedReasons` / `TelemetryEvent`, and the review decision logic. The other 14 probe-refresh seam result records keep their own shapes and were not retrofitted.
+
+### what is intentionally not wired yet
+
+No other seam adopts the envelope. No consumer reads `ToEnvelope()` on a pipeline path; ProtocolDiagnosticsRollup was deliberately NOT changed to consume it (would widen the slice). The projection is available for future cross-seam tooling.
+
+### tests
+
+- safe .NET targeted: 64 passed, 0 failed (also confirms compilation through the full build graph).
+- safe .NET full: 539 passed, 0 failed (was 526; +13). All existing ProbeRefreshMergeReview, ProtocolResultEnvelope, and ProtocolDiagnosticsRollup tests still green.
+- new tests cover: all 7 status->disposition mappings; original status preserved; Reason carried; ErrorMessage carried when present and null when absent; two real reviewer outputs (ReviewPassed->Success, ManualReviewRequired->Blocked) with domain fields intact.
+- No Python/Angular/PowerShell/EF/schema change -> those validations not applicable.
+
+### risks
+
+Low. Additive computed projection + tests on one seam; nothing else changed. The mapping is a pure function of Status with a conservative default. Reversible (delete the method + the test file). Residual: the disposition mapping is a judgement call (e.g. UnsafePlan -> Blocked vs Failure); it is documented in code and here so a future reviewer can revisit it deliberately.
+
+### next slice
+
+Either adopt the envelope in a second, different-shaped seam (e.g. ProbeRefreshExecutionResult or ProbeRefreshPerceiveIntakeResult) to further validate the contract across dispositions, or pause envelope adoption here as proven and pick a different factory-line slice. Do not mass-migrate; continue one seam at a time, behind tests.
+
+### Claude/Codex transfer notes
+
+- This is one-seam adoption, not a migration. Do NOT retrofit the other 14 seam results in one go.
+- The status->disposition mapping is documented in ProbeRefreshMergeReview.cs; change it there with intent (it is a governance judgement, not mechanical).
+- ToEnvelope() is additive and unconsumed on any pipeline path; do not wire it into runtime behavior without a dedicated slice.
+- Keep <JERA_SKILLS_ROOT> read-only unless explicitly approved. Use placeholders in reports/docs.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Probe Refresh Merge Review Envelope Adoption v1 implemented 2026-06-06. Added ProbeRefreshMergeReviewResult.ToEnvelope() projecting the domain status to ProtocolResultDisposition (ReviewPassed->Success; ManualReviewRequired/ReviewBlocked/UnsafePlan->Blocked; Disabled/NoMergePlan->Skipped; InvalidInput->Failure) while preserving every domain field. One seam adopted, not a migration; the other 14 seam results and the probe-specific station logic are unchanged. dotnet 539 (targeted 64), +13 tests. No model/prompt/gateway/confidence/posture/artifact/endpoint/schema/migration/Angular/MCP change. Ledger entry 14 progressed again (first real seam adopted the envelope; broader genericization still deferred). jera-workspace-skills untouched.
