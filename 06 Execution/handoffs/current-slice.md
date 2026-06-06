@@ -5008,3 +5008,96 @@ Perceive Signal Intake Runtime Consumer v1: add a read-only consumer of the norm
 Untouched (read-only this slice).
 
 status: Perceive Signal Intake Adoption v1 implemented 2026-06-06. Added read-only analyzer seed/model-emitted Perceive projection into `PerceiveSignalObservation`, kept probe-refresh projection intact, and proved both sources share the same contract. No production routing, no model/prompt/gateway/confidence/posture/artifact/endpoint/schema/migration/Angular/MCP change. dotnet 561 (targeted 64), +10 tests. Ledger entry 15 progressed but remains Deferred. jera-workspace-skills untouched.
+
+## addendum: Perceive Signal Observation Collector v1 (2026-06-06)
+
+Collection slice. Adds a read-only collector that consumes normalized analyzer-seed and probe-refresh Perceive observations and returns one `PerceiveSignalObservationSet` for inspection/adoption. Behavior-preserving: no production pipeline wiring, no analyzer seed routing, no endpoint, no model call, no Tool Gateway call, no FastAPI prompt change, no Angular change, no DB/schema change, no artifact mutation, no CognitiveProtocol mutation, no merge writer, and no confidence/posture/lean mutation.
+
+### pre-change repo-state and ahead check
+
+Verified clean before changes: <DAI_REPO_ROOT> (main, ahead 1), <DAI_VAULT_ROOT> (main, ahead 1), <JERA_SKILLS_ROOT> (main, not ahead). Required local commits confirmed: <DAI_REPO_ROOT> `50c05f5befe5d730844db0a6d0c3629835081f30`; <DAI_VAULT_ROOT> `b1ab223dbfadfdeacab0170b4d5547917036003c`.
+
+### skills/guidance used
+
+- Local <JERA_SKILLS_ROOT>/dai (read-only): dai-grill-with-vault (read current Perceive contracts, projections, tests, and ledger before naming/design), dai-token-tight, dai-agent-handoff. dai-write-skill was inspected only for boundary/doc-writing discipline.
+- superpowers-style guidance applied manually: planning / writing-plans, test-driven-development, systematic-debugging, verification-before-completion.
+- Naming and Skills Gate completed before coding: local skills inspected, repo states/ahead checks verified, prior commits verified, collector/result/status names reviewed, and development skills kept separate from runtime cognitive protocols.
+
+### naming review result
+
+Chosen: `PerceiveSignalObservationCollector`, `IPerceiveSignalObservationCollector`, `PerceiveSignalObservationSet`, `PerceiveSignalObservationCollectionResult`, `PerceiveSignalObservationCollectionStatus`.
+
+Rejected: production-routing names and a DI registration. The collector is a static-default read-only helper, matching nearby projection style and avoiding any runtime activation implication.
+
+### files changed
+
+dai:
+- `<DAI_REPO_ROOT>/platform/dotnet/DevCore.Api/Protocols/PerceiveSignalObservationCollector.cs` -- NEW. Collector, observation set, collection result, and status enum.
+- `<DAI_REPO_ROOT>/platform/dotnet/DevCore.Api.Tests/Protocols/PerceiveSignalObservationCollectorTests.cs` -- NEW. 11 tests.
+
+dai-vault:
+- `<DAI_VAULT_ROOT>/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` -- entry 15 progressed, still Deferred.
+- `<DAI_VAULT_ROOT>/06 Execution/handoffs/current-slice.md` -- this addendum.
+
+<JERA_SKILLS_ROOT>: untouched.
+
+### observation collector summary
+
+`PerceiveSignalObservationCollector` collects existing `PerceiveSignalObservation` values and exposes a `CollectFromSources(...)` convenience method that composes:
+- `PerceiveProtocol?.ToAnalyzerSeedPerceiveSignalObservations(...)`
+- `ProbeRefreshPerceiveIntakeResult?.ToPerceiveSignalIntakeResult(...)`
+
+It uses `IPerceiveSignalIntake` to validate candidates, returns accepted observations in `PerceiveSignalObservationSet`, and reports `RejectedObservationCount` for invalid/no-signal candidates.
+
+### collection behavior
+
+Statuses:
+- `Collected` -- at least one valid observation was accepted.
+- `Empty` -- no observations were supplied, or only no-signal candidates were supplied.
+- `InvalidInput` -- candidates were supplied but none were valid and at least one was invalid.
+
+Null source list returns `Empty`. Empty list returns `Empty`. Invalid/no-signal observations are rejected without throwing. Accepted observations are normalized through `PerceiveSignalIntake`; source records are not mutated.
+
+### source/origin count behavior
+
+`PerceiveSignalObservationSet` and the collection result expose `Count`, `AnalyzerSeedCount`, `PlatformRefreshCount`, `ManualInputCount`, `HistoricalMemoryCount`, and `UnknownSourceCount`. SourceKind and Origin remain visible on each observation and are not collapsed.
+
+### compatibility behavior
+
+Zero runtime behavior change. No production caller consumes the collector. No analyzer output is routed through it. No `CognitiveProtocol`, `PerceiveProtocol`, `ProbeRefreshPerceiveIntake`, artifact, DB/schema, FastAPI prompt, Angular surface, Tool Gateway behavior, model call count, confidence/posture/lean rule, or merge behavior changed. No DI registration or endpoint was added.
+
+### what intentionally remains unwired
+
+No runtime consumer, no endpoint, no activation, no direct Interrogate -> Perceive loop, no analyzer seed routing, no probe-refresh replacement, no artifact mutation, no confidence/posture/lean mutation, no MCP/pgvector/Azure Functions/Kubernetes/tenant-Stripe change.
+
+### tests
+
+- `<DAI_REPO_ROOT>/scripts/dev/dotnet/test-devcore-api-safe.ps1 -Targeted` -- pass: 64 passed, 0 failed.
+- `<DAI_REPO_ROOT>/scripts/dev/dotnet/test-devcore-api-safe.ps1 -Full` -- pass: 572 passed, 0 failed (was 561; +11).
+
+New tests cover analyzer seed collection, platform refresh collection, combined source collection, source counts, SourceKind preservation, Origin preservation, null/empty input, invalid/no-signal rejection, invalid-only fail-closed behavior, no mutation of observations/source PerceiveProtocol/refresh result, and no ToolGateway dependency.
+
+### deferred ledger updates
+
+Entry 15 progressed and remains Deferred. Analyzer seed and platform refresh observations can now be collected into one observation set, but production routing is still deferred. Direct Interrogate -> Perceive refresh, activation, merge writer, artifact mutation, confidence/posture/lean mutation, memory/pgvector, Kubernetes/AKS, tenant/Stripe, and calibration threshold changes remain deferred.
+
+### risks
+
+Low. Additive read-only collector plus tests. Residual risk: accepted observations are normalized through `PerceiveSignalIntake`, so a future runtime consumer must be explicit about whether it wants raw projected observations or validated/normalized observations.
+
+### next slice
+
+Perceive Signal Intake Runtime Consumer v1 only if there is an actual read-only caller. Otherwise pause Perceive intake work and return to the wider factory line balance review priorities. Do not start activation or production routing without a dedicated approval.
+
+### Claude/Codex transfer notes
+
+- The collector is dormant inspection/adoption infrastructure. Do not wire it into `SportsComposer`, the artifact endpoint, or the probe-refresh chain without a dedicated runtime-consumer slice.
+- `CollectFromSources(...)` composes existing projections; keep analyzer seed and probe-refresh projection behavior separate.
+- Do not infer domain signal keys from analyzer Perceive text. Field-path keys remain deliberate.
+- Keep <JERA_SKILLS_ROOT> read-only unless explicitly approved. Use placeholders in reports/docs.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Perceive Signal Observation Collector v1 implemented 2026-06-06. Added read-only collection of analyzer seed and platform refresh `PerceiveSignalObservation` values into `PerceiveSignalObservationSet`, with source counts and rejected-candidate reporting. No production routing, no model/prompt/gateway/confidence/posture/artifact/endpoint/schema/migration/Angular/MCP change. dotnet 572 (targeted 64), +11 tests. Ledger entry 15 progressed but remains Deferred. jera-workspace-skills untouched.
