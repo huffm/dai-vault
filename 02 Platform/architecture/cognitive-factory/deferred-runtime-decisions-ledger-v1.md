@@ -130,6 +130,15 @@
 - **Risk if forgotten:** the dormant assembly is mistaken for live behavior, or is enabled before the writer/observability/trigger story exists.
 - **Status:** Deferred -- assembly, diagnostics, and Activation Readiness Review v1 shipped, dormant. Activation still waits on entries 1-3, feature-flag/config design, telemetry emission, operator review, tenant/economic gating, and product approval.
 
+### 14. Genericization of probe-refresh-specific seams (intake / re-weigh / recommendation logic)
+- **Decision:** whether the probe-refresh Perceive intake, Discern re-weigh, and Decide recommendation seams are generalized into platform-level station logic now, or kept probe-refresh specific.
+- **Current choice:** kept probe-refresh specific. `ProbeRefreshPerceiveIntake` is hard-keyed to sports `ToolIds.*` and competition context types; `ProbeRefreshDiscernReweigh` and `ProbeRefreshDecideRecommendation` are single-consumer. Only the result *shape* (`Status` + `Reason` + `ErrorMessage?` + `IsX`, plus the `(Step, Reached, Outcome)` trace) is past the rule-of-three and approved for harvest; the station *logic* is not.
+- **Why deferred:** generalizing the logic on one consumer would be a speculative one-use abstraction, the opposite of the discipline the rest of the probe-refresh chain respected. The shared result envelope must land first so a future second consumer has a contract to adopt.
+- **Revisit trigger:** the Generic Station Result Envelope v1 slice lands AND a second, non-probe consumer of signal intake / re-weigh / recommendation appears.
+- **Proposed future slice:** Generic Station Result Envelope v1 (the result-shape harvest, recommended next); later a `PerceiveSignalIntake` / generic Decide policy guard only once a second use case exists.
+- **Risk if forgotten:** a second consumer copies `ProbeRefreshPerceiveIntake` wholesale (forking sports payload logic into the platform), or the probe-specific logic is prematurely lifted into shared infrastructure and ossifies on one niche.
+- **Status:** Deferred. Recorded by Factory Line Balance Review v1 (2026-06-06). See `factory-line-balance-review-v1.md`.
+
 ## Maintenance
 
 - When a slice resolves an entry, set Status to `Resolved (<slice name>, <date>)` and keep the row.

@@ -4440,3 +4440,100 @@ Probe Refresh Limited Dev Activation Plan v1: design the config and tenant-scope
 Untouched.
 
 status: Probe Refresh Chain Activation Readiness Review v1 implemented 2026-06-05. Added a docs-only readiness review in dai-vault with safe defaults, blockers, required flags, telemetry/diagnostics needs, tenant/run/idempotency boundaries, protected fields, audit requirements, allowed limited activation scope, forbidden activation scope, checklist, and next slices. No runtime code, no tests required, no endpoint, no pipeline wiring, no DB/schema/FastAPI/Angular/cloud/secrets change. Ledger entry 13 updated but remains Deferred. jera-workspace-skills untouched.
+
+## addendum: Factory Line Balance Review v1 (2026-06-06)
+
+Docs-only architecture assessment. Maps the maturity of the whole cognitive factory line (Perceive, Interrogate, Discern, Decide, Synthesize) against the deeply-built `interrogate.probe` refresh path and recommends the next implementation slice. No runtime code, no endpoint, no chain execution, no artifact/confidence/posture/lean mutation, no Tool Gateway/model/external call, no DB write, no schema/FastAPI/Angular/MCP/pgvector/Azure/Kubernetes/secrets change.
+
+### pre-change repo-state check
+
+Verified clean before changes: <DAI_REPO_ROOT> (main), <DAI_VAULT_ROOT> (main), <JERA_SKILLS_ROOT> (main). Probe Refresh Chain Activation Readiness Review v1 confirmed committed in dai-vault (commit ecf5067).
+
+### skills/guidance used
+
+- Local <JERA_SKILLS_ROOT>/dai (read-only): dai-grill-with-vault (read code + vault before asserting, report disagreements not smoothed), dai-token-tight, dai-agent-handoff (this addendum shape). dai-write-skill not used -- no skill authored. Pack not edited.
+- superpowers: planning / writing-plans (assessment structure), verification-before-completion (git status + path/ASCII checks). systematic-debugging on standby; no doc/code conflict surfaced.
+
+### docs/code decision
+
+Docs-only. The assessment is doctrine, not runtime surface. Grounded in reading the probe-refresh chain, `ProtocolNodeRunner`, `ProtocolStationCard`, `ProtocolStationDiagnostics`, `ProtocolToolAccessPolicy`, `ProtocolRegistry`, `CognitiveProtocolBuilder`, and the FastAPI analyzer seed. No code added.
+
+### files changed
+
+dai: untouched.
+
+dai-vault:
+- `02 Platform/architecture/cognitive-factory/factory-line-balance-review-v1.md` -- NEW. The factory-line balance review.
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` -- entry 14 added (genericization of probe-refresh-specific seams consciously deferred behind the recommended slice).
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+jera-workspace-skills: untouched.
+
+### factory-line balance summary
+
+Deep at one station, thin elsewhere. `interrogate.probe` carries a 17-seam dormant refresh chain + a one-station runner execute path; the other four macro protocols have no station-specific runtime seam beyond their slice of the single FastAPI analyze call (Synthesize is deterministic `SportsComposer`). Generic station infrastructure exists but is shallow: `ProtocolNodeRunner.ExecuteAsync` supports one station; `ProtocolStationCard` v0 encodes 10 of 18 blueprint fields (acknowledged in the card header, not a doc/code conflict); diagnostics and tool-access policy are read-only and dormant. Doctrine maturity (cards, ownership, boundaries) is uniformly high; runtime maturity is concentrated almost entirely in the dormant Interrogate loop.
+
+### maturity findings by macro protocol
+
+- Perceive: 3 model-emitted micro-actions; no generic intake. `ProbeRefreshPerceiveIntake` exists but is hard-keyed to sports `ToolIds.*`/context types -- not generic.
+- Interrogate: probe deterministic and live; Question/Verify model-emitted; the entire refresh chain + runner execute path live here, dormant.
+- Discern: 3 model-emitted; Weigh has a deterministic grade backbone; `ProbeRefreshDiscernReweigh` is probe-specific.
+- Decide: model-emitted; Confidence/Position deterministic + clamped; `ProbeRefreshDecideRecommendation` is recommend-only and probe-specific. No generic Decide guard.
+- Synthesize: fully deterministic `SportsComposer`; `ProbeRefreshSynthesizePreview` is preview-only, never user-facing.
+
+### overbuilt areas
+
+Probe-refresh merge half (6 seams guarding a writer that does not exist); per-seam result plumbing duplicated 15+ times; probe-only execute path on a generically-named runner.
+
+### underbuilt areas
+
+No generic Perceive signal-intake layer; no generic station result/diagnostic contract; runner drives one station; per-station tool enforcement is doctrine only (stage-level enforcement today); no generic Decide policy guard.
+
+### reusable patterns discovered
+
+Station result envelope `(Status, Reason, ErrorMessage?, IsX)`; chain step trace `(Step, Reached, Outcome)`; safe-by-default options record with inert dangerous flags; fail-closed type-erased payload recovery; read-only diagnostics over a dormant seam; forbidden-field guard enforced at multiple seams.
+
+### what remains probe-refresh specific
+
+The sports payload mapping inside `ProbeRefreshPerceiveIntake`; the DiscernReweigh/DecideRecommendation/SynthesizePreview *logic* (rule-of-three not met for the logic, only the result shape); the merge half.
+
+### what should become generic platform infrastructure
+
+The result envelope and step trace (harvest now, past rule-of-three); the read-only diagnostics shape; later a generic `PerceiveSignalIntake` (only with a second consumer) and a generic Decide policy guard.
+
+### open questions
+
+(1) factory maturity vs sports product polish -- the load-bearing fork; direction says factory, which the review follows. (2) generalize Perceive intake now or wait -- wait (one consumer). (3) generic StationResult envelope before more seams -- yes (the recommended slice). (4) Discern re-weigh generic or probe-specific -- probe-specific until a second use case. (5) minimum product-facing artifact improvement -- open, scopes the slice if (1) flips to product. (6) Decide policy guard now or with the merge writer -- defer with the writer unless a non-probe write path appears first.
+
+### recommended next implementation slice
+
+Primary: Generic Station Result Envelope v1 -- harvest the recurring result shape + step trace into one generic, tested envelope in DevCore.Api.Protocols and re-express existing seams against it with no behavior change. Activates nothing; strengthens the wider line; past rule-of-three so no speculative-abstraction risk.
+Backup: Protocol Diagnostics Rollup v1 -- read-only generic diagnostics rollup unifying the fragmenting diagnostics/telemetry/step-trace surfaces. Chosen over Decide Policy Guard and Discern Station Runner Groundwork because those deepen probe-adjacent runtime before the shared contract exists.
+
+### deferred ledger updates
+
+Added entry 14: genericization of the probe-refresh-specific seams (PerceiveSignalIntake / DiscernReweigh / DecideRecommendation logic) is consciously deferred until the recommended Generic Station Result Envelope slice lands and a second use case justifies generalizing the logic. Entries 1-6 and 13 reaffirmed as Deferred; this review changed none of their Status. Probe-refresh activation and merge writer remain parked.
+
+### verification
+
+Docs-only: no .NET tests required or run. Runtime files untouched. Schema/migration files untouched. New review doc ASCII-checked (clean). New/added docs use placeholders; no exact local paths added. git status --short run for all three repos.
+
+### risks
+
+Low. Documentation only. Main risk is staleness: if the recommended envelope slice or any activation/writer slice lands, update this review and the ledger in the same slice. Secondary risk: the recommendation assumes the factory-maturity axis (open question 1); confirm with the founder before the slice starts.
+
+### next recommended prompt
+
+> Implement Generic Station Result Envelope v1 (docs + .NET refactor, no activation). Extract the recurring probe-refresh result shape (Status + Reason + ErrorMessage? + IsX) and the chain step trace (Step, Reached, Outcome) into one generic, tested envelope in DevCore.Api.Protocols; re-express the existing ProbeRefresh* seams against it with zero behavior change. No gateway call, no writer, no endpoint, no prompt/confidence/posture/schema/Angular change. Start with the Naming and Skills Gate and a clean-repo check.
+
+### Claude/Codex transfer notes
+
+- This is an assessment, not an activation. Do not start the merge writer or chain activation from it.
+- The harvest target is the result *shape*, not the station *logic*. Do not generalize PerceiveIntake/DiscernReweigh/DecideRecommendation logic on one use case.
+- Keep <JERA_SKILLS_ROOT> read-only unless explicitly approved. Use placeholders in reports/docs.
+
+### jera-workspace-skills status
+
+Untouched.
+
+status: Factory Line Balance Review v1 implemented 2026-06-06. Added a docs-only cognitive-factory architecture assessment mapping macro-protocol/station maturity against the dormant interrogate.probe refresh chain, identifying the deep-at-one-station imbalance, harvestable patterns (result envelope, step trace), overbuilt/underbuilt areas, and reaffirming the activation/merge-writer/mutation deferrals. Primary recommendation: Generic Station Result Envelope v1; backup: Protocol Diagnostics Rollup v1. Ledger entry 14 added; entries 1-6, 13 reaffirmed Deferred. No runtime code, no tests required, no endpoint/pipeline/DB/schema/FastAPI/Angular/cloud/secrets change. jera-workspace-skills untouched.
