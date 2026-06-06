@@ -5209,3 +5209,93 @@ Discern Station Runner Adoption v1 only if there is an actual read-only caller. 
 Untouched (read-only this slice).
 
 status: Discern Station Runner Groundwork v1 implemented 2026-06-06. Added dormant deterministic Discern runner contracts for `discern.weigh`, `discern.contrast`, and `discern.stress`, with envelope and step trace projections. No production routing, no model/prompt/gateway/confidence/posture/artifact/endpoint/schema/migration/Angular/MCP change. dotnet 588 (targeted 64), +16 tests. Ledger entry 16 added and remains Deferred. jera-workspace-skills untouched.
+
+## addendum: Factory Line Balance v1 (2026-06-06)
+
+Vault-first architecture review slice. Produced a durable station operating map and next-priority recommendation for the current DAI decision factory line after Discern Station Runner Groundwork v1. Documentation only: no production runtime wiring, no Discern runner activation, no artifact mutation, no endpoint, no FastAPI change, no Angular change, no Tool Gateway behavior change, no model call, and no schema change.
+
+### pre-change repo-state and ahead check
+
+Verified clean before changes: <DAI_REPO_ROOT> (main, ahead 3), <DAI_VAULT_ROOT> (main, ahead 3), <JERA_SKILLS_ROOT> (main, not ahead).
+
+### skills/guidance used
+
+- Local <JERA_SKILLS_ROOT>/dai (read-only): dai-grill-with-vault (read vault doctrine, current-slice, ledger, and spot-checked current runtime contracts before writing), dai-token-tight, dai-agent-handoff. dai-write-skill was applied only for boundary/doc-writing discipline.
+- superpowers-style guidance applied manually: planning and verification-before-completion.
+- systematic-debugging not needed; no defect surfaced.
+- test-driven-development not used because no code changed.
+
+### docs reviewed
+
+- `02 Platform/decisions/0004-cognitive-protocol-runtime.md`
+- `02 Platform/architecture/cognitive-factory/cognitive-protocol-runtime.md`
+- `02 Platform/architecture/cognitive-factory/protocol-node-specs.md`
+- `02 Platform/architecture/cognitive-factory/protocol-station-blueprint-v1.md`
+- `02 Platform/architecture/cognitive-factory/protocol-vocabulary-map.md`
+- `02 Platform/architecture/cognitive-factory/factory-line-balance-review-v1.md`
+- `02 Platform/architecture/cognitive-factory/fastapi-canonical-field-migration-plan-v1.md`
+- `02 Platform/architecture/cognitive-factory/probe-refresh-chain-activation-readiness-v1.md`
+- `02 Platform/architecture/cognitive-factory/signal-fallback-ladder.md`
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md`
+- `02 Platform/architecture/cloud-tool-runtime-plan.md`
+- `04 Products/sports-v1/decision-factory-hardening-v1.md`
+- `04 Products/sports-v1/calibration/20260528-0931-nba-canonical-protocol-spot-check.md`
+- `04 Products/sports-v1/calibration/protocol-runs/2026-05-18-cognitive-protocol-outcome-reconciliation.md`
+- `06 Execution/handoffs/current-slice.md`
+
+Current runtime contracts were spot-checked only to avoid stale-doc carryover: `CognitiveProtocol`, `CognitiveProtocolBuilder`, `ProtocolRegistry`, `ProtocolNodeRunner`, `ProtocolDiagnosticsRollup`, `PerceiveSignalObservationCollector`, `DiscernStationRunner`, `SportsQualityChecker`, and `SignalFollowUpEvaluator`.
+
+### files changed
+
+dai-vault:
+- `<DAI_VAULT_ROOT>/02 Platform/architecture/cognitive-factory/factory-line-balance-v1.md` -- NEW. Durable architecture note mapping the decision factory line, station ownership, boundaries, maturity, risks, and next hardening priority.
+- `<DAI_VAULT_ROOT>/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` -- entry 17 added.
+- `<DAI_VAULT_ROOT>/06 Execution/handoffs/current-slice.md` -- this addendum.
+
+<DAI_REPO_ROOT>: untouched.
+<JERA_SKILLS_ROOT>: untouched.
+
+### factory line balance findings
+
+- The current bottleneck is not another dormant runner. `interrogate.probe` has deterministic execution; Perceive has normalized observation contracts and a collector; Discern has dormant runner groundwork. No concrete read-only caller was found that justifies activating `DiscernStationRunner`.
+- Prose station ownership is strong in `protocol-node-specs.md`, but runtime station cards remain partial. `ProtocolRegistry v0` does not yet encode artifact fields read/written, input/output contracts, allowed scripts/reflexes, fallback behavior, forbidden behavior, token budget, uncertainty/skip/failure statuses, or artifact mutation policy.
+- Artifact mutation governance is clear for probe-refresh: no writer, audit before effect, protected-field guards. The whole station line still needs explicit artifact mutation policy in the station contract before future adoption.
+- Confidence/posture/lean mutation rules remain clear and deferred. Do not build generic mutation policy until a real write path appears.
+- Fallback/proxy rules are clear: Interrogate names candidates, Discern grades equivalence/worth, Decide enforces permission. The explicit proxy-label artifact gap remains a sports product hardening slice, not the factory bottleneck.
+- Calibration feedback is connected offline and should stay non-mutating until evidence supports a threshold or gate change.
+
+### next recommended slice
+
+Protocol Station Contract Completion v1. Add the missing station-card ownership fields and diagnostics/startup validation without production wiring, model calls, Tool Gateway behavior change, artifact mutation, endpoints, schema changes, FastAPI prompt changes, or Angular changes.
+
+Why: it strengthens all stations and prevents future Perceive/Discern/Decide/memory/document-tool adoption from executing against partial station ownership metadata.
+
+Backup if product artifact quality becomes the near-term priority: Proxy Label Surfacing v1 from `decision-factory-hardening-v1.md`.
+
+### verification performed
+
+- git diff review.
+- `git diff --check` for <DAI_VAULT_ROOT>.
+- exact local path scan on added diff lines for <DAI_VAULT_ROOT>.
+- no code changed, so no .NET or pytest run.
+
+### deferred ledger updates
+
+Entry 17 added: Station card contract completion before station runtime adoption. It remains Deferred. Entries for probe-refresh activation, artifact mutation, confidence/posture/lean mutation, Perceive adoption, and Discern runner adoption remain Deferred.
+
+### risks
+
+Low. Documentation only. Main residual risk is staleness: if ProtocolRegistry fields or runtime station adoption land, update `factory-line-balance-v1.md` and ledger entry 17 in the same slice.
+
+### Codex/Claude transfer notes
+
+- Do not activate `DiscernStationRunner` from this slice.
+- Treat `factory-line-balance-v1.md` as the operating map for the next station-contract slice.
+- The recommended next slice is contract completion, not runner adoption or probe-refresh activation.
+- Keep <JERA_SKILLS_ROOT> read-only unless explicitly approved. Use placeholders in reports/docs.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Factory Line Balance v1 implemented 2026-06-06. Added durable vault architecture note mapping the full decision factory line, station ownership, mutation/tool/model boundaries, maturity, risk, and next hardening priority. Ledger entry 17 added for station-card contract completion before runtime adoption. No code/runtime/prompt/gateway/artifact/endpoint/schema/Angular change. jera-workspace-skills untouched.

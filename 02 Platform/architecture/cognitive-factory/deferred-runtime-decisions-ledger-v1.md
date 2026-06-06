@@ -157,6 +157,15 @@
 - **Risk if forgotten:** Discern remains model-emitted fields plus probe-refresh-specific re-weighing, so future consumers either copy probe-refresh logic or wire Discern execution directly into production without envelope/trace/status guardrails.
 - **Status:** Deferred -- runner groundwork shipped, dormant. Created by Discern Station Runner Groundwork v1 (2026-06-06). Generic Discern re-weigh is not resolved; direct Interrogate -> Perceive refresh, activation, merge writer, artifact mutation, confidence/posture/lean mutation, memory/pgvector, Kubernetes/AKS, tenant/Stripe, and calibration threshold changes remain deferred.
 
+### 17. Station card contract completion before station runtime adoption
+- **Decision:** whether any new station runtime adoption should proceed before the station cards encode full ownership boundaries.
+- **Current choice:** do not adopt or activate more station runtime behavior yet. `ProtocolRegistry v0` is useful but partial: it carries id, macro, micro-action, purpose, allowed tools, model-call policy, cost class, telemetry tags, quality gates, and calibration hooks. It does not yet encode artifact fields read/written, input/output contracts, allowed scripts/reflexes, fallback behavior, forbidden behavior, token budget, allowed memory queries, uncertainty/skip/failure statuses, or artifact mutation policy. `Factory Line Balance v1` documents the full operating map, but runtime adoption should wait until the machine-readable station contract catches up.
+- **Why deferred:** recent slices added dormant Perceive and Discern infrastructure. Activating those seams from partial station cards would create execution without complete ownership metadata, which risks tool/model/artifact/mutation boundary drift.
+- **Revisit trigger:** any proposed runtime consumer for `DiscernStationRunner`, `PerceiveSignalObservationCollector`, memory/document tools, probe-refresh adoption, or per-station execution; or an explicit request to make station diagnostics/registry ownership complete.
+- **Proposed future slice:** Protocol Station Contract Completion v1 -- add the missing station-card ownership fields and diagnostics/startup validation without production wiring, model calls, Tool Gateway behavior change, artifact mutation, endpoints, schema changes, FastAPI prompt changes, or Angular changes.
+- **Risk if forgotten:** a future slice may wire station execution, memory, document tools, or artifact writes from a partial manifest and re-create station boundaries in ad hoc code instead of the platform contract.
+- **Status:** Deferred -- documented by Factory Line Balance v1 (2026-06-06). No runtime adoption, endpoint, Tool Gateway behavior change, artifact mutation, confidence/posture/lean mutation, schema change, FastAPI prompt change, or Angular change.
+
 ## Maintenance
 
 - When a slice resolves an entry, set Status to `Resolved (<slice name>, <date>)` and keep the row.
