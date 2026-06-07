@@ -5564,3 +5564,95 @@ Protocol Station Runtime Adoption Readiness Review v1. Vault-first review to dec
 Untouched (read-only this slice).
 
 status: Protocol Station Status Contract v1 implemented 2026-06-07. Added required station status semantics metadata, populated all 15 registry cards, extended validation, station diagnostics, diagnostics rollup, and tests. No station activation, production wiring, prompt/model/gateway/confidence/posture/artifact/endpoint/schema/Angular/MCP change. dotnet protocol-focused 59, targeted 64, full 601. Ledger entry 17 progressed but remains Deferred. jera-workspace-skills untouched.
+
+## addendum: Protocol Station Runtime Adoption Readiness Review v1 (2026-06-07)
+
+Docs-only readiness review for tomorrow's station-runtime adoption deliberation. Created a durable vault note that evaluates whether any station should receive a read-only runtime caller next, maps every canonical station by adoption readiness, captures activation gates, and recommends no runtime adoption until a concrete caller/product axis is chosen.
+
+### pre-change repo-state and ahead check
+
+Verified clean before edits:
+
+- <DAI_REPO_ROOT>: `main` ahead 5.
+- <DAI_VAULT_ROOT>: `main` ahead 6.
+- <JERA_SKILLS_ROOT>: `main`, not ahead.
+
+No unrelated dirty files were present. This slice changed vault docs only.
+
+### skills/guidance used
+
+- Local <JERA_SKILLS_ROOT>/dai (read-only): dai-grill-with-vault, dai-agent-handoff, dai-token-tight, and dai-write-skill boundary guidance.
+- superpowers-style guidance applied manually: planning / writing-plans and verification-before-completion. systematic-debugging was used only as an inspection posture for docs/code disagreement; no defect required debugging. test-driven-development was not used because no code changed.
+- Naming and Skills Gate completed: readiness doc, station adoption status, activation gate, risk, and handoff naming were kept separate from runtime cognitive protocols.
+
+### docs and code reviewed
+
+- <DAI_REPO_ROOT>: `ProtocolStationCard.cs`, `ProtocolRegistry.cs`, `ProtocolRegistryValidator.cs`, `ProtocolStationDiagnostics.cs`, `ProtocolDiagnosticsRollup.cs`, `ProtocolNodeRunner.cs`, `PerceiveSignalIntake.cs`, `PerceiveSignalObservationCollector.cs`, `ProbeRefreshChainAssembly.cs`.
+- <DAI_VAULT_ROOT>: `protocol-node-specs.md`, `protocol-station-blueprint-v1.md`, `factory-line-balance-v1.md`, `factory-line-balance-review-v1.md`, `probe-refresh-chain-activation-readiness-v1.md`, `deferred-runtime-decisions-ledger-v1.md`, and this handoff.
+
+### naming review result
+
+Chosen durable note name: `protocol-station-runtime-adoption-readiness-v1.md`.
+
+Chosen deliberation terms: "read-only caller", "runtime adoption candidates", "activation gates", "blocked or forbidden moves", and "No Runtime Adoption Yet / Product Deliberation v1". These names describe governance and readiness, not runtime execution.
+
+### files changed
+
+<DAI_VAULT_ROOT>:
+
+- `02 Platform/architecture/cognitive-factory/protocol-station-runtime-adoption-readiness-v1.md`
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md`
+- `06 Execution/handoffs/current-slice.md`
+
+<DAI_REPO_ROOT>: unchanged.
+
+<JERA_SKILLS_ROOT>: untouched.
+
+### readiness summary
+
+The review found that station cards and status semantics are now strong enough for inspection, but not enough to justify adoption. No concrete read-only station consumer was found. The safest technical backup candidate is Synthesize runtime inspection because Synthesize is platform-owned, deterministic, no-tool, no-model, and mature; however, it should still wait for an explicit caller.
+
+### station findings
+
+- Perceive: generic intake/projection/collector exists, but production consumer remains absent.
+- Interrogate.Probe: mature and runner-supported, but higher activation risk; no direct retrieve and no Interrogate -> Perceive self-invocation.
+- Discern: runner groundwork exists but remains dormant; adoption risk is high because Discern affects judgment quality.
+- Decide: remains highest risk because confidence, posture, lean, and final stance boundaries are protected.
+- Synthesize: technically safest for read-only inspection, but no runtime adoption should happen without a caller.
+
+### activation gates captured
+
+Feature flag default off, dev/local-only first, named caller, tenant/run/correlation boundary, before/after diagnostics, no artifact mutation by default, no confidence/posture/lean mutation, Tool Gateway/model calls only if explicitly approved and card/policy-allowed, audit/rollback before mutation, calibration proof before confidence/posture changes, operator review path before user-facing behavior changes, and tests proving disabled/read-only behavior.
+
+### blocked moves
+
+Direct Interrogate -> Perceive self-invocation, direct tool power on `interrogate.probe`, production activation without tenant/auth boundary, artifact mutation without audit, confidence/posture/lean changes without calibration proof, merge writer before approval, endpoint before explicit gate, Tool Gateway behavior change, model-call split, FastAPI prompt change, Angular change, schema migration, and treating station-card metadata as runtime permission.
+
+### deferred ledger updates
+
+Entry 17 was progressed to note that runtime adoption readiness review shipped but found no concrete caller. Entry 18 was added for runtime station adoption before a concrete read-only caller exists. Both remain Deferred.
+
+### verification
+
+Docs-only verification completed before commit: git diff review, staged `git diff --check`, status checks for all three repos, exact local path scan for added lines, ASCII check for the new readiness doc, no runtime file changes, and no schema/migration file changes.
+
+### risks
+
+Main residual risk: future work may treat completed station-card metadata as permission to execute. The readiness note explicitly rejects that interpretation.
+
+### next slice
+
+Primary recommendation: No Runtime Adoption Yet / Product Deliberation v1. Backup only if a caller is approved: Synthesize Runtime Inspection v1, read-only and disabled by default.
+
+### Claude/Codex transfer notes
+
+- This slice is docs-only. Do not backfill runtime code.
+- Do not activate `DiscernStationRunner`, Perceive observation collection, `interrogate.probe` refresh behavior, or Synthesize inspection from this note alone.
+- Keep <JERA_SKILLS_ROOT> read-only unless explicitly approved.
+- Use placeholders in reports/docs; do not add exact local paths.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Protocol Station Runtime Adoption Readiness Review v1 drafted 2026-06-07. Docs-only readiness note created; ledger entries 17 and 18 updated; current-slice updated. No code/runtime/schema/prompt/model/gateway/artifact/endpoint/Angular/MCP change. Verification completed; vault commit pending.
