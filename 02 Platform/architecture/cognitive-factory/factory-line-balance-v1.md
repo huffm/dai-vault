@@ -363,6 +363,12 @@ Implemented 2026-06-06 as a metadata-only runtime contract slice. `ProtocolStati
 
 This does not activate stations, split model calls, change Tool Gateway behavior, mutate artifacts, add endpoints, change schema, change FastAPI prompts, change Angular, or add a merge writer. Station uncertainty/skip/failure statuses remain the next doc-to-runtime metadata gap before any broader runtime adoption.
 
+### Progress Update: Protocol Station Status Contract v1
+
+Implemented 2026-06-07 as a metadata-only runtime contract slice. `ProtocolStationCard` now carries `ProtocolStationStatusSemantics`: uncertainty behavior, skip behavior, blocked behavior, failure behavior, not-applicable behavior, and readiness interpretation. All 15 default station cards are populated, validator/diagnostics/rollup surfaces expose the semantics, and the rollup counts status-semantics completeness.
+
+This does not activate stations, run stations, split model calls, change Tool Gateway behavior, mutate artifacts, add endpoints, change schema, change FastAPI prompts, change Angular, change confidence/posture/lean behavior, or add a merge writer. The next question is not "turn it on"; it is whether a concrete read-only caller exists and what runtime adoption gate would be required.
+
 ## Anti-Goals For The Next Slice
 
 - Do not activate `DiscernStationRunner`.

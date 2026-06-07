@@ -5441,3 +5441,126 @@ Protocol Station Status Contract v1. Encode station uncertainty, skip, and failu
 Untouched (read-only this slice).
 
 status: Protocol Station Contract Completion v1 implemented 2026-06-06. Completed runtime station-card v1 metadata, registry population, validation findings, station diagnostics, and diagnostics rollup ownership/maturity summaries. No station activation, production wiring, prompt/model/gateway/confidence/posture/artifact/endpoint/schema/Angular/MCP change. dotnet targeted 64, protocol-focused 54, full 596. Ledger entry 17 progressed but remains Deferred. jera-workspace-skills untouched.
+
+## addendum: Protocol Station Status Contract v1 (2026-06-07)
+
+Runtime station-card status semantics slice. Adds metadata-only `ProtocolStationStatusSemantics` to `ProtocolStationCard`, populates all 15 `ProtocolRegistry` cards, strengthens validator findings, and exposes status semantics through station diagnostics and diagnostics rollup. Behavior-preserving: no station activation, no production pipeline wiring, no endpoint, no model call split, no Tool Gateway behavior change, no artifact mutation, no merge writer, no confidence/posture/lean mutation, no DB/schema change, no FastAPI prompt change, and no Angular change.
+
+### pre-change repo-state and ahead check
+
+Verified clean before edits:
+
+- <DAI_REPO_ROOT>: `main` ahead 4.
+- <DAI_VAULT_ROOT>: `main` ahead 5.
+- <JERA_SKILLS_ROOT>: `main`, not ahead.
+
+Protocol Station Contract Completion v1 local commits were present before edits: <DAI_REPO_ROOT> `ef12d3c` and <DAI_VAULT_ROOT> `5349ac4`.
+
+### skills/guidance used
+
+- Local <JERA_SKILLS_ROOT>/dai (read-only): dai-grill-with-vault (read completed station-card code, validator/diagnostics surfaces, node specs, blueprint, Factory Line Balance note, ledger, and handoff before naming/design), dai-token-tight, dai-agent-handoff. dai-write-skill was applied only for boundary/doc-writing discipline.
+- superpowers-style guidance applied manually: planning / writing-plans, test-driven-development, systematic-debugging, verification-before-completion.
+- Naming and Skills Gate completed: local skills inspected, repo states/ahead checks verified, previous station-contract commits verified, status/uncertainty/skip/failure names reviewed against code and vault language, and development skills kept separate from runtime cognitive protocols.
+
+### station-status gap analysis
+
+Already present before this slice: station ownership, maturity, mutation policy, read/write fields, allowed scripts/reflexes, memory-query list, input/output contracts, fallback behavior, forbidden behavior, token budget, validation, and diagnostics.
+
+Added now because every station can express it without runtime activation: uncertainty behavior, skip behavior, blocked behavior, failure behavior, not-applicable behavior, and readiness interpretation.
+
+Left deferred: runtime adoption, station activation gate, per-station model-call splitting, per-station Tool Gateway execution, memory/document tool opening, artifact mutation, confidence/posture/lean mutation, and calibration threshold changes.
+
+### naming review result
+
+Chosen:
+
+- `ProtocolStationStatusSemantics`
+- `StationUncertaintyBehavior`
+- `StationSkipBehavior`
+- `StationBlockedBehavior`
+- `StationFailureBehavior`
+- `StationNotApplicableBehavior`
+- `ReadinessInterpretation`
+
+Rejected/deferred: names that imply execution policy or activation, such as `StationExecutionStatusPolicy` or runtime activation flags. The chosen names describe diagnostic semantics only.
+
+### files changed
+
+<DAI_REPO_ROOT>:
+
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolStationCard.cs`
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolRegistry.cs`
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolRegistryValidator.cs`
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolStationDiagnostics.cs`
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolDiagnosticsRollup.cs`
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProtocolRegistryTests.cs`
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProtocolStationDiagnosticsTests.cs`
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProtocolDiagnosticsRollupTests.cs`
+
+<DAI_VAULT_ROOT>:
+
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md`
+- `02 Platform/architecture/cognitive-factory/factory-line-balance-v1.md`
+- `06 Execution/handoffs/current-slice.md`
+
+<JERA_SKILLS_ROOT>: untouched.
+
+### station status contract summary
+
+`ProtocolStationStatusSemantics` is a required, declarative station-card record. It captures how a future runner or diagnostic caller should interpret uncertainty, skipped station work, blocked station work, failed station work, not-applicable cases, and readiness/activation meaning. It is metadata only.
+
+### uncertainty, skip, blocked, and failure behavior summary
+
+- Model-owned stations generally defer uncertainty to bounded model output or surface it diagnostically; skipped model stations require manual review; blocked stations fail closed; failures surface errors.
+- `interrogate.probe` requests follow-up context as metadata but does not retrieve, call tools, or trigger Perceive. It skips safely when no doctrinal probe material exists and fails closed when blocked or failed.
+- Hybrid Decide/Discern stations surface uncertainty diagnostically and fail closed or surface errors according to their deterministic ownership. Decide readiness text explicitly does not authorize confidence, posture, or lean mutation.
+- Synthesize stations mark uncertainty as not applicable, preserve existing behavior for skip/blocked cases, and surface errors on failure.
+
+### validation behavior
+
+`ProtocolRegistryValidator` now treats missing or unknown `StatusSemantics` fields as station metadata validation errors. The default registry validates cleanly. Synthetic incomplete cards fail closed.
+
+### diagnostics behavior
+
+`ProtocolStationDiagnostics` exposes `StatusSemantics` in the read-only station snapshot.
+
+`ProtocolDiagnosticsRollup` now exposes per-station status behaviors, readiness interpretation, and `StatusSemanticsCompleteCount`. Missing status semantics are surfaced through the existing `station_contract_incomplete` diagnostic code.
+
+### compatibility behavior
+
+Existing station ids are unchanged. Existing allowed tool counts are unchanged. `ProtocolNodeRunner` support remains limited to `interrogate.probe`. Tool Gateway policy and execution behavior are unchanged.
+
+No FastAPI prompt, model call count, confidence/posture/lean rule, DB/schema, Angular, endpoint, artifact writer, merge writer, MCP, pgvector, Azure Functions, Kubernetes, tenant/Stripe behavior, calibration threshold, or production secret changed.
+
+### tests
+
+- Protocol-focused .NET filter for registry, diagnostics, rollup, node runner, and tool policy tests -- pass: 59 passed, 0 failed.
+- `<DAI_REPO_ROOT>/scripts/dev/dotnet/test-devcore-api-safe.ps1 -Targeted` -- pass: 64 passed, 0 failed.
+- `<DAI_REPO_ROOT>/scripts/dev/dotnet/test-devcore-api-safe.ps1 -Full` -- pass: 601 passed, 0 failed.
+
+New/strengthened tests cover default status semantics completeness, missing status semantics validation, default registry validation, station diagnostics projection, rollup status completeness, probe request/no-retrieval semantics, platform deterministic fail-closed/preserve behavior, model-owned uncertainty behavior, Decide no-mutation readiness semantics, unchanged station ids, unchanged tool counts, and existing policy/runner tests.
+
+### deferred ledger updates
+
+Entry 17 progressed and remains Deferred. Protocol Station Status Contract v1 completed the v1 status metadata and diagnostics/validation surface, but runtime adoption remains deferred. Station runner activation, direct Interrogate -> Perceive refresh, merge writer, artifact mutation, confidence/posture/lean mutation, memory/pgvector, Kubernetes/AKS, tenant/Stripe, calibration threshold changes, and Tool Gateway/model/prompt activation remain deferred.
+
+### risks
+
+Low. The slice is additive metadata and tests. Residual risk: readiness interpretation strings could drift from doctrine if future station edits skip vault review. A future runtime-adoption review must not treat status semantics as permission to execute.
+
+### next slice
+
+Protocol Station Runtime Adoption Readiness Review v1. Vault-first review to decide whether a concrete read-only caller exists and what activation gate would be required. Do not activate stations, split model calls, or wire dormant runners without a dedicated approval.
+
+### Claude/Codex transfer notes
+
+- `ProtocolStationStatusSemantics` is diagnostic governance metadata, not runtime behavior.
+- Do not wire `DiscernStationRunner`, `PerceiveSignalObservationCollector`, memory/document tools, probe-refresh adoption, or per-station execution from these semantics without a dedicated runtime-consumer slice.
+- Keep `AllowedMemoryQueries` empty until governed memory tooling is explicitly approved.
+- Keep <JERA_SKILLS_ROOT> read-only unless explicitly approved. Use placeholders in reports/docs.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Protocol Station Status Contract v1 implemented 2026-06-07. Added required station status semantics metadata, populated all 15 registry cards, extended validation, station diagnostics, diagnostics rollup, and tests. No station activation, production wiring, prompt/model/gateway/confidence/posture/artifact/endpoint/schema/Angular/MCP change. dotnet protocol-focused 59, targeted 64, full 601. Ledger entry 17 progressed but remains Deferred. jera-workspace-skills untouched.
