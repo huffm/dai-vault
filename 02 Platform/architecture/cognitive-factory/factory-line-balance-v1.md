@@ -357,6 +357,12 @@ Why this is the current bottleneck:
 
 Backup if product artifact quality is chosen over factory hardening: **Proxy Label Surfacing v1** from `decision-factory-hardening-v1.md`. That is a valid sports product slice, but it is not the platform factory bottleneck.
 
+### Progress Update: Protocol Station Contract Completion v1
+
+Implemented 2026-06-06 as a metadata-only runtime contract slice. `ProtocolStationCard` now carries the v1 station ownership surface: execution owner, runtime maturity, artifact mutation policy, artifact fields read/written, input/output contracts, allowed scripts/reflexes, allowed memory queries, fallback behavior, forbidden behavior, and token budget. All 15 default station cards are populated, and validator/diagnostics/rollup surfaces expose the new fields.
+
+This does not activate stations, split model calls, change Tool Gateway behavior, mutate artifacts, add endpoints, change schema, change FastAPI prompts, change Angular, or add a merge writer. Station uncertainty/skip/failure statuses remain the next doc-to-runtime metadata gap before any broader runtime adoption.
+
 ## Anti-Goals For The Next Slice
 
 - Do not activate `DiscernStationRunner`.

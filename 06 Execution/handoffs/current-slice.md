@@ -5299,3 +5299,145 @@ Low. Documentation only. Main residual risk is staleness: if ProtocolRegistry fi
 Untouched (read-only this slice).
 
 status: Factory Line Balance v1 implemented 2026-06-06. Added durable vault architecture note mapping the full decision factory line, station ownership, mutation/tool/model boundaries, maturity, risk, and next hardening priority. Ledger entry 17 added for station-card contract completion before runtime adoption. No code/runtime/prompt/gateway/artifact/endpoint/schema/Angular change. jera-workspace-skills untouched.
+
+## addendum: Protocol Station Contract Completion v1 (2026-06-06)
+
+Runtime station-card metadata completion slice. Adds the missing v1 ownership/contract metadata to `ProtocolStationCard`, populates all 15 `ProtocolRegistry` cards, strengthens validator findings, and exposes the new fields through station diagnostics and diagnostics rollup. Behavior-preserving: no station activation, no production pipeline wiring, no endpoint, no model call split, no Tool Gateway behavior change, no artifact mutation, no merge writer, no confidence/posture/lean mutation, no DB/schema change, no FastAPI prompt change, and no Angular change.
+
+### pre-change repo-state and ahead check
+
+Verified before edits:
+
+- <DAI_REPO_ROOT>: `main` ahead 3, with one in-scope modified target file: `platform/dotnet/DevCore.Api/Protocols/ProtocolStationCard.cs`. The file already contained the additive metadata shell from this slice; it was preserved and completed rather than reverted.
+- <DAI_VAULT_ROOT>: `main` ahead 4, clean.
+- <JERA_SKILLS_ROOT>: `main`, not ahead, clean.
+
+Factory Line Balance v1 local vault commit was present before edits. Recent local Perceive/Discern code commits were present before edits.
+
+### skills/guidance used
+
+- Local <JERA_SKILLS_ROOT>/dai (read-only): dai-grill-with-vault (read code and vault specs before editing; challenged runner activation and station-boundary assumptions), dai-token-tight, dai-agent-handoff. dai-write-skill was applied only for boundary/doc-writing discipline.
+- superpowers-style guidance applied manually: planning / writing-plans, test-driven-development, systematic-debugging, verification-before-completion.
+- Naming and Skills Gate completed: local skills inspected, repo states/ahead checks verified, Factory Line Balance v1 verified, station-card field names reviewed against `protocol-station-blueprint-v1.md` and `protocol-node-specs.md`, and development skills kept separate from runtime cognitive protocols.
+
+### station-card gap analysis
+
+Already present before this slice: station id, macro protocol, micro-action, purpose, allowed tools, model-call policy, cost class, telemetry tags, quality gates, and calibration hooks.
+
+Added now because they can be populated for every station without guessing: execution owner, runtime maturity, artifact mutation policy, artifact fields read, artifact fields written, allowed scripts/reflexes, allowed memory queries, input contract, output contract, fallback behavior, forbidden behavior, and token budget.
+
+Left deferred/doc-level: station uncertainty/skip/failure status taxonomy, per-station model-call splitting, per-station Tool Gateway execution, memory/document tool opening, tenant/Stripe behavior, and runtime artifact mutation governance beyond metadata.
+
+### naming review result
+
+Chosen names follow vault vocabulary where it already exists:
+
+- `ArtifactFieldsRead`
+- `ArtifactFieldsWritten`
+- `AllowedScripts`
+- `AllowedMemoryQueries`
+- `InputContract`
+- `OutputContract`
+- `FallbackBehavior`
+- `ForbiddenBehavior`
+- `TokenBudget`
+
+Additional small runtime metadata names:
+
+- `StationExecutionOwner` with `Model`, `Platform`, `Hybrid`, `Unknown`
+- `StationRuntimeMaturity` with `Mature`, `Partial`, `Thin`, `Overdeep`, `Unknown`
+- `StationArtifactMutationPolicy` with `ScopedOutputOnly`, `InitialArtifactAssembly`, `InitialArtifactPersistence`, `Unknown`
+
+Rejected/deferred: tenant/Stripe naming, activation naming, and uncertainty/skip/failure status naming. Those would imply runtime adoption or a wider policy slice.
+
+### files changed
+
+<DAI_REPO_ROOT>:
+
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolStationCard.cs`
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolRegistry.cs`
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolRegistryValidator.cs`
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolStationDiagnostics.cs`
+- `platform/dotnet/DevCore.Api/Protocols/ProtocolDiagnosticsRollup.cs`
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProtocolRegistryTests.cs`
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProtocolStationDiagnosticsTests.cs`
+- `platform/dotnet/DevCore.Api.Tests/Protocols/ProtocolDiagnosticsRollupTests.cs`
+
+<DAI_VAULT_ROOT>:
+
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md`
+- `02 Platform/architecture/cognitive-factory/factory-line-balance-v1.md`
+- `06 Execution/handoffs/current-slice.md`
+
+<JERA_SKILLS_ROOT>: untouched.
+
+### station card contract summary
+
+`ProtocolStationCard` now carries the machine-readable v1 station ownership surface. `ProtocolRegistry.Default()` populates all 15 stations with read/write fields, scripts/reflexes, input/output contracts, fallback behavior, forbidden behavior, memory-query lists, token budget, execution owner, maturity, and mutation policy.
+
+No card changes station id, allowed tool id, model-call policy, cost class, quality gate, or calibration hook behavior.
+
+### ownership and maturity summary
+
+- Model-owned stations: Perceive trio, Interrogate Question/Verify, Discern Contrast/Stress.
+- Platform-owned stations: Interrogate Probe and Synthesize trio.
+- Hybrid stations: Discern Weigh and Decide trio, where platform-owned deterministic clamps/grades/numbers constrain model-emitted text.
+- Mature stations: Interrogate Probe and Synthesize trio.
+- Partial stations: shared-analyze model/hybrid stations.
+
+Artifact mutation policy is metadata only:
+
+- `ScopedOutputOnly` for normal station output.
+- `InitialArtifactAssembly` for Synthesize Compose.
+- `InitialArtifactPersistence` for Synthesize Deliver.
+
+### validation behavior
+
+`ProtocolRegistryValidator` now reports missing required station metadata as validation errors while continuing the existing card-to-tool registry cross-check. The default registry validates cleanly. Synthetic incomplete cards fail closed with metadata findings.
+
+The startup guard still validates only static metadata. It does not execute stations, invoke the Tool Gateway, call a model, read markdown, or mutate artifacts.
+
+### diagnostics behavior
+
+`ProtocolStationDiagnostics` exposes the new station-card fields in the read-only diagnostic snapshot.
+
+`ProtocolDiagnosticsRollup` now surfaces execution owner, maturity, artifact mutation policy, artifact-field counts, forbidden-behavior counts, and owner/maturity aggregate counts. Metadata validation errors are classified as `station_contract_incomplete`; tool-manifest mismatches remain `tool_manifest_mismatch`.
+
+### compatibility behavior
+
+Existing station ids are unchanged. Existing allowed tool counts are unchanged: 11 shared-analyze stations still list `analysis.sports.matchup_read`, and the 4 deterministic stations still list no tools. `ProtocolNodeRunner` support remains limited to `interrogate.probe`. Tool Gateway policy and execution behavior are unchanged.
+
+No FastAPI prompt, model call count, confidence/posture/lean rule, DB/schema, Angular, endpoint, artifact writer, merge writer, MCP, pgvector, Azure Functions, Kubernetes, or production secret changed.
+
+### tests
+
+- `<DAI_REPO_ROOT>/scripts/dev/dotnet/test-devcore-api-safe.ps1 -Targeted` -- pass: 64 passed, 0 failed.
+- Protocol-focused .NET filter for registry, diagnostics, rollup, node runner, and tool policy tests -- pass: 54 passed, 0 failed.
+- `<DAI_REPO_ROOT>/scripts/dev/dotnet/test-devcore-api-safe.ps1 -Full` -- pass: 596 passed, 0 failed.
+
+New/strengthened tests cover default metadata completeness, missing metadata validation, unchanged tool counts, platform/model ownership markers, station diagnostics field projection, unknown-station diagnostic null/empty shape, rollup ownership/maturity counts, rollup station metadata counts, tool-mismatch findings, and incomplete-contract findings.
+
+### deferred ledger updates
+
+Entry 17 progressed and remains Deferred. Protocol Station Contract Completion v1 completed the v1 ownership metadata and diagnostics/validation surface, but runtime adoption remains deferred. Station uncertainty/skip/failure statuses remain deferred as a smaller follow-on metadata gap. Station runner activation, direct Interrogate -> Perceive refresh, merge writer, artifact mutation, confidence/posture/lean mutation, memory/pgvector, Kubernetes/AKS, tenant/Stripe, and calibration threshold changes remain deferred.
+
+### risks
+
+Low. The slice is additive metadata and tests. Residual risk: string-based contract fields can drift from doctrine if future changes skip vault review. A future status-contract slice should keep uncertainty/skip/failure states metadata-only until a concrete runtime caller exists.
+
+### next slice
+
+Protocol Station Status Contract v1. Encode station uncertainty, skip, and failure statuses as metadata/diagnostics only, then stop. Do not activate stations or wire dormant runners without a concrete read-only caller and a dedicated approval.
+
+### Claude/Codex transfer notes
+
+- Treat the new station-card fields as declarative governance metadata, not runtime permissions or activation.
+- Do not wire `DiscernStationRunner`, `PerceiveSignalObservationCollector`, memory/document tools, probe-refresh adoption, or per-station execution through the new cards without a dedicated runtime-consumer slice.
+- Keep `AllowedMemoryQueries` empty until governed memory tooling is explicitly approved.
+- Keep <JERA_SKILLS_ROOT> read-only unless explicitly approved. Use placeholders in reports/docs.
+
+### jera-workspace-skills status
+
+Untouched (read-only this slice).
+
+status: Protocol Station Contract Completion v1 implemented 2026-06-06. Completed runtime station-card v1 metadata, registry population, validation findings, station diagnostics, and diagnostics rollup ownership/maturity summaries. No station activation, production wiring, prompt/model/gateway/confidence/posture/artifact/endpoint/schema/Angular/MCP change. dotnet targeted 64, protocol-focused 54, full 596. Ledger entry 17 progressed but remains Deferred. jera-workspace-skills untouched.
