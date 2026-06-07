@@ -5656,3 +5656,79 @@ Primary recommendation: No Runtime Adoption Yet / Product Deliberation v1. Backu
 Untouched (read-only this slice).
 
 status: Protocol Station Runtime Adoption Readiness Review v1 drafted 2026-06-07. Docs-only readiness note created; ledger entries 17 and 18 updated; current-slice updated. No code/runtime/schema/prompt/model/gateway/artifact/endpoint/Angular/MCP change. Verification completed; vault commit pending.
+
+## addendum: Product vs Factory Deliberation v1 (2026-06-07)
+
+Docs-only deliberation after Protocol Station Runtime Adoption Readiness Review v1. The review applies the platform charter principle that platform = factory and product = packaged buyer value. It decides that the next slice should be product-forward, not another station-runtime or factory-maturity slice.
+
+### pre-change repo-state and ahead check
+
+Verified clean before edits:
+
+- <DAI_REPO_ROOT>: `main` ahead 5.
+- <DAI_VAULT_ROOT>: `main` ahead 7.
+- <JERA_SKILLS_ROOT>: `main`, not ahead.
+
+No unrelated dirty files were present. This slice changed vault docs only.
+
+### guidance used
+
+- Vault-first review before recommendation.
+- AGENTS boundary guidance: product docs remain in <DAI_VAULT_ROOT>/04 Products, platform deferrals remain in <DAI_VAULT_ROOT>/02 Platform.
+- Planning / writing-plans and verification-before-completion applied manually.
+- No test-driven-development because no code changed.
+
+### docs reviewed
+
+- <DAI_VAULT_ROOT>/02 Platform/architecture/cognitive-factory/protocol-station-runtime-adoption-readiness-v1.md
+- <DAI_VAULT_ROOT>/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md
+- <DAI_VAULT_ROOT>/04 Products/sports-v1/product-brief.md
+- <DAI_VAULT_ROOT>/04 Products/sports-v1/value-proposition.md
+- <DAI_VAULT_ROOT>/04 Products/sports-v1/target-customer.md
+- <DAI_VAULT_ROOT>/04 Products/sports-v1/v1-scope.md
+- <DAI_VAULT_ROOT>/04 Products/sports-v1/ui-concept.md
+- <DAI_VAULT_ROOT>/04 Products/sports-v1/decision-factory-hardening-v1.md
+- <DAI_VAULT_ROOT>/04 Products/sports-v1/current-sports-analysis-flow.md
+- <DAI_VAULT_ROOT>/04 Products/sports-v1/calibration/20260528-0931-nba-canonical-protocol-spot-check.md
+- <DAI_VAULT_ROOT>/04 Products/sports-v1/calibration/20260529-1421-mlb-calibration.md
+- <DAI_VAULT_ROOT>/04 Products/sports-v1/calibration/protocol-runs/2026-05-18-cognitive-protocol-outcome-reconciliation.md
+
+### files changed
+
+<DAI_VAULT_ROOT>:
+
+- `04 Products/sports-v1/product-vs-factory-deliberation-v1.md`
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md`
+- `06 Execution/handoffs/current-slice.md`
+
+<DAI_REPO_ROOT>: unchanged.
+
+<JERA_SKILLS_ROOT>: untouched.
+
+### deliberation finding
+
+More factory work does not currently produce a direct buyer-visible artifact improvement. Station contracts and readiness diagnostics are strong enough to keep future adoption safe, but no concrete read-only runtime caller exists. The buyer-visible gap is that the sports product promises a signal-scored brief, while the clearest signal/quality evidence still lives mostly in internal artifact and calibration surfaces.
+
+### required conclusion
+
+Recommended next slice: Sports Brief Signal Table v1.
+
+Synthesize Runtime Inspection v1 remains a backup only. It should not become next unless a named caller proves that existing artifact/diagnostic surfaces are insufficient.
+
+### deferred ledger updates
+
+Entry 18 was updated to record that Product vs Factory Deliberation v1 found no concrete runtime caller and recommends product polish next. Runtime station adoption remains Deferred.
+
+### guardrails carried forward
+
+Do not activate stations, treat station-card metadata as execution permission, expand Probe tool power, allow artifact mutation, change confidence/posture/lean without calibration proof, or adopt runtime station behavior without a named caller.
+
+### verification
+
+Docs-only verification completed: `git diff --check` with the new doc included through an intent-to-add diff, exact local path scan for added lines, ASCII scan on the new deliberation note, confirmed no runtime files changed, and confirmed no schema/migration files changed.
+
+### next slice
+
+Sports Brief Signal Table v1. Use existing artifact fields to make grounded/missing/weak/proxy signal state buyer-visible. Do not add sources, activate stations, mutate artifacts, or change confidence/posture/lean in that slice without separate approval.
+
+status: Product vs Factory Deliberation v1 drafted 2026-06-07. Docs-only note created; ledger entry 18 updated; current-slice updated. No code/runtime/schema/prompt/model/gateway/artifact/endpoint/Angular/MCP change. Verification completed. Not committed in this turn.
