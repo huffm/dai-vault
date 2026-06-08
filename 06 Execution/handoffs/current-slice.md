@@ -6105,3 +6105,71 @@ Entry 19 clarified: buyer copy/order locked; `Unavailable` still collapsed and s
 Line Movement Proxy v1 or Signal Source and Fallback Catalog v1 (ledger entry 19), only after confirming a recurring buyer-relevant gap. Backend availability-fidelity/source-kind metadata remains the precondition for buyer-visible Unavailable/source provenance.
 
 status: Artifact Copy and Section Order v1 implemented 2026-06-08. Frontend-only; 29 tests + build green; ledger entry 19 clarified; copy/order doc + current-slice updated. No .NET/schema/prompt/model/gateway/source/station/probe-refresh/artifact/confidence/posture/lean change. Committed locally, not pushed.
+
+## addendum: Buyer Artifact UX Calibration v1 (2026-06-08)
+
+Docs-only product calibration. Calibrated the buyer artifact surface against 33 existing generated NBA/MLB artifacts; identified the recurring signal gap and the top buyer copy risk. No code/runtime/schema/prompt/source change.
+
+### pre-change repo-state and ahead check
+
+- <DAI_REPO_ROOT>: `main`, even with origin (6d8553d pushed).
+- <DAI_VAULT_ROOT>: `main`, even with origin (b206e8d pushed).
+- <JERA_SKILLS_ROOT>: `main`, ahead 2 (pre-existing user commits; untouched).
+
+### skills / guidance used
+
+- local DAI pack (read-only): `dai-grill-with-vault`, `dai-token-tight`, `dai-agent-handoff`.
+- local runtime skill (read-only): `dai-signal-follow-up-diagnostics` for signal vocabulary.
+- superpowers (manual): `writing-plans`, `verification-before-completion`. No TDD/systematic-debugging (docs-only, no defect).
+
+### docs/code decision
+
+Docs-only. The top finding ("Edge" prose) is model-produced and out of scope; no frontend bug warranted a fix.
+
+### calibration samples reviewed
+
+33 generated artifact JSONs (NBA/MLB, 2026-05-07..05-29) under the calibration artifacts area, plus dated calibration reports. 23 rich (signalAvailability) + ~10 legacy (coarse grounded/missing) -- both buyer-summary paths exercised. Cross-checked the live buyer surface and the dev signal-table projection.
+
+### files changed
+
+<DAI_VAULT_ROOT>:
+
+- `04 Products/sports-v1/buyer-artifact-ux-calibration-v1.md` (new)
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` (entry 19 confirmed; entry 20 created)
+- `06 Execution/handoffs/current-slice.md` (this addendum)
+
+<DAI_REPO_ROOT>: unchanged. <JERA_SKILLS_ROOT>: untouched.
+
+### buyer-readiness judgment
+
+Clear, credible, and honest -- buyer-usable as-is. The surface leads with the decision, surfaces the dominant gap plainly ("Sharp vs Public -- Not available in this run"), and keeps the stance cautious. The Signal Summary supports rather than distracts.
+
+### main UX findings
+
+- Decision-first order and the Signal Summary placement work; nothing structurally broken.
+- One material risk, and it is model prose, not frontend: `lean` says "Edge toward X" in 27/33 (82%) -- a betting word the frontend avoids, in the most-read field.
+- Minor cosmetic: legacy Signal Summary rows render a dangling middle-dot/dash separator when impact is unknown (Buyer Artifact Visual QA later).
+
+### main signal gap findings
+
+`sharp_public` (Sharp vs Public) is the recurring buyer-relevant gap -- the only missing signal (19/33 coarse, 9/9 of rich-path missing). `market` / `rest_schedule` / `starting_pitching` consistently grounded. `signals_used` ungrounded claims in 25/33 (dev-only). Confidence >= 0.65 with sharp_public missing in 15/33 (surfaced honestly by the Signal Summary).
+
+### next recommended slice
+
+Prompt Copy Safety v1 -- constrain model prose (lean/summary) to analysis framing and limit `signals_used` to grounded signals. Highest-frequency buyer-visible risk, cheapest fix, protects positioning. Source expansion for the sharp_public gap (entry 19) is sequenced after copy safety.
+
+### deferred ledger updates
+
+Entry 19 confirmed (sharp_public is the dominant recurring gap; handled honestly; source expansion sequenced after copy safety; NOT resolved). Entry 20 created (buyer-facing model prose copy safety; Deferred; recommended next). Probe-refresh activation, confidence/posture/lean mutation, tenant/Stripe boundary remain Deferred and NOT resolved.
+
+### tests / checks
+
+- docs-only: `git diff --check` clean (benign LF->CRLF only); exact-path scan clean; ASCII check on new note passed; headings/links inspected. No Angular/.NET tests required (no code change).
+
+### risks
+
+- "Edge" prose persists until Prompt Copy Safety v1 ships.
+- Partial-evidence confidence mitigated but not eliminated.
+- Sample set is NBA/MLB only; NFL (commercial v1 lead) not represented -- calibrate when NFL runs exist.
+
+status: Buyer Artifact UX Calibration v1 drafted 2026-06-08. Docs-only; calibration note created; ledger entry 19 confirmed and entry 20 created; current-slice updated. No code/runtime/schema/prompt/model/gateway/source/station/probe-refresh/artifact/confidence/posture/lean change. Committed locally, not pushed.
