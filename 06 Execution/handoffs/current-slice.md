@@ -6034,3 +6034,74 @@ Entry 19 clarified: buyer route shipped; it collapses `Unavailable` into "Not av
 Artifact Copy and Section Order v1 (lock buyer labels + read-section ordering now that a real buyer signal surface exists). Alternatively Signal Source and Fallback Catalog v1 / Line Movement Proxy v1 if one gap dominates real runs.
 
 status: Buyer Artifact Route v1 implemented 2026-06-08. Frontend-only; tests + build green; ledger entry 19 clarified; buyer route doc + current-slice updated. No .NET/schema/prompt/model/gateway/source/station/probe-refresh/artifact/confidence/posture/lean change. Committed locally, not pushed.
+
+## addendum: Artifact Copy and Section Order v1 (2026-06-08)
+
+Product-design slice with small frontend-only implementation. Locked buyer reading order and copy for the analyzer artifact surface. No runtime/schema/prompt/source/tool change; dev surfaces untouched.
+
+### pre-change repo-state and ahead check
+
+- <DAI_REPO_ROOT>: `main`, even with origin (Buyer Artifact Route v1 8cc17f0 pushed).
+- <DAI_VAULT_ROOT>: `main`, even with origin (de73775 pushed).
+- <JERA_SKILLS_ROOT>: `main`, ahead 2 (pre-existing user commits 0b1ebb1 and one newer; untouched).
+
+### skills / guidance used
+
+- local DAI pack (read-only): `dai-grill-with-vault`, `dai-token-tight`, `dai-agent-handoff`.
+- local runtime skill (read-only): `dai-signal-follow-up-diagnostics` for signal vocabulary.
+- superpowers (manual): `writing-plans`, `test-driven-development`, `verification-before-completion`.
+
+### docs/code decision
+
+Frontend-only. Section reorder + copy refinements; buyer copy transforms stay in the single buyer mapper. No backend, schema, prompt, endpoint, or source change.
+
+### files changed
+
+<DAI_REPO_ROOT>:
+
+- `apps/sports-app/src/app/analyzer/analyzer.component.html` -- Read Stance moved decision-first (under Analyzed Matchup); "What Would Change the Read" renamed "What Could Change the Read".
+- `apps/sports-app/src/app/analyzer/buyer-signal-summary.ts` -- buyer copy: "Not available in this run", "Not clear enough to use", "Backed by current data".
+- `apps/sports-app/src/app/analyzer/buyer-signal-summary.spec.ts` -- assertions updated; added unrecognized-state test.
+
+(`analyzer.component.ts` unchanged this slice.)
+
+<DAI_VAULT_ROOT>:
+
+- `04 Products/sports-v1/artifact-copy-and-section-order-v1.md` (new)
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` (entry 19 clarified)
+- `06 Execution/handoffs/current-slice.md` (this addendum)
+
+<JERA_SKILLS_ROOT>: untouched.
+
+### chosen buyer section order
+
+Answer card: Analyzed Matchup -> Read Stance (moved up) -> Current Lean -> Summary -> Confidence -> Counter Case -> Watch For -> What Could Change the Read. Supporting full-width: Signal Summary -> Factor Breakdown. The deeper relayout (Signal Summary above the prose narrative) is deferred -- it would break the locked two-column answer zone.
+
+### final buyer labels / labels avoided
+
+Kept: Matchup Read, Read Stance, Current Lean (analysis-framed, not a pick), Summary, Confidence, Counter Case, Watch For, Signal Summary, Factor Breakdown. Changed: "What Could Change the Read"; state copy "Not available in this run" / "Not clear enough to use" / evidence "Backed by current data". Avoided: raw signal keys, probe, ToolGateway, source kind, analyzer seed, platform derived, cognitive protocol, artifact version, run id, diagnostics, edge, lock, guaranteed, pick. Tests assert no raw key or internal vocabulary leaks.
+
+### what remains dev-only
+
+Full Brief Signal Table, Signal Availability/Follow-Up tables, Pipeline Steps, Cognitive Protocol, Artifact Quality, Raw Artifact, analyzer confidence, artifact version, run id -- unchanged on the dev artifact-review surface.
+
+### tests / checks
+
+- `npm test` (vitest): 3 files, 29 tests passed.
+- `npm run build`: clean.
+- `git diff --check`: clean (benign LF->CRLF only). exact-path scan: clean. dev-artifact-review confirmed unchanged. No .NET change.
+
+### deferred ledger updates
+
+Entry 19 clarified: buyer copy/order locked; `Unavailable` still collapsed and source provenance omitted pending backend availability-fidelity/source-kind metadata. Source expansion, probe-refresh activation, confidence/posture/lean mutation, tenant/Stripe boundary remain Deferred and NOT resolved.
+
+### risks
+
+- Model-produced lean/prose text is outside this slice; pick/edge/lock language there is a backend/prompt concern (deferred). Controlled labels/framing avoid it.
+- Read Stance reorder is small; verified by build with the rest of the answer card intact.
+
+### next slice
+
+Line Movement Proxy v1 or Signal Source and Fallback Catalog v1 (ledger entry 19), only after confirming a recurring buyer-relevant gap. Backend availability-fidelity/source-kind metadata remains the precondition for buyer-visible Unavailable/source provenance.
+
+status: Artifact Copy and Section Order v1 implemented 2026-06-08. Frontend-only; 29 tests + build green; ledger entry 19 clarified; copy/order doc + current-slice updated. No .NET/schema/prompt/model/gateway/source/station/probe-refresh/artifact/confidence/posture/lean change. Committed locally, not pushed.
