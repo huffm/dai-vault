@@ -5962,3 +5962,75 @@ Entry 19 clarified: buyer route needs read-only availability-fidelity and source
 Docs-only: `git diff --check` clean, exact-path scan clean (placeholders only), ASCII check on the new note passed, no runtime/schema/Angular files changed.
 
 status: Sports Artifact Productization Review v1 drafted 2026-06-08. Docs-only; review note created; ledger entry 19 clarified; current-slice updated. No code/runtime/schema/prompt/model/gateway/station/probe-refresh/artifact/confidence/posture/lean change. Committed locally, not pushed.
+
+## addendum: Buyer Artifact Route v1 (2026-06-08)
+
+Implementation slice (frontend-only). Added a read-only buyer-safe signal summary to the analyzer surface, closing the gap named by Sports Artifact Productization Review v1.
+
+### pre-change repo-state and ahead check
+
+- <DAI_REPO_ROOT>: `main`, even with origin (Sports Brief Signal Table v1 pushed).
+- <DAI_VAULT_ROOT>: `main`, even with origin (productization review 7483392 pushed).
+- <JERA_SKILLS_ROOT>: `main`, ahead 1 (pre-existing user commit 0b1ebb1; untouched).
+
+### skills / guidance used
+
+- local DAI pack (read-only): `dai-grill-with-vault`, `dai-token-tight`, `dai-agent-handoff`.
+- local runtime skill (read-only): `dai-signal-follow-up-diagnostics` for canonical signal vocabulary.
+- superpowers (manual): `writing-plans`, `test-driven-development`, `verification-before-completion`.
+
+### docs/code decision
+
+Frontend-only. Reuse the existing artifact read endpoint and the existing `buildSignalTable` projection through a thin buyer mapper; no backend/schema/contract change.
+
+### files changed
+
+<DAI_REPO_ROOT>:
+
+- `apps/sports-app/src/app/analyzer/buyer-signal-summary.ts` (new) -- `buildBuyerSignalSummary(artifact)` buyer-safe mapper over `buildSignalTable`.
+- `apps/sports-app/src/app/analyzer/buyer-signal-summary.spec.ts` (new) -- 13 vitest tests.
+- `apps/sports-app/src/app/analyzer/analyzer.component.ts` -- read-only artifact fetch after a run, `buyerSignalSummary` computed, tone helpers; artifact cleared with result.
+- `apps/sports-app/src/app/analyzer/analyzer.component.html` -- new Signal Summary card between the read and Factor Breakdown.
+
+<DAI_VAULT_ROOT>:
+
+- `04 Products/sports-v1/buyer-artifact-route-v1.md` (new)
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` (entry 19 clarified)
+- `06 Execution/handoffs/current-slice.md` (this addendum)
+
+<JERA_SKILLS_ROOT>: untouched.
+
+### buyer route summary
+
+After a run, the analyzer fetches the artifact read-only via `getAgentRunArtifact` and renders a calm "Signal Summary" card grid: plain category labels, an evidence-strength dot (not a betting direction), a buyer state word, evidence posture, a calm flag phrase, what-would-change, and a Confidence band chip. Fail-soft: hidden when the artifact is unavailable (e.g. stub mode) or carries no signals.
+
+### signal summary behavior
+
+Reuses `buildSignalTable` for all signal meaning; translates state to buyer words (Supported / Light support / Indirect support / Not available / Unavailable / Not applicable / Unclear), impact to calm phrases, and bands confidence by the analyzer's 0.70/0.45 thresholds. Renders legacy artifacts from coarse grounded/missing lists; never exposes raw signal keys or internal source/probe vocabulary.
+
+### what remains dev-only
+
+Full Brief Signal Table (Source Type, Probe, raw Evidence), Signal Availability/Follow-Up tables, Pipeline Steps, Cognitive Protocol, Artifact Quality, Raw Artifact, analyzer confidence, artifact version, run id -- all unchanged on the dev artifact-review surface.
+
+### tests / checks
+
+- `npm test` (vitest): 3 files, 28 tests passed (13 new buyer-summary + 14 signal-table + 1 app).
+- `npm run build`: application bundle generation complete, no errors.
+- `git diff --check`: clean (benign LF->CRLF only). exact-path scan: clean. No .NET change.
+- No preview run.
+
+### deferred ledger updates
+
+Entry 19 clarified: buyer route shipped; it collapses `Unavailable` into "Not available" and omits source provenance because availability-fidelity and source-kind metadata still do not exist. Source expansion, probe-refresh activation, confidence/posture/lean mutation, and tenant/Stripe boundary remain Deferred and NOT resolved.
+
+### risks
+
+- Stub mode has no artifact endpoint, so the summary hides (fail-soft, expected).
+- Evidence-strength dot could be misread as a betting direction; mitigated by aria labels and neutral dots, not arrows.
+- `Unavailable` / source provenance await backend metadata (entry 19).
+
+### next slice
+
+Artifact Copy and Section Order v1 (lock buyer labels + read-section ordering now that a real buyer signal surface exists). Alternatively Signal Source and Fallback Catalog v1 / Line Movement Proxy v1 if one gap dominates real runs.
+
+status: Buyer Artifact Route v1 implemented 2026-06-08. Frontend-only; tests + build green; ledger entry 19 clarified; buyer route doc + current-slice updated. No .NET/schema/prompt/model/gateway/source/station/probe-refresh/artifact/confidence/posture/lean change. Committed locally, not pushed.
