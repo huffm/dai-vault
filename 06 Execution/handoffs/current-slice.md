@@ -5904,3 +5904,61 @@ Entry 19 created: Sports Signal Source and Fallback Catalog -- Deferred. Source 
 Backup options: Sports Artifact Productization Review v1 (field-by-field buyer-readiness audit) or, if one gap dominates the table across runs, Line Movement Proxy v1 / Sports Signal Source and Fallback Catalog v1 (entry 19).
 
 status: Sports Brief Signal Table v1 implemented 2026-06-08. Frontend-only; tests + build green; ledger entry 19 created; deliberation + current-slice updated. No .NET/schema/prompt/model/gateway/station/probe-refresh/artifact/confidence/posture/lean change. Committed locally, not pushed.
+
+## addendum: Sports Artifact Productization Review v1 (2026-06-08)
+
+Docs-only product + design review. Field-by-field productization audit of the sports decision artifact and the Brief Signal Table. No runtime/code/schema/prompt/Angular change; no obvious low-risk presentation bug was found that required a code fix.
+
+### pre-change repo-state and ahead check
+
+- <DAI_REPO_ROOT>: `main`, even with origin (0 ahead, 0 behind); prior commit 91fd10e pushed.
+- <DAI_VAULT_ROOT>: `main`, even with origin (0 ahead, 0 behind); prior commit 4f02c4d pushed.
+- <JERA_SKILLS_ROOT>: `main`, ahead 1 (pre-existing user commit 0b1ebb1; untouched this slice).
+
+### skills / guidance used
+
+- local DAI pack (read-only): `dai-grill-with-vault`, `dai-token-tight`, `dai-agent-handoff`.
+- local runtime skill (read-only): `dai-signal-follow-up-diagnostics` for signal vocabulary / artifact field names.
+- superpowers (manual): `writing-plans`, `verification-before-completion`. No TDD / systematic-debugging -- docs-only.
+
+### docs/code decision
+
+Docs-only. The buyer-readiness gap is structural (the buyer surface has no signal table), not a presentation bug, so no frontend code change was warranted.
+
+### key finding
+
+The buyer-facing analyzer (`AnalyzerComponent`) renders only `AgentRunResultDto` and shows no signal table; the Brief Signal Table lives only on the dev artifact-review surface. Product doctrine ("the signal table is the product") is therefore unmet on the route a buyer sees. The artifact is credible and reviewer-ready; it is not yet buyer-ready.
+
+### files changed
+
+<DAI_VAULT_ROOT>:
+
+- `04 Products/sports-v1/sports-artifact-productization-review-v1.md` (new)
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` (entry 19 clarified)
+- `06 Execution/handoffs/current-slice.md` (this addendum)
+
+<DAI_REPO_ROOT>: unchanged. <JERA_SKILLS_ROOT>: untouched.
+
+### buyer-readiness judgment
+
+Credible and reviewer-ready; not buyer-ready. The dev table is a strong foundation but speaks builder language (raw signal keys, ToolFetched, Probe, internal Evidence text) and is dev-gated. A curated, plain-language, narrower projection on the buyer path is the gap.
+
+### next slice
+
+Primary: Buyer Artifact Route v1 (thin, read-only buyer signal-table module reusing the existing projection + artifact read endpoint; plain-language labels, directional indicator, flag phrase, honest state, confidence band; no new sources, no activation, no decision mutation). Backup: Artifact Copy and Section Order v1 (docs-only label/category/copy lock first).
+
+### deferred ledger updates
+
+Entry 19 clarified: buyer route needs read-only availability-fidelity and source-kind metadata before `Unavailable` / source provenance can be shown to a buyer. Source expansion, probe-refresh activation, confidence/posture/lean mutation, and tenant/Stripe boundary all remain Deferred and NOT resolved.
+
+### risks
+
+- Recommending a buyer route is the first step toward a real buyer surface; it must stay read-only and must not leak dev-only sections or factory internals.
+- Buyer copy is the overclaim-risk surface; the review documents prediction-engine language to avoid (no pick/lock/guaranteed framing).
+- `Unavailable` state and `AnalyzerSeed`/`PlatformDerived` source kinds remain unreachable until backend metadata exists; the projection correctly refuses to guess them.
+
+### verification
+
+Docs-only: `git diff --check` clean, exact-path scan clean (placeholders only), ASCII check on the new note passed, no runtime/schema/Angular files changed.
+
+status: Sports Artifact Productization Review v1 drafted 2026-06-08. Docs-only; review note created; ledger entry 19 clarified; current-slice updated. No code/runtime/schema/prompt/model/gateway/station/probe-refresh/artifact/confidence/posture/lean change. Committed locally, not pushed.
