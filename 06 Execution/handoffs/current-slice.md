@@ -5813,3 +5813,94 @@ Docs-only verification completed: git status (all three repos clean/even), `git 
 Sports Brief Signal Table v1. Use existing artifact fields to make grounded/missing/weak/proxy signal state buyer-visible. Do not add sources, activate stations, mutate artifacts, or change confidence/posture/lean without separate approval.
 
 status: Design Readiness and Focus Selection v1 drafted 2026-06-08. Docs-only note created; ledger entry 18 clarified; current-slice updated. No code/runtime/schema/prompt/model/gateway/artifact/endpoint/Angular/MCP change. Verification completed. Not committed in this turn.
+
+## addendum: Sports Brief Signal Table v1 (2026-06-08)
+
+Implementation slice (not docs-only). Frontend-only change. Built the buyer-facing brief signal table recommended by Product vs Factory Deliberation v1 and Design Readiness and Focus Selection v1, using existing artifact fields only.
+
+### pre-change repo-state and ahead check
+
+Verified clean before edits:
+
+- <DAI_REPO_ROOT>: `main`, even with origin (0 ahead, 0 behind).
+- <DAI_VAULT_ROOT>: `main`, even with origin (0 ahead, 0 behind); prior slice 7eaaa6a committed and pushed.
+- <JERA_SKILLS_ROOT>: `main`, even with origin (0 ahead, 0 behind).
+
+No unrelated dirty files.
+
+### skills / guidance used
+
+- local DAI pack (read-only): `dai-grill-with-vault` (read code + vault before designing), `dai-agent-handoff` (this addendum), `dai-token-tight` (dense reporting). `dai-write-skill` not used.
+- local runtime skill consulted (read-only): `dai-signal-follow-up-diagnostics` -- used for the canonical signal vocabulary and artifact field names so the table never invents signals or sources. This is a runtime cognitive skill, kept separate from the development skills above.
+- superpowers, applied manually: `writing-plans`, `test-driven-development` (vitest spec written alongside the projection), `verification-before-completion`. `systematic-debugging` not triggered -- no code/doc conflict.
+
+### docs/code decision
+
+Frontend-only pure projection. The `AgentRunArtifactDto` already delivers every field the table needs (`signalAvailability`, `signalFollowUps`, `groundedSignals`, `missingSignals`, `whatWouldChangeTheRead`, `confidence`, `posture`). No domain mapping is duplicated, so no .NET read-side projection, no API change, no schema change, no prompt change.
+
+### fields / artifact sources inspected
+
+- .NET: `SportsRunArtifact.cs`, `SignalQualityEvaluator.cs` (status grounded/missing + quality strong/usable + confidenceEffect support/support_cautiously/dampen/block_aggressive_posture/neutral), `SignalFollowUpEvaluator.cs` (status grounded/missing/unavailable/not_implemented/candidate; reason/decisionUse vocabulary; fallback ladder -- backend only, not in the frontend DTO).
+- Angular: `core/models/agent-run.model.ts` (`AgentRunArtifactDto`, `SignalAvailabilityDto`, `SignalFollowUpDto`), `dev-artifact-review.component.ts/html` (existing artifact-review surface and Tailwind conventions).
+
+### files changed
+
+<DAI_REPO_ROOT>:
+
+- `apps/sports-app/src/app/dev-artifact-review/signal-table.ts` (new) -- pure projection `buildSignalTable(artifact) -> SignalTableRow[]`.
+- `apps/sports-app/src/app/dev-artifact-review/signal-table.spec.ts` (new) -- 14 vitest tests.
+- `apps/sports-app/src/app/dev-artifact-review/dev-artifact-review.component.ts` -- `signalTable` computed + `signalStateClass`/`formatState` helpers.
+- `apps/sports-app/src/app/dev-artifact-review/dev-artifact-review.component.html` -- new Brief Signal Table section after Run Overview.
+
+<DAI_VAULT_ROOT>:
+
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` -- entry 19 created (source/fallback catalog).
+- `04 Products/sports-v1/product-vs-factory-deliberation-v1.md` -- implementation-status note.
+- `06 Execution/handoffs/current-slice.md` -- this addendum.
+
+<JERA_SKILLS_ROOT>: untouched.
+
+### signal table behavior
+
+One row per signal. Columns: Signal, State, Source Type, Impact on Read, Fallback Need, Probe (eligible label), Evidence, What Would Change. Prefers the rich `signalAvailability` records; falls back to coarse grounded/missing lists for legacy artifacts; empty when no signal evidence exists.
+
+### signal states / source labels used
+
+- States: Grounded, Weak, Missing, Unavailable, Proxy, NotApplicable, Unknown.
+- Source types: Artifact, ToolFetched, Proxy, Missing, Unknown (emitted). AnalyzerSeed and PlatformDerived are reserved in the type union but never emitted -- the current artifact `source` field does not distinguish them, so the projection does not guess.
+
+### fallback / source gap behavior
+
+Fallback need is expressed as a NEED ("needs line_movement (not implemented)"), never as a fetched fact. Missing/unavailable signals with no follow-up read "no fallback configured". Probe-eligibility is a label only and does not trigger probe-refresh.
+
+### compatibility behavior
+
+Renders with incomplete artifacts (missing quality/source/confidenceEffect default safely), legacy artifacts without `signalAvailability` (coarse grounded/missing fallback), and null artifacts (empty table). Existing Signal Availability and Signal Follow-Up Diagnostics dev sections are left intact.
+
+### what intentionally remains unwired
+
+No source catalog, no new provider, no ToolGateway call, no station activation, no probe-refresh activation, no merge writer, no endpoint, no confidence/posture/lean mutation, no schema/prompt/model change. Source/fallback catalog deferred as ledger entry 19.
+
+### tests / checks
+
+- `npm test` (ng test / vitest): 2 files, 15 tests passed (14 new signal-table tests + existing app test).
+- `npm run build` (ng build): application bundle generation complete, no errors.
+- `git diff --check`: clean (benign LF->CRLF warnings only).
+- exact local path scan on added lines and new files: clean.
+- .NET safe runners: not run -- no .NET changed.
+
+### deferred ledger updates
+
+Entry 19 created: Sports Signal Source and Fallback Catalog -- Deferred. Source expansion, probe-refresh activation, confidence/posture mutation, and tenant/Stripe boundary all explicitly NOT resolved.
+
+### risks
+
+- Table is on the dev artifact-review surface, which is buyer-shaped but dev-gated; promoting it to a primary buyer route is a later product decision.
+- Source-type inference is intentionally conservative (Artifact/ToolFetched/Missing/Unknown); richer AnalyzerSeed/PlatformDerived labels need a backend source-kind field before they can be truthful.
+- Proxy detection relies on follow-up decisionUse/reason markers present in the DTO; the backend ladder fields (fallbackType/equivalence) are not serialized to the frontend, so proxy nuance is coarse by design.
+
+### next slice
+
+Backup options: Sports Artifact Productization Review v1 (field-by-field buyer-readiness audit) or, if one gap dominates the table across runs, Line Movement Proxy v1 / Sports Signal Source and Fallback Catalog v1 (entry 19).
+
+status: Sports Brief Signal Table v1 implemented 2026-06-08. Frontend-only; tests + build green; ledger entry 19 created; deliberation + current-slice updated. No .NET/schema/prompt/model/gateway/station/probe-refresh/artifact/confidence/posture/lean change. Committed locally, not pushed.

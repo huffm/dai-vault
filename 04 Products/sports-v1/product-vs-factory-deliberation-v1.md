@@ -158,6 +158,10 @@ A valid factory-maturity next slice would need a sentence like: "Caller X needs 
 - `<DAI_VAULT_ROOT>/04 Products/sports-v1/calibration/20260529-1421-mlb-calibration.md`
 - `<DAI_VAULT_ROOT>/04 Products/sports-v1/calibration/protocol-runs/2026-05-18-cognitive-protocol-outcome-reconciliation.md`
 
+## Implementation status (2026-06-08)
+
+Recommended slice implemented as **Sports Brief Signal Table v1**. A read-only buyer-facing table was added to the artifact-review surface (`apps/sports-app/.../dev-artifact-review`) via a tested pure projection (`signal-table.ts`) over existing artifact fields. It surfaces grounded/weak/missing/unavailable/proxy state, a source-type label, impact-on-read (from the existing confidence effect, not a mutation), a fallback NEED, probe-eligibility as a label only, and a non-predictive what-would-change note. No new sources, no ToolGateway calls, no station activation, no probe-refresh activation, no schema/prompt change, and no confidence/posture/lean mutation. The structured source/fallback catalog the table makes visible remains deferred (ledger entry 19).
+
 ## Verification performed for this note
 
 - docs-only change.
