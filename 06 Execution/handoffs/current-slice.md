@@ -5732,3 +5732,84 @@ Docs-only verification completed: `git diff --check` with the new doc included t
 Sports Brief Signal Table v1. Use existing artifact fields to make grounded/missing/weak/proxy signal state buyer-visible. Do not add sources, activate stations, mutate artifacts, or change confidence/posture/lean in that slice without separate approval.
 
 status: Product vs Factory Deliberation v1 drafted 2026-06-07. Docs-only note created; ledger entry 18 updated; current-slice updated. No code/runtime/schema/prompt/model/gateway/artifact/endpoint/Angular/MCP change. Verification completed. Not committed in this turn.
+
+## addendum: Design Readiness and Focus Selection v1 (2026-06-08)
+
+Docs-only focus-selection review. This is the 2026-06-08 deliberation that `protocol-station-runtime-adoption-readiness-v1.md` scheduled. It consolidates the runtime-adoption-readiness and product-vs-factory deliberations into one decision record, tests the line against modern engineering practice, DAI doctrine, and the 4x3 / 12-fold cognitive lens, and names the next slice.
+
+### pre-change repo-state and ahead check
+
+Verified clean before edits:
+
+- <DAI_REPO_ROOT>: `main`, even with origin (0 ahead, 0 behind).
+- <DAI_VAULT_ROOT>: `main`, even with origin (0 ahead, 0 behind).
+- <JERA_SKILLS_ROOT>: `main`, even with origin (0 ahead, 0 behind).
+
+Note: the 2026-06-07 addenda reported DAI_REPO ahead 5 and DAI_VAULT ahead 7; those commits were pushed since, so all three repos are now even with origin. No unrelated dirty files. This slice changed vault docs only.
+
+### skills / guidance used
+
+- local DAI pack (read-only): `dai-grill-with-vault`, `dai-token-tight`, `dai-agent-handoff`. `dai-write-skill` not used.
+- superpowers, applied manually: `writing-plans`, `verification-before-completion`. `test-driven-development` not used -- no code changed. `systematic-debugging` not triggered -- no code/doc conflict.
+
+### docs reviewed
+
+- <DAI_VAULT_ROOT>/02 Platform/architecture/cognitive-factory/factory-line-balance-v1.md
+- <DAI_VAULT_ROOT>/02 Platform/architecture/cognitive-factory/factory-line-balance-review-v1.md
+- <DAI_VAULT_ROOT>/02 Platform/architecture/cognitive-factory/protocol-station-runtime-adoption-readiness-v1.md
+- <DAI_VAULT_ROOT>/02 Platform/architecture/cognitive-factory/probe-refresh-chain-activation-readiness-v1.md
+- <DAI_VAULT_ROOT>/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md
+- <DAI_VAULT_ROOT>/04 Products/sports-v1/product-vs-factory-deliberation-v1.md
+- <DAI_VAULT_ROOT>/06 Execution/handoffs/current-slice.md
+
+### code reviewed
+
+- <DAI_REPO_ROOT>/platform/dotnet/DevCore.Api/Protocols/ProtocolRegistry.cs -- 15 station cards across 5 macros (perceive/interrogate/discern/decide/synthesize).
+- <DAI_REPO_ROOT>/platform/dotnet/DevCore.Api/Protocols/ProtocolNodeRunner.cs -- ExecuteAsync supports only `interrogate.probe`; other registered stations return `UnsupportedStation`; unknown ids `UnknownStation`.
+- <DAI_REPO_ROOT>/platform/dotnet/DevCore.Api/Protocols/ -- file inventory confirms envelope/trace/diagnostics/rollup + dormant DiscernStationRunner, PerceiveSignalIntake/collector/projections, full probe-refresh chain.
+
+No code/doc disagreement found. Code matches the readiness and line-balance docs.
+
+### files changed
+
+<DAI_VAULT_ROOT>:
+
+- `02 Platform/architecture/cognitive-factory/design-readiness-and-focus-selection-v1.md` (new)
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` (entry 18 clarified)
+- `06 Execution/handoffs/current-slice.md` (this addendum)
+
+<DAI_REPO_ROOT>: unchanged.
+<JERA_SKILLS_ROOT>: untouched.
+
+### finding
+
+The factory is design-ready and runtime-deferred by choice, not by gap. The weakest engineering dimension is product validation; the most doctrine-aligned move is to package existing artifact evidence for a buyer. The 4x3 / 12-fold lens clarifies rather than contradicts the 5-macro map: cognition is 4x3 = 12 (Perceive/Interrogate/Discern/Decide), and Synthesize is the 3-part packaging/delivery band, not a fifth cognitive station. No code restructure toward a forced 12 is warranted.
+
+### decision
+
+Primary next slice: Sports Brief Signal Table v1 (product-facing; existing artifact fields; activates nothing).
+Backup next slice: Sports Artifact Productization Review v1 (docs/design field-contract scoping). Synthesize Runtime Inspection v1 remains a runtime backup only if a named read-only caller appears; none exists.
+
+### deferred ledger updates
+
+Entry 18 clarified: the 2026-06-08 Design Readiness and Focus Selection review occurred and reaffirmed product polish (Sports Brief Signal Table v1). Runtime station adoption remains Deferred. No new deferral created.
+
+### guardrails carried forward
+
+Do not activate stations, treat station-card metadata as execution permission, expand probe tool power, allow artifact mutation, change confidence/posture/lean without calibration proof, or adopt runtime station behavior without a named caller. Keep the platform as the factory, not the product.
+
+### risks
+
+- Card completeness invites mistaking metadata for permission -- the standing top risk; this note restates the rejection.
+- Building the Signal Table could tempt scope creep into new sources or confidence changes -- guardrails forbid both.
+- Deferring tenant/Stripe gating keeps spend decoupled from the economic boundary; acceptable pre-revenue, tracked in ledger entry 11.
+
+### verification
+
+Docs-only verification completed: git status (all three repos clean/even), `git diff --check`, exact-local-path scan on added lines (placeholders only), ASCII check on the new note, confirmed no runtime files changed, confirmed no schema/migration files changed.
+
+### next slice
+
+Sports Brief Signal Table v1. Use existing artifact fields to make grounded/missing/weak/proxy signal state buyer-visible. Do not add sources, activate stations, mutate artifacts, or change confidence/posture/lean without separate approval.
+
+status: Design Readiness and Focus Selection v1 drafted 2026-06-08. Docs-only note created; ledger entry 18 clarified; current-slice updated. No code/runtime/schema/prompt/model/gateway/artifact/endpoint/Angular/MCP change. Verification completed. Not committed in this turn.
