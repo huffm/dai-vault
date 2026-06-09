@@ -6551,3 +6551,70 @@ Deferred runtime decisions ledger not updated. No new runtime, prompt, source, o
 - Push status: not pushed.
 
 status: Buyer Artifact Quality Check Pass v1 drafted 2026-06-09. Docs-only; quality report created; current-slice updated. No code/runtime/schema/prompt/model/gateway/source/station/probe-refresh/artifact/confidence/posture/lean change.
+
+---
+
+## addendum: Fresh Artifact Generation Operability Fix v1 (2026-06-09)
+
+**slice:** Fresh Artifact Generation Operability Fix v1
+**status:** operability diagnosis complete. dev-docs only change in `dai`. no prompt/parser/decision/confidence/posture/lean/schema/source/probe-refresh change; no .NET/FastAPI/Angular runtime code change.
+**repos touched:** `dai` (one dev-docs file); `dai-vault` (new report + this addendum).
+
+### objective
+
+Make the local fresh sports artifact generation path operable, diagnosable, and documented. The prior quality pass could not generate fresh artifacts (platform API timed out; agent service refused connection). Determine whether that is artifact quality (no) or local runtime operability (yes), and isolate the exact remaining blockers. Fix the factory line controls, not the product unit.
+
+### service topology discovered
+
+- agent service = FastAPI analyzer, uvicorn `127.0.0.1:8000`, health `GET /api/ping`. This is the "agent service" that refused connection.
+- platform API = .NET `DevCore.Api`, `localhost:5007`, health `GET /health`. This is the "platform API" that timed out.
+- sports app = Angular, `127.0.0.1:4201`.
+- SQL = `devcore` database in the `devcore-sql` Docker container, `localhost,1433`.
+- call direction: Angular -> .NET `POST /api/agent-runs` -> FastAPI `POST /api/sports/analyze` (`AiService:BaseUrl`); .NET -> SQL for identity resolution and `AgentRun` persistence. The persisted v3 buyer artifact (`cognitiveProtocol`) is assembled by .NET, so a fresh buyer artifact needs the full chain incl. SQL. Direct FastAPI analyze is a lower-level read (needs only the model key).
+
+### root cause found
+
+The factory line controls are healthy. The quality-pass blocker was simply that no local services were running (nothing on 8000/5007/4201/1433). Both services start cleanly with the existing documented commands and pass health checks. No port drift, no base-URL drift, no missing/mismatched env var, no stale venv, no startup/config code bug. `AiService:BaseUrl` (`http://127.0.0.1:8000`), platform port `5007`, `Dev:EnableBypassAuth: true`, and `OPENAI_API_KEY` presence are all correct.
+
+Two environment/account dependencies are currently down, both outside code scope:
+
+1. OpenAI quota exhausted -- `429 insufficient_quota` on the key in `services/agent-service/.env`. Binding blocker for producing any fresh read; blocks direct analyze and the full chain's model step.
+2. Docker daemon / `devcore-sql` not running -- the full `/api/agent-runs` chain fails at `IdentityResolver.ResolveDevelopmentAsync` with a SQL connection timeout. This SQL timeout is exactly the "platform API timed out" symptom.
+
+### does fresh generation work now
+
+Line controls: yes (services start, bind, health-check). End-to-end fresh artifact: no -- blocked by the model-key quota and the stopped SQL container. This is the slice's acceptable outcome: blocker isolated, next fix narrow.
+
+### next fix (exact, narrow)
+
+1. Restore a funded `OPENAI_API_KEY` in `services/agent-service/.env` (billing/account; no code change).
+2. Start Docker Desktop, then the `devcore-sql` container (SQL `localhost,1433`).
+3. Re-run `scripts/dev/sports/start-sports-dev.ps1`, then `test-sports-dev.ps1`, then `run-artifact-calibration.ps1 -Competition nba -Take 3` (dry run first).
+
+### files changed
+
+- `dai/scripts/dev/sports/README.md` -- troubleshooting for the `429 insufficient_quota` model-quota failure mode and for the `devcore-sql` Docker / SQL-timeout case (the "platform api times out" symptom).
+- `dai-vault/04 Products/sports-v1/fresh-artifact-generation-operability-fix-v1.md` (new report).
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+
+### checks run
+
+- repo baseline for `dai`, `dai-vault`, `jera-workspace-skills` (jera not present in this workspace).
+- pre-start port scan: nothing on 8000/5007/4201/1433.
+- venv health: in-place `pyvenv.cfg`, `Scripts/python.exe` + `uvicorn.exe`, `import main` ok.
+- agent service: `GET /api/ping` -> 200 ok; `POST /api/sports/analyze` -> 500 isolated to `429 insufficient_quota`.
+- platform API: `GET /health` -> 200 ok; `POST /api/agent-runs` -> 500 isolated to SQL timeout at identity resolution.
+- docs-only: `git diff --check`, added-line exact-path scan, vault non-ASCII added-line scan.
+
+### ledger
+
+Deferred runtime decisions ledger not updated. No new deferred runtime/prompt/source/artifact-contract decision was discovered. The two blockers are an exhausted model-key quota (billing) and a stopped SQL container (local Docker), neither a consciously deferred design decision.
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: one dev-docs commit (README troubleshooting). Hash reported in final response.
+- <DAI_VAULT_ROOT>: one docs commit (report + this addendum). Hash reported in final response. (Was already ahead of origin by 1 from the prior quality-pass commit; still not pushed.)
+- <JERA_SKILLS_ROOT>: not present in this workspace; unchanged.
+- Push status: not pushed.
+
+status: Fresh Artifact Generation Operability Fix v1 complete 2026-06-09. Line controls verified operable; fresh end-to-end generation still blocked by exhausted OPENAI_API_KEY quota (429 insufficient_quota) and stopped devcore-sql container; both isolated with exact next fixes. Dev-docs only in dai; report + addendum in vault. No code/runtime/schema/prompt/model/gateway/source/probe-refresh/artifact/confidence/posture/lean change.
