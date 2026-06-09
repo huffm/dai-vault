@@ -7098,3 +7098,77 @@ Outcome Reconciliation Contract v1 (step 5): the storage scaffold exists, so spe
 - skills repo / <JERA_SKILLS_ROOT>: not present; unchanged.
 
 status: Decision Artifact Persistence Review v1 complete 2026-06-09. Mapped factory memory: SQL Server persists the full v3 artifact (OutputJson) + promoted competition/gameDate/leanSide columns + tenant/user; AgentRunOutcomes/Evaluations + /outcome endpoint + RunEvaluator already scaffold reconciliation. Gaps: cost telemetry log-only (not persisted), no stable game/event match key, buyer-advertised strength not persisted (re-derivable). Recommendation: stay on SQL Server, defer Postgres; next improvements are database-agnostic. Ledger entry 24 added. Docs-only; no code/migration/schema/database-technology/contract change.
+
+---
+
+## addendum: Outcome Reconciliation Contract v1 (2026-06-09)
+
+**slice:** Outcome Reconciliation Contract v1 (sequence step 5)
+**status:** complete. contract/spec only, docs only. no runtime code/migration/schema/artifact-contract/buyer-projection/confidence/posture/lean/prompt/model/cost change; no outcome-provider choice; no automated settlement.
+**repos touched:** `dai-vault` only (report + ledger entry 25 + this addendum). `dai` not touched (read-only). skills/jera repo not present.
+
+### objective
+
+Define how generated artifacts match real game outcomes later -- the match key, outcome record, evaluation rules, and calibration feedback needs -- without implementing settlement, choosing a provider, or migrating.
+
+### existing scaffold (grounded)
+
+AgentRunOutcome (status/scores/source/sourceRef/resolvedUtc/notes) + AgentRunEvaluation (evalStatus/leanSide/winningSide) + POST /api/agent-runs/{id}/outcome (tenant-scoped, "future automation won't have a userkey", one-per-run 409) + RunEvaluator (lean null OR no directional winner -> inconclusive; else lean==winning -> correct else incorrect). OutcomeStatuses {home_win,away_win,draw,cancelled,postponed}; EvalStatuses {correct,incorrect,inconclusive}. Missing for automation: stable external game id, scheduledStartUtc (GameDate is date-only), normalized team refs, sourceProvider captured at generation, expanded settlement statuses, settledAt/sourceFetchedAt audit times.
+
+### stable game/event key contract
+
+Canonical (automation): (sourceProvider, externalGameId) captured on the run at generation time + scheduledStartUtc + season + normalized home/away team refs. Fallback (manual/dev only): (competition, gameDate, normalized names) with matchConfidence + human-in-loop. Display names are insufficient (the repo's RenameOaklandToSacramento migration proves drift; college/women's sports compound it). Automation must never auto-evaluate an unmatched run.
+
+### outcome record contract
+
+Adds to today's outcome: externalGameId, sourceProvider, season, scheduledStartUtc, normalized team refs; split settlement state (final/postponed/cancelled/suspended/void/unknown) from directional result (home/away/draw); settledAtUtc, sourceFetchedAtUtc, recordedBy/automated, correlationId; optional sourceQuality/matchConfidence; manualOverrideReason. Keep scores/notes.
+
+### evaluation contract
+
+Keep the deterministic rule. correct/incorrect only when a directional lean meets a settled directional final; inconclusive for no-lean / draw / unsettled / unmatched; never fabricate a match. Posture (monitor/wait) does not change whether a lean is evaluated -- it is a calibration slice. Buyer-advertised strength is NOT a correctness input (calibration slice only), preserving the two-axis doctrine. Accuracy denominators count only correct/incorrect.
+
+### calibration feedback-loop contract
+
+Preserve/group by: raw + analyzer confidence, evidenceRichness, evidence-sufficiency tier, advertised strength, humility reason, posture, lean side, competition/season, signal availability, source degradation, model cost (entry 22), generatedAtUtc, settledAtUtc, outcome status, eval result. Feedback is delayed (need both timestamps). Calibrate on RAW confidence, present on advertised strength -- this is the downstream consumer of why Evidence-Sufficiency Band Gate v1 preserved raw confidence.
+
+### manual vs automated stages
+
+Stage 0 (now, already works): manual /outcome + deterministic evaluator + inspect + calibrate. Stage 1: stable-id columns + matcher (migrations). Stage 2: provider integration (deferred). Stage 3: scheduled settlement (deferred). Recommend starting manual Stage 0 to learn source reliability before automating.
+
+### per-sport
+
+Sport-agnostic: ids, competition/season, scheduledStartUtc, team refs, status, scores, winningSide, leanSide, evalStatus, calibration dims. Sport-specific later: OT/shootout/mercy/suspended rules, draw possibility, and a different evaluator if leans become spread/total (cover/over-under). Stable event id is non-negotiable before enabling college/women's sports (naming ambiguity, thin/divergent coverage).
+
+### storage posture
+
+Stay on SQL Server (entry 24); contract is database-agnostic. Future migrations (not now): stable-id + team-ref columns, status-taxonomy expansion + check constraint, optional calibration-dimension column promotion. No Postgres.
+
+### ledger
+
+Updated: new entry 25 (outcome reconciliation match key + settlement runtime -- contract defined, runtime/provider/automated settlement deferred to Outcome Reconciliation Runtime v1; feeds entry 12, stays on SQL Server per entry 24).
+
+### skill update
+
+Not made (no skills repo / relevant custom skill present). Recommended future capture: reconciliation depends on stable match keys not display names; contract outcomes before automating settlement; keep buyer-facing correctness separate from internal calibration; calibrate on raw confidence while presenting gated strength; preserve raw signals for delayed feedback loops.
+
+### files changed
+
+- dai-vault/04 Products/sports-v1/outcome-reconciliation-contract-v1.md (new report)
+- dai-vault/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md (entry 25)
+- dai-vault/06 Execution/handoffs/current-slice.md (this addendum)
+
+### checks run
+
+git diff --check; added-line exact-path scan; vault non-ASCII added-line scan.
+
+### recommended next slice
+
+Per-Sport Buyer Validation Matrix v1 (step 6, parallel on existing runs) and Outcome Reconciliation Runtime v1 (step 7, implements this contract: stable-id columns + matcher + status taxonomy, provider-agnostic).
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: unchanged; clean; even with origin. Not pushed.
+- <DAI_VAULT_ROOT>: one docs commit. Hash in final response. Not pushed.
+- skills repo / <JERA_SKILLS_ROOT>: not present; unchanged.
+
+status: Outcome Reconciliation Contract v1 complete 2026-06-09. Defined stable match key (sourceProvider+externalGameId, not display names), outcome record contract (split settlement-state vs direction + audit times), evaluation contract (lean-vs-winning; unmatched/unsettled/no-lean = inconclusive; advertised strength excluded from correctness), and calibration feedback-loop (calibrate on raw confidence, present on advertised strength). Existing manual scaffold (/outcome + RunEvaluator) already supports Stage 0. Runtime/provider/settlement deferred. Ledger entry 25 added. Docs-only on SQL Server; no code/migration/schema/contract/provider change.
