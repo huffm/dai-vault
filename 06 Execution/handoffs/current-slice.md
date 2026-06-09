@@ -6693,3 +6693,79 @@ Not updated. No new deferred runtime/prompt/source/artifact-contract decision di
 - <JERA_SKILLS_ROOT>: not present in this workspace; unchanged.
 
 status: Post-Credit Fresh Artifact Generation Smoke v1 complete 2026-06-09. Best outcome: 429 cleared, devcore-sql up, full .NET->FastAPI->SQL chain produced a fresh sports_decision_artifact_v3 with cognitiveProtocol and buyer projection. Model usage centralized at one analyzer call; .NET makes no direct model calls; zero token/cost/latency observability today (input to Artifact Cost Guardrails v1). Dev-docs only in dai; report + addendum in vault. No code/runtime/schema/prompt/model/source/probe-refresh/artifact/confidence/posture/lean change.
+
+---
+
+## addendum: Fresh Buyer Artifact Validation v1 (2026-06-09)
+
+**slice:** Fresh Buyer Artifact Validation v1
+**status:** complete. validation slice. docs + intentional calibration artifacts only. no code change in any repo. no prompt/buyer-copy/phrase-bank/confidence/posture/lean/signal/decision/source/probe-refresh/schema/cost-guardrail/pricing change.
+**repos touched:** `dai-vault` only (validation report + 7 calibration artifacts + this addendum). `dai` not touched (no reproduction detail changed).
+
+### services verified
+
+- Docker 29.1.3; devcore-sql Up on 1433; FastAPI ping 200; .NET health 200.
+
+### sample set
+
+- 5 fresh artifacts via calibration harness (full `.NET /api/agent-runs` chain): 1 NBA + 4 MLB. 5 model calls.
+- all `sports_decision_artifact_v3`, all `cognitiveProtocol` present, all `completed`, all persisted, buyer projection present.
+- slate limits (not faked): NBA had only 1 upcoming game (Finals); MLB 4 from a single same-day slate; no weak/no-signal case occurred; no legacy/coarse artifacts.
+- saved under accepted convention `04 Products/sports-v1/calibration/` (2 calibration reports + 5 artifact JSON).
+
+### artifacts (posture / confidence / grounded)
+
+- NBA Spurs at Knicks 9b6b433e: monitor / 0.675 (analyzer 0.75) / market+rest, sharp_public missing -- measured "market-only lean".
+- MLB Mariners at Orioles 9f6b433e: monitor / 0.75 / starting_pitching; quality_check Degraded (ungrounded bullpen/lineup_form/ballpark).
+- MLB Diamondbacks at Marlins a46b433e: monitor / 0.75 / starting_pitching; clean.
+- MLB Red Sox at Rays a56b433e: monitor / 0.75 / starting_pitching; quality_check Degraded.
+- MLB Yankees at Guardians aa6b433e: monitor / 0.75 / starting_pitching; clean.
+
+### findings
+
+- Buyer credibility: PASS. Measured decision-support copy, hedged leans linked to a basis, monitor posture throughout, NBA appropriately cautious. Soft watch: 2 MLB summaries reference ungrounded bullpen/lineup_form in hedged language (caught internally by Degraded quality_check; not buyer-visible factory terms, not tout).
+- Repetition: controlled. "Slight lean toward" 5/5 (template by design); MLB bases split starting-pitching (2) / home-field (2); generic counter_case "could outperform" 2/4 and what_would_change filler "recent form" 2/4 (harness-flagged). No betting-adjacent or trust-damaging repetition. Borderline, not yet phrase-bank-justifying on a 4-game single-day sample.
+- Safety/toutiness: PASS. Explicit scan over buyer fields of all 5 = 0 unsafe hits. No aggressive posture/guardrail leakage into buyer copy.
+- Completeness: PASS. Read early, uncertainty visible, weak runs honest, no empty/dangling buyer fields, v3 signalAvailability handled, projection aligns with posture/confidence.
+- Calibration watch: confidence_high_for_partial_evidence on 4/4 MLB (0.75 on one grounded signal, evidenceRichness 1) -- confirms prior MLB single-signal watch with fresh data.
+
+### deterministic harness recommendations (second opinion)
+
+- MLB report: Cognitive Prompt Tightening v1.5 (prompt-quality flags on 3/4).
+- NBA report: Signal Follow-Up Diagnostics v1 (sharp_public missing, line_movement not implemented).
+
+### cost awareness
+
+- 5 model calls (one gpt-4o-mini per run). Token/cost/latency unavailable -- response.usage still not captured. Instrument before larger batches.
+
+### judgment
+
+Pass with minor follow-up.
+
+### recommended next slice
+
+Primary: Confidence Calibration Rules v1 (4/4 MLB high-confidence on thin evidence, two passes running). Secondary: Cognitive Prompt Tightening v1.5 (generic hedge phrasing), Signal Follow-Up Diagnostics v1 (NBA), Artifact Cost Guardrails v1 (before larger batches).
+
+### files changed
+
+- `dai-vault/04 Products/sports-v1/fresh-buyer-artifact-validation-v1.md` (new report)
+- `dai-vault/04 Products/sports-v1/calibration/20260609-1116-nba-calibration.md` (+1 artifact json) (harness output)
+- `dai-vault/04 Products/sports-v1/calibration/20260609-1116-mlb-calibration.md` (+4 artifact json) (harness output)
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum)
+
+### checks run
+
+- service health; 5 runs completed+persisted; v3+cognitiveProtocol confirmed; buyer-copy safety scan 0/5; harness flags reviewed.
+- docs/artifacts: `git diff --check`, added-line exact-path scan, vault non-ASCII added-line scan.
+
+### ledger
+
+Not updated. No new deferred decision; existing deferrals unchanged.
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: unchanged; still ahead 1 (c40dfac). Not pushed.
+- <DAI_VAULT_ROOT>: one docs+artifacts commit. Hash in final response. Not pushed.
+- <JERA_SKILLS_ROOT>: not present; unchanged.
+
+status: Fresh Buyer Artifact Validation v1 complete 2026-06-09. 5 fresh artifacts (1 NBA + 4 MLB) via full chain, all v3 + cognitiveProtocol + buyer projection. Buyer copy credible and safe (0 unsafe hits); repetition controlled; completeness good. Pass with minor follow-up. Dominant fresh finding: confidence_high_for_partial_evidence on 4/4 MLB -> recommend Confidence Calibration Rules v1. Vault-only (report + calibration artifacts + addendum); no code/prompt/confidence/posture/lean/signal/source/schema/cost change.

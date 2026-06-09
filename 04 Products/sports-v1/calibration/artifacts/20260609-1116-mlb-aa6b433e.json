@@ -1,0 +1,123 @@
+{
+  "agentRunId": "aa6b433e-f36b-1410-8161-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-09",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "Cecconi's unknown performance could limit the Yankees' advantage.",
+  "watchFor": "Any news on Cecconi's performance or lineup changes.",
+  "whatWouldChangeTheRead": [
+    "Cecconi shows strong recent form",
+    "Guardians' lineup shows improvement against right-handers"
+  ],
+  "summary": "Gerrit Cole, a right-handed pitcher, faces the Guardians lineup, which has struggled against righties. Slade Cecconi's performance is uncertain, but the Yankees may benefit from Cole's experience.",
+  "lean": "Slight lean toward Yankees based on starting pitching advantage.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Gerrit Cole's right-handed pitching may exploit Guardians' weaknesses."
+      ],
+      "frame": "The Yankees face the Guardians with Cole starting against Cecconi.",
+      "aim": [
+        "The primary factor is Cole's matchup against the Guardians' lineup."
+      ]
+    },
+    "interrogate": {
+      "question": "Cecconi's unknown performance could limit the Yankees' advantage.",
+      "probe": null,
+      "verify": "The Guardians may have hidden strengths against inexperienced pitchers."
+    },
+    "discern": {
+      "weigh": "Starting pitching is clear, but Cecconi's form is unknown.",
+      "contrast": "Market confidence may lean towards the Yankees given Cole's reputation.",
+      "stress": "The read could fail if Cecconi performs unexpectedly well."
+    },
+    "decide": {
+      "resolve": "Hold this read cautiously, acknowledging Cecconi's uncertainty.",
+      "position": "monitor",
+      "justify": "Confidence is high due to Cole's established track record."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Gerrit Cole's right-handed pitching may exploit Guardians' weaknesses.",
+      "frame": "The Yankees face the Guardians with Cole starting against Cecconi.",
+      "aim": "The primary factor is Cole's matchup against the Guardians' lineup."
+    },
+    "interrogate": {
+      "question": "Cecconi's unknown performance could limit the Yankees' advantage.",
+      "probe": null,
+      "verify": "The Guardians may have hidden strengths against inexperienced pitchers."
+    },
+    "discern": {
+      "weigh": "Starting pitching is clear, but Cecconi's form is unknown.",
+      "contrast": "Market confidence may lean towards the Yankees given Cole's reputation.",
+      "stress": "The read could fail if Cecconi performs unexpectedly well."
+    },
+    "decide": {
+      "resolve": "Hold this read cautiously, acknowledging Cecconi's uncertainty.",
+      "position": "monitor",
+      "justify": "Confidence is high due to Cole's established track record."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}

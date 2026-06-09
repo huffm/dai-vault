@@ -1,0 +1,127 @@
+{
+  "agentRunId": "a56b433e-f36b-1410-8161-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-09",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [
+    "signals_used contains bullpen but bullpen was not grounded",
+    "signals_used contains lineup_form but lineup_form was not grounded",
+    "signals_used contains ballpark but ballpark was not grounded"
+  ],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Degraded",
+      "note": "signals_used contains bullpen but bullpen was not grounded; signals_used contains lineup_form but lineup_form was not grounded; signals_used contains ballpark but ballpark was not grounded"
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The Red Sox could outperform if their hitters find form against the Rays' bullpen.",
+  "watchFor": "Any significant lineup changes or injury updates before the game.",
+  "whatWouldChangeTheRead": [
+    "A notable injury to a key player on the Rays",
+    "A significant shift in the starting pitcher matchup"
+  ],
+  "summary": "The Rays have the advantage of playing at home, which can be significant in MLB matchups. Additionally, both teams' bullpens and lineup forms will play a crucial role in the outcome.",
+  "lean": "Slight lean toward Rays based on home field advantage.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Home field advantage for the Rays is significant in this matchup."
+      ],
+      "frame": "The Red Sox face the Rays at Tropicana Field with both teams evenly matched.",
+      "aim": [
+        "Home field performance will be the primary factor in this matchup."
+      ]
+    },
+    "interrogate": {
+      "question": "The Red Sox could exploit any weaknesses in the Rays' bullpen.",
+      "probe": null,
+      "verify": "The Rays' home advantage is strong, but lineup performance can vary."
+    },
+    "discern": {
+      "weigh": "Starting pitching is equal, but the Rays have home field advantage.",
+      "contrast": "Market confidence appears to favor the Rays given their home status.",
+      "stress": "The read could fail if the Red Sox's lineup performs unexpectedly well."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, as lineup performance can shift quickly.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the strong home field advantage for the Rays."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Home field advantage for the Rays is significant in this matchup.",
+      "frame": "The Red Sox face the Rays at Tropicana Field with both teams evenly matched.",
+      "aim": "Home field performance will be the primary factor in this matchup."
+    },
+    "interrogate": {
+      "question": "The Red Sox could exploit any weaknesses in the Rays' bullpen.",
+      "probe": null,
+      "verify": "The Rays' home advantage is strong, but lineup performance can vary."
+    },
+    "discern": {
+      "weigh": "Starting pitching is equal, but the Rays have home field advantage.",
+      "contrast": "Market confidence appears to favor the Rays given their home status.",
+      "stress": "The read could fail if the Red Sox's lineup performs unexpectedly well."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, as lineup performance can shift quickly.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the strong home field advantage for the Rays."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}
