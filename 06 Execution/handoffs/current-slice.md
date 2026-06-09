@@ -6173,3 +6173,88 @@ Entry 19 confirmed (sharp_public is the dominant recurring gap; handled honestly
 - Sample set is NBA/MLB only; NFL (commercial v1 lead) not represented -- calibrate when NFL runs exist.
 
 status: Buyer Artifact UX Calibration v1 drafted 2026-06-08. Docs-only; calibration note created; ledger entry 19 confirmed and entry 20 created; current-slice updated. No code/runtime/schema/prompt/model/gateway/source/station/probe-refresh/artifact/confidence/posture/lean change. Committed locally, not pushed.
+
+## addendum: Buyer Copy Safety v1 (2026-06-09)
+
+Implementation slice. Hardened buyer-facing sports analyzer copy at the FastAPI prompt/parser boundary and in the Angular Buyer Signal Summary projection. This continued the interrupted slice from its completed implementation state; this closeout did not restart or broaden the slice.
+
+### pre-change repo-state and ahead check
+
+- <DAI_REPO_ROOT>: `main`, even with origin before committing this closeout (`0 ahead`, `0 behind`). The resumed worktree had 7 modified implementation/test files and no commit yet.
+- <DAI_VAULT_ROOT>: `main`, even with origin before committing this closeout (`0 ahead`, `0 behind`). The resumed worktree had the ledger modified and `04 Products/sports-v1/buyer-copy-safety-v1.md` untracked; `current-slice.md` still needed this final addendum.
+- <JERA_SKILLS_ROOT>: unavailable from the environment/workspace during closeout; no Jera status was inspectable from this workspace. No Jera files changed.
+
+### skills / guidance used
+
+- local DAI pack (read-only): `dai-grill-with-vault`, `dai-token-tight`, `dai-agent-handoff`.
+- local runtime skill (read-only): `dai-signal-follow-up-diagnostics` for signal vocabulary and internal diagnostic terms.
+- superpowers, applied manually: `writing-plans`, `test-driven-development`, `verification-before-completion`.
+
+### docs/code decision
+
+Prompt/parser/frontend hardening plus vault documentation. The safety boundary is layered: prompt instructions reduce model drift, parser sanitation catches unsafe top-level buyer copy, and the buyer signal mapper prevents internal gap rows from reaching the buyer surface. No source expansion, runtime activation, confidence/posture/lean mutation engine, schema change, tenant/auth/billing work, or broad redesign.
+
+### files changed in <DAI_REPO_ROOT>
+
+- `services/agent-service/app/services/sports_analyzer.py` - prompt constraints and deterministic sanitation for top-level buyer fields.
+- `services/agent-service/tests/test_sports_analyzer.py` - parser tests for unsafe buyer phrases.
+- `apps/sports-app/src/app/analyzer/buyer-signal-summary.ts` - aggregates missing/unavailable/proxy/unknown signal rows into `Confirmation strength`.
+- `apps/sports-app/src/app/analyzer/buyer-signal-summary.spec.ts` - buyer mapper tests for internal gap copy safety.
+- `apps/sports-app/src/app/analyzer/analyzer.component.html` - Signal Summary intro copy made safer.
+- `apps/sports-app/src/app/analyzer/analyzer.component.ts` - no-lean fallback and aria label made product-safe.
+- `apps/sports-app/src/app/sports-api.service.ts` - stub lean changed from `Edge toward` to `Slight lean toward`.
+
+### files changed in <DAI_VAULT_ROOT>
+
+- `04 Products/sports-v1/buyer-copy-safety-v1.md` - new product/implementation note.
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` - entry 20 marked Resolved; entry 21 added for Buyer Copy Polish Review v1.
+- `06 Execution/handoffs/current-slice.md` - this final handoff addendum.
+
+### files not changed
+
+- <JERA_SKILLS_ROOT>: not changed.
+- .NET code/tests/projects under `platform/dotnet`: not changed.
+- Dev artifact review surface, source/fallback catalog, ToolGateway, station/probe refresh, schemas, migrations, tenant/auth/billing, and confidence/posture/lean mutation engine: not changed.
+
+### buyer-copy doctrine implemented
+
+Buyer copy may say `Slight lean toward`, `Cautious lean toward`, `No clear lean`, `Mixed read`, `measured confidence`, and `not strong enough for a firmer stance`.
+
+Buyer copy must not say or expose `Edge toward`, `best bet`, `prediction`, `lock`, `sharp side`, `value play`, `expected to cover`, `should win`, `take`, `hammer`, `sharp_public`, `missing signal`, `unavailable signal`, `fallback failed`, `probe required`, or `source unavailable`.
+
+Internal diagnostics still keep their raw terms in the artifact, quality warnings, signal availability, signal follow-ups, protocol fields, and dev review surfaces.
+
+### tests / checks
+
+- FastAPI analyzer tests: passed earlier in the slice, `105 passed`.
+- sports-app tests: passed earlier in the slice, `30 passed`.
+- sports-app build: passed earlier in the slice.
+- `git -C dai diff --check`: passed during closeout; LF/CRLF warnings only.
+- `git -C dai-vault diff --check`: passed during closeout; LF/CRLF warnings only.
+- DAI exact-path scan on changed implementation files: passed, no local absolute path or repo-placeholder leak.
+- `npm test -- --watch=false --include src/app/analyzer/buyer-signal-summary.spec.ts`: passed during closeout, `15 passed`.
+- `.\\.venv\\Scripts\\python.exe -m pytest tests/test_sports_analyzer.py -k "buyer_copy or sanitized or edge_toward"`: passed during closeout, `2 passed`, `103 deselected`.
+- Added-line exact-path scan across the DAI commit and vault diff: passed; no new absolute local paths. Expected repo placeholders appear only in the handoff/docs.
+- Vault non-ASCII added-line scan: passed.
+- Full-file scan of `current-slice.md` still finds older historical absolute local path references from prior addenda; none were added by Buyer Copy Safety v1.
+- .NET tests: attempted earlier as a diligence check, interrupted by user, and not claimed as passed. No dotnet process remained afterward. This is recorded as a verification caveat, not a blocking failure, because no .NET files changed.
+
+### risks remaining
+
+- The parser sanitizer is deliberately narrow; fresh generated artifacts should be reviewed to confirm prompt-side behavior holds without over-repetition.
+- Safe copy may feel mechanical until Buyer Copy Polish Review v1.
+- `signals_used` remains internal/dev-only; source expansion and richer source metadata remain separate future work.
+- .NET was not reverified after the interrupted diligence run because no .NET files changed.
+
+### deferred follow-up
+
+Buyer Copy Polish Review v1 is deferred as ledger entry 21. Scope: tone, cadence, repetition, buyer trust language, and prompt efficiency after fresh post-safety artifacts exist. It does not reopen source expansion, probe refresh, confidence/posture/lean mutation, or runtime station adoption.
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: local commit `58abb463148ec80a22ec64c78847fa7ad543066a` (`feat(sports): harden buyer copy safety`). Expected final status after closeout: clean, `main...origin/main [ahead 1]`.
+- <DAI_VAULT_ROOT>: docs commit to be created immediately after this handoff is written (`docs(sports): record buyer copy safety`). Expected final status after closeout: clean, `main...origin/main [ahead 1]`. The final vault hash is reported in the terminal closeout/final response because this file cannot contain the hash of the commit that includes it.
+- <JERA_SKILLS_ROOT>: unavailable/not changed.
+- Push status: not pushed.
+
+status: Buyer Copy Safety v1 implemented and closed out 2026-06-09. Code and vault docs committed locally, not pushed. .NET test attempt was interrupted and is not claimed as passed.

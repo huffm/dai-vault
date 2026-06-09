@@ -186,12 +186,21 @@
 
 ### 20. Buyer-facing model prose copy safety
 - **Decision:** whether the model-produced prose on the buyer surface (chiefly the `lean` line, also `summary` and `signals_used`) should be constrained to analysis-framed, non-betting language.
-- **Current choice:** not constrained. The frontend label layer is copy-safe (no pick/lock/edge/guaranteed), but the model prose rendered directly in Current Lean says "Edge toward <team>" in 27/33 calibration artifacts (82%), and `signals_used` names ungrounded signals (bullpen/lineup_form/ballpark) in 25/33 (dev warning only). No prompt change has been made.
-- **Why deferred:** fixing it correctly requires a FastAPI prompt change, which is out of scope for the calibration slice that found it. A frontend regex that rewrites model sentences was considered and rejected as fragile and meaning-distorting.
-- **Revisit trigger:** Prompt Copy Safety v1 is scheduled, or buyer testing shows the "Edge" language harms trust or the "decision support, not prediction" positioning.
-- **Proposed future slice:** Prompt Copy Safety v1 -- constrain lean/summary prose to analysis framing ("leans toward / favors") and limit `signals_used` to grounded signals; prompt-level only, no new sources, no runtime, no schema, no confidence/posture/lean mutation.
+- **Current choice:** implemented at the buyer-copy boundary. Buyer Copy Safety v1 (2026-06-09) changed the FastAPI analyzer prompt, added deterministic parser sanitation for top-level buyer fields, changed the Angular buyer signal mapper to aggregate non-grounded diagnostic rows under `Confirmation strength`, and changed stub/fallback buyer copy away from app-gap language. `signals_used` remains internal/dev-only; the prompt now says to list only categories with real context blocks, and the quality checker still flags ungrounded claims for calibration.
+- **Why deferred:** resolved for safety. Future tone/cadence polish is separate and tracked in entry 21.
+- **Revisit trigger:** unsafe buyer-copy phrases recur in fresh generated artifacts, or buyer testing shows the safety language is too repetitive or too blunt.
+- **Proposed future slice:** Buyer Copy Polish Review v1 -- review tone, cadence, buyer trust language, repeated phrasing, and prompt efficiency after safety is in place. No source expansion or runtime activation.
 - **Risk if forgotten:** the most-read buyer field keeps reading like a betting pick, undermining the product positioning the frontend copy work was built to protect.
-- **Status:** Deferred -- created by Buyer Artifact UX Calibration v1 (2026-06-08). Recommended as the next slice, ahead of source expansion (entry 19). No prompt change, model-call change, source addition, runtime activation, or confidence/posture/lean mutation performed.
+- **Status:** Resolved (Buyer Copy Safety v1, 2026-06-09). No source addition, source/fallback catalog, probe-refresh activation, confidence/posture/lean mutation engine, tenant/auth/billing work, or broad frontend redesign performed. Entry 19 remains Deferred.
+
+### 21. Buyer Copy Polish Review v1
+- **Decision:** when to optimize buyer wording beyond the safety boundary.
+- **Current choice:** deferred. Buyer Copy Safety v1 intentionally corrected unsafe posture and internal gap leakage without doing a broader copywriting pass.
+- **Why deferred:** tone polish should wait until fresh post-safety artifacts show what phrasing repeats, where buyer confidence language feels too cautious, and whether the prompt can be made more efficient without weakening the safety boundary.
+- **Revisit trigger:** at least one fresh calibration batch generated after Buyer Copy Safety v1, or user/buyer feedback that the safe copy is clear but repetitive, stiff, or too long.
+- **Proposed future slice:** Buyer Copy Polish Review v1 -- wordsmithing, tone optimization, repeated-phrase reduction, buyer trust language, and prompt-efficiency review only.
+- **Risk if forgotten:** the artifact stays safe but may feel mechanically phrased or over-cautious as more buyer runs accumulate.
+- **Status:** Deferred -- created by Buyer Copy Safety v1 (2026-06-09). This does not reopen source expansion, entry 19, probe refresh, confidence/posture/lean mutation, or runtime station adoption.
 
 ## Maintenance
 
