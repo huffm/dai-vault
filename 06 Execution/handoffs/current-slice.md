@@ -6451,3 +6451,103 @@ Fresh Buyer Artifact Generation Calibration v1 when model calls and local stack 
 - Push status: not pushed.
 
 status: Buyer Copy Polish Review v1 implemented 2026-06-09. One Angular copy change; vault review note created; ledger entry 21 resolved; current-slice updated. No prompt/runtime/schema/source/probe-refresh/confidence/posture/lean mutation change.
+
+## addendum: Buyer Artifact Quality Check Pass v1 (2026-06-09)
+
+Quality pass over the sports buyer artifact as a packaged product unit. Docs-only. No prompt, parser, Angular, .NET, source, probe refresh, schema, confidence/posture/lean mutation, tenant/auth/billing, dashboard, deployment, or Jera change.
+
+### pre-change repo-state and ahead check
+
+- <DAI_REPO_ROOT>: `main`, clean, even with origin (`0 ahead`, `0 behind`), HEAD `d7621d9e9df84308ccf66165f8966685fa5a6397`.
+- <DAI_VAULT_ROOT>: `main`, clean, even with origin (`0 ahead`, `0 behind`), HEAD `a3eaee86250429312fbcb27484aa79e9e9603902`.
+- <JERA_SKILLS_ROOT>: available at the local Jera skills repo, clean, `main...origin/main [ahead 2]` from pre-existing local commits. Read-only; not changed.
+
+### skills / guidance used
+
+- local DAI pack (read-only): `dai-grill-with-vault`, `dai-token-tight`, `dai-agent-handoff`.
+- local signal diagnostics context: no installed `dai-signal-follow-up-diagnostics` skill file was found in the local skills pack, so signal vocabulary/context was read from repo code and vault docs instead.
+- superpowers, applied manually: planning and verification-before-completion.
+
+### docs/code decision
+
+Docs-only. Fresh generation was not available because the local platform API did not respond within timeout and the FastAPI agent service refused connection. The pass used latest committed artifacts projected through the current buyer safety/polish boundary. No code defect was found; no prompt phrase bank was justified.
+
+### sample set reviewed
+
+Ten committed artifacts:
+
+- NBA legacy/coarse: `20260507-1001-nba-ccbc433e.json`, Cavaliers at Pistons.
+- NBA legacy/coarse: `20260507-1001-nba-cdbc433e.json`, Cavaliers at Thunder.
+- NBA rich v2: `20260518-1001-nba-5f16433e.json`, Cavaliers at Knicks.
+- NBA rich v2: `20260528-0931-nba-fa8d433e.json`, Knicks at Thunder.
+- NBA rich v2: `20260528-0931-nba-f48d433e.json`, Spurs sample.
+- MLB rich v2: `20260518-1010-mlb-6416433e.json`, Braves at Marlins.
+- MLB rich v2: `20260518-1010-mlb-6816433e.json`, Orioles at Rays mixed read.
+- MLB rich v3: `20260529-1421-mlb-098e433e.json`, Twins at Pirates mixed read.
+- MLB rich v3: `20260529-1421-mlb-0c8e433e.json`, Padres at Nationals.
+- MLB rich v3: `20260529-1421-mlb-1c8e433e.json`, Cubs at Cardinals.
+
+### files changed
+
+<DAI_VAULT_ROOT>:
+
+- `04 Products/sports-v1/buyer-artifact-quality-check-pass-v1.md` (new)
+- `06 Execution/handoffs/current-slice.md` (this addendum)
+
+<DAI_REPO_ROOT>: unchanged. <JERA_SKILLS_ROOT>: unchanged.
+
+### summary judgment
+
+Pass with minor follow-up. The packaged buyer artifact is credible enough to keep hardening toward paid validation. It reads like decision support, not a tout sheet. Direction remains visible, unsafe buyer language is absent in the projected buyer package, and internal diagnostics stay internal.
+
+### key credibility findings
+
+- Clear leans remain clear: `Slight lean toward...`.
+- Mixed reads remain clear: `Signals are split`.
+- Signal Summary explains support without raw source/fallback/probe language.
+- The artifact is careful without becoming evasive.
+
+### key repetition findings
+
+- `Slight lean toward` appears in 8/10 projected samples, but those are historical artifacts sanitized from old `Edge toward` leans. Not enough evidence for phrase-bank work.
+- `Current read from the available evidence` appears in 10/10 as a static UI note; acceptable product consistency.
+- `Confirmation strength - Measured` appears in 5/10 and remains useful.
+- MLB `starting pitching advantage` appears repeatedly enough to watch in fresh generation, not enough to change prompts now.
+
+### key safety/toutiness findings
+
+- Projected buyer package had 0 unsafe buyer-copy hits.
+- No lock/guarantee/free-money/pressure language.
+- No raw `sharp_public`, missing source/fallback/probe language, or internal factory terms in buyer copy.
+- Raw historical artifact JSON still contains old `Edge toward` text in 8/10 samples; this is a historical artifact limitation, not a current projected buyer-output finding.
+
+### checks run
+
+- Fresh generation availability check: platform API timeout, agent service refused connection.
+- 10-artifact quality projection: completed; 0 unsafe projected buyer hits.
+- Final docs checks: to be run before commit (`git diff --check`, added-line exact-path scan, vault non-ASCII added-line scan).
+- npm/FastAPI/.NET tests: not run; no code changed.
+
+### risks remaining
+
+- No fresh post-safety model artifacts were generated.
+- Three MLB clear-lean samples are thin/high-confidence watches because they rely on one signal while confidence is high.
+- Internal quality warnings remain in warning samples for ungrounded `signals_used`; buyer copy hides them, dev diagnostics preserve them.
+- NFL remains unreviewed in post-safety quality form.
+
+### recommended next slice
+
+Fresh Buyer Artifact Generation Calibration v1 when the sports dev stack is available and model-call spend is justified. That slice should decide whether phrase-bank prompt guidance, MLB single-signal product handling, or NFL buyer calibration is needed.
+
+### ledger
+
+Deferred runtime decisions ledger not updated. No new runtime, prompt, source, or artifact-contract decision was discovered. Prompt phrase-bank work is only a recommendation candidate, not a deferred decision.
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: expected final status clean/even with origin; no new commit.
+- <DAI_VAULT_ROOT>: docs commit to be created after verification with message `docs(sports): record buyer artifact quality pass`. Final hash reported in final response.
+- <JERA_SKILLS_ROOT>: unchanged.
+- Push status: not pushed.
+
+status: Buyer Artifact Quality Check Pass v1 drafted 2026-06-09. Docs-only; quality report created; current-slice updated. No code/runtime/schema/prompt/model/gateway/source/station/probe-refresh/artifact/confidence/posture/lean change.
