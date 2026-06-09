@@ -6899,3 +6899,67 @@ Log-only (no sink/aggregation/per-tenant cost/spend cap); hand-maintained pricin
 - <JERA_SKILLS_ROOT>: not present; unchanged.
 
 status: Artifact Cost Guardrails v1 complete 2026-06-09. Single sports model call instrumented with token usage, configured-estimate USD cost, latency, status, finishReason, requestId -> structured devcore.cost log per run (live: ~$0.0006/artifact). Added max_completion_tokens=1500 + 30s timeout; retry posture documented (SDK default, unchanged); fail-safe telemetry. Smoke: v3 artifact + cognitiveProtocol + buyer projection intact, buyer copy unchanged. 111 python tests pass (6 new TDD). Ledger entry 22 added (sink/spend-cap deferred). No prompt/confidence/posture/lean/signal/schema/source/pricing/Stripe/tenant/dashboard change.
+
+---
+
+## addendum: Evidence-Sufficiency Band Gate v1 (2026-06-09)
+
+**slice:** Evidence-Sufficiency Band Gate v1
+**status:** complete. narrow Angular buyer-projection change + tests in `dai`; report/handoff/ledger in `dai-vault`. no prompt/model-call/cost-guardrail/source/probe-refresh/lean/raw-confidence/posture/schema/.NET/FastAPI change.
+**repos touched:** `dai` (Angular `buyer-signal-summary.ts` + `.spec.ts`); `dai-vault` (report + ledger entry 12 progress + new entry 23 + this addendum). skills repo: the named custom skills (dai-grill-with-vault, dai-token-tight, dai-agent-handoff) and jera-workspace-skills are NOT present; only `dai/.claude/skills/dai-signal-follow-up-diagnostics` exists (different domain) -- no skill changed.
+
+### objective
+
+First runtime expression of the two-axis confidence doctrine: derive evidence sufficiency and prevent thin-evidence artifacts from advertising high buyer strength, while preserving lean and raw numeric confidence.
+
+### implementation
+
+Gate lives in the deterministic Angular buyer projection `apps/sports-app/src/app/analyzer/buyer-signal-summary.ts` (where the buyer `confidenceBand` is already derived from numeric confidence -- design rule 5, narrowest correct layer). No .NET/schema change: `confidence` + `evidenceRichness` are already on the artifact DTO.
+
+### evidence sufficiency
+
+Tier from absolute `evidenceRichness` (composer sets it = grounded-signal count): thin <=1, moderate ==2, rich >=3, unknown when absent. Provisional, not outcome-calibrated.
+
+### buyer-advertised strength gate
+
+If rawBand == High and tier == thin -> cap advertised band to Medium; else unchanged. Never raises a band, never touches Medium/Low, fails open on unknown (legacy artifacts). Raw numeric confidence and lean untouched.
+
+### humility reason
+
+`BuyerSignalSummary.advertisedStrengthReason = "advertised_strength_limited_by_evidence"` when capped, null otherwise. Internal metadata only -- not rendered to the buyer (no template change, no jargon leak).
+
+### lean / confidence preservation
+
+Lean preserved (function never touches it; existing no-mutation test guards it). Raw numeric confidence preserved (gate changes presentation band only). Smoke artifact kept confidence 0.75 and lean "Slight lean toward Orioles..." while advertised band capped High->Medium.
+
+### tests / checks
+
+TDD (8 new gate tests, written failing-first -- RED was the missing `advertisedStrengthReason` compile error). Vitest 38 pass (3 files). ng build exit 0. git diff --check; added-line exact-path scan; vault non-ASCII added-line scan.
+
+### smoke
+
+Docker/devcore-sql up; FastAPI ping 200; .NET health 200. Full chain MLB single-signal -> 200 completed, v3 + cognitiveProtocol present, evidenceRichness 1, raw confidence 0.75, lean preserved; gate projects rawBand High -> advertised Medium (capped). Cost telemetry intact (gpt-4o-mini, 3193 tokens, $0.00072, finishReason stop). Zero new model-call sites (frontend-only); 2 model calls used in smoke.
+
+### ledger
+
+Updated: entry 12 progress note (humility cap now implemented as a presentation-layer gate; numeric recalibration + threshold move still deferred pending outcome evidence). New entry 23 (buyer-advertised strength gate is presentation-only; server-authoritative/contract gate deferred until a second non-Angular consumer needs it; risk = a non-Angular consumer re-deriving High from raw confidence).
+
+### skill update
+
+Not made -- the relevant custom DAI skills are not present in this workspace. Recommended future skill capture (documented in final handoff, not applied): a durable DAI doctrine principle -- "gate buyer presentation humility at the deterministic projection layer; preserve raw internal calibration signals (confidence/lean) for the outcome loop; separate confidence from evidence sufficiency."
+
+### files changed
+
+- dai/apps/sports-app/src/app/analyzer/buyer-signal-summary.ts (gate + tier + reason)
+- dai/apps/sports-app/src/app/analyzer/buyer-signal-summary.spec.ts (8 new tests)
+- dai-vault/04 Products/sports-v1/evidence-sufficiency-band-gate-v1.md (new report)
+- dai-vault/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md (entry 12 progress + entry 23)
+- dai-vault/06 Execution/handoffs/current-slice.md (this addendum)
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: one code commit (Angular gate + tests). Hash in final response. Not pushed.
+- <DAI_VAULT_ROOT>: one docs commit (report + ledger + addendum). Hash in final response. Not pushed.
+- skills repo / <JERA_SKILLS_ROOT>: not present; unchanged.
+
+status: Evidence-Sufficiency Band Gate v1 complete 2026-06-09. Buyer projection now caps thin-evidence (evidenceRichness<=1) reads from advertising High -> Medium, with an internal advertised_strength_limited_by_evidence reason; lean and raw numeric confidence preserved; gate fails open on unknown evidence. Frontend-only (buyer-signal-summary.ts); 8 new TDD tests, 38 Vitest pass, ng build clean; full-chain smoke confirms v3 + cognitiveProtocol + cost telemetry intact, zero new model calls. Ledger entry 12 progressed, entry 23 added (server-authoritative gate deferred). No prompt/model/cost/source/probe-refresh/raw-confidence/lean/posture/schema/.NET/FastAPI change.
