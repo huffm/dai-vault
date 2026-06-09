@@ -119,7 +119,7 @@
 - **Revisit trigger:** enough reconciled `AgentRunOutcome` -> `AgentRunEvaluation` evidence to support a specific threshold change.
 - **Proposed future slice:** Calibration-Driven Threshold Update v1 (evidence-gated, its own review).
 - **Risk if forgotten:** a threshold is changed on intuition or on a refresh signal, undermining calibration credibility.
-- **Status:** Deferred -- standing decision recorded in handoffs; gates flag only.
+- **Status:** Deferred -- standing decision recorded in handoffs; gates flag only. Clarified by Confidence Calibration Rules v1 (2026-06-09, doctrine/spec only -- `04 Products/sports-v1/confidence-calibration-rules-v1.md`): established a two-axis confidence + evidence-sufficiency model. Moving a confidence/posture *threshold* still requires reconciled-outcome evidence and stays deferred here. An evidence-sufficiency humility cap on *buyer-advertised strength* (band-gating so a thin-evidence read cannot advertise "high") is a buyer-honesty presentation constraint, distinct from a threshold move, and is the one part of that doctrine not gated on outcome data; numeric confidence recalibration remains gated here. No code, constant, or threshold changed.
 
 ### 13. Probe-refresh chain assembly activation
 - **Decision:** whether the assembled probe-refresh chain runs in production.

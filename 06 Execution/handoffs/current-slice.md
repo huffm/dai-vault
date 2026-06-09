@@ -6769,3 +6769,60 @@ Not updated. No new deferred decision; existing deferrals unchanged.
 - <JERA_SKILLS_ROOT>: not present; unchanged.
 
 status: Fresh Buyer Artifact Validation v1 complete 2026-06-09. 5 fresh artifacts (1 NBA + 4 MLB) via full chain, all v3 + cognitiveProtocol + buyer projection. Buyer copy credible and safe (0 unsafe hits); repetition controlled; completeness good. Pass with minor follow-up. Dominant fresh finding: confidence_high_for_partial_evidence on 4/4 MLB -> recommend Confidence Calibration Rules v1. Vault-only (report + calibration artifacts + addendum); no code/prompt/confidence/posture/lean/signal/source/schema/cost change.
+
+---
+
+## addendum: Confidence Calibration Rules v1 (2026-06-09)
+
+**slice:** Confidence Calibration Rules v1
+**status:** complete. doctrine/spec only. no code in any repo. no SportsEvaluator change, no confidence constants changed, no buyer UI/projection, no prompt, no schema, no source/probe-refresh, no cost-guardrail, no pricing change.
+**repos touched:** `dai-vault` only (new doctrine spec + entry-12 clarification + this addendum). `dai` not touched.
+
+### objective
+
+Define how confidence should behave in the factory after Fresh Buyer Artifact Validation v1 found confidence_high_for_partial_evidence on 4/4 MLB (0.75 "high" on a single grounded signal, evidenceRichness 1). Produce doctrine a future slice can implement safely; change no code.
+
+### what was decided (two-axis doctrine)
+
+- confidence = how coherent/strong the read is from available evidence (the existing relative SportsEvaluator value, preserved).
+- evidence sufficiency = how much independent grounding supports the read (absolute, from existing evidenceRichness; tiers thin/moderate/rich, indicative thin<=1, moderate=2, rich>=3, provisional/not outcome-calibrated).
+- buyer-advertised strength = derived from BOTH; a thin-evidence run may not advertise "high" regardless of numeric confidence; suppression recorded as a named evidence humility constraint.
+- outcome reconciliation = the future feedback loop that can recalibrate the confidence number over time.
+
+### failure mode documented
+
+Relative completeness masking absolute scarcity (a system boundary problem): SportsEvaluator measures completeness inside the competition/source boundary (MLB maxGrounded==1, so 1-of-1 = "full" -> up to 0.85), while the buyer experiences confidence across the whole artifact where 1 signal is thin. Lowering a number treats the symptom; the doctrine fixes the boundary.
+
+### systems framing recorded
+
+Flows (signals/availability/model interpretation) -> stock (evidence sufficiency) -> derived state (confidence) -> output (buyer-advertised strength) -> feedback loop (outcome reconciliation) with delay (outcomes arrive later), constraints (source availability, model-call budget), protected long-term stock (buyer trust). Core insight: local optimization of the numeric confidence can drain buyer trust if thin reads are advertised as strong; confidence must be interpreted with evidence sufficiency, not as a standalone scalar.
+
+### recommended later implementation direction (NOT done here)
+
+Band-gating before numeric rewriting: preserve numeric confidence (clean signal for future outcome calibration); derive evidence-sufficiency tier from existing evidenceRichness; prevent thin-evidence runs from surfacing as high buyer-advertised strength; record the suppression as an evidence humility constraint with a reason. No SportsEvaluator/constant/threshold/UI/prompt/schema change in that future slice either.
+
+### decision location
+
+Decision kept embedded in the main spec (`04 Products/sports-v1/confidence-calibration-rules-v1.md`). No new decisions/ stub created -- the existing `04 Products/sports-v1/decisions/` folder is a UI-design-decision convention and a thin stub would be redundant.
+
+### ledger
+
+Updated: one clarification line appended to entry 12 (calibration proof before posture-threshold changes) -- distinguishes the evidence-sufficiency humility cap (buyer-honesty presentation constraint, not gated on outcome data) from a confidence/posture threshold move (still gated). Entry 4 (probe-refresh confidence/posture/lean mutation) unchanged -- its trigger is not satisfied by this doctrine.
+
+### files changed
+
+- `dai-vault/04 Products/sports-v1/confidence-calibration-rules-v1.md` (new spec/doctrine)
+- `dai-vault/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` (entry 12 clarification)
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum)
+
+### checks run
+
+- git diff --check; added-line exact-path scan; vault non-ASCII added-line scan.
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: unchanged; clean; even with origin. Not pushed.
+- <DAI_VAULT_ROOT>: one docs commit. Hash in final response. Not pushed.
+- <JERA_SKILLS_ROOT>: not present; unchanged.
+
+status: Confidence Calibration Rules v1 complete 2026-06-09. Doctrine/spec only: two-axis confidence + evidence-sufficiency model, systems framing, MLB relative-completeness-vs-absolute-scarcity failure mode, and band-gating-before-numeric-rewrite implementation direction for a later slice. Entry 12 clarified (humility cap distinct from threshold move); entry 4 unchanged. Vault-only; no code/SportsEvaluator/constant/threshold/UI/prompt/schema/source/probe-refresh/cost/pricing change.
