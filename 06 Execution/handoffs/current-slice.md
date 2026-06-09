@@ -7172,3 +7172,72 @@ Per-Sport Buyer Validation Matrix v1 (step 6, parallel on existing runs) and Out
 - skills repo / <JERA_SKILLS_ROOT>: not present; unchanged.
 
 status: Outcome Reconciliation Contract v1 complete 2026-06-09. Defined stable match key (sourceProvider+externalGameId, not display names), outcome record contract (split settlement-state vs direction + audit times), evaluation contract (lean-vs-winning; unmatched/unsettled/no-lean = inconclusive; advertised strength excluded from correctness), and calibration feedback-loop (calibrate on raw confidence, present on advertised strength). Existing manual scaffold (/outcome + RunEvaluator) already supports Stage 0. Runtime/provider/settlement deferred. Ledger entry 25 added. Docs-only on SQL Server; no code/migration/schema/contract/provider change.
+
+---
+
+## addendum: Pre-Support Buyer Validation Matrix v1 (2026-06-09)
+
+**slice:** Pre-Support Buyer Validation Matrix v1 (sequence step 6)
+**status:** complete. support-readiness classification, docs only. no runtime code/source/prompt/parser/schema/contract/buyer-projection/buyer-copy/confidence/posture/lean/model/cost change; no public support-claim change.
+**repos touched:** `dai-vault` only (report + ledger entry 26 + this addendum). `dai` not touched (read-only). skills/jera repo not present.
+
+### objective
+
+Classify NBA, MLB, NFL, CFB, NCAAB men, NCAAB women, WNBA, NHL by buyer-support readiness so claims do not outrun validation. "Can generate text" is not support.
+
+### grounded competition/source map
+
+Routable in code (CompetitionCatalog + FastAPI _SUPPORTED_COMPETITIONS): nfl, ncaaf, nba, ncaamb, mlb. Analyzer paths: football(nfl/ncaaf), basketball(nba/ncaamb), mlb. Expected grounded signals: nfl/ncaaf [market, sharp_public] (2); nba/ncaamb [rest_schedule, market, sharp_public] (3); mlb [starting_pitching] (1). Sources: the-odds-api (market/schedule), ActionNetwork (sharp_public, often missing; maps ncaamb->ncaab), ESPN (rest, basketball only), MLB statsapi (pitching, mlb only). Seeded teams: nfl/nba/mlb/ncaaf/ncaamb. Fresh validated artifacts: NBA + MLB only. WNBA/NHL/NCAAB-women absent entirely.
+
+### per-sport classification
+
+- NBA: Buyer-ready validated -> support with caveat (validated; sharp_public usually missing so ~2/3 richness; Finals then off-season).
+- MLB: Buyer-ready validated -> support with caveat (validated; single-signal thin, band-gated to advertised Medium; in season).
+- NFL: Smoke-level only -> internal smoke only (code+source exist, unvalidated, off-season; market+sharp only).
+- CFB (ncaaf): Smoke-level only -> internal smoke only (as NFL + college name ambiguity; off-season).
+- NCAAB men (ncaamb): Smoke-level only -> internal smoke only (basketball signals; college identity risk; off-season).
+- NCAAB women: Deferred / not-supported-in-code -> defer until demand + source/identity groundwork (no code path).
+- WNBA: Deferred / not-supported-in-code -> defer until demand (in season but entirely unbuilt).
+- NHL: Deferred / not-supported-in-code -> defer until demand (unbuilt, ~off-season).
+
+### support claims guidance
+
+Soft-launch/private: MLB (strongest today) and NBA, both as measured decision support with caveats. Hidden/"coming later": NFL/CFB/NCAAMB (validate in-season first, manual review). Internal only: their direct-analyze smokes. Never list WNBA/NHL/NCAAB-women as supported; never imply five sports buyer-ready -- only two are.
+
+### main risks/gaps
+
+3 of 5 routable competitions never buyer-validated and season-gated; thin-evidence dominance (MLB 1 signal, football market-only when sharp missing); sharp_public flakiness everywhere; no stable game/event id yet (worst for college/women's); overclaim risk (code path != support).
+
+### cost
+
+Cost telemetry available for all routable competitions (one gpt-4o-mini call, ~$0.0006-0.0007/run, log-only). This slice generated no new batches (used prior validations) -- minimal/zero new model spend.
+
+### ledger
+
+Updated: new entry 26 (sport support readiness / buyer-support expansion -- NBA/MLB validated with caveats; NFL/CFB/NCAAMB smoke-only pending in-season validation; WNBA/NHL/NCAAB-women deferred/unbuilt).
+
+### skill update
+
+Not made (no skills repo / relevant custom skill present). Recommended future capture: never equate technical generation with buyer support; classify sports by readiness before expanding public claims; validate demand, data availability, credibility, and reconciliation readiness separately; college/women's sports need extra identity/source caution.
+
+### files changed
+
+- dai-vault/04 Products/sports-v1/pre-support-buyer-validation-matrix-v1.md (new report)
+- dai-vault/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md (entry 26)
+- dai-vault/06 Execution/handoffs/current-slice.md (this addendum)
+
+### checks run
+
+git diff --check; added-line exact-path scan; vault non-ASCII added-line scan.
+
+### recommended next slice
+
+Outcome Reconciliation Runtime v1 (step 7, sequenced next). In parallel when football returns: Football Pre-Support Validation v1 (NFL+CFB, existing pipeline, manual review) to move them from smoke-only toward buyer-ready.
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: unchanged; clean; even with origin. Not pushed.
+- <DAI_VAULT_ROOT>: one docs commit. Hash in final response. Not pushed.
+- skills repo / <JERA_SKILLS_ROOT>: not present; unchanged.
+
+status: Pre-Support Buyer Validation Matrix v1 complete 2026-06-09. Classified 8 sports: NBA + MLB Buyer-ready validated (support with caveat); NFL + CFB + NCAAB men Smoke-level only (code/source exist, unvalidated, off-season); NCAAB women + WNBA + NHL Deferred/unbuilt (no code path). Technical generation separated from buyer support; claims guidance set; only 2 sports buyer-validated. Ledger entry 26 added. Docs-only; no code/source/prompt/schema/contract/buyer-copy/public-claim change.

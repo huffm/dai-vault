@@ -238,6 +238,15 @@
 - **Risk if forgotten:** automated reconciliation is built on fragile display-name matching, or buyer-advertised strength leaks into correctness, corrupting calibration.
 - **Status:** Deferred -- contract shipped (Outcome Reconciliation Contract v1, 2026-06-09), docs only. Builds on the existing manual scaffold (AgentRunOutcomes/AgentRunEvaluations + /outcome + RunEvaluator). Feeds entry 12 (calibration evidence) and stays on SQL Server (entry 24). Does not reopen provider integration, automated settlement, migrations, artifact contracts, confidence/posture/lean, prompts, sources, or probe refresh.
 
+### 26. Sport support readiness and buyer-support expansion
+- **Decision:** which sports DAI may claim as buyer-supported, and when to expand support to additional sports.
+- **Current choice:** classified by Pre-Support Buyer Validation Matrix v1 (2026-06-09). Only NBA and MLB are Buyer-ready validated (fresh full-chain artifacts, clean safety, validated evidence-sufficiency band gate, known cost) -- support with caveat (NBA seasonal; MLB single-signal thin, honestly gated). NFL, CFB (ncaaf), and NCAAB men (ncaamb) are Smoke-level only: code path + analyzer + source clients + seeded teams exist, but zero buyer validation and currently off-season -- internal smoke only, no buyer claim until an in-season validation batch (with manual review). WNBA, NHL, and NCAAB women have no code path / analyzer / source / seed at all -- Deferred (effectively not supported today) until demand and source/identity groundwork justify the build; college and women's sports carry the highest naming/identity risk and need stable event identity first. Technical generation must never be equated with buyer support.
+- **Why deferred:** expanding public support before validation overclaims coverage; football/college validation is time-gated by season; the unbuilt sports need real implementation and source coverage. Validate credibility, data availability, and reconciliation readiness separately before promising a sport.
+- **Revisit trigger:** football/college season returns (validate NFL/CFB, then NCAAMB), or demand appears for an unbuilt sport (WNBA/NHL/NCAAB women).
+- **Proposed future slice:** Football Pre-Support Validation v1 (in season, NFL+CFB, existing pipeline, manual review); NCAAB validation in winter; new-sport build only on demand with source + stable-identity groundwork first.
+- **Risk if forgotten:** a code path or schedule source is mistaken for buyer support, or smoke-only/unbuilt sports are listed as supported, damaging buyer trust.
+- **Status:** Deferred -- matrix shipped (Pre-Support Buyer Validation Matrix v1, 2026-06-09), docs only. NBA/MLB buyer-ready (with caveats); NFL/CFB/NCAAMB smoke-only pending in-season validation; WNBA/NHL/NCAAB-women deferred/unbuilt. No frontend support-claim change. Does not reopen sources, prompts, schemas, buyer copy, confidence/posture/lean, or outcome-reconciliation runtime.
+
 ## Maintenance
 
 - When a slice resolves an entry, set Status to `Resolved (<slice name>, <date>)` and keep the row.
