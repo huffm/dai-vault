@@ -6258,3 +6258,92 @@ Buyer Copy Polish Review v1 is deferred as ledger entry 21. Scope: tone, cadence
 - Push status: not pushed.
 
 status: Buyer Copy Safety v1 implemented and closed out 2026-06-09. Code and vault docs committed locally, not pushed. .NET test attempt was interrupted and is not claimed as passed.
+
+## addendum: Buyer Artifact Post-Safety Calibration v1 (2026-06-09)
+
+Calibration slice. Reviewed whether Buyer Copy Safety v1 preserved buyer usefulness after removing betting-edge posture and internal gap leakage. Docs-only; no code change.
+
+### pre-change repo-state and ahead check
+
+- <DAI_REPO_ROOT>: `main`, clean, even with origin after pushing Buyer Copy Safety v1 (`0 ahead`, `0 behind`), HEAD `58abb463148ec80a22ec64c78847fa7ad543066a`.
+- <DAI_VAULT_ROOT>: `main`, clean, even with origin after pushing Buyer Copy Safety v1 (`0 ahead`, `0 behind`), HEAD `8ed5d249985009358527813a4df624f235d8c87c`.
+- <JERA_SKILLS_ROOT>: available at the local Jera skills repo, clean, `main...origin/main [ahead 2]` from pre-existing local commits. Read-only; not changed.
+
+### skills / guidance used
+
+- local DAI pack (read-only): `dai-grill-with-vault`, `dai-token-tight`, `dai-agent-handoff`.
+- local signal diagnostics context: no installed `dai-signal-follow-up-diagnostics` skill file was found in the local skills pack, so signal vocabulary/context was read from repo code and vault docs instead.
+- superpowers, applied manually: planning and verification-before-completion.
+- TDD not used because no code defect was found and no code changed.
+
+### docs/code decision
+
+Docs-only. Calibration found no safety defect, no direction-loss defect, and no internal-diagnostics regression. The observed issues are polish: phrase repetition, confirmation-language cadence, a slightly implementation-flavored `Structured lean` note, and legacy/coarse placeholder presentation.
+
+### sample set reviewed
+
+Eight committed artifacts, projected through the current buyer safety boundary:
+
+- NBA legacy/coarse: Cleveland Cavaliers at Detroit Pistons, `20260507-1001-nba-ccbc433e.json`.
+- NBA rich v2: Cleveland Cavaliers at New York Knicks, `20260518-1001-nba-5f16433e.json`.
+- NBA rich v2: New York Knicks at Oklahoma City Thunder, `20260528-0931-nba-fa8d433e.json`.
+- MLB rich v2: Atlanta Braves at Miami Marlins, `20260518-1010-mlb-6416433e.json`.
+- MLB rich v2 mixed read: Baltimore Orioles at Tampa Bay Rays, `20260518-1010-mlb-6816433e.json`.
+- MLB rich v3 mixed read: Minnesota Twins at Pittsburgh Pirates, `20260529-1421-mlb-098e433e.json`.
+- MLB rich v3 clear lean: San Diego Padres at Washington Nationals, `20260529-1421-mlb-0c8e433e.json`.
+- MLB rich v3 clear lean: Chicago Cubs at St. Louis Cardinals, `20260529-1421-mlb-1c8e433e.json`.
+
+No live generation was run; persisted artifacts predate the safety parser, so top-level buyer fields were reviewed after applying the current sanitizer behavior and buyer Signal Summary mapper.
+
+### files changed
+
+<DAI_VAULT_ROOT>:
+
+- `04 Products/sports-v1/buyer-artifact-post-safety-calibration-v1.md` (new)
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` (entry 21 confirmed as polish-only and still Deferred)
+- `06 Execution/handoffs/current-slice.md` (this addendum)
+
+<DAI_REPO_ROOT>: unchanged. <JERA_SKILLS_ROOT>: unchanged.
+
+### summary judgment
+
+Buyer Copy Safety v1 passed with minor polish follow-up. It did not overcorrect into useless neutrality. Directional samples still clearly name the side and reason; mixed samples still read as mixed. Buyer copy no longer leaks raw `sharp_public`, missing source, fallback, or probe terms. Dev diagnostics remain explicit.
+
+### defects found
+
+None. No safety correction or code repair was warranted.
+
+### polish observations
+
+- `Slight lean toward...` is clear but may become repetitive across generated runs.
+- `Confirmation strength - Measured` is safe and useful beside grounded context, but may need cadence/label review.
+- `Structured lean from the current read` is serviceable but slightly implementation-flavored.
+- Legacy/coarse Signal Summary rows can still show placeholder-like impact text because those artifacts lack impact metadata.
+- No NFL sample was reviewed; NFL still needs calibration when cheap artifacts exist.
+
+### tests / checks run
+
+- Calibration projection over 8 committed artifacts: completed, 0 unsafe buyer-copy hits after applying current safety boundary.
+- Code tests/builds: not run, because this slice changed no code.
+- .NET tests: not run, because no .NET files changed.
+- Final docs checks: to be run before commit (`git diff --check`, added-line exact-path scan, vault non-ASCII added-line scan).
+
+### risks remaining
+
+- This used existing artifacts, not fresh model output after the prompt change.
+- Phrase repetition may only become obvious after a fresh batch.
+- Source expansion remains deferred; buyer copy handles the gap but does not solve the data absence.
+- NFL remains unreviewed in post-safety form.
+
+### deferred next slice recommendation
+
+Buyer Copy Polish Review v1 remains the next relevant follow-up, scoped to tone/cadence/phrase variety and minor buyer-label polish only. Entry 19 source expansion remains deferred and should not jump ahead based on this calibration.
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: expected final status clean/even with origin; no new commit.
+- <DAI_VAULT_ROOT>: docs commit to be created after verification with message `docs(sports): calibrate buyer artifact after copy safety`. Final hash reported in final response.
+- <JERA_SKILLS_ROOT>: unchanged.
+- Push status: Buyer Copy Safety v1 was pushed at slice start with user approval. This calibration slice will not be pushed.
+
+status: Buyer Artifact Post-Safety Calibration v1 drafted 2026-06-09. Docs-only; calibration note created; ledger entry 21 updated; current-slice updated. No code/runtime/schema/prompt/model/gateway/source/station/probe-refresh/artifact/confidence/posture/lean change.
