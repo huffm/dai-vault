@@ -195,12 +195,12 @@
 
 ### 21. Buyer Copy Polish Review v1
 - **Decision:** when to optimize buyer wording beyond the safety boundary.
-- **Current choice:** deferred. Buyer Copy Safety v1 intentionally corrected unsafe posture and internal gap leakage without doing a broader copywriting pass. Buyer Artifact Post-Safety Calibration v1 (2026-06-09) reviewed 8 committed NBA/MLB artifacts through the current safety boundary and found the artifact still useful: clear leans remain clear, mixed reads remain clear, internal gaps stay out of buyer copy, and dev diagnostics remain explicit. The follow-up is polish, not repair.
-- **Why deferred:** the calibration used existing artifacts projected through the current sanitizer and buyer mapper, not fresh generated post-safety runs. Tone polish should wait until fresh post-safety artifacts show what phrasing repeats, where buyer confidence language feels too cautious, and whether the prompt can be made more efficient without weakening the safety boundary.
-- **Revisit trigger:** at least one fresh calibration batch generated after Buyer Copy Safety v1, or user/buyer feedback that the safe copy is clear but repetitive, stiff, or too long. The first concrete polish candidates are lean phrase variety, confirmation-strength cadence, whether `Confirmation strength` should be relabeled, and whether `Structured lean from the current read` should become plainer buyer copy.
-- **Proposed future slice:** Buyer Copy Polish Review v1 -- wordsmithing, tone optimization, repeated-phrase reduction, buyer trust language, prompt-efficiency review, and minor buyer-label polish only.
+- **Current choice:** completed as a review with one narrow buyer-facing UI copy change. Buyer Copy Polish Review v1 (2026-06-09) reviewed the 8-artifact post-safety sample for cadence, repetition, `Confirmation strength - Measured`, buyer usefulness, and safety regression. It changed the Angular current-lean note from `Structured lean from the current read.` to `Current read from the available evidence.` No prompt phrase bank, sanitizer variation, source expansion, runtime activation, or signal-summary label variant was added.
+- **Why deferred:** no longer deferred as a review. Additional phrase-bank work should wait for fresh post-safety generated artifacts rather than historical artifacts projected through the sanitizer.
+- **Revisit trigger:** fresh post-safety generation shows `Slight lean toward` or `Confirmation strength - Measured` becoming mechanically repetitive, or buyer feedback says the safe copy is clear but stiff.
+- **Proposed future slice:** Fresh Buyer Artifact Generation Calibration v1, only when live generation is worth spending. If it proves real repetition, then a narrower Buyer Phrase Bank v1 can adjust prompt guidance without changing source/runtime logic.
 - **Risk if forgotten:** the artifact stays safe but may feel mechanically phrased or over-cautious as more buyer runs accumulate.
-- **Status:** Deferred -- created by Buyer Copy Safety v1 (2026-06-09), confirmed by Buyer Artifact Post-Safety Calibration v1 (2026-06-09) as polish-only. This does not reopen source expansion, entry 19, probe refresh, confidence/posture/lean mutation, or runtime station adoption.
+- **Status:** Resolved (Buyer Copy Polish Review v1, 2026-06-09). This does not reopen source expansion, entry 19, probe refresh, confidence/posture/lean mutation, or runtime station adoption.
 
 ## Maintenance
 

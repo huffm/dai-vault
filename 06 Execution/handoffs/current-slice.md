@@ -6347,3 +6347,107 @@ Buyer Copy Polish Review v1 remains the next relevant follow-up, scoped to tone/
 - Push status: Buyer Copy Safety v1 was pushed at slice start with user approval. This calibration slice will not be pushed.
 
 status: Buyer Artifact Post-Safety Calibration v1 drafted 2026-06-09. Docs-only; calibration note created; ledger entry 21 updated; current-slice updated. No code/runtime/schema/prompt/model/gateway/source/station/probe-refresh/artifact/confidence/posture/lean change.
+
+## addendum: Buyer Copy Polish Review v1 (2026-06-09)
+
+Copy-polish review with one small Angular buyer-copy change. No prompt change, parser change, source addition, probe refresh activation, schema change, confidence/posture/lean mutation engine, .NET change, or tenant/auth/billing work.
+
+### pre-change repo-state and ahead check
+
+- <DAI_REPO_ROOT>: `main`, clean, even with origin (`0 ahead`, `0 behind`), HEAD `58abb463148ec80a22ec64c78847fa7ad543066a`.
+- <DAI_VAULT_ROOT>: `main`, clean, even with origin (`0 ahead`, `0 behind`), HEAD `623cd83fa2494eeb91a9c248c52882e94a368edc`.
+- <DAI_VAULT_ROOT> post-safety calibration commit `623cd83fa2494eeb91a9c248c52882e94a368edc` was confirmed pushed before starting.
+- <JERA_SKILLS_ROOT>: available at the local Jera skills repo, clean, `main...origin/main [ahead 2]` from pre-existing local commits. Read-only; not changed.
+
+### skills / guidance used
+
+- local DAI pack (read-only): `dai-grill-with-vault`, `dai-token-tight`, `dai-agent-handoff`.
+- local signal diagnostics context: no installed `dai-signal-follow-up-diagnostics` skill file was found in the local skills pack, so signal vocabulary/context was read from repo code and vault docs instead.
+- superpowers, applied manually: planning, verification-before-completion, and test-driven-development discipline only for the one copy change verification.
+
+### docs/code decision
+
+One narrow Angular copy change plus vault docs. The review found a repeated implementation-flavored buyer phrase (`Structured lean from the current read`) on every sample. It was low-risk to replace with plainer buyer language. No prompt phrase bank was added because the sample is historical artifacts projected through the sanitizer, not fresh post-safety generation.
+
+### sample set reviewed
+
+Eight artifacts:
+
+- NBA legacy/coarse: Cleveland Cavaliers at Detroit Pistons, `20260507-1001-nba-ccbc433e.json`.
+- NBA rich v2: Cleveland Cavaliers at New York Knicks, `20260518-1001-nba-5f16433e.json`.
+- NBA rich v2: New York Knicks at Oklahoma City Thunder, `20260528-0931-nba-fa8d433e.json`.
+- MLB rich v2: Atlanta Braves at Miami Marlins, `20260518-1010-mlb-6416433e.json`.
+- MLB rich v2 mixed read: Baltimore Orioles at Tampa Bay Rays, `20260518-1010-mlb-6816433e.json`.
+- MLB rich v3 mixed read: Minnesota Twins at Pittsburgh Pirates, `20260529-1421-mlb-098e433e.json`.
+- MLB rich v3 clear lean: San Diego Padres at Washington Nationals, `20260529-1421-mlb-0c8e433e.json`.
+- MLB rich v3 clear lean: Chicago Cubs at St. Louis Cardinals, `20260529-1421-mlb-1c8e433e.json`.
+
+### files changed
+
+<DAI_REPO_ROOT>:
+
+- `apps/sports-app/src/app/analyzer/analyzer.component.ts` - current-lean note changed from `Structured lean from the current read.` to `Current read from the available evidence.`
+
+<DAI_VAULT_ROOT>:
+
+- `04 Products/sports-v1/buyer-copy-polish-review-v1.md` (new)
+- `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` (entry 21 resolved)
+- `06 Execution/handoffs/current-slice.md` (this addendum)
+
+<JERA_SKILLS_ROOT>: unchanged.
+
+### summary judgment
+
+Buyer Copy Polish Review v1 resolved with one small UI copy change. The artifact remains safe, directional, and buyer-useful. `Confirmation strength - Measured` should stay as-is until fresh post-safety generated artifacts prove it feels mechanical.
+
+### copy polish findings
+
+- `Slight lean toward` is clear and safe, but historical projected samples make it look repetitive. Do not tune prompt/sanitizer until fresh post-safety generation confirms repetition.
+- `Confirmation strength - Measured` is buyer-safe and understandable beside grounded rows. Keep it for now.
+- The static note `Structured lean from the current read` sounded like product plumbing and appeared on every sample. Changed.
+- MLB summary phrases like `starting pitching edge` are not the forbidden `Edge toward` posture, but should be watched in fresh outputs.
+
+### changes made or deferred
+
+Made:
+
+- Angular buyer-copy note changed to `Current read from the available evidence.`
+
+Deferred:
+
+- No prompt phrase bank.
+- No sanitizer variation.
+- No Signal Summary label variants.
+- No source expansion, probe refresh, confidence/posture/lean mutation, schema, .NET, or tenant/auth/billing work.
+
+### safety regression check
+
+Projected buyer copy contained no forbidden buyer phrases or internal gap terms. Dev/internal diagnostics remain explicit in artifacts and dev review surfaces.
+
+### tests / checks run
+
+- `npm test -- --watch=false`: passed, 30 tests.
+- `npm run build`: passed.
+- Final repo checks: to be run before commit (`git diff --check`, added-line exact-path scan, vault non-ASCII added-line scan).
+- FastAPI tests: not run; FastAPI was not changed.
+- .NET tests: not run; .NET was not changed.
+
+### risks remaining
+
+- No fresh post-safety model artifacts were generated.
+- Phrase-bank need is still unproven until fresh generated artifacts exist.
+- NFL remains unreviewed in post-safety/polish form.
+- Source expansion remains deferred; buyer copy handles the gap but does not solve the data absence.
+
+### next recommended slice
+
+Fresh Buyer Artifact Generation Calibration v1 when model calls and local stack time are worth spending. If fresh artifacts prove real repetition, then Buyer Phrase Bank v1 can adjust prompt guidance without changing runtime/source logic.
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: code commit to be created with `fix(sports): refine buyer copy polish`. Final hash reported in final response.
+- <DAI_VAULT_ROOT>: docs commit to be created with `docs(sports): review buyer copy polish`. Final hash reported in final response.
+- <JERA_SKILLS_ROOT>: unchanged.
+- Push status: not pushed.
+
+status: Buyer Copy Polish Review v1 implemented 2026-06-09. One Angular copy change; vault review note created; ledger entry 21 resolved; current-slice updated. No prompt/runtime/schema/source/probe-refresh/confidence/posture/lean mutation change.
