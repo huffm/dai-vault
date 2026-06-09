@@ -7038,3 +7038,63 @@ Outcome Reconciliation v1 (feedback loop to recalibrate the preserved raw confid
 - skills repo / <JERA_SKILLS_ROOT>: not present; unchanged.
 
 status: Fresh Buyer Artifact Validation v2 complete 2026-06-09. 6 fresh artifacts (5 MLB + 1 NBA) via full chain; band gate verified: 5/5 thin MLB High -> advertised Medium with internal humility reason, lean + raw confidence preserved, NBA moderate not capped; 0 unsafe buyer hits + 0 internal-reason leaks; cost telemetry intact (6 calls, ~$0.004 batch), zero new model calls. Pass. Vault-only (report + calibration artifacts + addendum); no code/prompt/model/cost/source/confidence/lean/schema change.
+
+---
+
+## addendum: Decision Artifact Persistence Review v1 (2026-06-09)
+
+**slice:** Decision Artifact Persistence Review v1 (sequence step 4)
+**status:** complete. read-only persistence review, docs only. no runtime code/migration/schema/database-technology/artifact-contract/buyer-projection/confidence/posture/lean/prompt/model/cost change.
+**repos touched:** `dai-vault` only (report + ledger entry 24 + this addendum). `dai` not touched (read-only inspection). skills/jera repo not present.
+
+### objective
+
+Map what the factory currently remembers and define what it must remember next, before any Postgres or outcome-reconciliation work.
+
+### current persistence state (key finding: richer than assumed)
+
+SQL Server (`devcore`, EF `AppDbContext`, `devcore-sql` container). AgentRun persists the FULL v3 artifact in `OutputJson` (cognitiveProtocol, raw + analyzer confidence, evidenceRichness, posture, lean, groundedSignals/missingSignals/signalAvailability/signalFollowUps/pipelineSteps all inside it), plus promoted indexed columns `Competition`/`GameDate`/`LeanSide`/`Status`/timestamps/`DurationMs`/`CorrelationId` and tenant/user attribution (`TenantKey`/`RequestedByUserKey`). AgentRunOutcomes + AgentRunEvaluations tables, a manual `POST /api/agent-runs/{id}/outcome` endpoint, and the deterministic `RunEvaluator` (correct/incorrect/inconclusive from LeanSide vs WinningSide) ALREADY EXIST -- outcome-reconciliation storage is scaffolded, just not fed by an automated settlement source.
+
+### gaps
+
+1. Cost telemetry is NOT persisted -- log-only to `devcore.cost` (entry 22). Tokens/cost/latency not queryable. Highest-value database-agnostic improvement.
+2. No stable external game/event match key on AgentRun -- matching an artifact to a settled outcome relies on (competition, gameDate, team display names), which is fragile for automation. The real reconciliation gap.
+3. Buyer-advertised strength / evidence tier / humility reason derived in Angular only (entry 23), not persisted -- but re-derivable from persisted confidence + evidenceRichness.
+
+### SQL vs Postgres assessment
+
+SQL Server is sufficient for 30-60 days. Postgres/jsonb would only marginally help artifact-internal JSON querying (SQL Server already has JSON_VALUE/OPENJSON) and is not warranted before revenue/scale. Migrating now = real EF/provider/migration/container cost for zero benefit. The next improvements (cost sink, game-match key, optional column promotion) are database-agnostic and land on SQL Server.
+
+### recommended storage posture
+
+Stay on SQL Server; improve documented memory requirements; defer Postgres (evidence-gated). Treat database choice as a factory-memory decision, not platform fashion.
+
+### ledger
+
+Updated: new entry 24 (decision artifact storage technology + factory-memory posture -- stay on SQL Server, defer Postgres; database-agnostic next improvements named). Reaffirms entry 22 (cost sink) and entry 23 (advertised-strength persistence).
+
+### skill update
+
+Not made (no skills repo / relevant custom skill present; only dai-signal-follow-up-diagnostics, different domain). Recommended future capture: "do not choose storage technology before defining factory-memory requirements; distinguish authoritative SQL persistence from vault calibration snapshots; preserve raw internal signals for the feedback loop; separate operational telemetry, buyer payloads, and outcome-reconciliation data."
+
+### files changed
+
+- dai-vault/04 Products/sports-v1/decision-artifact-persistence-review-v1.md (new report)
+- dai-vault/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md (entry 24)
+- dai-vault/06 Execution/handoffs/current-slice.md (this addendum)
+
+### checks run
+
+git diff --check; added-line exact-path scan; vault non-ASCII added-line scan.
+
+### recommended next slice
+
+Outcome Reconciliation Contract v1 (step 5): the storage scaffold exists, so specify the settlement source + trigger, the stable game/event match key (the real gap), per-competition settlement rules, and aggregation/calibration queries -- all database-agnostic on SQL Server.
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: unchanged; clean; even with origin. Not pushed.
+- <DAI_VAULT_ROOT>: one docs commit. Hash in final response. Not pushed.
+- skills repo / <JERA_SKILLS_ROOT>: not present; unchanged.
+
+status: Decision Artifact Persistence Review v1 complete 2026-06-09. Mapped factory memory: SQL Server persists the full v3 artifact (OutputJson) + promoted competition/gameDate/leanSide columns + tenant/user; AgentRunOutcomes/Evaluations + /outcome endpoint + RunEvaluator already scaffold reconciliation. Gaps: cost telemetry log-only (not persisted), no stable game/event match key, buyer-advertised strength not persisted (re-derivable). Recommendation: stay on SQL Server, defer Postgres; next improvements are database-agnostic. Ledger entry 24 added. Docs-only; no code/migration/schema/database-technology/contract change.
