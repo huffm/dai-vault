@@ -6826,3 +6826,76 @@ Updated: one clarification line appended to entry 12 (calibration proof before p
 - <JERA_SKILLS_ROOT>: not present; unchanged.
 
 status: Confidence Calibration Rules v1 complete 2026-06-09. Doctrine/spec only: two-axis confidence + evidence-sufficiency model, systems framing, MLB relative-completeness-vs-absolute-scarcity failure mode, and band-gating-before-numeric-rewrite implementation direction for a later slice. Entry 12 clarified (humility cap distinct from threshold move); entry 4 unchanged. Vault-only; no code/SportsEvaluator/constant/threshold/UI/prompt/schema/source/probe-refresh/cost/pricing change.
+
+---
+
+## addendum: Artifact Cost Guardrails v1 (2026-06-09)
+
+**slice:** Artifact Cost Guardrails v1
+**status:** complete. narrow FastAPI instrumentation + tests in `dai`; report/handoff/ledger in `dai-vault`. no prompt/buyer-copy/confidence/posture/lean/signal/decision/schema/source/probe-refresh/pricing/Stripe/tenant/auth/dashboard/deployment change.
+**repos touched:** `dai` (FastAPI agent-service: new metering module + tests + instrumented call boundary); `dai-vault` (report + ledger entry 22 + this addendum).
+
+### objective
+
+Instrument and bound the single sports model-call boundary enough for unit-cost discipline. Cost telemetry, not pricing/billing.
+
+### model-call boundary instrumented
+
+`services/agent-service/app/services/sports_analyzer.py :: _call_model` (the one `chat.completions.create`). New pure module `app/services/model_metering.py` owns cost math + metadata shape. No change to the analyzer response or .NET wire contract; return value unchanged.
+
+### metadata captured (log-only, devcore.cost logger)
+
+model, inputTokens/outputTokens/totalTokens, usageAvailable, latencyMs, status (ok / error:<Type>), finishReason, requestId (best-effort), estimatedInputCost/OutputCost/TotalCost, currency USD, pricingSource (configured-estimate label), costEstimateVersion v1, competition. Live MLB full-chain record: 2622 in / 362 out / 2984 total tokens, latency 8185ms, finishReason stop, estTotalCost $0.0006105.
+
+### pricing estimate
+
+Hand-maintained PRICING table (USD per 1M tokens; gpt-4o-mini 0.15 in / 0.60 out). estimate_cost deterministic, fail-safe (null costs when tokens/model missing), labelled as configured estimate, not billing truth. Stripe stays revenue truth.
+
+### max token decision
+
+Added max_completion_tokens=1500. Smoke produced only 362 completion tokens with finishReason "stop" -> no truncation; cap is a safety bound with headroom.
+
+### timeout decision
+
+Added 30s per-call timeout (under the .NET 90s FastApiClient timeout) so a stuck call fails locally with a recorded error record.
+
+### retry posture
+
+No custom retry. SDK default (<=2 bounded transient-only retries, backoff) documented at the call site, unchanged. Final outcome captured in status.
+
+### fail-safe
+
+Telemetry cannot break generation: extraction wrapped in try/except; missing usage -> usageAvailable false + null tokens/costs; failed call records error status then re-raises original exception.
+
+### smoke result
+
+Docker/devcore-sql up; FastAPI ping 200; .NET health 200. Full chain MLB -> 200 completed, durationMs 9070; artifactVersion sports_decision_artifact_v3, cognitiveProtocol present, buyer projection present; buyer copy unchanged; cost record captured with full usage.
+
+### tests / checks
+
+TDD for model_metering (6 tests, written-failing-first). Full agent-service suite 111 passed (6 new + 105 existing). Import check clean. git diff --check; added-line exact-path scan; vault non-ASCII added-line scan.
+
+### files changed
+
+- dai/services/agent-service/app/services/model_metering.py (new)
+- dai/services/agent-service/tests/test_model_metering.py (new)
+- dai/services/agent-service/app/services/sports_analyzer.py (instrumented _call_model + cap/timeout + _log_call_metadata)
+- dai-vault/04 Products/sports-v1/artifact-cost-guardrails-v1.md (new report)
+- dai-vault/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md (new entry 22)
+- dai-vault/06 Execution/handoffs/current-slice.md (this addendum)
+
+### ledger
+
+Updated: new entry 22 (model-call cost telemetry sink, spend enforcement, pricing maintenance) -- per-call instrumentation + per-call bounds shipped; persistent sink, aggregation, per-tenant attribution, and spend cap deferred (sequenced with tenant/economic boundary, entry 11). Pricing maintenance is a documented manual step.
+
+### remaining gaps
+
+Log-only (no sink/aggregation/per-tenant cost/spend cap); hand-maintained pricing; requestId best-effort; non-sports chat/assist model call intentionally not instrumented.
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: one code commit (FastAPI metering + tests + instrumentation). Hash in final response. Not pushed.
+- <DAI_VAULT_ROOT>: one docs commit (report + ledger + addendum). Hash in final response. Not pushed.
+- <JERA_SKILLS_ROOT>: not present; unchanged.
+
+status: Artifact Cost Guardrails v1 complete 2026-06-09. Single sports model call instrumented with token usage, configured-estimate USD cost, latency, status, finishReason, requestId -> structured devcore.cost log per run (live: ~$0.0006/artifact). Added max_completion_tokens=1500 + 30s timeout; retry posture documented (SDK default, unchanged); fail-safe telemetry. Smoke: v3 artifact + cognitiveProtocol + buyer projection intact, buyer copy unchanged. 111 python tests pass (6 new TDD). Ledger entry 22 added (sink/spend-cap deferred). No prompt/confidence/posture/lean/signal/schema/source/pricing/Stripe/tenant/dashboard change.

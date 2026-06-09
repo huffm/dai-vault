@@ -202,6 +202,15 @@
 - **Risk if forgotten:** the artifact stays safe but may feel mechanically phrased or over-cautious as more buyer runs accumulate.
 - **Status:** Resolved (Buyer Copy Polish Review v1, 2026-06-09). This does not reopen source expansion, entry 19, probe refresh, confidence/posture/lean mutation, or runtime station adoption.
 
+### 22. Model-call cost telemetry sink, spend enforcement, and pricing maintenance
+- **Decision:** where sports model-call cost telemetry goes, whether spend is enforced, and how the pricing estimate is kept current.
+- **Current choice:** Artifact Cost Guardrails v1 (2026-06-09) instruments the single sports model call (`sports_analyzer._call_model`) and emits one structured cost record per run to the `devcore.cost` logger (token usage from `response.usage`, model, latency, status, finish reason, best-effort request id, and a configured-estimate USD cost). Telemetry is log-only: there is no persistent sink, no aggregation, no per-tenant cost accounting, and no spend cap / budget enforcement -- the system measures unit cost, it does not yet bound total spend. A `max_completion_tokens` cap (1500) and a 30s per-call timeout bound a single call; the openai sdk default bounded retry (<=2, transient-only) is documented, not changed. Pricing lives in a hand-maintained `PRICING` table in `model_metering.py` labelled `costEstimateVersion`/`pricingSource`; it is a configured estimate, not billing truth (stripe remains revenue truth).
+- **Why deferred:** one centralized call with log-only telemetry is the right first increment; a persistent sink, aggregation, per-tenant attribution, and spend caps belong with the tenant/billing boundary (entry 11) and a dashboards/observability slice, none of which exist yet. Building them now would be a billing platform ahead of need.
+- **Revisit trigger:** a need for per-tenant cost accounting, a real spend ceiling/budget, or cost dashboards; or a model/price change that makes the hand-maintained `PRICING` table stale.
+- **Proposed future slice:** Model Cost Sink and Budget v1 (persist cost records + aggregate + optional spend cap), sequenced with tenant/economic boundary (entry 11). Keep pricing maintenance a documented manual step until a sink exists.
+- **Risk if forgotten:** the log-only estimate is mistaken for enforced/persistent cost truth, or the hand-maintained price drifts and the estimate silently misleads. Spend stays unbounded across many runs because only per-call (token/timeout) bounds exist.
+- **Status:** Deferred -- per-call instrumentation + per-call bounds shipped (Artifact Cost Guardrails v1, 2026-06-09); sink, aggregation, per-tenant attribution, and spend enforcement not built. Does not reopen pricing/Stripe/tenant billing, dashboards, confidence/posture/lean mutation, prompts, sources, or probe refresh.
+
 ## Maintenance
 
 - When a slice resolves an entry, set Status to `Resolved (<slice name>, <date>)` and keep the row.
