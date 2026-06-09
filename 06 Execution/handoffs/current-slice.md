@@ -7241,3 +7241,75 @@ Outcome Reconciliation Runtime v1 (step 7, sequenced next). In parallel when foo
 - skills repo / <JERA_SKILLS_ROOT>: not present; unchanged.
 
 status: Pre-Support Buyer Validation Matrix v1 complete 2026-06-09. Classified 8 sports: NBA + MLB Buyer-ready validated (support with caveat); NFL + CFB + NCAAB men Smoke-level only (code/source exist, unvalidated, off-season); NCAAB women + WNBA + NHL Deferred/unbuilt (no code path). Technical generation separated from buyer support; claims guidance set; only 2 sports buyer-validated. Ledger entry 26 added. Docs-only; no code/source/prompt/schema/contract/buyer-copy/public-claim change.
+
+---
+
+## addendum: Readiness-Gated Buyer Packaging v1 (2026-06-09)
+
+**slice:** Readiness-Gated Buyer Packaging v1
+**status:** complete. buyer-packaging safety. narrow Angular buyer-copy + selector-gating changes + tests in `dai`; report/handoff/ledger in `dai-vault`. no new sport support, source, prompt, parser, schema, artifact-contract, buyer-projection-semantics, confidence/posture/lean/signal/model/cost change.
+**repos touched:** `dai` (5 Angular files modified + 3 new) and `dai-vault` (report + ledger entry 26 progress + this addendum). skills/jera repo not present.
+
+### objective
+
+Make buyer-facing packaging stop implying coverage beyond NBA/MLB (the only buyer-ready sports per the matrix). Technical generation is not buyer support.
+
+### overclaims found (before)
+
+Landing coverage was nearly inverted vs the matrix: NFL "Live Now" (false, smoke-only), MLB "Planned" (false, MLB is validated), NCAAF/NCAAB "Next" (overstated). Landing hero sample badged an NFL game "Live Now". The analyzer selector exposed all routable competitions (NFL/NCAAF/NBA/NCAAMB/MLB) because it gated on `isSupported` (= routable), letting buyers run smoke-only reads. Account said "NFL and NBA live now" (NFL false; omitted MLB). History mock data had 2 NFL sample rows. WNBA/NHL/NCAAB-women were not mentioned (correct).
+
+### changes made (narrow, frontend-only)
+
+1. analyzer selector gated: new pure `analyzer/buyer-ready-competitions.ts` (allowlist `['nba','mlb']` + `filterBuyerReadyCompetitions`); applied to the `getCompetitions()` result so the buyer selector only offers NBA/MLB. Smoke-only sports remain runnable via dev tooling (backend/catalog unchanged).
+2. landing coverage realigned: NBA+MLB Live Now (measured-support notes); NFL Next; NCAAF/NCAAB Planned (future validation targets).
+3. landing hero sample switched NFL -> NBA matchup.
+4. account: "NFL and NBA live now" -> "NBA and MLB live now".
+5. history: 2 NFL mock rows -> NBA (measured Medium) + MLB (split/no-clear-lean).
+6. tests: buyer-ready-competitions.spec (5) + landing.component.spec (3), written test-first (RED then green).
+
+### buyer-projection / semantics
+
+Untouched. buyer-signal-summary and the evidence-sufficiency band gate are unchanged; no artifact meaning changed. Gating is presentation/packaging only.
+
+### product posture
+
+Say now: NBA + MLB buyer-ready (measured decision support; varies by slate/signal). Internal/hidden: NFL/CFB/NCAAMB (future targets + /dev/artifacts dev surface). Deferred/unbuilt: WNBA/NHL/NCAAB-women (not mentioned). Future: a backend `isBuyerReady` flag (vs `isSupported`=routable) as the single source of truth driving packaging; a `/dev/artifacts` route guard.
+
+### risks/gaps
+
+Buyer-ready set duplicated (frontend filter + landing list); single backend readiness flag would remove drift. `/dev/artifacts` unguarded (acceptable internal surface; recommend guard). History remaining 3 mock rows keep betting-price lean tone (pre-existing demo; copy-polish follow-up).
+
+### verification
+
+Vitest 46 pass (5 files, +8 new); ng build exit 0; buyer-surface sweep clean (only landing future-target entries remain, framed as roadmap; landing spec enforces none Live Now); git diff --check clean; non-ASCII added-line scan 0 across dai code and vault docs.
+
+### ledger
+
+Progressed entry 26 (buyer packaging now gated to NBA/MLB in the frontend; open sub-deferral: backend `isBuyerReady` source of truth + `/dev/artifacts` guard).
+
+### skill update
+
+Not made (no skills repo / relevant custom skill present). Recommended future capture: buyer packaging must be gated by support readiness, not code-path existence; never expose smoke-level competitions as supported; public claims lag validation; readiness metadata should drive packaging.
+
+### files changed
+
+- dai/apps/sports-app/src/app/analyzer/buyer-ready-competitions.ts (new), .../buyer-ready-competitions.spec.ts (new)
+- dai/apps/sports-app/src/app/analyzer/analyzer.component.ts (apply filter)
+- dai/apps/sports-app/src/app/landing/landing.component.ts (coverage realign), landing.component.spec.ts (new), landing.component.html (hero sample)
+- dai/apps/sports-app/src/app/account/account.component.html (plan line)
+- dai/apps/sports-app/src/app/history/history.component.ts (2 NFL mock rows -> NBA/MLB)
+- dai-vault/04 Products/sports-v1/readiness-gated-buyer-packaging-v1.md (new report)
+- dai-vault/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md (entry 26 progress)
+- dai-vault/06 Execution/handoffs/current-slice.md (this addendum)
+
+### checks run
+
+Vitest 46 pass; ng build exit 0; git diff --check (both repos); added-line exact-path scan; non-ASCII scan 0.
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: one frontend commit (packaging gating + tests). Hash in final response. Not pushed.
+- <DAI_VAULT_ROOT>: one docs commit. Hash in final response. Not pushed.
+- skills repo / <JERA_SKILLS_ROOT>: not present; unchanged.
+
+status: Readiness-Gated Buyer Packaging v1 complete 2026-06-09. Buyer-facing packaging gated to NBA/MLB: analyzer selector filtered to a buyer-ready allowlist; landing coverage realigned (NBA+MLB Live Now, NFL/CFB/NCAAB future-only); hero sample, account line, and 2 NFL history mock rows corrected. 8 new TDD tests, 46 Vitest pass, ng build clean; buyer-projection semantics and backend catalog untouched. Ledger entry 26 progressed (open: backend isBuyerReady source of truth + /dev/artifacts guard). No new sport support / source / prompt / schema / artifact / confidence / posture / lean change.
