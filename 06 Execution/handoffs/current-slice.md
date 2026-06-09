@@ -6618,3 +6618,78 @@ Deferred runtime decisions ledger not updated. No new deferred runtime/prompt/so
 - Push status: not pushed.
 
 status: Fresh Artifact Generation Operability Fix v1 complete 2026-06-09. Line controls verified operable; fresh end-to-end generation still blocked by exhausted OPENAI_API_KEY quota (429 insufficient_quota) and stopped devcore-sql container; both isolated with exact next fixes. Dev-docs only in dai; report + addendum in vault. No code/runtime/schema/prompt/model/gateway/source/probe-refresh/artifact/confidence/posture/lean change.
+
+---
+
+## addendum: Post-Credit Fresh Artifact Generation Smoke v1 (2026-06-09)
+
+**slice:** Post-Credit Fresh Artifact Generation Smoke v1
+**status:** complete. best outcome. dev-docs only change in `dai` (one troubleshooting line). no prompt/buyer-copy/confidence/posture/lean/signal/decision/source/probe-refresh/schema/cost-guardrail/pricing change; no .NET/FastAPI/Angular runtime code change.
+**repos touched:** `dai` (one dev-docs line); `dai-vault` (new report + this addendum).
+
+### objective
+
+Turn the line back on after OpenAI credits were added, prove a fresh sports artifact can be produced end-to-end, and inventory where model spend enters the factory (for a later Artifact Cost Guardrails v1).
+
+### services started + health checks
+
+- FastAPI analyzer `127.0.0.1:8000` -- `GET /api/ping` -> 200.
+- .NET DevCore.Api `localhost:5007` -- `GET /health` -> 200.
+- Docker Desktop started -- daemon up (server 29.1.3).
+- `devcore-sql` was `Exited (137)` 8 days; `docker start devcore-sql` -> Up, `0.0.0.0:1433->1433`, log "ready for client connections".
+
+### blocker results
+
+- OpenAI 429 quota: CLEARED. `POST /api/sports/analyze` -> 200 (~9.6s), real model response with full `protocol` block.
+- Docker/SQL: CLEARED this session (manual Docker Desktop + `docker start devcore-sql`).
+
+### full-chain result + artifact
+
+- `POST /api/agent-runs` (NBA Boston Celtics vs Denver Nuggets, 2026-06-12) -> 200 `completed`, `agentRunId 946b433e-f36b-1410-8161-00373db4b724`, `durationMs 8750`, posture `wait`, confidence 0.375.
+- artifact: `artifactVersion sports_decision_artifact_v3`, `cognitiveProtocol` present, buyer projection available, pipeline retrieve(Degraded, priors-only)/analyze/evaluate/quality_check/compose all recorded.
+- persisted to dev SQL `AgentRun` row (not committed to repo; raw smoke, not a calibration-harness sample).
+- sanity check: pass (structurally complete; v3 + cognitiveProtocol; buyer projection coherent; unsafe-language scan clean -- only hit `lock` was a substring of internal `block_aggressive_posture`/`aggressive_blocked`).
+
+### protocol model-call inventory (read-only)
+
+- Model usage is centralized: exactly ONE model call per sports run, at FastAPI `sports_analyzer._call_model` (`sports_analyzer.py:480`, `gpt-4o-mini`, temp 0.3, json_object). That single call emits the whole cognitive `protocol` (perceive; interrogate.question/verify; discern.contrast/weigh/stress; decide.justify/position/resolve).
+- Perceive / Interrogate.Question / Interrogate.Verify / Discern / Decide = Indirect (all from the one analyzer call). Decide's final confidence + posture are recomputed deterministically in .NET (`SportsEvaluator` + clamp).
+- Interrogate.Probe = No (platform-completed, dormant probe-refresh, ledger 1-2). Synthesize = No (platform-operational constant). Buyer projection/UI = No.
+- .NET makes NO direct model calls -- `FastApiClient` only POSTs `/api/sports/analyze`; all other .NET clients are deterministic signal providers. The model boundary is entirely inside FastAPI.
+- Separate non-sports model call exists at `main.py:113` for `/api/chat`,`/api/assist`,gRPC -- not part of artifact generation.
+
+### observability gaps (for Artifact Cost Guardrails v1)
+
+- no `response.usage` capture (token counts unused); only response char-count logged.
+- no per-call model name / request id / latency / retry / cost logging.
+- no `max_tokens`, no explicit per-call timeout, no retry/backoff.
+- model name hardcoded in two places (`sports_analyzer.py:481`, `main.py:114`); no central config.
+- single centralized model site = low-risk to instrument.
+
+### files changed
+
+- `dai/scripts/dev/sports/README.md` -- one troubleshooting line: explicit `docker start devcore-sql` + readiness check.
+- `dai-vault/04 Products/sports-v1/post-credit-fresh-artifact-generation-smoke-v1.md` (new report).
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum).
+
+### checks run
+
+- FastAPI ping 200; analyze 200 (429 cleared); .NET health 200; agent-runs 200 completed; artifact v3 + cognitiveProtocol + buyer projection + clean unsafe scan.
+- docs-only: `git diff --check`, added-line exact-path scan, vault non-ASCII added-line scan.
+
+### ledger
+
+Not updated. No new deferred runtime/prompt/source/artifact-contract decision discovered; existing probe-refresh deferrals (entries 1-5) confirmed, not changed. Cost-guardrail design is a recommended future slice, not yet a committed seam.
+
+### recommended next slice
+
+1. Artifact Cost Guardrails v1 (instrument the single model call: usage/cost/latency/model/retry + metering sink, before any caps/pricing).
+2. Fresh Buyer Artifact Generation Calibration v1 (fresh batch over real upcoming games via `run-artifact-calibration.ps1`).
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: one dev-docs commit (README troubleshooting line). Hash in final response. Not pushed.
+- <DAI_VAULT_ROOT>: one docs commit (report + this addendum). Hash in final response. Not pushed.
+- <JERA_SKILLS_ROOT>: not present in this workspace; unchanged.
+
+status: Post-Credit Fresh Artifact Generation Smoke v1 complete 2026-06-09. Best outcome: 429 cleared, devcore-sql up, full .NET->FastAPI->SQL chain produced a fresh sports_decision_artifact_v3 with cognitiveProtocol and buyer projection. Model usage centralized at one analyzer call; .NET makes no direct model calls; zero token/cost/latency observability today (input to Artifact Cost Guardrails v1). Dev-docs only in dai; report + addendum in vault. No code/runtime/schema/prompt/model/source/probe-refresh/artifact/confidence/posture/lean change.
