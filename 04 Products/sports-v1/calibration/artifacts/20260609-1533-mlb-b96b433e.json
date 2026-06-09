@@ -1,0 +1,127 @@
+{
+  "agentRunId": "b96b433e-f36b-1410-8161-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-09",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [
+    "signals_used contains bullpen but bullpen was not grounded",
+    "signals_used contains lineup_form but lineup_form was not grounded",
+    "signals_used contains ballpark but ballpark was not grounded"
+  ],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Degraded",
+      "note": "signals_used contains bullpen but bullpen was not grounded; signals_used contains lineup_form but lineup_form was not grounded; signals_used contains ballpark but ballpark was not grounded"
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The Mariners' hitters could turn around their performance, challenging the lean.",
+  "watchFor": "Any significant lineup changes for the Mariners before the game.",
+  "whatWouldChangeTheRead": [
+    "A sudden improvement in Mariners' hitters' performance.",
+    "Injury news affecting key players on either team."
+  ],
+  "summary": "The Orioles benefit from home field and a potentially favorable lineup matchup against Gilbert. The Mariners may face challenges against Rogers, who could exploit their weaknesses.",
+  "lean": "Slight lean toward Orioles based on home field advantage.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "The Orioles' home advantage and lineup matchup are key signals."
+      ],
+      "frame": "The Mariners face the Orioles in Baltimore with Rogers starting against Gilbert.",
+      "aim": [
+        "Home field advantage and lineup effectiveness are crucial for this matchup."
+      ]
+    },
+    "interrogate": {
+      "question": "The Mariners could outperform if their slumping hitters find form.",
+      "probe": null,
+      "verify": "The Orioles' bullpen depth might mitigate any starter weaknesses."
+    },
+    "discern": {
+      "weigh": "Starting pitching favors the Orioles, but Mariners' lineup form is weak.",
+      "contrast": "Market confidence may lean toward the Orioles due to home field.",
+      "stress": "The read could fail if the Mariners' hitters suddenly break out."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, acknowledging potential for Mariners' improvement.",
+      "position": "monitor",
+      "justify": "Confidence is based on the Orioles' home advantage and lineup strength."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "The Orioles' home advantage and lineup matchup are key signals.",
+      "frame": "The Mariners face the Orioles in Baltimore with Rogers starting against Gilbert.",
+      "aim": "Home field advantage and lineup effectiveness are crucial for this matchup."
+    },
+    "interrogate": {
+      "question": "The Mariners could outperform if their slumping hitters find form.",
+      "probe": null,
+      "verify": "The Orioles' bullpen depth might mitigate any starter weaknesses."
+    },
+    "discern": {
+      "weigh": "Starting pitching favors the Orioles, but Mariners' lineup form is weak.",
+      "contrast": "Market confidence may lean toward the Orioles due to home field.",
+      "stress": "The read could fail if the Mariners' hitters suddenly break out."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, acknowledging potential for Mariners' improvement.",
+      "position": "monitor",
+      "justify": "Confidence is based on the Orioles' home advantage and lineup strength."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}

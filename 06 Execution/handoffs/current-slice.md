@@ -6963,3 +6963,78 @@ Not made -- the relevant custom DAI skills are not present in this workspace. Re
 - skills repo / <JERA_SKILLS_ROOT>: not present; unchanged.
 
 status: Evidence-Sufficiency Band Gate v1 complete 2026-06-09. Buyer projection now caps thin-evidence (evidenceRichness<=1) reads from advertising High -> Medium, with an internal advertised_strength_limited_by_evidence reason; lean and raw numeric confidence preserved; gate fails open on unknown evidence. Frontend-only (buyer-signal-summary.ts); 8 new TDD tests, 38 Vitest pass, ng build clean; full-chain smoke confirms v3 + cognitiveProtocol + cost telemetry intact, zero new model calls. Ledger entry 12 progressed, entry 23 added (server-authoritative gate deferred). No prompt/model/cost/source/probe-refresh/raw-confidence/lean/posture/schema/.NET/FastAPI change.
+
+---
+
+## addendum: Fresh Buyer Artifact Validation v2 (2026-06-09)
+
+**slice:** Fresh Buyer Artifact Validation v2
+**status:** complete. validation slice. docs + intentional calibration artifacts only. no code change in any repo. no prompt/model/cost-guardrail/source/probe-refresh/lean/raw-confidence/confidence-constant/schema/buyer-copy change.
+**repos touched:** `dai-vault` only (report + 8 calibration artifacts + this addendum). `dai` not touched. skills/jera repo not present.
+
+### objective
+
+Validate the Evidence-Sufficiency Band Gate v1 on fresh artifacts: does it improve buyer honesty without flattening leans or changing raw confidence?
+
+### services
+
+Docker/devcore-sql up; FastAPI ping 200; .NET health 200.
+
+### sample set
+
+6 fresh artifacts via the calibration harness (full .NET chain): 5 MLB + 1 NBA. 6 model calls. All sports_decision_artifact_v3, cognitiveProtocol present, posture monitor, buyer projection present, persisted. Saved under the calibration convention (2 reports + 6 artifact JSON). Slate limits: MLB grounds only starting_pitching (every MLB run evidenceRichness 1 = thin, the gate's target); NBA gave 1 moderate (evidenceRichness 2) case; no priors-only/rich fresh case this batch.
+
+### band gate behavior
+
+Correct everywhere. 5/5 MLB: raw 0.75 / rawBand High / evidenceRichness 1 / thin -> advertised Medium, capped, internal reason advertised_strength_limited_by_evidence recorded; lean preserved ("Slight lean toward ..."). NBA: raw 0.675 / rawBand Medium / evidenceRichness 2 / moderate -> not capped. Raw confidence preserved on all (gate is presentation-only). Buyer-field scan explicitly searched for the internal reason string + evidenceRichness: 0 leaks.
+
+### buyer credibility
+
+Pass. Direction still told plainly on every artifact; single-signal MLB now presents Medium strength (matches thin evidence) while keeping a usable slight lean; NBA moderate stays Medium consistently. No internal/debug terms in buyer copy.
+
+### repetition
+
+Controlled. "Slight lean toward" 6/6 (template). MLB bases split starting-pitching (4, with specifics) / home-field (2). No trust-damaging sameness; no phrase-bank work warranted.
+
+### safety/toutiness
+
+Pass. 0 unsafe buyer-copy hits across 6 (incl. 0 internal-reason leaks). All monitor posture, no aggressive/tout language.
+
+### cost telemetry
+
+Intact. 6 records (one gpt-4o-mini call per run), all finishReason stop / status ok; tokens 3058-3448; ~$0.00064-$0.00071/run (batch ~$0.004); latency 5.7-11.5s. Zero new model-call sites; no cost-guardrail change.
+
+### skill update
+
+Not made (no skills repo / relevant custom skill present). Recommended future capture documented: gate buyer-presentation humility at the projection layer; preserve raw calibration signals; keep confidence separate from evidence sufficiency; validate doctrine with fresh artifacts before per-sport scaling.
+
+### judgment
+
+Pass. Band gate works on fresh artifacts; buyer artifacts remain credible; lean + raw confidence preserved; no immediate fix needed. Caveat: sample diversity limited by slate/source (thin-only MLB, one moderate NBA); priors-only/rich branches covered by unit tests.
+
+### ledger
+
+Not updated. No new deferred decision; the gate behaves as designed. Entries 12 and 23 unchanged.
+
+### files changed
+
+- dai-vault/04 Products/sports-v1/fresh-buyer-artifact-validation-v2.md (new report)
+- dai-vault/04 Products/sports-v1/calibration/20260609-1533-mlb-calibration.md (+5 mlb artifact json)
+- dai-vault/04 Products/sports-v1/calibration/20260609-1534-nba-calibration.md (+1 nba artifact json)
+- dai-vault/06 Execution/handoffs/current-slice.md (this addendum)
+
+### checks run
+
+Service health; 6 runs completed+persisted; gate applied per artifact (5 capped, 1 not); raw confidence+lean preserved; buyer safety scan 0/6 + 0 internal leaks; cost telemetry 6 records. git diff --check; added-line exact-path scan; vault non-ASCII added-line scan.
+
+### recommended next slice
+
+Outcome Reconciliation v1 (feedback loop to recalibrate the preserved raw confidence + validate the provisional thin/moderate/rich thresholds; ledger entry 12). Secondary: MLB grounding/source expansion (structurally thin today; ledger entry 19, source work out of scope).
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: unchanged; clean; even with origin. Not pushed.
+- <DAI_VAULT_ROOT>: one docs+artifacts commit. Hash in final response. Not pushed.
+- skills repo / <JERA_SKILLS_ROOT>: not present; unchanged.
+
+status: Fresh Buyer Artifact Validation v2 complete 2026-06-09. 6 fresh artifacts (5 MLB + 1 NBA) via full chain; band gate verified: 5/5 thin MLB High -> advertised Medium with internal humility reason, lean + raw confidence preserved, NBA moderate not capped; 0 unsafe buyer hits + 0 internal-reason leaks; cost telemetry intact (6 calls, ~$0.004 batch), zero new model calls. Pass. Vault-only (report + calibration artifacts + addendum); no code/prompt/model/cost/source/confidence/lean/schema change.

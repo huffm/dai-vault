@@ -1,0 +1,123 @@
+{
+  "agentRunId": "bb6b433e-f36b-1410-8161-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-09",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "Max Meyer could outperform expectations, limiting Gallen's advantage.",
+  "watchFor": "Any lineup changes that could affect Gallen's performance.",
+  "whatWouldChangeTheRead": [
+    "Meyer is announced as a left-handed pitcher",
+    "Significant changes in the Marlins' lineup against righties"
+  ],
+  "summary": "Zac Gallen, a right-handed pitcher, faces the Marlins' lineup, which may struggle against righties. Max Meyer, also a right-handed pitcher, will be on the mound for the Marlins, but Gallen's presence gives the Diamondbacks a slight edge.",
+  "lean": "Slight lean toward Diamondbacks based on starting pitching advantage.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Zac Gallen's right-handed pitching may favor the Diamondbacks."
+      ],
+      "frame": "The matchup features the Diamondbacks at the Marlins with Gallen starting.",
+      "aim": [
+        "Starting pitching performance is crucial for this matchup."
+      ]
+    },
+    "interrogate": {
+      "question": "Max Meyer could provide a strong performance, countering Gallen's advantage.",
+      "probe": null,
+      "verify": "The Marlins may have lineup strengths against right-handed pitchers."
+    },
+    "discern": {
+      "weigh": "Starting pitching signals are present; other factors are missing.",
+      "contrast": "Market confidence may reflect Gallen's strong reputation as a starter.",
+      "stress": "The read could fail if Gallen underperforms unexpectedly."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, acknowledging the potential for variability.",
+      "position": "monitor",
+      "justify": "The confidence level reflects Gallen's potential impact on the game."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Zac Gallen's right-handed pitching may favor the Diamondbacks.",
+      "frame": "The matchup features the Diamondbacks at the Marlins with Gallen starting.",
+      "aim": "Starting pitching performance is crucial for this matchup."
+    },
+    "interrogate": {
+      "question": "Max Meyer could provide a strong performance, countering Gallen's advantage.",
+      "probe": null,
+      "verify": "The Marlins may have lineup strengths against right-handed pitchers."
+    },
+    "discern": {
+      "weigh": "Starting pitching signals are present; other factors are missing.",
+      "contrast": "Market confidence may reflect Gallen's strong reputation as a starter.",
+      "stress": "The read could fail if Gallen underperforms unexpectedly."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, acknowledging the potential for variability.",
+      "position": "monitor",
+      "justify": "The confidence level reflects Gallen's potential impact on the game."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "agentRunId": "c46b433e-f36b-1410-8161-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-09",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The Guardians could take advantage of any inconsistencies from Cole.",
+  "watchFor": "Any news on Cole's health or performance leading up to the game.",
+  "whatWouldChangeTheRead": [
+    "Cecconi shows strong pre-game performance indicators",
+    "Cole is reported to have any injury concerns"
+  ],
+  "summary": "Gerrit Cole's presence on the mound provides a notable advantage for the Yankees, especially if he has a favorable matchup against the Guardians' lineup. Slade Cecconi's inexperience could be a factor in this matchup.",
+  "lean": "Slight lean toward Yankees based on starting pitching advantage with Gerrit Cole.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Gerrit Cole's starting role is the most significant signal."
+      ],
+      "frame": "The Yankees face the Guardians with Gerrit Cole starting against Slade Cecconi.",
+      "aim": [
+        "The primary factor is the effectiveness of Gerrit Cole against the Guardians."
+      ]
+    },
+    "interrogate": {
+      "question": "The Guardians could exploit any weaknesses in Cole's performance.",
+      "probe": null,
+      "verify": "Cecconi's potential for an unexpected strong outing could alter the dynamics."
+    },
+    "discern": {
+      "weigh": "Cole's presence is strong, but Cecconi's performance is uncertain.",
+      "contrast": null,
+      "stress": "The read could fail if Cole underperforms or Cecconi exceeds expectations."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, as both pitchers' performances are critical.",
+      "position": "monitor",
+      "justify": "The confidence level reflects Cole's established track record as a top pitcher."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Gerrit Cole's starting role is the most significant signal.",
+      "frame": "The Yankees face the Guardians with Gerrit Cole starting against Slade Cecconi.",
+      "aim": "The primary factor is the effectiveness of Gerrit Cole against the Guardians."
+    },
+    "interrogate": {
+      "question": "The Guardians could exploit any weaknesses in Cole's performance.",
+      "probe": null,
+      "verify": "Cecconi's potential for an unexpected strong outing could alter the dynamics."
+    },
+    "discern": {
+      "weigh": "Cole's presence is strong, but Cecconi's performance is uncertain.",
+      "contrast": null,
+      "stress": "The read could fail if Cole underperforms or Cecconi exceeds expectations."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, as both pitchers' performances are critical.",
+      "position": "monitor",
+      "justify": "The confidence level reflects Cole's established track record as a top pitcher."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  }
+}
