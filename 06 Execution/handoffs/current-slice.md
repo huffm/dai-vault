@@ -7499,3 +7499,52 @@ All 10 skills structurally conform (frontmatter name matches folder, third-perso
 Start slices with the Skills Gate (see inventory doc): invoke dai-skill-router, list/select/report-missing, proceed only with an explicit skill plan.
 
 status: skill layer normalized and tracked; MLB Game Identity Capture v1 remains the interrupted in-flight slice (red-phase tests uncommitted in SportsRetrieverTests.cs) and should resume next.
+
+---
+
+## addendum: MLB Game Identity Capture v1 (2026-06-11)
+
+**slice:** MLB Game Identity Capture v1 (resumed from the protected red-phase state left across the skills-normalization slice)
+**status:** complete. narrow platform capture + tests in `dai`; report/handoff/ledger in `dai-vault`. no migration, no OutputJson change, no buyer-facing change, no matcher/taxonomy/settlement change.
+**skills gate:** run via dai-skill-router. selected: dai-skill-router, dai-test-discipline, dai-token-tight, dai-grill-with-vault, superpowers test-driven-development + verification-before-completion, dai-agent-handoff. not selected: systematic-debugging (protected diff needed no repair), dai-signal-follow-up-diagnostics, product-ui-design-architect, dai-typescript-angular-quality (no frontend/signal-diagnostics work). missing: none.
+
+### resume + red
+
+Preflight matched the prior handoff exactly (dai ahead 3 with only the protected `SportsRetrieverTests.cs` diff; vault clean ahead 3). The protected diff held the four MLB identity tests + `BuildMlbScheduleResponse` fixture as left. Bounded red run (SportsRetrieverTests only, per dai-test-discipline): 2 failed on null identity (the expected production gap), 9 green, no syntax repair needed.
+
+### implementation
+
+statsapi `/api/v1/schedule` carries `gamePk` + `gameDate` per game; the DTO dropped both. `MlbScheduleGame` now maps them; `MlbStarterClient` builds `GameIdentityContext` at game-match time (`mlb_statsapi`, gamePk invariant string, utc start, `DeriveSeason("baseball", ...)`, provider-name team-ref slugs) and returns `MlbStarterGrounding(Context, GameIdentity)` -- identity present even when starters are unannounced (match gates identity; announcement gates only the signal; matched-but-unannounced runs degrade to priors-only AND stay reconcilable). All-or-nothing: missing gamePk or gameDate -> null identity; pre-match failures -> null; never inferred from display names. Handler/registration retyped; `SportsRetriever` mlb branch unpacks into `SportsRetrievalOutput.GameIdentity`; the existing Stable Game Identity Capture v1 persistence path (wrapper, controller, six AgentRun columns, inspection DTO) handles the rest unchanged. No migration.
+
+### deliberately not changed
+
+`ProbeRefreshExecutor` mlb arm keeps the pre-grounding output type (same dormant drift as its market arms; compiles, chain disabled; repair-on-compile-failure rule did not trigger; one-pass repair noted before any probe-refresh activation). No buyer UI, analyzer prompt/parser, confidence/posture/lean/cost, outcome taxonomy, matcher, settlement, migrations, apps/, services/.
+
+### verification
+
+Red: 2 expected failures observed. Green: SportsRetrieverTests 11/11. Adjacent: GameIdentityDerivation + AgentRunService + AgentRunsController + ToolGatewayMarketSpread + ToolGatewayRetrieveParity 63/63. Final verification (declared): full .NET suite 637/0 (net +3); solution build succeeded; ng test 47/47; ng build exit 0; zero diffs under apps/ and services/; no new migration; git diff --check clean; added-line ascii scan clean. OutputJson no-identity guard test green within the 637.
+
+### ledger
+
+Entry 25 progressed: MLB identity gap closed; both buyer-ready sports (NBA, MLB) now have generation-time identity coverage. Matcher, settlement-status taxonomy, settlement provider/runtime, scheduled settlement, and buyer-visible track record remain deferred. Stage 0 manual reconciliation remains recommended and unused.
+
+### files changed
+
+- dai/platform/dotnet/DevCore.Api/Sports/GameIdentity.cs (MlbStatsApi source + MlbStarterGrounding)
+- dai/platform/dotnet/DevCore.Api/Sports/MlbStarterClient.cs (DTO fields + identity at match + grounding return)
+- dai/platform/dotnet/DevCore.Api/Tools/Handlers/RetrieveSignalHandlers.cs (handler retype)
+- dai/platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs (registration retype)
+- dai/platform/dotnet/DevCore.Api/AgentRuns/SportsRetriever.cs (mlb branch threading)
+- dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/SportsRetrieverTests.cs (protected red-phase tests + registration retype)
+- dai/platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayRetrieveParityTests.cs (resolution/invoke/registration retype)
+- dai-vault/04 Products/sports-v1/mlb-game-identity-capture-v1.md (new report)
+- dai-vault/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md (entry 25 progress)
+- dai-vault/06 Execution/handoffs/current-slice.md (this addendum)
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: one code commit. Hash in final response. Not pushed (now ahead 4 incl. 2ce96fc, 03e127b, d300e0f).
+- <DAI_VAULT_ROOT>: one docs commit. Hash in final response. Not pushed (now ahead 4 incl. 2415e91, 385b435, 50c0189).
+- skills layer: untouched this slice.
+
+status: MLB Game Identity Capture v1 complete 2026-06-11. MLB runs now persist (mlb_statsapi, gamePk) + scheduled start + season + team refs at generation time, even when starters are unannounced; identity coverage now spans both buyer-ready sports. 637 .NET tests + 47 Vitest pass; no migration; OutputJson and buyer surfaces unchanged. Next: Outcome Reconciliation Runtime v1 (matcher + taxonomy + thin settlement), and begin manual Stage 0 reconciliation.
