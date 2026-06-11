@@ -7313,3 +7313,71 @@ Vitest 46 pass; ng build exit 0; git diff --check (both repos); added-line exact
 - skills repo / <JERA_SKILLS_ROOT>: not present; unchanged.
 
 status: Readiness-Gated Buyer Packaging v1 complete 2026-06-09. Buyer-facing packaging gated to NBA/MLB: analyzer selector filtered to a buyer-ready allowlist; landing coverage realigned (NBA+MLB Live Now, NFL/CFB/NCAAB future-only); hero sample, account line, and 2 NFL history mock rows corrected. 8 new TDD tests, 46 Vitest pass, ng build clean; buyer-projection semantics and backend catalog untouched. Ledger entry 26 progressed (open: backend isBuyerReady source of truth + /dev/artifacts guard). No new sport support / source / prompt / schema / artifact / confidence / posture / lean change.
+
+---
+
+## addendum: Buyer Packaging Source-of-Truth v1 (2026-06-09)
+
+**slice:** Buyer Packaging Source-of-Truth v1
+**status:** complete. source-of-truth/contract hardening. narrow backend catalog+DTO + narrow frontend consumption + tests in `dai`; report/handoff/ledger in `dai-vault`. no schema/migration, no artifact contract, no sport-support expansion, no source integration, no prompt/parser/buyer-projection/confidence/posture/lean/model/cost change.
+**repos touched:** `dai` (5 modified + 1 new test) and `dai-vault` (report + ledger entry 26 progress + this addendum). skills/jera repo not present.
+
+### objective
+
+Move buyer readiness from a frontend allowlist to a platform-owned source of truth, keeping routable-in-code (`isSupported`) distinct from buyer-ready (`isBuyerReady`).
+
+### source-of-truth decision
+
+Readiness lives in the platform `CompetitionCatalog` (static in-code data; no DB/migration), exposed on `GET /api/competitions`, consumed by the frontend. Smallest shape: one boolean (`IsBuyerReady`) + a `ReadinessLevel` string (no extra label/note -- avoid overbuild).
+
+### metadata shape + values
+
+`CompetitionDefinition` gains `IsBuyerReady: bool` + `ReadinessLevel: string` (new `ReadinessLevels` constants: buyer_ready_validated/buyer_ready_limited/smoke_level_only/contract_ready_source_limited/deferred/not_supported). nba+mlb = true/buyer_ready_validated; nfl/ncaaf/ncaamb = false/smoke_level_only; College Baseball placeholder = false/not_supported. `CompetitionReferenceDto` (API) gains both, camelCase like the existing isSupported.
+
+### frontend consumption
+
+`CompetitionReferenceDto` (Angular) gains optional `isBuyerReady`/`readinessLevel`. `filterBuyerReadyCompetitions` now filters on `isBuyerReady === true` (the frontend allowlist was removed); analyzer call site unchanged. Fail-safe: missing/false flag -> hidden from buyers. Dev tooling still uses routability (isSupported), unaffected.
+
+### buyer safety validation
+
+Backend catalog test: only nba/mlb buyer-ready; nfl/ncaaf/ncaamb routable-but-not-buyer-ready; placeholder not buyer-ready. Frontend test: metadata-driven not code-driven (buyer-ready flag on a non-nba/mlb code honored; nba dropped if platform says not buyer-ready), fail-safe on missing flag. Selector still shows only NBA/MLB. Landing/account/history unchanged and aligned; no new aggressive language.
+
+### changes made
+
+backend: CompetitionCatalog.cs (ReadinessLevels + IsBuyerReady/ReadinessLevel on the record + per-competition values); SportsReferenceController.cs (DTO + mapping); CompetitionCatalogReadinessTests.cs (new). frontend: agent-run.model.ts (DTO fields); buyer-ready-competitions.ts (consume isBuyerReady, allowlist removed); buyer-ready-competitions.spec.ts (rewritten, test-first).
+
+### verification
+
+.NET targeted tests 16 pass (SportsReference integration + catalog readiness); full solution builds. Vitest 47 pass (5 files); ng build exit 0. git diff --check clean; non-ASCII added-line scan 0 across dai code and vault docs.
+
+### ledger
+
+Progressed entry 26: the isBuyerReady source of truth now exists (catalog -> API -> analyzer selector). Remaining open: drive landing/account copy from the same metadata (still static), and the /dev/artifacts guard; per-tenant readiness deferred until tenants exist.
+
+### skill update
+
+Not made (no skills repo / relevant custom skill present). Recommended future capture: readiness metadata should drive buyer packaging; distinguish routable-in-code from buyer-ready; frontend packaging should consume platform readiness, not infer it locally; readiness gates keep internal smoke paths out of buyer surfaces.
+
+### files changed
+
+- dai/platform/dotnet/DevCore.Api/Sports/CompetitionCatalog.cs
+- dai/platform/dotnet/DevCore.Api/Controllers/SportsReferenceController.cs
+- dai/platform/dotnet/DevCore.Api.Tests/Sports/CompetitionCatalogReadinessTests.cs (new)
+- dai/apps/sports-app/src/app/core/models/agent-run.model.ts
+- dai/apps/sports-app/src/app/analyzer/buyer-ready-competitions.ts
+- dai/apps/sports-app/src/app/analyzer/buyer-ready-competitions.spec.ts
+- dai-vault/04 Products/sports-v1/buyer-packaging-source-of-truth-v1.md (new report)
+- dai-vault/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md (entry 26 progress)
+- dai-vault/06 Execution/handoffs/current-slice.md (this addendum)
+
+### checks run
+
+.NET targeted tests (16 pass) + build; Vitest 47 pass; ng build exit 0; git diff --check (both repos); added-line exact-path scan; non-ASCII scan 0.
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: one commit (backend catalog/DTO + frontend consumption + tests). Hash in final response. Not pushed.
+- <DAI_VAULT_ROOT>: one docs commit. Hash in final response. Not pushed.
+- skills repo / <JERA_SKILLS_ROOT>: not present; unchanged.
+
+status: Buyer Packaging Source-of-Truth v1 complete 2026-06-09. Buyer readiness is now platform-owned: CompetitionCatalog carries IsBuyerReady + ReadinessLevel (only nba/mlb buyer_ready_validated; nfl/ncaaf/ncaamb smoke_level_only), exposed on /api/competitions; the analyzer selector consumes isBuyerReady (fail-safe), frontend allowlist removed. 16 .NET tests + 47 Vitest pass, builds clean. Ledger entry 26 progressed. No schema/migration/artifact/sport-support/source/prompt/confidence/posture/lean change.
