@@ -7471,3 +7471,31 @@ targeted .NET tests at each tdd step; full .NET suite (634 pass) + full solution
 - skills repo / <JERA_SKILLS_ROOT>: not present; unchanged.
 
 status: Stable Game Identity Capture v1 complete 2026-06-11. Runs now persist the canonical reconciliation match key at generation time: (SourceProvider, ExternalGameId) + ScheduledStartUtc + Season + team refs, captured from the confidently matched odds event, null otherwise, never fabricated. OutputJson artifact contract unchanged (test-guarded); buyer surfaces untouched. 634 .NET tests + 47 Vitest pass. Ledger entry 25 progressed; matcher/taxonomy/settlement/buyer-track-record still deferred. Named follow-up: MLB Game Identity Capture v1 (statsapi gamePk).
+
+---
+
+## addendum: DAI Skills Normalization and Expansion v1 (2026-06-11)
+
+**slice:** DAI Skills Normalization and Expansion v1 (development governance; no runtime change)
+**status:** complete. skills + docs only. the interrupted MLB Game Identity Capture v1 diff (`SportsRetrieverTests.cs`, red-phase tests) was left untouched and excluded from the commit.
+
+### what was found
+
+The active skills root is `dai/.claude/skills/`. Only `dai-signal-follow-up-diagnostics` was tracked in git; six skills copied from the Jera workspace (dai-agent-handoff, dai-grill-me, dai-grill-with-vault, dai-token-tight, dai-write-skill from `jera-workspace-skills/skills/dai/`; product-ui-design-architect from `jera-workspace/.claude/skills/`) sat untracked -- which is why earlier sessions could not load them. All six were byte-identical to their Jera sources.
+
+### what was done
+
+- committed the six copied skills into `dai` (normalization: tracked, durable, loadable).
+- created three new original skills: `dai-skill-router` (mandatory Skills Gate at slice start), `dai-test-discipline` (bounded verification ladder, 90-second rule, repo-specific commands incl. the `npm test -- --watch=false` vs bare-vitest gotcha), `dai-typescript-angular-quality` (boundary-typed, editor-feedback TS/Angular rules; Total TypeScript-inspired, original prose, attribution included).
+- adapted `dai-write-skill`: repo boundary + closing checklist re-pointed from the Jera pack layout to `dai/.claude/skills/` and the vault skills inventory; attribution back-pointer fixed and `references/mattpocock-skills-attribution.md` copied locally so the chain resolves.
+- new vault doc `06 Execution/skills/dai-skills-inventory-v1.md`: full inventory with purpose/use/not-use/kind/provenance per skill, missing-skill ledger, recommended future skills, and the reusable Skills Gate prompt snippet.
+
+### validation
+
+All 10 skills structurally conform (frontmatter name matches folder, third-person trigger descriptions, anti-triggers, repo boundaries, attribution where adapted). The three new skills were confirmed live-loadable in the active session. Subagent pressure-testing per superpowers:writing-skills was not performed -- recorded as an honest gap in the inventory. git diff --check clean; zero changes under platform/, apps/, services/, sql/.
+
+### future prompts
+
+Start slices with the Skills Gate (see inventory doc): invoke dai-skill-router, list/select/report-missing, proceed only with an explicit skill plan.
+
+status: skill layer normalized and tracked; MLB Game Identity Capture v1 remains the interrupted in-flight slice (red-phase tests uncommitted in SportsRetrieverTests.cs) and should resume next.
