@@ -7381,3 +7381,93 @@ Not made (no skills repo / relevant custom skill present). Recommended future ca
 - skills repo / <JERA_SKILLS_ROOT>: not present; unchanged.
 
 status: Buyer Packaging Source-of-Truth v1 complete 2026-06-09. Buyer readiness is now platform-owned: CompetitionCatalog carries IsBuyerReady + ReadinessLevel (only nba/mlb buyer_ready_validated; nfl/ncaaf/ncaamb smoke_level_only), exposed on /api/competitions; the analyzer selector consumes isBuyerReady (fail-safe), frontend allowlist removed. 16 .NET tests + 47 Vitest pass, builds clean. Ledger entry 26 progressed. No schema/migration/artifact/sport-support/source/prompt/confidence/posture/lean change.
+
+---
+
+## addendum: Stable Game Identity Capture v1 (2026-06-11)
+
+**slice:** Stable Game Identity Capture v1 (with Slice Trail Repair preflight)
+**status:** complete. runtime capture / persistence hardening. platform code + one EF migration + 23 new tests in `dai`; report/handoff/ledger in `dai-vault`. no OutputJson artifact contract change, no buyer-facing change, no matcher/settlement/taxonomy change, no prompt/parser/confidence/posture/lean/model/cost change.
+**repos touched:** `dai` (17 modified + 4 new files) and `dai-vault` (preflight docs commit + new report + ledger entry 25 progress + this addendum). skills/jera repo not present.
+
+### preflight: slice trail repair
+
+The Buyer Packaging Source-of-Truth v1 addendum claimed a vault docs commit that was never made. Found exactly the three expected uncommitted files (report, ledger entry 26 progress, handoff addendum) and committed them as a docs-only repair commit (`50c0189`) before starting this slice. `dai` was clean, one unpushed commit (`d300e0f`), as expected.
+
+### objective
+
+Capture stable provider event identity at generation time and persist it as AgentRun run-row metadata, implementing the capture half of Outcome Reconciliation Contract v1 so future reconciliation joins on the canonical key `(sourceProvider, externalGameId)` instead of fragile display names.
+
+### premise verified in code
+
+The odds clients already parsed the provider event `id` and `commence_time` and dropped them before `SportsRetrievalOutput`; `AgentRun` had no identity columns; the run row is created/updated in `AgentRunsController`; the whole `AgentRunExecutionResult` is serialized to OutputJson (so identity must not ride on it).
+
+### design
+
+Identity is built only in `OddsMarketClient` at the point of confident event match (provider's own event fields, either orientation); null otherwise -- never inferred from display names. Market tools return grounding records (`FootballMarketGrounding`/`BasketballMarketGrounding` = prompt-facing context + identity) so the AiClient context types and the FastAPI payload are unchanged. Identity rides `SportsRetrievalOutput.GameIdentity` -> new `AgentRunExecution(Result, GameIdentity)` service wrapper -> controller persistence (`ApplyGameIdentity`) on both success and analyze-failure paths (`AnalysisPipelineException.GameIdentity`). Season: eastern-time, baseball single-year ("2026"), basketball/football cross-year by start year ("2025-26", august boundary). Team refs: lowercase ascii slugs of the provider's matched names (normalization, never matching). Surfaced on `AgentRunArtifactDto` (inspection endpoint) from run columns only.
+
+### known limitations
+
+MLB runs persist null identity today (no odds-market path; statsapi `gamePk` capture is the named follow-up: MLB Game Identity Capture v1). Identity is captured only when the spread fully grounds; matched-but-spreadless events return null grounding (unchanged failure semantics). The match-key index exists but nothing joins on it yet (matcher slice).
+
+### migration
+
+`20260611152737_AddAgentRunGameIdentity`: six nullable columns (`SourceProvider` 64, `ExternalGameId` 128, `ScheduledStartUtc` datetimeoffset, `Season` 16, `HomeTeamRef`/`AwayTeamRef` 128) + nonclustered index `IX_AgentRuns_SourceProvider_ExternalGameId`; clean down. Not applied to the running dev db in this slice.
+
+### tests added (tdd, red observed first in every phase)
+
+- GameIdentityDerivationTests (new, 13): season per sport family incl. eastern-year boundary and unknown-family default; team-ref slug cases.
+- SportsRetrieverTests (4 new): football + basketball identity capture end to end through the real gateway with fake http; null when no odds event matches; null for mlb runs.
+- AgentRunServiceTests (3 new): identity threaded on success; null passthrough; carried on the analyze-failure exception.
+- AgentRunsControllerTests (6 new): identity columns persisted; OutputJson contains no identity properties (artifact-contract guard); columns null without identity; analyze-failure persists identity; artifact endpoint surfaces identity; legacy rows project null identity cleanly.
+- ToolGatewayMarketSpreadTests updated to grounding output types (asserts identity rides the tool result).
+
+### verification
+
+Full .NET suite 634 passed / 0 failed; full solution build succeeded. Frontend untouched and green: zero diffs under `apps/` and `services/`; `ng test` 47 passed (5 files); `ng build` exit 0. `git diff --check` clean in both repos. Ascii scan: hand-written added lines clean; only non-ascii is the EF auto-generated designer reproducing the pre-existing seeded "San Jose State Spartans" name (already in prior designers).
+
+### ledger
+
+Progressed entry 25: capture shipped; matcher, settlement-status taxonomy, settlement provider/runtime, scheduled settlement, and buyer-visible track record all remain deferred. Manual Stage 0 reconciliation remains recommended and unused.
+
+### skill update
+
+Not made (no skills repo present). Recommended future capture: run-row metadata vs artifact contract is a load-bearing distinction -- new run facts should be persisted as columns and guarded by a no-OutputJson-mutation test, not added to the serialized artifact.
+
+### files changed
+
+- dai/platform/dotnet/DevCore.Api/Sports/GameIdentity.cs (new)
+- dai/platform/dotnet/DevCore.Api/Sports/OddsMarketClient.cs
+- dai/platform/dotnet/DevCore.Api/Tools/Handlers/MarketSpreadHandlers.cs
+- dai/platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs
+- dai/platform/dotnet/DevCore.Api/AgentRuns/SportsRetriever.cs
+- dai/platform/dotnet/DevCore.Api/AgentRuns/SportsRetrievalOutput.cs
+- dai/platform/dotnet/DevCore.Api/AgentRuns/IAgentRunService.cs
+- dai/platform/dotnet/DevCore.Api/AgentRuns/AgentRunService.cs
+- dai/platform/dotnet/DevCore.Api/AgentRuns/PipelineModels.cs
+- dai/platform/dotnet/DevCore.Api/AgentRuns/AgentRunContracts.cs
+- dai/platform/dotnet/DevCore.Api/Controllers/AgentRunsController.cs
+- dai/platform/dotnet/DevCore.Domain/Agentic/AgentRun.cs
+- dai/platform/dotnet/DevCore.Data/AppDbContext.cs
+- dai/platform/dotnet/DevCore.Data/Migrations/20260611152737_AddAgentRunGameIdentity.cs (new, + designer)
+- dai/platform/dotnet/DevCore.Data/Migrations/AppDbContextModelSnapshot.cs
+- dai/platform/dotnet/DevCore.Api.Tests/Sports/GameIdentityDerivationTests.cs (new)
+- dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/SportsRetrieverTests.cs
+- dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/AgentRunServiceTests.cs
+- dai/platform/dotnet/DevCore.Api.Tests/Integration/AgentRunsControllerTests.cs
+- dai/platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayMarketSpreadTests.cs
+- dai-vault/04 Products/sports-v1/stable-game-identity-capture-v1.md (new report)
+- dai-vault/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md (entry 25 progress)
+- dai-vault/06 Execution/handoffs/current-slice.md (this addendum)
+
+### checks run
+
+targeted .NET tests at each tdd step; full .NET suite (634 pass) + full solution build; ng test 47 pass; ng build exit 0; git diff --check (both repos); zero-diff check on apps/ and services/; OutputJson no-identity test; non-ascii added-line scan.
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: one code commit (platform capture + migration + tests). Hash in final response. Not pushed (plus the pre-existing unpushed d300e0f).
+- <DAI_VAULT_ROOT>: preflight repair commit 50c0189 + one docs commit for this slice. Hashes in final response. Not pushed.
+- skills repo / <JERA_SKILLS_ROOT>: not present; unchanged.
+
+status: Stable Game Identity Capture v1 complete 2026-06-11. Runs now persist the canonical reconciliation match key at generation time: (SourceProvider, ExternalGameId) + ScheduledStartUtc + Season + team refs, captured from the confidently matched odds event, null otherwise, never fabricated. OutputJson artifact contract unchanged (test-guarded); buyer surfaces untouched. 634 .NET tests + 47 Vitest pass. Ledger entry 25 progressed; matcher/taxonomy/settlement/buyer-track-record still deferred. Named follow-up: MLB Game Identity Capture v1 (statsapi gamePk).
