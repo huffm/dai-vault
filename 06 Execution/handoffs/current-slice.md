@@ -1,6 +1,6 @@
 # current slice
 
-**slice:** cognitive protocol runtime — artifact contract migration (slice 4)
+**slice:** cognitive protocol runtime -- artifact contract migration (slice 4)
 **status:** shipped 2026-05-14
 **repos touched:** `dai` (.NET backend, tests); `dai-vault` (this doc, contract doc, sports cognitive worker model, sports flow)
 
@@ -25,7 +25,7 @@ The first runtime-side slice of the Cognitive Protocol Runtime migration. New sp
 - view: `dai/platform/dotnet/DevCore.Api/AgentRuns/CognitiveProtocolView.cs`
   - `DiscernStressProtocolView` gains optional `Canonical` slot for canonical-sourced stress
 - tests: 24 new tests added (197 total passing)
-  - `CognitiveProtocolBuilderTests.cs` covers the legacy → canonical builder rules
+  - `CognitiveProtocolBuilderTests.cs` covers the legacy -> canonical builder rules
   - `ProtocolVocabularyMapperTests.cs` covers canonical-source preference, legacy fallback, and round-trip
   - `SportsComposerTests.cs` covers v2 stamping on success and failure paths and v1 deserialization
   - `AgentRunsControllerTests.cs` covers the artifact endpoint for both v1 and v2 records
@@ -78,7 +78,7 @@ Until then, `CognitiveProtocol` is the authoritative source and `CognitivePhases
 
 ## next slice candidates
 
-- Phase B continuation: dual-emit prompt update — teach the analyze prompt to emit canonical field names without removing legacy ones. Requires FastAPI + .NET lockstep.
+- Phase B continuation: dual-emit prompt update -- teach the analyze prompt to emit canonical field names without removing legacy ones. Requires FastAPI + .NET lockstep.
 - Probe runtime source: surface `SignalFollowUpRecord[]` into `Interrogate.Probe` so the canonical Probe is non-null when the platform has investigation candidates.
 - Quality check migration: update `SportsQualityChecker` to read canonical sources for `CounterCase` / `WatchFor` derivation before the legacy fields are removed.
 
@@ -124,7 +124,7 @@ Signals without a template are silently dropped so the probe never fabricates in
 - Prefers persisted `cognitiveProtocol` when present (v2 records).
 - Falls back to the per-request `protocolView` projection when only the projection is available (v1 records).
 - Displays "Not recorded" on every micro-action when both shapes are absent.
-- Shows a source badge — "Canonical Artifact", "View Projection", or "Not Recorded" — so reviewers know which path produced the rendered block.
+- Shows a source badge -- "Canonical Artifact", "View Projection", or "Not Recorded" -- so reviewers know which path produced the rendered block.
 - Renders the five canonical cards: Perceive, Interrogate, Discern, Decide, Synthesize.
 - For Discern.Stress: renders a single "Canonical Stress" row when canonical, or two labeled rows ("Legacy Interrogate Stress", "Legacy Discern Test") for v1 records. No concatenation.
 - Leaves the legacy "Cognitive Phases" section in place as a labeled compatibility view.
@@ -134,9 +134,9 @@ Backend, FastAPI, and database are unchanged in this surface slice. Only the dev
 
 Affected files:
 
-- `dai/apps/sports-app/src/app/core/models/agent-run.model.ts` — new TS types: `CognitiveProtocolDto`, `CognitiveProtocolViewDto`, plus nested per-protocol types; `AgentRunArtifactDto` gains optional `artifactVersion`, `cognitiveProtocol`, `protocolView`.
-- `dai/apps/sports-app/src/app/dev-artifact-review/dev-artifact-review.component.ts` — view-model builder (`protocolBlocks`), source resolution logic, multi-source Stress handling, artifact version label.
-- `dai/apps/sports-app/src/app/dev-artifact-review/dev-artifact-review.component.html` — Artifact Version stat in Run Overview; new Cognitive Protocol section with source badge.
+- `dai/apps/sports-app/src/app/core/models/agent-run.model.ts` -- new TS types: `CognitiveProtocolDto`, `CognitiveProtocolViewDto`, plus nested per-protocol types; `AgentRunArtifactDto` gains optional `artifactVersion`, `cognitiveProtocol`, `protocolView`.
+- `dai/apps/sports-app/src/app/dev-artifact-review/dev-artifact-review.component.ts` -- view-model builder (`protocolBlocks`), source resolution logic, multi-source Stress handling, artifact version label.
+- `dai/apps/sports-app/src/app/dev-artifact-review/dev-artifact-review.component.html` -- Artifact Version stat in Run Overview; new Cognitive Protocol section with source badge.
 
 ## addendum: Outcome Reconciliation Harness v1 (2026-05-18)
 
@@ -147,30 +147,30 @@ Dev tooling to reconcile the 2026-05-18 cognitive protocol calibration batch aga
   - for each game marked `final` it posts to `POST /api/agent-runs/{id}/outcome`, then reads back `GET /api/agent-runs/{id}/evaluation` (the platform's directional eval)
   - writes a reconciled csv (only the 7 outcome columns filled) and a markdown reconciliation note; never overwrites the original export
   - `-DryRun` posts nothing and requires no running stack
-  - cover / total result are filled only when `closing_spread_home` / `closing_total` are supplied in the results input; left blank otherwise — never guessed
+  - cover / total result are filled only when `closing_spread_home` / `closing_total` are supplied in the results input; left blank otherwise -- never guessed
 - new template: `dai-vault/04 Products/sports-v1/calibration/protocol-runs/2026-05-18-game-results-input.csv`
   - pre-seeded with the 8 batch run ids, all `game_status = pending`
 - outputs (same protocol-runs folder):
   - `2026-05-18-cognitive-protocol-run-export-reconciled.csv`
   - `2026-05-18-cognitive-protocol-outcome-reconciliation.md`
 
-status: harness built and dry-run verified 2026-05-18 (8 runs, 0 completed, 8 pending; final-game derivation self-tested with synthetic scores). live reconciliation runs after 2026-05-20 once NBA (05-18, 05-19) and MLB (05-18) games are final and the results input is filled with actual scores. confidence calibration remains blocked on this reconciliation evidence — see the calibration export note.
+status: harness built and dry-run verified 2026-05-18 (8 runs, 0 completed, 8 pending; final-game derivation self-tested with synthetic scores). live reconciliation runs after 2026-05-20 once NBA (05-18, 05-19) and MLB (05-18) games are final and the results input is filled with actual scores. confidence calibration remains blocked on this reconciliation evidence -- see the calibration export note.
 
 ## addendum: Cognitive Protocol Node Specs v1 (2026-05-18)
 
-Doctrine slice. Vault docs only — no runtime code touched.
+Doctrine slice. Vault docs only -- no runtime code touched.
 
 - new doc: `dai-vault/02 Platform/architecture/cognitive-factory/protocol-node-specs.md`
   - operational node spec for all 15 cognitive nodes (Perceive/Interrogate/Discern/Decide + Synthesize, three micro-actions each)
   - each node defines 11 facets: purpose, fields read, fields written, allowed tools, allowed scripts/reflexes, model-call rule, signal dependencies, quality checks, fallback, sports overlay, forbidden behavior
-  - sits below `cognitive-protocol-runtime.md` (names the nodes) and `protocol-vocabulary-map.md` (legacy↔canonical) as the contract a future code slice implements against
+  - sits below `cognitive-protocol-runtime.md` (names the nodes) and `protocol-vocabulary-map.md` (legacy<->canonical) as the contract a future code slice implements against
 - doctrine reinforced by this doc:
   - Retrieve is platform plumbing, not a node; Perceive consumes retrieval output
   - Probe is deterministic (`CognitiveProtocolBuilder.BuildProbe` from `SignalFollowUpRecord[]`), no model call
   - the Synthesize trio is deterministic (`SportsComposer`), no model call
-  - models never choose their own tools, write scope, or data access — fields and tools are fixed per node
+  - models never choose their own tools, write scope, or data access -- fields and tools are fixed per node
   - confidence value and band are deterministic (`SportsEvaluator`); the model owns rationale text, not numbers or the posture enum
-- open question carried forward: NCAAW (women's college basketball) is not a platform competition — no `CompetitionCatalog` entry, no teams, no retriever — so no node overlay exists for it. Decide whether to add the competition or drop it from cognitive scope.
+- open question carried forward: NCAAW (women's college basketball) is not a platform competition -- no `CompetitionCatalog` entry, no teams, no retriever -- so no node overlay exists for it. Decide whether to add the competition or drop it from cognitive scope.
 
 status: node specs defined 2026-05-18. they give the stable target that the Phase B canonical prompt/contract rename was waiting on.
 
@@ -210,18 +210,18 @@ status: plan written 2026-05-20. it gives the stable launch target the Phase B p
 Runtime slice. Wires the skeleton into DI and migrates one safe call site. No FastAPI change, no DB schema change, no customer-facing output change.
 
 - new code (`dai/platform/dotnet/DevCore.Api/Tools/`):
-  - `ToolGatewayServiceCollectionExtensions.cs` — `AddDaiToolGateway(IServiceCollection)` extension. Registers `IToolRegistry` (singleton, `ToolRegistry.Default()`), `IToolGateway` (scoped), and `IToolHandler<ScheduleMatchupDatesInput, MatchupEventDto[]>` as `AddKeyedScoped` keyed by `ToolIds.ScheduleMatchupDates`. Scoped lifetimes match `AddHttpClient<OddsScheduleClient>`'s transient-with-managed-handler so the gateway can resolve handlers per request without holding HTTP message handlers alive.
+  - `ToolGatewayServiceCollectionExtensions.cs` -- `AddDaiToolGateway(IServiceCollection)` extension. Registers `IToolRegistry` (singleton, `ToolRegistry.Default()`), `IToolGateway` (scoped), and `IToolHandler<ScheduleMatchupDatesInput, MatchupEventDto[]>` as `AddKeyedScoped` keyed by `ToolIds.ScheduleMatchupDates`. Scoped lifetimes match `AddHttpClient<OddsScheduleClient>`'s transient-with-managed-handler so the gateway can resolve handlers per request without holding HTTP message handlers alive.
 - modified code:
-  - `dai/platform/dotnet/DevCore.Api/Program.cs` — adds `using DevCore.Api.Tools;` and one line: `builder.Services.AddDaiToolGateway();` after the existing pipeline registrations.
-  - `dai/platform/dotnet/DevCore.Api/Controllers/SportsReferenceController.cs` — constructor now also injects `IToolGateway` alongside the existing `OddsScheduleClient` and `AppDbContext`. The `GetMatchupDates` action invokes the gateway with `ProtocolNode = ProtocolNodes.PlatformReference`, `CorrelationId = HttpContext.TraceIdentifier`, `RunId = null`, `TenantKey = null`. `GetUpcoming` is unchanged — it still calls `OddsScheduleClient.GetAllUpcomingEventsAsync` directly because that method is not wrapped by the v1 registry.
+  - `dai/platform/dotnet/DevCore.Api/Program.cs` -- adds `using DevCore.Api.Tools;` and one line: `builder.Services.AddDaiToolGateway();` after the existing pipeline registrations.
+  - `dai/platform/dotnet/DevCore.Api/Controllers/SportsReferenceController.cs` -- constructor now also injects `IToolGateway` alongside the existing `OddsScheduleClient` and `AppDbContext`. The `GetMatchupDates` action invokes the gateway with `ProtocolNode = ProtocolNodes.PlatformReference`, `CorrelationId = HttpContext.TraceIdentifier`, `RunId = null`, `TenantKey = null`. `GetUpcoming` is unchanged -- it still calls `OddsScheduleClient.GetAllUpcomingEventsAsync` directly because that method is not wrapped by the v1 registry.
 - new tests (`dai/platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayDIRegistrationTests.cs`):
-  - `resolve_tool_gateway_from_application_services` — resolves `IToolGateway` from the real `Program.cs` service graph and asserts it is a `ToolGateway`.
-  - `resolve_tool_registry_with_default_manifest_containing_schedule_matchup_dates` — asserts the v1 manifest entry is present with the expected kind, transport, and allowed caller.
-  - `resolve_schedule_matchup_dates_handler_as_keyed_service` — asserts the keyed handler resolves to `ScheduleMatchupDatesHandler`.
+  - `resolve_tool_gateway_from_application_services` -- resolves `IToolGateway` from the real `Program.cs` service graph and asserts it is a `ToolGateway`.
+  - `resolve_tool_registry_with_default_manifest_containing_schedule_matchup_dates` -- asserts the v1 manifest entry is present with the expected kind, transport, and allowed caller.
+  - `resolve_schedule_matchup_dates_handler_as_keyed_service` -- asserts the keyed handler resolves to `ScheduleMatchupDatesHandler`.
 - new tests (`dai/platform/dotnet/DevCore.Api.Tests/Integration/SportsReferenceControllerTests.cs`):
-  - `matchup_dates_returns_not_found_for_unknown_competition_code` — 404 path still fires before the gateway is reached.
-  - `matchup_dates_returns_bad_request_when_team_is_missing` — 400 path still fires before the gateway is reached.
-  - `matchup_dates_returns_ok_with_empty_array_via_tool_gateway_when_provider_unavailable` — the gateway-routed happy path returns the same JSON array shape; team seeding added to `InitializeAsync` so the controller's team-existence check passes.
+  - `matchup_dates_returns_not_found_for_unknown_competition_code` -- 404 path still fires before the gateway is reached.
+  - `matchup_dates_returns_bad_request_when_team_is_missing` -- 400 path still fires before the gateway is reached.
+  - `matchup_dates_returns_ok_with_empty_array_via_tool_gateway_when_provider_unavailable` -- the gateway-routed happy path returns the same JSON array shape; team seeding added to `InitializeAsync` so the controller's team-existence check passes.
 - behavior compatibility: the API response for `GET /api/competitions/{code}/matchup-dates` is byte-identical at the JSON-array level. Same content type, same status codes for the unchanged validation branches, same empty-on-degraded behavior when `OddsApi:ApiKey` is unset. Existing `SportsReferenceController` callers, the Angular sports app, and `/dev/artifacts` consumers see no contract change.
 - what stayed deferred: correlation header injection into outbound HTTP from the gateway, idempotency caching, cost-class enforcement, tenant-tier enforcement, swapping the retrieval-side call sites (`OddsMarketClient`, `EspnBasketballScheduleClient`, `MlbStarterClient`, `FastApiClient`), wiring into the main sports analysis pipeline, Azure Container Apps deploy, pgvector landing, Azure Functions, MCP adapters.
 - next safe slice: wrap the next typed client behind the gateway. Recommended order: `OddsMarketClient.GetFootballSpreadAsync` and `GetBasketballSpreadAsync` (retrieve-stage callers, `ProtocolNodes.PlatformRetrieve`). That slice opens `platform.retrieve` to the manifest, exercises the same wrap-in-handler pattern, and stays inside `dai/platform/dotnet/` with no FastAPI or DB changes.
@@ -237,7 +237,7 @@ Audit slice triggered by Outcome Reconciliation v1: several MLB runs had `eviden
 - `confidence_high_for_partial_evidence` **is** computed, by the offline harness `dai/scripts/dev/sports/run-artifact-calibration.ps1:435-439` (rule: `evidence_richness < 3 AND confidence >= 0.70`). It is **not** computed in .NET runtime code and is **not** stored on the artifact.
 - The flag fired correctly on all the runs it should have: the 2026-05-18 harness reports (`20260518-1001-nba-calibration.md`, `20260518-1010-mlb-calibration.md`) show it on both NBA runs and 3 of 6 MLB runs (5 of 8 total). The offline computation was never broken.
 - The `quality_warnings` column in the cognitive protocol export maps to `ArtifactQualityWarnings` (the runtime `SportsQualityChecker` output). That field carries only signal-narrative-drift and `signals_used` integrity warnings. **Calibration flags and `ArtifactQualityWarnings` are separate concepts** and were never the same surface.
-- Root cause: the cognitive protocol run export (hand-curated to `2026-05-18-cognitive-protocol-run-export.csv`) and the reconciliation export did not carry calibration flags at all, so a reviewer scanning `quality_warnings` saw `none` and concluded the risk was invisible. The risk was visible — in a different file (the harness markdown) the reviewer was not looking at.
+- Root cause: the cognitive protocol run export (hand-curated to `2026-05-18-cognitive-protocol-run-export.csv`) and the reconciliation export did not carry calibration flags at all, so a reviewer scanning `quality_warnings` saw `none` and concluded the risk was invisible. The risk was visible -- in a different file (the harness markdown) the reviewer was not looking at.
 
 classification: **export gap.** Not a runtime gap (the offline flag works), not a docs mismatch (`protocol-node-specs.md` correctly calls it a "calibration flag"), not a naming mismatch (the names are consistent; the two surfaces are just genuinely distinct).
 
@@ -266,17 +266,17 @@ status: audit complete 2026-05-21. export fix verified by PowerShell dry-run + r
 
 ### local skills used (Claude Code, jera-workspace-skills pack)
 
-- `dai-grill-with-vault` — applied its read-before-conclude discipline: grepped the literal flag across both repos, traced `quality_warnings` to `ArtifactQualityWarnings`, and located the rule in `run-artifact-calibration.ps1` and `protocol-node-specs.md` before deciding the fix. Used the reading half, not the interactive-grill half (no user Q&A — this was a solo diagnostic, not a fuzzy plan).
-- `dai-token-tight` — reporting density.
-- `superpowers:verification-before-completion` — every claim backed by grep/dry-run/regenerated artifact; ASCII + AST parse-check run explicitly before close.
+- `dai-grill-with-vault` -- applied its read-before-conclude discipline: grepped the literal flag across both repos, traced `quality_warnings` to `ArtifactQualityWarnings`, and located the rule in `run-artifact-calibration.ps1` and `protocol-node-specs.md` before deciding the fix. Used the reading half, not the interactive-grill half (no user Q&A -- this was a solo diagnostic, not a fuzzy plan).
+- `dai-token-tight` -- reporting density.
+- `superpowers:verification-before-completion` -- every claim backed by grep/dry-run/regenerated artifact; ASCII + AST parse-check run explicitly before close.
 
-skill-fit note (for later, do not action now): `dai-grill-with-vault` is shaped for interactive plan interrogation — its closing template (locked decisions, deferred decisions with owner, recommended next prompt) does not map cleanly onto a solo code/vault audit that ends in a fix. A dedicated `dai-audit` or `dai-vault-diagnose` skill (read repo+vault, classify gap type, smallest fix, evidence trail) would fit this slice's shape better. Recommend sharpening later; not changed in this slice (jera-workspace-skills left untouched, no approval to edit).
+skill-fit note (for later, do not action now): `dai-grill-with-vault` is shaped for interactive plan interrogation -- its closing template (locked decisions, deferred decisions with owner, recommended next prompt) does not map cleanly onto a solo code/vault audit that ends in a fix. A dedicated `dai-audit` or `dai-vault-diagnose` skill (read repo+vault, classify gap type, smallest fix, evidence trail) would fit this slice's shape better. Recommend sharpening later; not changed in this slice (jera-workspace-skills left untouched, no approval to edit).
 
 ### Claude <-> Codex transfer notes
 
 - Repos in play this slice: `dai` (1 file: the reconcile script) and `dai-vault` (4 files: protocol-node-specs rule, regenerated reconciled CSV + MD, this handoff). `jera-workspace-skills` read-only, untouched.
 - The fix is PowerShell + docs only. No build step. To re-verify on any machine: ASCII scan + `[System.Management.Automation.Language.Parser]::ParseFile` (both clean), then `reconcile-calibration-outcomes.ps1 -DryRun -OutputDir <scratch>` and confirm `derived_calibration_flags` fires on the 5 runs with confidence >= 0.70 and richness < 3.
-- Live regeneration requires the stack: Docker Desktop + `devcore-sql` container (it OOM-exited 137 overnight twice this slice — restart with `docker start devcore-sql`, wait for "Recovery is complete"), then the .NET API on :5007. The 8 run ids already have outcomes recorded, so a live re-run returns 409 and reads evaluations idempotently — safe to re-run.
+- Live regeneration requires the stack: Docker Desktop + `devcore-sql` container (it OOM-exited 137 overnight twice this slice -- restart with `docker start devcore-sql`, wait for "Recovery is complete"), then the .NET API on :5007. The 8 run ids already have outcomes recorded, so a live re-run returns 409 and reads evaluations idempotently -- safe to re-run.
 - Open thread for the next agent: confidence calibration is unresolved by design (5 leans is too small). The flag is now visible on the reconciled export; accumulate more game-day reconciliations before touching thresholds.
 - Next slice is Tool Gateway expansion (`market.football.spread`, `market.basketball.spread`), not a confidence change.
 
@@ -286,27 +286,27 @@ Runtime slice. Routes market spread retrieval through the Tool Gateway. No FastA
 
 ### local skills used (Claude Code)
 
-- `dai-grill-with-vault` (jera pack) — ran the naming gate against doctrine before code: confirmed `market.football.spread` / `market.basketball.spread` against `cloud-tool-runtime-plan.md` section 5 (where they are the literal examples) and the `schedule.matchup_dates` dotted-namespace precedent.
-- `dai-token-tight` (jera pack) — reporting density.
-- `superpowers:test-driven-development` — RED (new dispatch tests fail to compile) -> GREEN (registry + handlers + DI) verified.
-- `superpowers:verification-before-completion` — full suite run before any completion claim; new tests confirmed by name.
+- `dai-grill-with-vault` (jera pack) -- ran the naming gate against doctrine before code: confirmed `market.football.spread` / `market.basketball.spread` against `cloud-tool-runtime-plan.md` section 5 (where they are the literal examples) and the `schedule.matchup_dates` dotted-namespace precedent.
+- `dai-token-tight` (jera pack) -- reporting density.
+- `superpowers:test-driven-development` -- RED (new dispatch tests fail to compile) -> GREEN (registry + handlers + DI) verified.
+- `superpowers:verification-before-completion` -- full suite run before any completion claim; new tests confirmed by name.
 - `dai-agent-handoff` shaping for the transfer notes below.
-- `dai-signal-follow-up-diagnostics` considered and skipped — it diagnoses signal coverage gaps on a run, not gateway plumbing.
+- `dai-signal-follow-up-diagnostics` considered and skipped -- it diagnoses signal coverage gaps on a run, not gateway plumbing.
 
 skill-fit note (carryover, not actioned): `dai-grill-with-vault` again did the read+verify job but its interactive closing template still does not match a solo implementation slice. The earlier recommendation for a dedicated `dai-audit` / `dai-implement-with-vault` skill stands. jera-workspace-skills left untouched this slice (no approval to edit).
 
 ### naming review result
 
-Confirmed, no rename. `market.football.spread` / `market.basketball.spread` are: specific (domain.sport.capability), stable, boring, doctrine-aligned (literal examples in the cloud plan), consistent with the dotted-namespace precedent of `schedule.matchup_dates`, and not misleading (they name retrieval, not cognition). Handler classes follow the tool-id-to-PascalCase convention (`MarketFootballSpreadHandler`, `MarketBasketballSpreadHandler`). One deliberate decision: a single shared `MarketSpreadInput(Competition, HomeTeam, AwayTeam, GameDate)` record rather than two identical per-tool records — the input shape is identical; the tools differ by output context type (`FootballMarketContext?` vs `BasketballMarketContext?`) and underlying client method. Allowed node is the existing `ProtocolNodes.PlatformRetrieve` (no new node).
+Confirmed, no rename. `market.football.spread` / `market.basketball.spread` are: specific (domain.sport.capability), stable, boring, doctrine-aligned (literal examples in the cloud plan), consistent with the dotted-namespace precedent of `schedule.matchup_dates`, and not misleading (they name retrieval, not cognition). Handler classes follow the tool-id-to-PascalCase convention (`MarketFootballSpreadHandler`, `MarketBasketballSpreadHandler`). One deliberate decision: a single shared `MarketSpreadInput(Competition, HomeTeam, AwayTeam, GameDate)` record rather than two identical per-tool records -- the input shape is identical; the tools differ by output context type (`FootballMarketContext?` vs `BasketballMarketContext?`) and underlying client method. Allowed node is the existing `ProtocolNodes.PlatformRetrieve` (no new node).
 
 ### files changed
 
-- `dai/platform/dotnet/DevCore.Api/Tools/ToolRegistry.cs` — `ToolIds.MarketFootballSpread`, `ToolIds.MarketBasketballSpread`; two `ToolDefinition` entries (Retriever, HttpExternal, `platform.retrieve`, PerRunInput, 15-min cache mirroring `OddsMarketClient`, PaidExternal).
-- `dai/platform/dotnet/DevCore.Api/Tools/Handlers/MarketSpreadHandlers.cs` (new) — `MarketSpreadInput` + `MarketFootballSpreadHandler` + `MarketBasketballSpreadHandler` wrapping `OddsMarketClient.GetFootballSpreadAsync` / `GetBasketballSpreadAsync` 1:1.
-- `dai/platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` — two keyed-scoped handler registrations (+ `using DevCore.AiClient;`).
-- `dai/platform/dotnet/DevCore.Api/AgentRuns/SportsRetriever.cs` — constructor now takes `IToolGateway` instead of `OddsMarketClient`; football and basketball spread calls route through `gateway.InvokeAsync(...)` with a `platform.retrieve` context carrying `RunId = artifact.AgentRunId`. All other retrieval (starters, basketball schedule/rest, sharp/public) unchanged.
-- `dai/platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayMarketSpreadTests.cs` (new) — 3 tests: football dispatch, basketball dispatch, denied-node.
-- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/SportsRetrieverTests.cs` — `MakeRetriever` builds a real gateway wired to the fake-http `OddsMarketClient`; new `retrieve_grounds_basketball_market_through_gateway_for_nba` test.
+- `dai/platform/dotnet/DevCore.Api/Tools/ToolRegistry.cs` -- `ToolIds.MarketFootballSpread`, `ToolIds.MarketBasketballSpread`; two `ToolDefinition` entries (Retriever, HttpExternal, `platform.retrieve`, PerRunInput, 15-min cache mirroring `OddsMarketClient`, PaidExternal).
+- `dai/platform/dotnet/DevCore.Api/Tools/Handlers/MarketSpreadHandlers.cs` (new) -- `MarketSpreadInput` + `MarketFootballSpreadHandler` + `MarketBasketballSpreadHandler` wrapping `OddsMarketClient.GetFootballSpreadAsync` / `GetBasketballSpreadAsync` 1:1.
+- `dai/platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- two keyed-scoped handler registrations (+ `using DevCore.AiClient;`).
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/SportsRetriever.cs` -- constructor now takes `IToolGateway` instead of `OddsMarketClient`; football and basketball spread calls route through `gateway.InvokeAsync(...)` with a `platform.retrieve` context carrying `RunId = artifact.AgentRunId`. All other retrieval (starters, basketball schedule/rest, sharp/public) unchanged.
+- `dai/platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayMarketSpreadTests.cs` (new) -- 3 tests: football dispatch, basketball dispatch, denied-node.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/SportsRetrieverTests.cs` -- `MakeRetriever` builds a real gateway wired to the fake-http `OddsMarketClient`; new `retrieve_grounds_basketball_market_through_gateway_for_nba` test.
 - Program.cs unchanged: `AddDaiToolGateway()` already registers the gateway and now the two new handlers; `OddsMarketClient` stays registered (the handlers depend on it).
 
 ### behavior summary
@@ -332,7 +332,7 @@ Wrap the remaining retrieve-stage clients behind the gateway for parity: `EspnBa
 
 - Repos in play: `dai` (6 files: registry, handlers, extensions, retriever, 2 test files) and `dai-vault` (this handoff). `jera-workspace-skills` read-only, untouched.
 - Re-verify on any machine: `dotnet test DevCore.Api.Tests/DevCore.Api.Tests.csproj` -> expect 220 passing. No stack, no DB, no network needed (all tests use fake HTTP handlers).
-- The pattern to extend: add `ToolDefinition` + `ToolIds` constant in `ToolRegistry.cs`, implement `IToolHandler<TInput, TOutput>` in `Tools/Handlers/`, register keyed-scoped in `ToolGatewayServiceCollectionExtensions.cs`, then route the call site through `gateway.InvokeAsync(...)` with the correct `ProtocolNodes.*`. Nullable reference outputs (`FootballMarketContext?`) are fine as the generic `TOutput` — the annotation is erased so registration and resolution match.
+- The pattern to extend: add `ToolDefinition` + `ToolIds` constant in `ToolRegistry.cs`, implement `IToolHandler<TInput, TOutput>` in `Tools/Handlers/`, register keyed-scoped in `ToolGatewayServiceCollectionExtensions.cs`, then route the call site through `gateway.InvokeAsync(...)` with the correct `ProtocolNodes.*`. Nullable reference outputs (`FootballMarketContext?`) are fine as the generic `TOutput` -- the annotation is erased so registration and resolution match.
 - No PowerShell changed this slice, so no ASCII/parser-validation step was required.
 - Open thread unchanged: confidence calibration still needs more reconciled game-days before any threshold change.
 
@@ -353,12 +353,12 @@ Skills used: `dai-grill-with-vault` (read clients/DTOs/`SportsRetriever` before 
 
 ### files changed
 
-- `dai/platform/dotnet/DevCore.Api/Tools/ToolRegistry.cs` — three `ToolIds` constants + three `ToolDefinition` entries (Retriever, HttpExternal, `platform.retrieve`, PerRunInput; cache ttls mirror clients: rest 30m, starters 30m, sharp_public 15m; CostClass Free because all three providers are keyless public endpoints).
-- `dai/platform/dotnet/DevCore.Api/Tools/Handlers/RetrieveSignalHandlers.cs` (new) — `MatchupRetrievalInput` (shared by rest_context + sharp_public), `MlbProbableStartersInput` (no competition field), and the three handlers wrapping `EspnBasketballScheduleClient.GetRestContextAsync`, `MlbStarterClient.GetStartersAsync`, `ActionNetworkClient.GetSharpPublicDataAsync` 1:1. The sharp_public handler returns the full `SharpPublicLookupResult` (status + context), not a bare nullable.
-- `dai/platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` — three keyed-scoped handler registrations.
-- `dai/platform/dotnet/DevCore.Api/AgentRuns/SportsRetriever.cs` — constructor reduced to `(IToolGateway)`. The three remaining direct client calls (rest, starters, both sharp_public branches) now route through `gateway.InvokeAsync(...)` with the `platform.retrieve` context carrying `RunId = artifact.AgentRunId`. `SportsRetriever` no longer references `MlbStarterClient`, `EspnBasketballScheduleClient`, or `ActionNetworkClient` directly.
-- `dai/platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayRetrieveParityTests.cs` (new) — registry assertions, keyed-handler resolution, sharp_public grounded dispatch, mlb starters grounded dispatch, rest routing, denied-node.
-- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/SportsRetrieverTests.cs` — `MakeRetriever` builds a gateway wired to all five handlers and constructs `SportsRetriever(gateway)`; optional `mlbJson` param; new `retrieve_grounds_starting_pitching_through_gateway_for_mlb` integration test.
+- `dai/platform/dotnet/DevCore.Api/Tools/ToolRegistry.cs` -- three `ToolIds` constants + three `ToolDefinition` entries (Retriever, HttpExternal, `platform.retrieve`, PerRunInput; cache ttls mirror clients: rest 30m, starters 30m, sharp_public 15m; CostClass Free because all three providers are keyless public endpoints).
+- `dai/platform/dotnet/DevCore.Api/Tools/Handlers/RetrieveSignalHandlers.cs` (new) -- `MatchupRetrievalInput` (shared by rest_context + sharp_public), `MlbProbableStartersInput` (no competition field), and the three handlers wrapping `EspnBasketballScheduleClient.GetRestContextAsync`, `MlbStarterClient.GetStartersAsync`, `ActionNetworkClient.GetSharpPublicDataAsync` 1:1. The sharp_public handler returns the full `SharpPublicLookupResult` (status + context), not a bare nullable.
+- `dai/platform/dotnet/DevCore.Api/Tools/ToolGatewayServiceCollectionExtensions.cs` -- three keyed-scoped handler registrations.
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/SportsRetriever.cs` -- constructor reduced to `(IToolGateway)`. The three remaining direct client calls (rest, starters, both sharp_public branches) now route through `gateway.InvokeAsync(...)` with the `platform.retrieve` context carrying `RunId = artifact.AgentRunId`. `SportsRetriever` no longer references `MlbStarterClient`, `EspnBasketballScheduleClient`, or `ActionNetworkClient` directly.
+- `dai/platform/dotnet/DevCore.Api.Tests/Tools/ToolGatewayRetrieveParityTests.cs` (new) -- registry assertions, keyed-handler resolution, sharp_public grounded dispatch, mlb starters grounded dispatch, rest routing, denied-node.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/SportsRetrieverTests.cs` -- `MakeRetriever` builds a gateway wired to all five handlers and constructs `SportsRetriever(gateway)`; optional `mlbJson` param; new `retrieve_grounds_starting_pitching_through_gateway_for_mlb` integration test.
 - Program.cs unchanged: `AddDaiToolGateway()` already registers gateway + handlers; the three clients stay registered via `AddHttpClient<T>` (now consumed by handlers, not the retriever).
 
 ### behavior summary
@@ -7743,3 +7743,45 @@ After settlement, reconcile these exact provider keys through `POST /api/agent-r
 - `dai`: no runtime file changes; scratch files removed after validation.
 
 status: Stage 0 True Calibration Candidate Capture v1 complete 2026-06-12 -- four identity-bearing pending candidates captured and validated; zero candidate outcomes/evaluations; duplicate keys none; tenant aligned; model spend 4/6. Next: wait for settlement, reconcile, then build the read surface.
+
+---
+
+## addendum: Stage 0 Outcome Reconciliation Follow-Up v1 (2026-06-12)
+
+**slice:** Stage 0 Outcome Reconciliation Follow-Up v1
+**status:** complete as a wait-only follow-up. local/dev environment ready; candidates rechecked through local API artifact/evaluation reads; no reconcile payloads submitted because every game was still pre-start. no outcomes, no evaluations, no read surface, no runtime code change.
+
+### preflight
+
+`dai` clean at `f02b307`. `dai-vault` clean with candidate-capture commit `6b47130` present at HEAD, ahead of origin by 2, not pushed. No working-tree diffs before docs updates.
+
+### environment
+
+API `GET /api/competitions` returned 200 on `http://localhost:5007`. Local DB confirmed as `devcore` inside `devcore-sql`; DB UTC clock was `2026-06-12 14:45:03Z`. Required migrations `AddAgentRunGameIdentity` and `ExpandOutcomeStatusTaxonomy` were present. Dev bypass config remained `TenantKey=1`, `UserKey=1`.
+
+### candidate status
+
+The expanded SQL candidate query was rejected by approval review, so the safer local API artifact/evaluation reads were used. All four candidates still had identity-bearing completed artifacts and `GET /evaluation` returned 404 for each:
+
+- `c1f3423e-f36b-1410-8162-00373db4b724`: `odds_api` / `6cc5c3b9cfcb1d94bed9f3ca972b3114`, scheduled `2026-06-14T00:40:00Z`.
+- `c3f3423e-f36b-1410-8162-00373db4b724`: `mlb_statsapi` / `822803`, scheduled `2026-06-12T23:37:00Z`.
+- `caf3423e-f36b-1410-8162-00373db4b724`: `mlb_statsapi` / `824752`, scheduled `2026-06-12T23:10:00Z`.
+- `d1f3423e-f36b-1410-8162-00373db4b724`: `mlb_statsapi` / `824826`, scheduled `2026-06-12T23:05:00Z`.
+
+### reconcile decision
+
+No trusted final outcome source was used because none of the games had reached scheduled start. Reconcile calls submitted: 0. Outcomes recorded: 0. Evaluations recorded: 0. New correct/incorrect/inconclusive counts: 0/0/0. No NoMatch, MultipleMatches, or NotEvaluable result was produced in this follow-up because no request was sent; the pre-start state should not be converted into a synthetic non-final test.
+
+### evaluator notes
+
+`RunEvaluator` was not invoked. The Yankees/Blue Jays candidate still carries the known null-lean caveat and may become inconclusive after a real final result is reconciled.
+
+### files changed
+
+- `dai-vault/04 Products/sports-v1/stage-0-true-calibration-candidate-capture-v1.md`
+- `dai-vault/04 Products/sports-v1/manual-stage-0-reconciliation-seed-v1.md`
+- `dai-vault/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md`
+- `dai-vault/06 Execution/handoffs/current-slice.md`
+- `dai`: none.
+
+status: Stage 0 Outcome Reconciliation Follow-Up v1 complete 2026-06-12 -- wait-only; all four candidates remain unreconciled because every scheduled start was still in the future at DB time 14:45Z. Internal Calibration Read Surface v1 remains not ready. Next: rerun settlement follow-up after the games are final, reconcile exact provider keys, then consider the internal read surface.

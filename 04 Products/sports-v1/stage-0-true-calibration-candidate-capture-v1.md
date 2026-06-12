@@ -138,3 +138,72 @@ After each game is final:
 7. Append the result and any friction to this file or a follow-up Stage 0 settlement note.
 
 Do not build the internal calibration read surface until at least a small non-trivial set of these pending candidates has settled and been reconciled into real `AgentRunEvaluations`.
+
+---
+
+## Outcome Reconciliation Follow-Up v1
+
+**execution date:** 2026-06-12
+**status:** checked against local/dev; no reconciliation performed because none of the four candidates had reached scheduled start yet. no outcome was fabricated and no non-final probe was posted.
+
+### Environment Recheck
+
+- `dai` preflight: clean at `f02b307`.
+- `dai-vault` preflight: clean with `6b47130` present at HEAD; commit was still ahead of origin and not pushed.
+- API `GET /api/competitions` returned 200 on `http://localhost:5007`.
+- dev bypass config still shows `Dev:EnableBypassAuth=true`, `Dev:TenantKey=1`, `Dev:UserKey=1`.
+- DB confirmed as local `devcore` inside `devcore-sql`; DB UTC clock was `2026-06-12 14:45:03Z`.
+- required migrations confirmed in `__EFMigrationsHistory`: `AddAgentRunGameIdentity` and `ExpandOutcomeStatusTaxonomy`.
+
+### Candidate Pre-State
+
+The local artifact endpoint was used as the safe read path after the expanded SQL candidate query was rejected by the approval review. Every candidate still returned a completed artifact with the expected identity fields. Every `GET /api/agent-runs/{id}/evaluation` returned 404, so no candidate evaluation existed at follow-up time.
+
+| AgentRunId | provider key | scheduled start | pre-state | evaluation |
+|---|---|---|---|---|
+| `c1f3423e-f36b-1410-8162-00373db4b724` | `odds_api` / `6cc5c3b9cfcb1d94bed9f3ca972b3114` | 2026-06-14T00:40:00Z | identity present; completed | 404 |
+| `c3f3423e-f36b-1410-8162-00373db4b724` | `mlb_statsapi` / `822803` | 2026-06-12T23:37:00Z | identity present; completed | 404 |
+| `caf3423e-f36b-1410-8162-00373db4b724` | `mlb_statsapi` / `824752` | 2026-06-12T23:10:00Z | identity present; completed | 404 |
+| `d1f3423e-f36b-1410-8162-00373db4b724` | `mlb_statsapi` / `824826` | 2026-06-12T23:05:00Z | identity present; completed | 404 |
+
+### Settlement Decision
+
+No candidate was eligible for final reconciliation:
+
+- current DB time: `2026-06-12T14:45:03Z`.
+- earliest candidate scheduled start: `2026-06-12T23:05:00Z`.
+- NBA candidate scheduled start: `2026-06-14T00:40:00Z`.
+
+Because the system clock was before scheduled start for every candidate, there was no possible trusted final result to record. No final-score source was consulted or used, and no reconcile payload was sent. MLB future source references remain the exact statsapi gamePks; NBA still requires a trusted auditable final source after its scheduled game.
+
+### Reconcile Summary
+
+| candidate | reconcile attempted | matcher result | outcome recorded | evaluation recorded | reason |
+|---|---|---|---|---|---|
+| Knicks at Spurs | no | none | no | no | pre-start |
+| Yankees at Blue Jays | no | none | no | no | pre-start |
+| Rangers at Red Sox | no | none | no | no | pre-start |
+| Padres at Orioles | no | none | no | no | pre-start |
+
+New Stage 0 evaluation count from this follow-up:
+
+| evalStatus | count |
+|---|---:|
+| correct | 0 |
+| incorrect | 0 |
+| inconclusive | 0 |
+
+### Matcher Findings
+
+- `SingleMatch`: not attempted; no final candidate.
+- `NoMatch`: not attempted.
+- `MultipleMatches`: not attempted; no duplicate-resolution decision was needed.
+- `NotEvaluable`: not posted intentionally; the games were pre-start rather than settled non-final.
+
+### Evaluator Observations
+
+`RunEvaluator` was not invoked. The Yankees/Blue Jays run still has no directional lean value in the captured candidate report, so a later final reconciliation may produce an inconclusive evaluation; that remains expected and should not be treated as an evaluator defect.
+
+### Read Surface Readiness
+
+Internal Calibration Read Surface v1 is still not ready. This follow-up produced zero reconciled outcomes and zero new evaluations. The next attempt should run only after the scheduled games have actually settled and should use trusted final sources for the exact provider keys above.

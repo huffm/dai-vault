@@ -294,3 +294,45 @@ Identity capture shipped at the code level (Stable Game Identity Capture v1, MLB
 ## Whether Internal Calibration Read Surface v1 is ready next
 
 Still not ready. The environment is now proven (DB up, migrations applied, endpoint validated live), but no reconciled calibration evidence exists. Updated sequence: (1) DONE -- bring up dev DB, apply migrations, validate the reconcile endpoint live; (2) generate a small batch of fresh identity-bearing NBA/MLB runs via the normal analyzer path (model spend) for games about to play; (3) after they settle, reconcile them through `/reconcile` with trusted sources to seed real correct/incorrect evaluations; (4) only then build Internal Calibration Read Surface v1. Step (2) is the first model-spend action and should be an explicit, budgeted next slice.
+
+---
+
+# Execution: Stage 0 Outcome Reconciliation Follow-Up v1
+
+**execution date:** 2026-06-12
+**status:** local/dev follow-up performed too early to reconcile. no `POST /api/agent-runs/reconcile` calls were submitted. no outcomes or evaluations were written. no final results were fabricated.
+**classification:** wait-only, no evidence produced.
+
+## Candidate check
+
+The four identity-bearing candidates from Stage 0 True Calibration Candidate Capture v1 were checked through local API artifact/evaluation reads. All four still had the expected provider key and completed artifact state; every evaluation endpoint returned 404.
+
+## Settlement status
+
+DB UTC time was `2026-06-12 14:45:03Z`, before all four scheduled starts:
+
+- Padres at Orioles: `2026-06-12T23:05:00Z`
+- Rangers at Red Sox: `2026-06-12T23:10:00Z`
+- Yankees at Blue Jays: `2026-06-12T23:37:00Z`
+- Knicks at Spurs: `2026-06-14T00:40:00Z`
+
+Because all games were pre-start, no trusted final result source was available or used.
+
+## Outcomes attempted / recorded
+
+- reconcile payloads submitted: 0.
+- outcomes recorded: 0.
+- evaluations recorded: 0.
+- correct / incorrect / inconclusive added by this follow-up: 0 / 0 / 0.
+
+## Matcher findings
+
+No `NoMatch`, `MultipleMatches`, or `NotEvaluable` findings were produced in this follow-up because no reconcile request was sent. This avoids turning a pre-start game into a synthetic non-final test. The previously documented plumbing-only `NoMatch` and `NotEvaluable` probes remain the only live matcher classification probes in this runbook.
+
+## Evaluator observations
+
+The evaluator was not invoked. The expected future caveat remains: the Yankees/Blue Jays run has no directional lean, so a later final outcome may evaluate inconclusive.
+
+## Recommendation
+
+Internal Calibration Read Surface v1 is still not ready. Run the follow-up again only after the games have settled, then reconcile the exact provider keys through `/api/agent-runs/reconcile` with trusted final sources.
