@@ -7799,3 +7799,19 @@ Recommendation: WAIT -- no Discern code change before reconciled-outcome evidenc
 Files changed: `04 Products/sports-v1/discern-improvement-review-v1.md` (new); `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` (entry 16 review note); this addendum. `dai`: none.
 
 status: Discern Improvement Review v1 complete 2026-06-12 -- docs only, no runtime/test/prompt/schema/buyer change. Next overall remains: rerun the Stage 0 settlement follow-up after the four candidate games are final, reconcile exact provider keys, then build Internal Calibration Read Surface v1.
+
+---
+
+## addendum: Discern Locus and Contract Clarification v1 (2026-06-12)
+
+Docs/contract-only follow-up to Discern Improvement Review v1 (93a6f81). Created `04 Products/sports-v1/discern-locus-and-contract-clarification-v1.md`.
+
+Delivered: (1) a five-layer Discern locus map separating model-emitted `DiscernProtocol` prose, deterministic grading under signal plumbing (`SignalQualityEvaluator`/`SignalFollowUpEvaluator`/`SportsEvaluator`), approximating artifact fields, the buyer projection (`watch_for` / `DiscernProtocolView`), the dormant `DiscernStationRunner`/`ProbeRefreshDiscernReweigh`, and docs-only doctrine; (2) Weigh/Contrast/Stress ownership with gaps and deferrals; (3) a paper-only `DiscernAssessment` Discern->Decide contract shape -- NOT implemented in code -- whose fields each map to concepts that already flow informally today (block_aggressive_posture, fallback-ladder ConfidencePermission/PosturePermission, ConfidenceBand, follow-up records); (4) Interrogate boundary ("Interrogate names candidates, Discern grades them"; Discern never collects or refreshes sources) and Decide boundary (Discern constrains/informs the stance, never chooses it; final confidence stays platform-owned); (5) a reconciliation-gated calibration-feedback plan.
+
+Deferred (unchanged): runner activation, deterministic Contrast helper, implementing the contract type, prompt/Stress-move, model calls, buyer copy, confidence/posture/lean tuning, evaluator changes, ConfidencePermission/PosturePermission wiring, generalizing ProbeRefreshDiscernReweigh, calibration read surface, dashboards.
+
+Future Discern slices proposed (at most 2): Discern Assessment Contract v1 (dormant code type only, only if a producer/consumer appears); Discern Contrast Characterization v1 (tests/design only, after real evaluations exist).
+
+Files changed: `04 Products/sports-v1/discern-locus-and-contract-clarification-v1.md` (new); `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` (entry 16 clarification note); this addendum. `dai`: none.
+
+status: Discern Locus and Contract Clarification v1 complete 2026-06-12 -- docs/contract only, no runtime/test/prompt/schema/buyer/confidence/posture/lean/evaluator/reconciliation change, contract type not implemented. Ledger entry 16 stays Deferred. Next overall remains: after the four Stage 0 candidate games are final, reconcile exact provider keys via /api/agent-runs/reconcile, then build Internal Calibration Read Surface v1; a Discern code slice waits on reconciled-outcome evidence.
