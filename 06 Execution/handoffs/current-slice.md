@@ -7785,3 +7785,17 @@ No trusted final outcome source was used because none of the games had reached s
 - `dai`: none.
 
 status: Stage 0 Outcome Reconciliation Follow-Up v1 complete 2026-06-12 -- wait-only; all four candidates remain unreconciled because every scheduled start was still in the future at DB time 14:45Z. Internal Calibration Read Surface v1 remains not ready. Next: rerun settlement follow-up after the games are final, reconcile exact provider keys, then consider the internal read surface.
+
+---
+
+## addendum: Discern Improvement Review v1 (2026-06-12)
+
+Docs-only review run during the wait window before Stage 0 calibration candidates settle (Internal Calibration Read Surface v1 intentionally NOT built). Reviewed the Discern stage (Weigh, Contrast, Stress) and whether it needs improvement now.
+
+Findings: the live Discern surface is split across three layers the name does not match -- model-emitted `DiscernProtocol.Weigh/Contrast/Stress` prose (passed through, registry `ExecutionOwner.Model`), the deterministic evidence-grading surface doctrine assigns to Discern.Weigh but that lives under signal plumbing (`SignalQualityEvaluator`/`SignalFollowUpEvaluator`/fallback ladder/`SportsEvaluator`), and one buyer-visible field (`watch_for` <- `discern.stress` = "What Could Change the Read"). `DiscernStationRunner` and `ProbeRefreshDiscernReweigh` are both dormant with no production caller.
+
+Recommendation: WAIT -- no Discern code change before reconciled-outcome evidence exists; Discern grades evidence weight and cannot be validated without outcomes. Only safe near-term work is docs/contract only (proposed Discern Locus and Contract Clarification v1). Progressed ledger entry 16 (still Deferred); resolved nothing.
+
+Files changed: `04 Products/sports-v1/discern-improvement-review-v1.md` (new); `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` (entry 16 review note); this addendum. `dai`: none.
+
+status: Discern Improvement Review v1 complete 2026-06-12 -- docs only, no runtime/test/prompt/schema/buyer change. Next overall remains: rerun the Stage 0 settlement follow-up after the four candidate games are final, reconcile exact provider keys, then build Internal Calibration Read Surface v1.
