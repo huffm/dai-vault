@@ -7690,3 +7690,56 @@ no runtime code changed -> no test suites run (dai-test-discipline). git diff --
 Identity-Bearing Run Seeding for Stage 0 v1 (first model-spend action): generate a small capped batch of fresh NBA/MLB runs via the analyzer for games about to play, let them settle, reconcile through /reconcile with trusted provider sources, then build Internal Calibration Read Surface v1. Internal Calibration Read Surface v1 remains NOT ready (no reconciled evidence yet).
 
 status: Manual Stage 0 Reconciliation Execution v1 complete 2026-06-12 -- environment proven (dev DB up, migrations applied, reconcile endpoint validated live with NoMatch + NotEvaluable writing nothing), but no calibration sample produced because zero runs carry identity. Plumbing-only; nothing fabricated. Next: seed fresh identity-bearing runs (model spend), settle, reconcile, THEN the read surface.
+
+---
+
+## addendum: Stage 0 True Calibration Candidate Capture v1 (2026-06-12)
+
+**slice:** Stage 0 True Calibration Candidate Capture v1
+**status:** complete -- candidate capture only. local/dev DB/API/FastAPI ready; four identity-bearing pre-settlement candidates captured; no outcomes, no evaluations, no reconciliation, no calibration read surface. vault-only docs update; no runtime code change.
+**skills gate:** already completed before this continuation. respected continuation constraints: did not restart, did not reconcile outcomes, did not build the read surface, did not edit runtime code.
+
+### preflight
+
+`dai` had no tracked diffs and only the expected scratch scripts (`.probe.ps1`, `.waitready.ps1`, `.upcoming.ps1`, `.mlb.ps1`, `.gen.ps1`). `dai-vault` was clean and ahead 1. Existing commit heads before this docs update: `dai` f02b30737cbc03b1de4c6b825f3ac3bd24771a96; `dai-vault` f243cc846d2f1ec43c8e8e0eff83c386b64ebd0f.
+
+### environment + readiness
+
+Local/dev only. API `GET /api/competitions` returned 200 on `http://localhost:5007`; FastAPI `GET /api/ping` returned `status=ok` on `http://127.0.0.1:8000`; SQL Server was confirmed inside the local `devcore-sql` container against database `devcore`. Required migrations `AddAgentRunGameIdentity` and `ExpandOutcomeStatusTaxonomy` were present in `__EFMigrationsHistory`.
+
+### baseline + spend
+
+Baseline carried forward: 115 runs, 0 identity-bearing. After capture: 119 runs, 4 identity-bearing. Model-spend count for the slice is 4 analyzer runs total (1 NBA from Claude + 3 MLB from Codex), under the max 6 cap. No additional analyzer calls were made after this resumed validation found the planned MLB rows already present.
+
+### candidates
+
+NBA candidate revalidated from DB:
+
+- `c1f3423e-f36b-1410-8162-00373db4b724` -- New York Knicks at San Antonio Spurs, gameDate 2026-06-13, created 2026-06-12T14:16:30.0664878Z, `SourceProvider=odds_api`, `ExternalGameId=6cc5c3b9cfcb1d94bed9f3ca972b3114`, scheduled 2026-06-14T00:40:00Z, season 2025-26, refs `san-antonio-spurs` / `new-york-knicks`, leanSide home, posture monitor, confidence 0.675, evidenceRichness 2, artifact `sports_decision_artifact_v3`, outcomes/evaluations 0/0.
+
+MLB upcoming was re-queried and the selected games were present in the upcoming set. MLB candidates generated through the normal analyzer path:
+
+- `c3f3423e-f36b-1410-8162-00373db4b724` -- New York Yankees at Toronto Blue Jays, gameDate 2026-06-12, created 2026-06-12T14:19:29.2690242Z, `SourceProvider=mlb_statsapi`, `ExternalGameId=822803`, scheduled 2026-06-12T23:37:00Z, season 2026, refs `toronto-blue-jays` / `new-york-yankees`, leanSide null, posture wait, confidence 0.375, evidenceRichness 0, artifact v3, outcomes/evaluations 0/0.
+- `caf3423e-f36b-1410-8162-00373db4b724` -- Texas Rangers at Boston Red Sox, gameDate 2026-06-12, created 2026-06-12T14:19:35.4700842Z, `SourceProvider=mlb_statsapi`, `ExternalGameId=824752`, scheduled 2026-06-12T23:10:00Z, season 2026, refs `boston-red-sox` / `texas-rangers`, leanSide home, posture monitor, confidence 0.75, evidenceRichness 1, artifact v3, outcomes/evaluations 0/0.
+- `d1f3423e-f36b-1410-8162-00373db4b724` -- San Diego Padres at Baltimore Orioles, gameDate 2026-06-12, created 2026-06-12T14:19:43.1961044Z, `SourceProvider=mlb_statsapi`, `ExternalGameId=824826`, scheduled 2026-06-12T23:05:00Z, season 2026, refs `baltimore-orioles` / `san-diego-padres`, leanSide home, posture monitor, confidence 0.75, evidenceRichness 1, artifact v3, outcomes/evaluations 0/0.
+
+### validation
+
+All four rows are completed, identity-bearing, under TenantKey/UserKey 1/1, and have complete identity columns. Duplicate `(SourceProvider, ExternalGameId)` query returned no groups. Candidate outcome rows = 0 and candidate evaluation rows = 0. No buyer files changed and no runtime behavior changed.
+
+### classification
+
+The four rows are true pending calibration candidates because they were generated before scheduled start and carry stable identity. The Yankees/Blue Jays row has `LeanSide=null`, so it may only produce an inconclusive evaluation later; keep it in the capture set but do not overstate its calibration value. No plumbing-only runs are counted as candidates.
+
+### follow-up
+
+After settlement, reconcile these exact provider keys through `POST /api/agent-runs/reconcile` with trusted result sources and matching tenant. Validate one outcome + one evaluation per SingleMatch. Do not build Internal Calibration Read Surface v1 until real reconciled evaluations exist. Scratch `.ps1` files were removed from `dai` after validation.
+
+### files changed
+
+- `dai-vault/04 Products/sports-v1/stage-0-true-calibration-candidate-capture-v1.md` (new report)
+- `dai-vault/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` (entry 25 progression)
+- `dai-vault/06 Execution/handoffs/current-slice.md` (this addendum)
+- `dai`: no runtime file changes; scratch files removed after validation.
+
+status: Stage 0 True Calibration Candidate Capture v1 complete 2026-06-12 -- four identity-bearing pending candidates captured and validated; zero candidate outcomes/evaluations; duplicate keys none; tenant aligned; model spend 4/6. Next: wait for settlement, reconcile, then build the read surface.
