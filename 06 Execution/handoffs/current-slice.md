@@ -7607,3 +7607,49 @@ Entry 25 progressed: matcher + taxonomy built; this begins producing the reconci
 - <DAI_VAULT_ROOT>: one docs commit. Hash in final response. Not pushed.
 
 status: Outcome Reconciliation Matcher v1 complete 2026-06-12. Settled outcomes can now be deterministically matched to identity-bearing runs on (SourceProvider, ExternalGameId) and a single final match records an outcome+evaluation through the existing evaluator path; non-single and non-final results write nothing. Internal/manual only -- no settlement provider, no scheduled jobs, no buyer-visible track record. 659 .NET + 47 Vitest pass; one minimal check-constraint migration. Next: internal calibration read surface, and begin manual Stage 0 reconciliation via the reconcile endpoint.
+
+---
+
+## addendum: Manual Stage 0 Reconciliation Seed v1 (2026-06-12)
+
+**slice:** Manual Stage 0 Reconciliation Seed v1
+**status:** complete -- runbook only. docs-only commit in dai-vault; no code, no schema, no runtime change in dai. no sample fabricated.
+**skills gate:** dai-skill-router run. selected + applied: dai-skill-router, dai-grill-with-vault (contract/path grill), dai-test-discipline (no code -> no broad suites), dai-token-tight, dai-agent-handoff, superpowers:verification-before-completion. not selected: superpowers:test-driven-development (no code change), superpowers:systematic-debugging (no failures), product-ui-design-architect / dai-typescript-angular-quality (no frontend), dai-signal-follow-up-diagnostics. missing: none.
+
+### preflight
+
+Both repos clean, in sync with origin (prompt expected "ahead by 1"; already pushed last turn -- benign; f02b307 and b4d87d9 present). Reported before acting.
+
+### database guard outcome -> runbook only
+
+local/dev target `localhost,1433 / devcore`. `Test-NetConnection localhost:1433` -> False (nothing listening). `dotnet ef migrations list` could not read applied state ("error occurs while accessing the database"). Both required migrations exist in code (`20260611152737_AddAgentRunGameIdentity`, `20260612121023_ExpandOutcomeStatusTaxonomy`) but applied-state UNCONFIRMED, and the latter was recorded as never applied. Per the database guard: DB unreachable -> no sample, no fabrication, produce the runbook. Did not start the SQL container or apply migrations (out of scope to do blindly).
+
+### reconciliation path inspected (read-only, grounded in code)
+
+POST /api/agent-runs/reconcile (AgentRunsController.cs:480), tenant-scoped via IdentityResolver (real principal OR dev bypass: Development + Dev:EnableBypassAuth + Dev:TenantKey/UserKey). Body ReconcileOutcomeRequest serialized camelCase (AddControllers default). Matcher OutcomeReconciliationService.MatchAsync -> pure OutcomeReconciliationMatcher on exact (SourceProvider, ExternalGameId); SingleMatch+final writes outcome+evaluation via the shared AddOutcomeAndEvaluation helper; 409 if already reconciled; non-single/non-final write nothing. Final statuses home_win/away_win/draw; non-final cancelled/postponed/suspended/void/unknown. Tables AgentRuns / AgentRunOutcomes / AgentRunEvaluations; RunEvaluator unchanged.
+
+### runbook produced
+
+`04 Products/sports-v1/manual-stage-0-reconciliation-seed-v1.md`: env bring-up + migration-apply steps, exact match key, sample selection rules, read/candidate/duplicate SQL, endpoint + dev-bypass auth, camelCase payload + placeholder example, post-reconcile validation SQL, friction-log template, source-reliability + evaluator notes, Stage 0 completion criteria, and the readiness recommendation.
+
+### key findings (structural friction, no code change warranted)
+
+tenant-scoping (seed runs must own Dev:TenantKey or reconcile returns NoMatch); result source is manual/out-of-band (operator-supplied source/sourceRef, unverified); MultipleMatches has no resolution path yet; ExpandOutcomeStatusTaxonomy must be applied before any non-final status can be recorded; runs with null LeanSide evaluate inconclusive (prefer non-null lean in the sample). No evaluator bug found.
+
+### verification
+
+no code changed -> no test suites run (dai-test-discipline). git diff --check clean (vault). dai working tree: no changes (runtime untouched). docs ascii scan clean. zero diffs under dai apps/ services/ platform/.
+
+### files changed
+
+- dai-vault/04 Products/sports-v1/manual-stage-0-reconciliation-seed-v1.md (new runbook)
+- dai-vault/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md (entry 25)
+- dai-vault/06 Execution/handoffs/current-slice.md (this addendum)
+- dai: none.
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: clean, unchanged. No commit. Not pushed.
+- <DAI_VAULT_ROOT>: one docs commit. Hash in final response. Not pushed.
+
+status: Manual Stage 0 Reconciliation Seed v1 complete 2026-06-12 -- runbook only (dev DB unreachable; no sample fabricated). Precise, code-grounded Stage 0 runbook shipped; ledger entry 25 records the attempt and structural friction. No code/schema/runtime change. Next: bring up dev DB + apply migrations, execute the runbook to seed real evaluations, THEN Internal Calibration Read Surface v1 (not ready until evidence exists).
