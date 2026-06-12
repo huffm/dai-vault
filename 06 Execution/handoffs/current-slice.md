@@ -7548,3 +7548,62 @@ Entry 25 progressed: MLB identity gap closed; both buyer-ready sports (NBA, MLB)
 - skills layer: untouched this slice.
 
 status: MLB Game Identity Capture v1 complete 2026-06-11. MLB runs now persist (mlb_statsapi, gamePk) + scheduled start + season + team refs at generation time, even when starters are unannounced; identity coverage now spans both buyer-ready sports. 637 .NET tests + 47 Vitest pass; no migration; OutputJson and buyer surfaces unchanged. Next: Outcome Reconciliation Runtime v1 (matcher + taxonomy + thin settlement), and begin manual Stage 0 reconciliation.
+
+---
+
+## addendum: Outcome Reconciliation Matcher v1 (2026-06-12)
+
+**slice:** Outcome Reconciliation Matcher v1
+**status:** complete. narrow platform matcher + one minimal EF migration + tests in `dai`; report/ledger/handoff in `dai-vault`. no OutputJson change, no buyer-facing change, no settlement provider, no scheduled job, no calibration change.
+**skills gate:** dai-skill-router run. selected + applied: dai-skill-router, superpowers:test-driven-development, dai-test-discipline (bounded ladder), dai-grill-with-vault (contract grill), dai-token-tight, superpowers:verification-before-completion, dai-agent-handoff. not selected: product-ui-design-architect / dai-typescript-angular-quality (no frontend), dai-signal-follow-up-diagnostics (no signal diagnostics), superpowers:writing-plans (used inline grill plan instead -- declared), dai-write-skill. missing: none.
+
+### preflight
+
+Both repos clean and in sync with origin (the prompt expected "ahead by 4"; they were already pushed last turn at the user's request -- benign, all expected commits 531c2e6 / 62b7197 present). Reported before changing files.
+
+### what existed vs what was missing
+
+Existed (reused, not duplicated): AgentRunOutcome/AgentRunEvaluation, RunEvaluator, per-run POST /outcome (writes outcome+eval, one-per-run 409), OutcomeStatuses + check constraint. Missing: the reverse (provider,id)->run matcher; settlement states suspended/void/unknown; an evaluability classifier.
+
+### design
+
+Canonical key `(SourceProvider, ExternalGameId)`, exact equality, no name fallback, null-identity never matched. Pure `OutcomeReconciliationMatcher` -> NotEvaluable/NoMatch/SingleMatch/MultipleMatches (evaluability checked first). Db-backed `OutcomeReconciliationService.MatchAsync` (read-only; SQL equality excludes null rows). `OutcomeStatuses` += Suspended/Void/Unknown + `FinalSettlement`/`IsFinalSettlement`. New internal `POST /api/agent-runs/reconcile`: NotEvaluable/NoMatch/MultipleMatches write nothing (MultipleMatches surfaced for review, never picks); SingleMatch records outcome+evaluation via a shared `AddOutcomeAndEvaluation` helper extracted from RecordOutcome (per-run behavior preserved). One minimal migration expands the check constraint only.
+
+### tests (TDD, red before green)
+
+- OutcomeReconciliationMatcherTests (new, 13): single/no/multiple; legacy-null ignored; all five non-final NotEvaluable; all three final evaluable.
+- AgentRunsControllerTests (9 new): single match records outcome+eval (correct verdict); non-final writes nothing (postponed + suspended/void/unknown/cancelled); no match; multiple matches writes nothing and does not pick; legacy-null ignored. Existing record_outcome* unchanged.
+
+### verification (final, declared)
+
+full .NET suite 659 passed / 0 failed (+22 vs 637); solution build succeeded; npm test 47/47; ng build emitted bundle; zero diffs under apps/ and services/; git diff --check clean; single migration ExpandOutcomeStatusTaxonomy; added-line ascii scan clean; OutputJson/prompt/parser/confidence/posture/lean/cost unchanged.
+
+### migration
+
+`20260612121023_ExpandOutcomeStatusTaxonomy` -- drop+recreate CK_AgentRunOutcomes_OutcomeStatus with home_win/away_win/draw/cancelled/postponed/suspended/void/unknown; clean Down. No table/column/index change. Not applied to the dev db this slice (apply via dotnet ef database update).
+
+### ledger
+
+Entry 25 progressed: matcher + taxonomy built; this begins producing the reconciled-outcome evidence entry 12 is gated on. Settlement provider, scheduled/bulk settlement, MultipleMatches auto-evaluation, buyer-visible track record, and calibration threshold changes remain deferred. Display-name fallback is forbidden, not deferred.
+
+### files changed
+
+- dai/platform/dotnet/DevCore.Api/AgentRuns/AgentRunContracts.cs (taxonomy + reconcile DTOs)
+- dai/platform/dotnet/DevCore.Api/AgentRuns/OutcomeReconciliationMatcher.cs (new, pure)
+- dai/platform/dotnet/DevCore.Api/AgentRuns/OutcomeReconciliationService.cs (new, db-backed)
+- dai/platform/dotnet/DevCore.Api/Controllers/AgentRunsController.cs (shared write helper + reconcile endpoint)
+- dai/platform/dotnet/DevCore.Api/Program.cs (DI registration)
+- dai/platform/dotnet/DevCore.Data/AppDbContext.cs (check constraint)
+- dai/platform/dotnet/DevCore.Data/Migrations/20260612121023_ExpandOutcomeStatusTaxonomy.cs (+ Designer, + snapshot)
+- dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/OutcomeReconciliationMatcherTests.cs (new)
+- dai/platform/dotnet/DevCore.Api.Tests/Integration/AgentRunsControllerTests.cs (reconcile tests)
+- dai-vault/04 Products/sports-v1/outcome-reconciliation-matcher-v1.md (new report)
+- dai-vault/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md (entry 25)
+- dai-vault/06 Execution/handoffs/current-slice.md (this addendum)
+
+### final git status / commits / push
+
+- <DAI_REPO_ROOT>: one code commit. Hash in final response. Not pushed.
+- <DAI_VAULT_ROOT>: one docs commit. Hash in final response. Not pushed.
+
+status: Outcome Reconciliation Matcher v1 complete 2026-06-12. Settled outcomes can now be deterministically matched to identity-bearing runs on (SourceProvider, ExternalGameId) and a single final match records an outcome+evaluation through the existing evaluator path; non-single and non-final results write nothing. Internal/manual only -- no settlement provider, no scheduled jobs, no buyer-visible track record. 659 .NET + 47 Vitest pass; one minimal check-constraint migration. Next: internal calibration read surface, and begin manual Stage 0 reconciliation via the reconcile endpoint.
