@@ -7653,3 +7653,40 @@ no code changed -> no test suites run (dai-test-discipline). git diff --check cl
 - <DAI_VAULT_ROOT>: one docs commit. Hash in final response. Not pushed.
 
 status: Manual Stage 0 Reconciliation Seed v1 complete 2026-06-12 -- runbook only (dev DB unreachable; no sample fabricated). Precise, code-grounded Stage 0 runbook shipped; ledger entry 25 records the attempt and structural friction. No code/schema/runtime change. Next: bring up dev DB + apply migrations, execute the runbook to seed real evaluations, THEN Internal Calibration Read Surface v1 (not ready until evidence exists).
+
+---
+
+## addendum: Manual Stage 0 Reconciliation Execution v1 (2026-06-12)
+
+**slice:** Manual Stage 0 Reconciliation Execution v1 (continuation after a Cloudflare 522 interruption mid-session)
+**status:** executed against local/dev. environment now ready; reconcile endpoint validated live. NO calibration sample produced -- blocked on zero identity-bearing runs. docs-only in dai-vault; a local dev db migration was applied (not a repo change). no sample fabricated.
+**skills gate:** dai-skill-router run (continuation). selected + applied: dai-skill-router, dai-grill-with-vault, dai-test-discipline, dai-token-tight, superpowers:verification-before-completion, dai-agent-handoff. conditional systematic-debugging not needed (DB came up cleanly); conditional test-driven-development not needed (no code change). missing: none.
+
+### preflight after resuming
+Both repos clean, no files changed during the interruption. DAI at f02b307; vault at b7825f4, level with origin.
+
+### environment + DB + migrations
+local/dev unambiguous (`localhost,1433 / devcore`, container `devcore-sql`, dev bypass TenantKey=1). Prior blocker resolved: port now reachable, container up. Both required migrations were pending; applied all 3 pending via `dotnet ef database update --project platform/dotnet/DevCore.Data --startup-project platform/dotnet/DevCore.Api` (AddProbeRefreshMergeAuditStore, AddAgentRunGameIdentity, ExpandOutcomeStatusTaxonomy). Confirmed present in `__EFMigrationsHistory`; check constraint now carries suspended/void/unknown.
+
+### API + live reconcile validation (model-free)
+Started platform api only (`dotnet run ... --launch-profile http`, :5007); reconcile needs only DB, not FastAPI/model. `GET /api/competitions` 200. Two non-writing probes through `POST /api/agent-runs/reconcile` (camelCase, dev bypass): NoMatch (nonexistent key, final status) and NotEvaluable (non-final `postponed`) -- both returned the expected classification and wrote nothing (outcomes/evaluations 8 -> 8). API stopped cleanly after.
+
+### candidate data (decisive blocker)
+115 runs total; **identity-bearing = 0** (all SourceProvider/ExternalGameId/ScheduledStartUtc null; 59 null-comp, 27 mlb, 27 nba, 2 nfl). 8 pre-existing outcomes + 8 evaluations (3 correct/2 incorrect/3 inconclusive) were attached via the per-run /outcome path, not the matcher. No settled candidates, no duplicate-key groups, no SingleMatch reachable. Root cause: every run predates identity capture, so the matcher (exact (SourceProvider, ExternalGameId), no name fallback) NoMatches all of them.
+
+### classification
+plumbing-only (live endpoint mechanics proven). NOT a true calibration sample; nothing fabricated.
+
+### files changed
+- dai-vault/04 Products/sports-v1/manual-stage-0-reconciliation-seed-v1.md (execution section appended)
+- dai-vault/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md (entry 25 progression)
+- dai-vault/06 Execution/handoffs/current-slice.md (this addendum)
+- dai: none (runtime untouched). local dev db: 3 migrations applied (dev state, not a repo change).
+
+### verification
+no runtime code changed -> no test suites run (dai-test-discipline). git diff --check (vault) clean. dai working tree clean. docs ascii clean.
+
+### recommended next slice
+Identity-Bearing Run Seeding for Stage 0 v1 (first model-spend action): generate a small capped batch of fresh NBA/MLB runs via the analyzer for games about to play, let them settle, reconcile through /reconcile with trusted provider sources, then build Internal Calibration Read Surface v1. Internal Calibration Read Surface v1 remains NOT ready (no reconciled evidence yet).
+
+status: Manual Stage 0 Reconciliation Execution v1 complete 2026-06-12 -- environment proven (dev DB up, migrations applied, reconcile endpoint validated live with NoMatch + NotEvaluable writing nothing), but no calibration sample produced because zero runs carry identity. Plumbing-only; nothing fabricated. Next: seed fresh identity-bearing runs (model spend), settle, reconcile, THEN the read surface.

@@ -177,3 +177,120 @@ Stage 0 is complete when: at least ~5-10 real settled NBA/MLB runs have been rec
 ## Recommendation: is Internal Calibration Read Surface v1 ready next?
 
 Not yet. A read surface that aggregates AgentRunEvaluations is premature until Stage 0 has produced a real, non-trivial body of correct/incorrect evaluations -- otherwise the surface would aggregate an empty or all-inconclusive set and prove nothing. Sequence: (1) bring up the dev DB + apply migrations, (2) run this runbook to seed real evaluations and a friction log, (3) only then build Internal Calibration Read Surface v1 against actual data. If the dev DB has no settled identity-bearing runs at all, generate a few via the normal analyzer path against recently completed games first.
+
+---
+
+# Execution: Manual Stage 0 Reconciliation Execution v1
+
+**execution date:** 2026-06-12
+**status:** executed against local/dev. environment is now ready (DB up, both required migrations applied, reconcile endpoint verified live). no calibration sample produced -- blocked on the absence of identity-bearing runs. one model-free plumbing-only validation of the endpoint's non-writing paths was performed. no calibration evidence fabricated.
+**classification:** plumbing-only (live endpoint validation). NOT a true calibration sample.
+
+## Environment confirmed local/dev
+
+- connection string `Server=localhost,1433;Database=devcore` (appsettings.Development.json) -- localhost, not production.
+- SQL Server runs in the local docker container `devcore-sql` (`mcr.microsoft.com/mssql/server:2022-latest`), confirmed `Up` via `docker ps`.
+- dev auth bypass on: `Dev:EnableBypassAuth=true`, `Dev:TenantKey=1`, `Dev:UserKey=1`.
+- environment identity is unambiguous (localhost container, devcore db). guard satisfied: no production, no remote production-like database touched.
+
+## DB readiness result
+
+- `localhost,1433` reachable this session (`Test-NetConnection` -> `TcpTestSucceeded=True`) -- the prior session's blocker (port closed) is resolved; the container was already running.
+- `devcore` database present (`sys.databases`).
+- sqlcmd executed inside the container: `docker exec devcore-sql /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P <pw> -C -d devcore -Q ...`.
+
+## Migration status
+
+- before: latest applied migration was `20260425145646_AddAgentRunEvaluation`; three migrations pending, including both required ones. `AgentRuns` existed but lacked the identity columns (`SourceProvider`, `ExternalGameId`, `ScheduledStartUtc`, ...).
+- applied via the documented dev flow (runbook step 0.2):
+  `dotnet ef database update --project platform/dotnet/DevCore.Data --startup-project platform/dotnet/DevCore.Api`
+  this applied all three pending migrations: `20260605123908_AddProbeRefreshMergeAuditStore`, `20260611152737_AddAgentRunGameIdentity`, `20260612121023_ExpandOutcomeStatusTaxonomy`.
+- after: both required migrations confirmed present in `__EFMigrationsHistory`. The `CK_AgentRunOutcomes_OutcomeStatus` check constraint now includes `suspended`/`void`/`unknown`. local/dev only; no production migration.
+
+## API readiness result
+
+- started the platform api only (Development, `http` profile, `http://localhost:5007`) via `dotnet run --project platform/dotnet/DevCore.Api --launch-profile http`. the reconcile endpoint touches only the DB + matcher, so the FastAPI agent service and a funded model key were not required.
+- readiness confirmed: `GET /api/competitions` -> 200.
+- the api process was stopped cleanly after the probes (no lingering dev process).
+
+## Candidate query results
+
+| query | result |
+|---|---|
+| total AgentRuns | 115 |
+| identity-bearing (`SourceProvider` AND `ExternalGameId` not null) | **0** |
+| rows with `SourceProvider` not null | 0 |
+| rows with `ExternalGameId` not null | 0 |
+| rows with `ScheduledStartUtc` not null | 0 |
+| settled candidates (start in past, no outcome) | 0 (none can qualify -- no identity) |
+| duplicate `(SourceProvider, ExternalGameId)` groups | 0 (no identity rows to group) |
+| existing AgentRunOutcomes | 8 |
+| existing AgentRunEvaluations | 8 |
+
+competition/provider breakdown of the 115 runs: 59 null-competition, 27 mlb, 27 nba, 2 nfl -- **all with null `SourceProvider`**. the 8 pre-existing outcomes (6 mlb, 2 nba, all `Source=manual`) were attached via the per-run `POST /outcome` path, not the matcher; their evaluation tally is 3 correct / 2 incorrect / 3 inconclusive.
+
+## Candidate selection decision
+
+No selection possible. Every one of the 115 runs predates identity capture (all identity columns null), so the matcher -- which keys exactly on `(SourceProvider, ExternalGameId)` and never falls back to display names -- returns NoMatch for all of them. There are zero true calibration candidates and zero rows on which a live SingleMatch could be exercised.
+
+## True calibration candidates found
+
+None. A true calibration sample requires an identity-bearing run generated before its game settled. No run carries identity at all. No calibration evidence was produced or fabricated.
+
+## Plumbing-only candidates generated
+
+No new runs were generated (that would require model spend). Instead, the reconcile endpoint's two non-writing classifications were exercised live against the migrated DB to validate the path mechanics. This is plumbing-only and must not be counted as model-performance or calibration evidence.
+
+## Endpoint payloads used
+
+`POST http://localhost:5007/api/agent-runs/reconcile`, `Content-Type: application/json`, camelCase, dev-bypass auth (no bearer).
+
+NoMatch probe (final status, nonexistent id):
+```json
+{ "sourceProvider": "mlb_statsapi", "externalGameId": "plumbing-nomatch-0001",
+  "outcomeStatus": "home_win", "homeScore": 1, "awayScore": 0,
+  "source": "plumbing:none", "sourceRef": "stage0-plumbing", "notes": "plumbing-only nomatch probe" }
+```
+
+NotEvaluable probe (non-final status):
+```json
+{ "sourceProvider": "mlb_statsapi", "externalGameId": "plumbing-nomatch-0001",
+  "outcomeStatus": "postponed", "source": "plumbing:none", "sourceRef": "stage0-plumbing",
+  "notes": "plumbing-only noteval probe" }
+```
+
+## Outcomes attempted / recorded
+
+- attempted: 2 plumbing-only reconcile calls (both intentionally non-writing classifications).
+- recorded: 0. Neither call wrote an outcome or evaluation, by design.
+
+## Validation query results
+
+- `outcomes_before = 8`, `outcomes_after = 8`; `evaluations_after = 8`. Confirmed the endpoint wrote nothing for NoMatch and NotEvaluable -- matching the matcher contract.
+
+## NoMatch / MultipleMatches / NotEvaluable findings
+
+- **NoMatch:** observed live -> `{"matchKind":"NoMatch","matchedRunIds":[],"evaluatedRunId":null,"evalStatus":null}`. Wrote nothing.
+- **NotEvaluable:** observed live (non-final `postponed`) -> `{"matchKind":"NotEvaluable","matchedRunIds":[],"evaluatedRunId":null,"evalStatus":null}`. Wrote nothing. Confirms evaluability is checked before matching.
+- **MultipleMatches:** not reachable -- needs duplicate identity-bearing rows, of which there are zero.
+- **SingleMatch:** not reachable live -- needs at least one identity-bearing run; covered today only by the 9 in-process reconcile integration tests.
+
+## Tenant / auth friction
+
+Dev bypass resolved `TenantKey=1` cleanly; the endpoint was reachable without a bearer token. Tenant-scoping friction noted in the seed runbook is unexercised here because no candidate rows exist; it remains the most likely first trip-up once identity-bearing runs are seeded under the resolved tenant.
+
+## Source reliability notes
+
+No real outcome source was consulted -- no final scores were written, so no provider settlement was needed. The plumbing payloads use `source: "plumbing:none"` precisely to mark them as non-evidential. When real reconciliation runs, prefer the same provider that grounded the run (statsapi `gamePk` boxscore for MLB, odds-api/ESPN for NBA) and record `source`/`sourceRef` for provenance.
+
+## Evaluator observations
+
+`RunEvaluator` was not invoked (no SingleMatch). No evaluator behavior change is warranted. The pre-existing 8 evaluations (3 correct / 2 incorrect / 3 inconclusive) were produced by the per-run path before this session and are unaffected.
+
+## Root-cause of the data gap
+
+Identity capture shipped at the code level (Stable Game Identity Capture v1, MLB Game Identity Capture v1), but every run in the dev DB was generated before those slices, so the production-shaped data has zero identity coverage. The reconcile/matcher path is correct but starved of input. Stage 0 cannot produce calibration evidence until fresh identity-bearing runs are generated through the analyzer and allowed to settle.
+
+## Whether Internal Calibration Read Surface v1 is ready next
+
+Still not ready. The environment is now proven (DB up, migrations applied, endpoint validated live), but no reconciled calibration evidence exists. Updated sequence: (1) DONE -- bring up dev DB, apply migrations, validate the reconcile endpoint live; (2) generate a small batch of fresh identity-bearing NBA/MLB runs via the normal analyzer path (model spend) for games about to play; (3) after they settle, reconcile them through `/reconcile` with trusted sources to seed real correct/incorrect evaluations; (4) only then build Internal Calibration Read Surface v1. Step (2) is the first model-spend action and should be an explicit, budgeted next slice.
