@@ -7922,3 +7922,17 @@ Optional future hardening (watch item, not a slice): a runtime guard asserting `
 Files changed: `dai-vault` -- new `04 Products/sports-v1/lean-vs-leanside-contract-audit-v1.md`; ledger entry 25 note; this addendum. `dai`: none.
 
 status: Lean vs LeanSide Contract Audit v1 complete 2026-06-15 -- docs only; keep LeanSide (distinct evaluation key vs display prose); no code/schema/matcher/confidence/prompt/buyer change; no spend; outcomes/evals 12/12. Next: reconcile the 7 usable MLB runs after settlement via the proven statsapi path. Nothing pushed.
+
+---
+
+## addendum: Reconcile 7 Usable MLB Stage 0 Runs v1 -- wait-only (2026-06-15)
+
+Reconciliation blocked on settlement. At execution (`2026-06-15 18:18Z`) all 7 target games are pre-start: StatsAPI `abstractGameState = Preview/Scheduled` for gamePks 823452/822724/824505/824666/824181/825071/823938; earliest start 22:40Z, latest 02:10Z next day. Per the boundary (confirm Final before reconciling) and the no-fabrication rule, no `POST /api/agent-runs/reconcile` was sent and no non-final probe was posted.
+
+Pre-state: `dai` clean on `main` ahead 1; `dai-vault` ahead 5. Services: API `:5007` 200, `devcore-sql` `:1433` open (FastAPI not needed -- no spend). Outcomes/evals unchanged 12/12. No identity/tenant/source/matcher issue surfaced -- timing only.
+
+Result: 0 reconciled, correct 0 / incorrect 0 / inconclusive 0. Reconciled directional sample stays at 3 (2 correct/1 incorrect from the first reconciliation slice). 3 null-lean runs intentionally excluded from directional calibration. Sample remains too small for threshold changes (entry 12 gated).
+
+Files changed: `dai-vault` -- new `04 Products/sports-v1/reconcile-7-usable-mlb-stage-0-runs-v1.md`; ledger entry 25 wait-only note; this addendum. `dai`: none.
+
+status: Reconcile 7 Usable MLB Stage 0 Runs v1 wait-only 2026-06-15 -- all 7 games pre-start, no reconciliation, no writes (12/12), no code/spend. Next: rerun this exact reconciliation after settlement (~2026-06-16 05:30Z) with StatsAPI finals through the proven path. Nothing pushed.
