@@ -7885,3 +7885,21 @@ Run report: `04 Products/sports-v1/budgeted-mlb-stage-0-generation-v1.md`. Per-r
 Files changed: new run report; ledger entry 25 generation note; this addendum; 10 generated artifact JSONs + 1 calibration report under the vault calibration folder. `dai`: none (no code/schema/test change).
 
 status: Budgeted MLB Stage 0 Generation v1 complete 2026-06-15 -- 10 identity-bearing MLB runs generated (7 directionally usable), all pending settlement, no reconciliation, no code/schema/matcher/identity/confidence/buyer change. Entry 12 still gated. Next: reconcile the 7 usable runs after tonight's games settle via the proven statsapi `POST /api/agent-runs/reconcile` path; WNBA Support Setup v1 only if intentionally adding WNBA. Nothing pushed.
+
+---
+
+## addendum: Directional Lean Contract v1 (2026-06-15)
+
+Audited whether the analyzer conflates "wait/no-action" with "no directional lean", and fixed one read-projection defect. No model spend, no regeneration, no outcomes/evals written. Pre-state: `dai` clean on `main` 0/0; `dai-vault` ahead 3.
+
+Mechanism audit (side flows intact): the model emits a structured `lean_side` (home/away/null) separate from prose `lean` and from posture (`sports_analyzer.py` prompt + `_parse_response`); preserved through `SportsComposer.cs:47` -> `AgentRunsController.cs:102` -> `AgentRun.LeanSide`. No posture/confidence gate erases it. The 3 null-lean MLB runs are **true non-evaluable model abstentions** (2e03433e/3603433e: zero grounded signals, priors-only; 4203433e: starting_pitching grounded but directionally empty -- unknown handedness), not improper abstentions. Premise that the system conflates no-action with no-lean is false at the contract/persistence layer.
+
+Single defect: `AgentRunArtifactDto`/`GetArtifact` projected prose `Lean` but dropped structured `LeanSide`, so the calibration export showed no side at all (the prior slice's flagged inconsistency). Fixed additively (read-only DTO field + projection). No prompt/schema/matcher/confidence/posture/buyer change. Deferred (operator doctrine, not a bug): whether priors-only games should orient on priors rather than abstain.
+
+Code: `AgentRunContracts.cs` (`AgentRunArtifactDto` += `LeanSide`); `AgentRunsController.cs` (`GetArtifact` projects `artifact.LeanSide`). Tests: existing artifact test asserts `dto.LeanSide=="home"`; new `artifact_endpoint_projects_null_lean_side_for_non_evaluable_run` asserts null passthrough.
+
+Verification: TDD red (test project failed to compile -- no `LeanSide`) -> green; artifact+matcher 54/54; full `DevCore.Api.Tests` **660/660** (matcher + identity green); no-spend live smoke `leanSide=home`/`null` on real generated runs; outcomes/evals unchanged 12/12.
+
+Files changed: `dai` -- AgentRunContracts.cs, AgentRunsController.cs, AgentRunsControllerTests.cs. `dai-vault` -- new `04 Products/sports-v1/directional-lean-contract-v1.md`; ledger entry 25 note; this addendum.
+
+status: Directional Lean Contract v1 complete 2026-06-15 -- lean/posture separation confirmed correct; one read-projection defect fixed (export now surfaces authoritative `leanSide`); 660/660 tests; no spend, no outcomes/evals written, no analyzer/prompt/matcher/confidence/buyer change. Next: reconcile the 7 usable MLB runs after settlement via the proven statsapi path. Priors-only orientation is a deferred operator doctrine decision. Nothing pushed.
