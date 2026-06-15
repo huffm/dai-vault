@@ -8065,3 +8065,39 @@ Clean next-slice sequencing:
 Files changed: `dai-vault` -- ledger entry 25 consolidation; this addendum. `dai`: none.
 
 status: Post-Taxonomy Vault Reconciliation v1 complete 2026-06-15 -- docs verified accurate, deferrals consolidated in the ledger, next-slice sequencing clean. No code/test/runtime/reconciliation change. Nothing pushed.
+
+---
+
+## addendum: Perceive Fulfillment and Question-to-Probe Handoff Contract v1 (2026-06-15)
+
+Implemented the minimal dormant Perceive fulfillment seam. No model calls, no generation, no reconciliation, no game/outcome/evaluation writes, no migration, no prompt change, no confidence/posture/lean/buyer change, no DTO/API/frontend expansion, no gate activation, and no Probe/tool execution.
+
+Pre-state: workspace root is not a git repo; `dai` clean; `dai-vault` clean; `jera-skills` not present at `C:\Users\trolo\source\repos\jera-workspace\jera-skills`; no matching `dotnet.exe` API/test/watch process found, so the build lock appeared clear.
+
+Existing ProbeRequest finding: `platform/dotnet/DevCore.Api/AgentRuns/ProbeRequest.cs` already is the structured Probe handoff (`SignalKey`, `Reason`, nullable `SuggestedToolId`, `Priority`, `ConfidenceEffect`). It remains the singular Question/Interrogate-to-Probe handoff. This slice did not duplicate, rename, persist, mutate, or route through it. The existing dormant probe-refresh contracts were not activated.
+
+Principal engineer review:
+- Do not duplicate `ProbeRequest`: it already carries the probe handoff shape, and a second type would split doctrine.
+- The only useful deterministic code seam now is Perceive fulfillment: `SourceSufficiency` can already answer whether baseline evidence fulfilled, needs primary fulfillment, should defer to later Probe repair, or is blocked.
+- Question remains docs-only because decision-focused uncertainty needs model output or richer typed protocol trace. A deterministic `QuestionRequired` value here would fake a missing producer.
+- Dormant-safe because the new policy is static and pure, not DI-registered, not called by composer/controller/runtime paths, not persisted, not projected, and not wired to tools.
+- Dangerous early activation: live gating, Probe/tool execution, fallback resolution without approved source policy, treating `NoDirectionalSeparation` as source insufficiency, or calibrating broad thresholds on thin MLB artifacts.
+- Overengineering avoided: no orchestrator, endpoint, DTO, migration, fallback catalog, Question simulator, or parallel Probe request type.
+
+Code: added `PerceiveFulfillmentPolicy.cs` with `PerceiveFulfillmentDecision`, `PerceiveFulfillmentResult`, and `PerceiveFulfillmentPolicy.Evaluate(...)`. The policy consumes competition + existing `SourceSufficiency` + explicit primary/probe source-group lists. It recommends source groups only and calls no services.
+
+Policy rules: moderate/rich -> Fulfilled; thin with sport-critical grounded -> FulfilledWithThinCoverage; missing sport-critical + primary path -> PrimaryFulfillmentRequired; missing sport-critical + fallback/proxy only -> ProbeRequired; missing sport-critical + no supported path -> BlockedNotEvaluable; `NoDirectionalSeparation` is preserved and not reclassified as source insufficiency.
+
+Tests: added `PerceiveFulfillmentPolicyTests.cs` covering moderate, rich, thin sport-critical grounded, primary fulfillment required, fallback-only probe required, no supported path blocked, `NoDirectionalSeparation` distinction, primary/probe group separation, and static/pure/dormant structure.
+
+Verification:
+- initial TDD focused run returned nonzero before the contract existed; sandboxed MSBuild later failed silently with zero errors, so verification was rerun outside the sandbox after approval.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter PerceiveFulfillmentPolicyTests` -> 9/9 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter SourceSignalTaxonomyTests` -> 15/15 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal` -> 689/689 passed.
+
+Docs: added `04 Products/sports-v1/perceive-fulfillment-and-question-to-probe-handoff-contract-v1.md`; ledger entry 25 updated with this dormant contract and deferrals.
+
+Files changed: `dai` -- new `platform/dotnet/DevCore.Api/AgentRuns/PerceiveFulfillmentPolicy.cs`, new `platform/dotnet/DevCore.Api.Tests/AgentRuns/PerceiveFulfillmentPolicyTests.cs`. `dai-vault` -- new product report, ledger entry 25 note, this addendum.
+
+status: Perceive Fulfillment and Question-to-Probe Handoff Contract v1 complete 2026-06-15 -- pure dormant Perceive fulfillment contract implemented and tested; existing `ProbeRequest` reused as the Probe handoff; Question documented only, not faked. Full DevCore.Api.Tests 689/689. No runtime activation, no spend, no reconciliation, no migrations. Nothing pushed.
