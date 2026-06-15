@@ -7996,3 +7996,25 @@ Recommended next observability slice: Source Group Taxonomy v1 (deterministic gr
 Files changed: `dai-vault` -- new `perceive-signal-sufficiency-audit-v1.md`; ledger entry 25 note; this addendum. `dai`: none.
 
 status: Perceive Signal Sufficiency Audit v1 complete 2026-06-15 -- diagnosis only, no gate. signal+protocol trace well instrumented; missing source-group taxonomy/tiers, persisted band, typed cause-code. source insufficiency structural; low-separation prose-only. Next observability: Source Group Taxonomy v1. Reconciliation of 9 usable runs after settlement remains the calibration priority. No code/spend/writes. Nothing pushed.
+
+---
+
+## addendum: Source Group Taxonomy v1 (2026-06-15)
+
+Implemented the deterministic source-group taxonomy + derived read-only metadata (no Perceive gate -- boundary respected). No model spend, no generation/reconciliation, no migration, outcomes/evals 12/12. Pre-state: `dai` in sync on `main` (pushed), `dai-vault` in sync.
+
+Audit-shaped design: MLB grounds only starting_pitching (market/odds not tracked for MLB), so the band uses grounded decision-useful count + the sport-critical group, NOT market_odds presence -- avoids wrongly flagging all MLB runs insufficient.
+
+Component (pure): `SourceSignalTaxonomy` (12 signals -> 10 groups + 3 tiers; sport-critical = starting_pitching for mlb, market_odds otherwise; unknown -> fallback_proxy, never throws), `SourceSufficiencyBuilder.Build` -> { band (insufficient/thin/moderate/rich), null-reason (MissingCriticalGroup/NoGroundedSignals/NoDirectionalSeparation; structural only, no prose), per-group coverage }. Projected read-only onto `AgentRunArtifactDto` at read time (derive-on-read like ProtocolView; no persistence).
+
+Live smoke (real runs) reproduced the Perceive audit exactly:
+- 823046/822887 old null -> insufficient / SourceInsufficient_MissingCriticalGroup
+- 824993 old + rerun null -> thin / NoDirectionalSeparation
+- 5003433e rerun home + 2303433e usable -> thin / (no null reason)
+So source insufficiency vs low directional separation is now structurally distinguished server-side.
+
+Code: SourceSignalTaxonomy.cs (new); AgentRunContracts.cs (AgentRunArtifactDto += SourceSufficiency); AgentRunsController.cs (GetArtifact projects it). Tests: SourceSignalTaxonomyTests.cs (15 new) + artifact test asserts the projection. Full DevCore.Api.Tests 680/680.
+
+Files changed: `dai` -- SourceSignalTaxonomy.cs, AgentRunContracts.cs, AgentRunsController.cs, SourceSignalTaxonomyTests.cs, AgentRunsControllerTests.cs. `dai-vault` -- new source-group-taxonomy-v1.md; ledger entry 25 note; this addendum.
+
+status: Source Group Taxonomy v1 complete 2026-06-15 -- deterministic groups/tiers + server-side sufficiency band + structural null-reason, read-only projection, no gate. 680/680 tests; no spend, no writes (12/12), no migration/prompt/matcher/confidence/lean/buyer change. Enables Perceive Sufficiency Gate Contract v1 next. Reconciliation of 9 usable runs after settlement remains the calibration priority. Nothing pushed.
