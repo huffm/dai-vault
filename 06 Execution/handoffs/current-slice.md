@@ -8101,3 +8101,39 @@ Docs: added `04 Products/sports-v1/perceive-fulfillment-and-question-to-probe-ha
 Files changed: `dai` -- new `platform/dotnet/DevCore.Api/AgentRuns/PerceiveFulfillmentPolicy.cs`, new `platform/dotnet/DevCore.Api.Tests/AgentRuns/PerceiveFulfillmentPolicyTests.cs`. `dai-vault` -- new product report, ledger entry 25 note, this addendum.
 
 status: Perceive Fulfillment and Question-to-Probe Handoff Contract v1 complete 2026-06-15 -- pure dormant Perceive fulfillment contract implemented and tested; existing `ProbeRequest` reused as the Probe handoff; Question documented only, not faked. Full DevCore.Api.Tests 689/689. No runtime activation, no spend, no reconciliation, no migrations. Nothing pushed.
+
+---
+
+## addendum: Probe Fallback Catalog v1 (2026-06-15)
+
+Implemented the dormant Probe fallback catalog: a pure source-group plus sport metadata menu of approved primary/fallback/proxy tool options. No Probe execution, no Tool Gateway call, no model call, no generation, no reconciliation, no prompt change, no confidence/posture/lean/buyer change, no DTO/API/frontend change, no persistence, no migration, and no gate activation.
+
+Pre-state: `dai` clean on `main` ahead 1 (`15334c7`); `dai-vault` clean on `main` ahead 3 (`1a2f675` plus prior docs commits); `jera-skills` not present; no matching dotnet API/test/watch process running.
+
+Existing Probe/tool policy audit: `ToolRegistry` already defines registered tools and allowed protocol nodes; `ProtocolToolAccessPolicy` enforces station/tool compatibility; `ProtocolRegistry` keeps `interrogate.probe` on `NoTools`; `ProbeRefreshDecisionService` / `ProbeRefreshAuthorizationService` / disabled `ProbeRefreshExecutor` already exist and remain dormant. Current retrieve tools are `market.football.spread`, `market.basketball.spread`, `schedule.basketball.rest_context`, `pitching.mlb.probable_starters`, and `market.sharp_public.split`. `schedule.matchup_dates` is reference-only; `analysis.sports.matchup_read` is the analyzer model call, not a fallback.
+
+Principal engineer review:
+- smallest useful code: static catalog keyed by source group + sport/competition, returning primary/fallback/proxy tool ids and source policy flags.
+- docs-only remains: Question semantics, ranking, tenant-specific permissions, rate limits, observability, and live execution.
+- existing policy already covers authorization; the catalog is not an authority.
+- it avoids duplicating `ProbeRequest` by not accepting or returning it.
+- it avoids live orchestration by having no DI registration, no gateway dependency, no async methods, no controller/composer caller, and no executor call.
+- tenant/tool safety remains with future gateway context plus `ProtocolToolAccessPolicy`.
+- dangerous early activation: giving `interrogate.probe` retrieve tools, treating future candidates as approved, or using proxies as primary evidence.
+- avoided overengineering: no fallback executor, no new handoff object, no source integration, no persistence, no migration.
+
+Code: added `ProbeFallbackCatalog.cs` with `ProbeFallbackCatalogEntry`, status/reliability constants, `Find(sourceGroup, sport)`, and `ForSport(sport)`. MLB catalog covers all 10 source groups. Current supported paths: MLB `identity_schedule` + `starting_pitching` via `pitching.mlb.probable_starters`; NBA `identity_schedule`/`market_odds` via `market.basketball.spread`, `rest_travel` via `schedule.basketball.rest_context`, `market_movement` via `market.sharp_public.split`; football/NCAAMB smoke paths recorded as source/tool support only, not buyer readiness. MLB `market_odds` is accurately future_candidate/no approved current retrieve path.
+
+Tests: added `ProbeFallbackCatalogTests.cs` covering known primary policy, safe unsupported default, MLB starting-pitching support, MLB market-odds current no-path reality, all MLB source groups present, no gateway/tool-execution dependency, and no `ProbeRequest` mutation/extension.
+
+Verification:
+- TDD red: focused catalog test failed because catalog types did not exist.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter ProbeFallbackCatalogTests` -> 7/7 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal --filter "PerceiveFulfillmentPolicyTests|SourceSignalTaxonomyTests|ProbeRequestTests"` -> 31/31 passed.
+- `dotnet test platform/dotnet/DevCore.Api.Tests/DevCore.Api.Tests.csproj --no-restore -v minimal` -> 696/696 passed.
+
+Docs: added `04 Products/sports-v1/probe-fallback-catalog-v1.md`; ledger entry 25 updated with this dormant catalog and deferrals.
+
+Files changed: `dai` -- new `platform/dotnet/DevCore.Api/AgentRuns/ProbeFallbackCatalog.cs`, new `platform/dotnet/DevCore.Api.Tests/AgentRuns/ProbeFallbackCatalogTests.cs`. `dai-vault` -- new product report, ledger entry 25 note, this addendum.
+
+status: Probe Fallback Catalog v1 complete 2026-06-15 -- static dormant source/tool option menu implemented and tested; no Probe execution, no tool calls, no ProbeRequest duplication, no runtime wiring. Full DevCore.Api.Tests 696/696. Nothing pushed.
