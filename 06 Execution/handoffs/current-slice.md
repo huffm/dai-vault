@@ -7815,3 +7815,30 @@ Future Discern slices proposed (at most 2): Discern Assessment Contract v1 (dorm
 Files changed: `04 Products/sports-v1/discern-locus-and-contract-clarification-v1.md` (new); `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` (entry 16 clarification note); this addendum. `dai`: none.
 
 status: Discern Locus and Contract Clarification v1 complete 2026-06-12 -- docs/contract only, no runtime/test/prompt/schema/buyer/confidence/posture/lean/evaluator/reconciliation change, contract type not implemented. Ledger entry 16 stays Deferred. Next overall remains: after the four Stage 0 candidate games are final, reconcile exact provider keys via /api/agent-runs/reconcile, then build Internal Calibration Read Surface v1; a Discern code slice waits on reconciled-outcome evidence.
+
+---
+
+## addendum: Manual Stage 0 Reconciliation Execution v1 -- settled (2026-06-15)
+
+The wait this handoff kept deferring is resolved: all four Stage 0 candidate games settled, and all four were reconciled live through the matcher endpoint `POST /api/agent-runs/reconcile`. First live `SingleMatch` reconciliations on identity-bearing runs -- the matcher contract is now proven end-to-end on real settled data.
+
+Stack brought up via documented path only (Docker Desktop -> `docker start devcore-sql`, which was `Exited (137)` and recovered to "Recovery is complete" on `0.0.0.0:1433->1433` -> .NET API on `:5007`, Development, `http` profile). FastAPI not started (reconcile touches only DB + matcher, no model call). Repos clean on `main` 0/0 at start.
+
+Trusted finals: MLB statsapi gamePks (822803 TOR 8-NYY 5; 824752 BOS 10-TEX 1; 824826 BAL 7-SD 3, all `Final`/`game_finished`) and ESPN NBA scoreboard 20260613 (SA 90-NY 94, `Final`) for the odds_api run (opaque event id, so ESPN supplied the directional result; the odds_api key still drove the match).
+
+Results (all `SingleMatch`, one outcome + one evaluation each):
+
+| candidate | provider / key | final | evalStatus |
+|---|---|---|---|
+| Rangers at Red Sox (`caf3423e`) | mlb_statsapi / 824752 | BOS 10-1 home_win | correct |
+| Padres at Orioles (`d1f3423e`) | mlb_statsapi / 824826 | BAL 7-3 home_win | correct |
+| Knicks at Spurs (`c1f3423e`) | odds_api / 6cc5c3b9cfcb1d94bed9f3ca972b3114 | SA 90-NY 94 away_win | incorrect |
+| Yankees at Blue Jays (`c3f3423e`) | mlb_statsapi / 822803 | TOR 8-5 home_win | inconclusive (null lean) |
+
+Verification (no code changed, so live smoke + read-back is the evidence): four `SingleMatch` responses with expected evalStatus; all four `GET /{id}/evaluation` then 200 with consistent leanSide/winningSide/evalStatus; re-POST -> 409 (one-outcome-per-run guard holds on the matcher path); DB tally 8/8 -> 12/12 outcomes/evals (correct 5 / inconclusive 4 / incorrect 3), +4 delta == these four candidates. No unit tests rerun: the running API holds the build-output lock and no code changed, so the live SingleMatch/correct/incorrect/inconclusive + 409 + SQL read-back is the verification the slice asks for.
+
+Files changed: `04 Products/sports-v1/stage-0-true-calibration-candidate-capture-v1.md` (settlement-execution section appended); `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` (entry 25 latest-update 2026-06-15); this addendum. `dai`: none (no code/schema/test change; only local-dev reconcile writes to the dev DB).
+
+Decision discipline: a Stage 0 sample reconciled successfully -- the current matcher handled these four settled candidates. NOT fully validated, not production ready, not an automated feedback loop. `MultipleMatches` still unexercised (no duplicate-key runs).
+
+status: Manual Stage 0 Reconciliation Execution v1 (settled) complete 2026-06-15 -- four candidates reconciled (2 correct / 1 incorrect / 1 inconclusive), docs + local-dev reconcile writes only, no code/schema/prompt/confidence/posture/lean/buyer/matcher change. Ledger entry 25 stays Deferred (matcher proven; provider/scheduled settlement, MultipleMatches auto-evaluation, buyer track record still deferred); entry 12 stays gated. Next overall: MORE Stage 0 samples (larger identity-bearing batch, prefer non-null leans) before Internal Calibration Read Surface v1 or any automated feedback loop. Nothing committed, nothing pushed.

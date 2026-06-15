@@ -207,3 +207,57 @@ New Stage 0 evaluation count from this follow-up:
 ### Read Surface Readiness
 
 Internal Calibration Read Surface v1 is still not ready. This follow-up produced zero reconciled outcomes and zero new evaluations. The next attempt should run only after the scheduled games have actually settled and should use trusted final sources for the exact provider keys above.
+
+---
+
+## Manual Stage 0 Reconciliation Execution v1 (settled)
+
+**execution date:** 2026-06-15
+**status:** all four Stage 0 candidates reconciled live through `POST /api/agent-runs/reconcile`. Every candidate returned `SingleMatch` and persisted exactly one outcome + one evaluation. Trusted final sources consulted (MLB statsapi by gamePk; ESPN NBA scoreboard). No outcome fabricated. No code, schema, prompt, confidence/posture/lean, buyer, analyzer, or matcher change.
+**classification:** true Stage 0 calibration sample (first live `SingleMatch` reconciliations on identity-bearing runs).
+
+### Environment
+
+- workspace `C:\Users\trolo\source\repos\dai-workspace`; both repos clean on `main`, 0/0 ahead/behind at slice start.
+- brought the stack up via documented path only: Docker Desktop -> `docker start devcore-sql` (was `Exited (137)`; log reached "Recovery is complete", `0.0.0.0:1433->1433`) -> .NET API on `:5007` (`ASPNETCORE_ENVIRONMENT=Development`, `http` profile). FastAPI analyzer not started -- the reconcile path touches only DB + matcher (no model call).
+- DB confirmed local `devcore` inside `devcore-sql`; dev bypass auth resolved `TenantKey=1` (candidate evaluations returned 404 pre-state, not 401).
+- readiness: `GET /api/competitions` 200; all four `GET /api/agent-runs/{id}/evaluation` returned 404 before reconcile (no prior evaluation).
+
+### Trusted outcome sources
+
+- **MLB (mlb_statsapi):** `statsapi.mlb.com/api/v1.1/game/{gamePk}/feed/live` -- all three gamePks resolved `abstractGameState=Final` / `game_finished`, matchups confirmed by the statsapi `id` slug (nyamlb-tormlb, texmlb-bosmlb, sdnmlb-balmlb). Scores from `/api/v1/game/{gamePk}/linescore`.
+- **NBA (odds_api run):** the odds-api event id is opaque (no public lookup without a key), so the auditable final was taken from ESPN's NBA scoreboard for 2026-06-13 (`site.api.espn.com/.../basketball/nba/scoreboard?dates=20260613`), `status=Final`, NY 94 @ SA 90. `source=manual:espn`. Provenance recorded; the run identity (odds_api key) still drove the match, the ESPN box score only supplied the directional result.
+
+### Four-candidate result table
+
+| candidate | sport / league | teams (home) | scheduled start UTC | prior run id | captured identity (provider / key) | final (home-away) | outcome source | matchKind | evalStatus | reason |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Knicks at Spurs | NBA | New York Knicks at San Antonio Spurs (home: Spurs) | 2026-06-14T00:40:00Z | `c1f3423e-f36b-1410-8162-00373db4b724` | odds_api / `6cc5c3b9cfcb1d94bed9f3ca972b3114` | SA 90 - NY 94 (away_win) | ESPN NBA scoreboard 20260613 (`manual:espn`) | SingleMatch | **incorrect** | lean was home (Spurs); Knicks (away) won |
+| Yankees at Blue Jays | MLB | New York Yankees at Toronto Blue Jays (home: Blue Jays) | 2026-06-12T23:37:00Z | `c3f3423e-f36b-1410-8162-00373db4b724` | mlb_statsapi / `822803` | TOR 8 - NYY 5 (home_win) | statsapi gamePk 822803 (`manual:statsapi`) | SingleMatch | **inconclusive** | no directional lean on the run (lean null) |
+| Rangers at Red Sox | MLB | Texas Rangers at Boston Red Sox (home: Red Sox) | 2026-06-12T23:10:00Z | `caf3423e-f36b-1410-8162-00373db4b724` | mlb_statsapi / `824752` | BOS 10 - TEX 1 (home_win) | statsapi gamePk 824752 (`manual:statsapi`) | SingleMatch | **correct** | lean home (Red Sox); Red Sox won |
+| Padres at Orioles | MLB | San Diego Padres at Baltimore Orioles (home: Orioles) | 2026-06-12T23:05:00Z | `d1f3423e-f36b-1410-8162-00373db4b724` | mlb_statsapi / `824826` | BAL 7 - SD 3 (home_win) | statsapi gamePk 824826 (`manual:statsapi`) | SingleMatch | **correct** | lean home (Orioles); Orioles won |
+
+Artifact id: identity lives on the AgentRun row (not in `OutputJson`); the run id above is the artifact anchor. All four artifacts are v3, `Status=completed`, `TenantKey=1`.
+
+### Persistence verification
+
+- each reconcile returned the matched run id + evalStatus; all four `GET /api/agent-runs/{id}/evaluation` then returned 200 with consistent `leanSide`/`winningSide`/`evalStatus` (e.g. Knicks: lean `home`, winning `away`, `incorrect`).
+- idempotency: re-POST of the Rangers/Red Sox key returned **409** (one-outcome-per-run guard holds on the matcher path, single-sourced with the per-run endpoint).
+- DB tally (sqlcmd in `devcore-sql`): outcomes/evals moved **8/8 -> 12/12**; eval tally now correct 5 / inconclusive 4 / incorrect 3. The +4 delta (+2 correct, +1 incorrect, +1 inconclusive) is exactly these four candidates; the four identity-bearing outcome rows confirm provider/key/score/eval.
+
+### What this proves / does not prove
+
+- **Proves:** the matcher contract end-to-end on real settled data -- first live `SingleMatch` reconciliations. The canonical `(SourceProvider, ExternalGameId)` key matched each settled game to its one identity-bearing run with no display-name fallback; the deterministic evaluator produced the expected correct/incorrect/inconclusive verdicts; persistence and the 409 guard hold. The data gap the prior execution hit (zero identity-bearing runs) is closed for this sample.
+- **Does not prove:** nothing global. This is a **Stage 0 sample reconciled successfully** -- four settled candidates the current matcher handled cleanly. It is not "fully validated", not "production ready", not an automated feedback loop. `MultipleMatches` was still not exercised (no duplicate-key runs exist), and no settlement-provider automation was built or implied.
+
+### Failure patterns
+
+None. Zero NoMatch, zero MultipleMatches, zero NotEvaluable, zero errors across the four. The only non-`correct` results are by design: the null-lean run evaluates inconclusive (expected, low calibration value) and the Spurs lean was genuinely wrong.
+
+### Is the matcher good enough for Stage 0?
+
+Yes for Stage 0. The matcher cleanly handled all four settled candidates on the canonical key, single-sourced the write path with the per-run endpoint, and guarded duplicates with 409. The unexercised edge (`MultipleMatches` resolution) remains a deferred decision (ledger entry 25), not a Stage 0 blocker -- no duplicate-key runs exist to trigger it.
+
+### Recommended next slice
+
+**More Stage 0 samples** before any automation. Four games (one of them a no-lean inconclusive) is a successful contract proof but a thin calibration base. Generate and reconcile a larger identity-bearing batch (both sports, prefer non-null leans) to build a non-trivial correct/incorrect body. Internal Calibration Read Surface v1 is closer but still premature on a 4-sample base; matcher hardening and identity-capture hardening are not indicated (both performed correctly here). Buyer-artifact outcome feedback stays gated on a larger reconciled sample (ledger entry 12).
