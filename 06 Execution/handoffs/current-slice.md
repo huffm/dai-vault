@@ -7842,3 +7842,27 @@ Files changed: `04 Products/sports-v1/stage-0-true-calibration-candidate-capture
 Decision discipline: a Stage 0 sample reconciled successfully -- the current matcher handled these four settled candidates. NOT fully validated, not production ready, not an automated feedback loop. `MultipleMatches` still unexercised (no duplicate-key runs).
 
 status: Manual Stage 0 Reconciliation Execution v1 (settled) complete 2026-06-15 -- four candidates reconciled (2 correct / 1 incorrect / 1 inconclusive), docs + local-dev reconcile writes only, no code/schema/prompt/confidence/posture/lean/buyer/matcher change. Ledger entry 25 stays Deferred (matcher proven; provider/scheduled settlement, MultipleMatches auto-evaluation, buyer track record still deferred); entry 12 stays gated. Next overall: MORE Stage 0 samples (larger identity-bearing batch, prefer non-null leans) before Internal Calibration Read Surface v1 or any automated feedback loop. Nothing committed, nothing pushed.
+
+---
+
+## addendum: Stage 0 Larger Identity-Bearing Batch v1 -- dry-run / no spend (2026-06-15)
+
+Sample-preparation slice following the successful four-candidate reconciliation. Per operator decision: **dry-run, no model spend**. Prepared an MLB-only candidate batch and investigated WNBA support; generated nothing, reconciled nothing.
+
+Pre-state: `dai` clean on `main` 0/0; `dai-vault` ahead 1 (prior reconcile commit, unpushed). API + `devcore-sql` up; FastAPI down (not needed). Identity-bearing inventory: 4 runs, **0 unreconciled** -- the four prior candidates are all reconciled, so a larger batch must be generated, not selected.
+
+Sport availability: MLB 10 upcoming (2026-06-15); NBA 0 (offseason); WNBA unsupported. Only viable batch = MLB-only. The 10 upcoming MLB games are documented as pending-generation candidates in `04 Products/sports-v1/stage-0-larger-identity-bearing-batch-v1.md`. The upcoming endpoint returns date+teams only; gamePk/scheduled-UTC identity is captured on the AgentRun row at generation time (`MlbStarterClient`), so lean/identity are unknown until a run is generated.
+
+WNBA investigation (evidence-backed, no spend) -- **defer, support missing upstream**:
+1. catalog: absent (`SportsSeedData.cs` seeds nfl/nba/mlb/ncaaf/ncaamb; `GET /api/competitions` excludes wnba).
+2. odds upcoming: `wnba/upcoming` -> 404 (no odds sport-key).
+3. analyzer: FastAPI `_SUPPORTED_COMPETITIONS` (`routes/sports.py:13`) excludes wnba -> 400.
+4. identity capture: moot (gated at 400; no WNBA team seed, no odds sport-key).
+5. settlement source: ESPN WNBA scoreboard 200 -- the one downstream piece that exists, irrelevant while nothing can generate a run.
+Confirms ledger entry 26. The only "wnba" in code is a hypothetical buyer-ready-filter spec, not support.
+
+Verification (no code changed): service health (API 200, SQL 1433 open); SQL inventory query (4 identity-bearing, 0 unreconciled); upcoming-game queries (MLB 10, NBA 0, WNBA 404); WNBA support reads across seed/catalog/odds/analyzer + ESPN source probe. All read-only, no spend.
+
+Files changed: `04 Products/sports-v1/stage-0-larger-identity-bearing-batch-v1.md` (new); `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` (entry 26 WNBA confirmation + entry 25 batch-prep note); this addendum. `dai`: none.
+
+status: Stage 0 Larger Identity-Bearing Batch v1 complete 2026-06-15 -- dry-run/no-spend; MLB-only batch prepared (pending generation), WNBA deferred (support missing), NBA offseason. No runs/outcomes/code/schema/seed/catalog change. Sample base still insufficient for confidence-threshold changes (entry 12 gated). Next: a budgeted spend slice generates ~8-10 MLB runs, keeps non-null leans, reconciles after settlement via the proven statsapi path; WNBA support is a separate catalog+seed+odds+analyzer slice if pursued. Nothing committed yet, nothing pushed.
