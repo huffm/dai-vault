@@ -8137,3 +8137,33 @@ Docs: added `04 Products/sports-v1/probe-fallback-catalog-v1.md`; ledger entry 2
 Files changed: `dai` -- new `platform/dotnet/DevCore.Api/AgentRuns/ProbeFallbackCatalog.cs`, new `platform/dotnet/DevCore.Api.Tests/AgentRuns/ProbeFallbackCatalogTests.cs`. `dai-vault` -- new product report, ledger entry 25 note, this addendum.
 
 status: Probe Fallback Catalog v1 complete 2026-06-15 -- static dormant source/tool option menu implemented and tested; no Probe execution, no tool calls, no ProbeRequest duplication, no runtime wiring. Full DevCore.Api.Tests 696/696. Nothing pushed.
+
+---
+
+## addendum: Perceive Fulfillment Observed Activation v1 (2026-06-15)
+
+Moved Perceive fulfillment from dormant code to live observed read/projection metadata. No enforcement, no Probe execution, no Tool Gateway call, no model call, no sports generation, no reconciliation, no prompt change, no confidence/posture/lean/buyer change, no persistence, no migration, and no frontend change.
+
+Pre-state: `dai` clean on `main` ahead 2; `dai-vault` clean on `main` ahead 4; `jera-skills` not present at `C:\Users\trolo\source\repos\jera-workspace\jera-skills`; no matching dotnet API/test/watch process running.
+
+Principal engineer review: observed computation is justified now because the inputs are deterministic and already available at artifact read time (`SourceSufficiency`, sport profile, catalog metadata). Enforcement is still premature because MLB is intentionally thin, Question has no structured trace, the catalog is incomplete, and calibration evidence is too small. The computation belongs in read/projection, not generation or persistence, so it cannot contaminate calibration or mutate analyzer behavior. Sport requirements remain in the sports niche through `SportSufficiencyProfile`; platform policy stays generic. The slice does not duplicate `ProbeRequest`, `ProbeFallbackCatalog`, `ToolRegistry`, or `ProtocolToolAccessPolicy`. Dangerous early activation remains hard gating, Probe/tool execution, threshold changes, buyer display, or treating future-candidate source paths as approved.
+
+Audit: `SourceSufficiency` already projected in `AgentRunsController.GetArtifact`; `PerceiveFulfillmentPolicy` can consume it directly; primary/probe source-group inputs can be derived from `ProbeFallbackCatalog` without executing tools; `AgentRunArtifactDto` is the internal diagnostic surface; `AgentRunResultDto`, `OutputJson`, evaluator, matcher, reconciliation, analyzer, and frontend surfaces remain unchanged.
+
+Code: added `SportSufficiencyProfile.cs` with enforcement vocabulary (`off`, `observed`, `advisory`, `soft_enforced`, `hard_enforced`), the MLB observed profile, off-profile fallback, and `PerceiveFulfillmentProjection.Build(...)`. MLB profile: required `starting_pitching`; recommended `market_odds`, `bullpen_availability`, `lineup_injury`, `weather_park`, `market_movement`; optional `identity_schedule`, `team_form`, `rest_travel`; minimum band `thin`; primary fulfillment allowed; Probe fallback disabled. `AgentRunArtifactDto` now carries `PerceiveFulfillment` as read-only diagnostic metadata; `GetArtifact` computes it beside `SourceSufficiency`.
+
+Observed behavior: MLB artifact reads with grounded starting pitching and thin sufficiency project `FulfilledWithThinCoverage` in `observed` mode; missing starting pitching with the catalog primary path projects `PrimaryFulfillmentRequired`; missing required groups with no supported path project blocked/not evaluable; `NoDirectionalSeparation` remains distinct. The projection does not mutate `LeanSide`, confidence, posture, status, output JSON, outcome/evaluation, or calibration eligibility.
+
+Tests: added `SportSufficiencyProfileTests.cs` and artifact endpoint tests for observed projection, primary fulfillment required, unsupported/off profile, `NoDirectionalSeparation` preservation, market-odds future-candidate behavior, no result-DTO expansion, and no `OutputJson` mutation.
+
+Verification:
+- TDD red confirmed before profile/projection types existed.
+- focused observed profile/projection tests: 9/9 passed.
+- focused regression set (`SportSufficiencyProfileTests | PerceiveFulfillmentPolicyTests | ProbeFallbackCatalogTests | SourceSignalTaxonomyTests | ProbeRequestTests | artifact_endpoint`): 60/60 passed.
+- full `DevCore.Api.Tests`: 705/705 passed.
+
+Docs: added `04 Products/sports-v1/perceive-fulfillment-observed-activation-v1.md`; ledger entry 25 updated with the observed activation note.
+
+Files changed: `dai` -- `SportSufficiencyProfile.cs`, `AgentRunContracts.cs`, `AgentRunsController.cs`, `SportSufficiencyProfileTests.cs`, `AgentRunsControllerTests.cs`. `dai-vault` -- new product report, ledger entry 25 note, this addendum.
+
+status: Perceive Fulfillment Observed Activation v1 complete 2026-06-15 -- live observed Perceive fulfillment projection on artifact reads only; no enforcement, no Probe/tool execution, no model spend, no reconciliation, no persistence. Full DevCore.Api.Tests 705/705. Nothing pushed.
