@@ -7936,3 +7936,19 @@ Result: 0 reconciled, correct 0 / incorrect 0 / inconclusive 0. Reconciled direc
 Files changed: `dai-vault` -- new `04 Products/sports-v1/reconcile-7-usable-mlb-stage-0-runs-v1.md`; ledger entry 25 wait-only note; this addendum. `dai`: none.
 
 status: Reconcile 7 Usable MLB Stage 0 Runs v1 wait-only 2026-06-15 -- all 7 games pre-start, no reconciliation, no writes (12/12), no code/spend. Next: rerun this exact reconciliation after settlement (~2026-06-16 05:30Z) with StatsAPI finals through the proven path. Nothing pushed.
+
+---
+
+## addendum: Run Eligibility and Supersession Contract v1 (2026-06-15)
+
+Implemented the minimal lifecycle/eligibility contract so one game can carry many runs without ambiguous matching, before any null-lean rerun. No model spend, no new runs, no reconciliation, no outcomes/evals written (12/12 unchanged). Pre-state: `dai` clean on `main` ahead 1; `dai-vault` ahead 6.
+
+Audit: no prior equivalent -- `AgentRun.Status` is execution state only; `OutcomeReconciliationService` filtered only tenant+identity; per-run `/outcome` is a separate explicit path; two active runs -> MultipleMatches.
+
+Change (smallest that solves it): two nullable `AgentRun` columns `ExclusionReason` (null=active; superseded/excluded/diagnostic/invalid) + `SupersededByAgentRunId` (provenance), additive migration `20260615191124_AddRunMatchEligibility` (clean Down). `MatchAsync` now also filters `ExclusionReason == null` -> superseded/excluded runs are preserved but never auto-matched; two ACTIVE runs still MultipleMatches. New tenant+user-scoped `POST /api/agent-runs/{id}/exclude` (soft flag, artifact preserved, 422 bad reason, 404 cross-tenant). Per-run `/outcome` stays explicit/unfiltered by decision. Pure matcher, evaluator, lean/LeanSide, confidence, prompts, buyer untouched.
+
+Verification: TDD red (filter removed -> 3 eligibility tests fail) -> green; full `DevCore.Api.Tests` 665/665 (matcher + identity green); migration applied to dev DB (129/129 active); no-spend smoke (exclude 422 on bad reason, columns present, outcomes/evals 12/12). No model calls.
+
+Files changed: `dai` -- AgentRun.cs, AppDbContext.cs, OutcomeReconciliationService.cs, AgentRunContracts.cs, AgentRunsController.cs, migration (+Designer/snapshot), AgentRunsControllerTests.cs. `dai-vault` -- new `run-eligibility-and-supersession-contract-v1.md`; ledger entry 25 note; this addendum.
+
+status: Run Eligibility and Supersession Contract v1 complete 2026-06-15 -- duplicate runs now safe (active-only auto-matching + soft exclude/supersede); 665/665 tests; no spend, no writes (12/12). Enables future null-lean reruns (supersede old -> reconcile new); not executed. Next: reconcile the 7 usable MLB runs after settlement. Nothing pushed.
