@@ -7903,3 +7903,22 @@ Verification: TDD red (test project failed to compile -- no `LeanSide`) -> green
 Files changed: `dai` -- AgentRunContracts.cs, AgentRunsController.cs, AgentRunsControllerTests.cs. `dai-vault` -- new `04 Products/sports-v1/directional-lean-contract-v1.md`; ledger entry 25 note; this addendum.
 
 status: Directional Lean Contract v1 complete 2026-06-15 -- lean/posture separation confirmed correct; one read-projection defect fixed (export now surfaces authoritative `leanSide`); 660/660 tests; no spend, no outcomes/evals written, no analyzer/prompt/matcher/confidence/buyer change. Next: reconcile the 7 usable MLB runs after settlement via the proven statsapi path. Priors-only orientation is a deferred operator doctrine decision. Nothing pushed.
+
+---
+
+## addendum: Lean vs LeanSide Contract Audit v1 (2026-06-15)
+
+Audit only -- no code change, no model spend, no outcomes/evals written (12/12 unchanged). Pre-state: `dai` clean on `main` ahead 1 (prior LeanSide-projection commit, unpushed); `dai-vault` ahead 4.
+
+Verdict: **keep `LeanSide` -- intentionally distinct from `lean`, not redundant.**
+
+- `lean` = original free-text buyer display prose: names the favored team + reason ("Slight lean toward Chiefs based on..."), explicitly barred from home/away wording and betting-posture words. Consumed by Angular `analyzer.component.ts:180` for display. Existed first.
+- `LeanSide` = normalized `home`/`away`/null, added later (git `43f9385` + `2af54c7`) specifically to activate deterministic run evaluation. Consumed by `RunEvaluator`/the matcher; persisted on `AgentRun.LeanSide` (denormalized) and in OutputJson. No buyer surface reads it.
+- The evaluator requires home/away/null and cannot safely use prose `lean` (would mean parsing a team name -> display-name fragility the reconciliation contract forbids). Coupled only by the prompt "lean_side must agree with lean" rule. One source of truth per concern: `LeanSide` for evaluation, `lean` for display. No duplication.
+- The prior `1d9ae93` projected the already-persisted `LeanSide` onto the read DTO; it did not introduce a parallel field. The new tests assert the correct contract (structured side surfaces; null passes through), not duplication.
+
+Optional future hardening (watch item, not a slice): a runtime guard asserting `lean` and `lean_side` agree.
+
+Files changed: `dai-vault` -- new `04 Products/sports-v1/lean-vs-leanside-contract-audit-v1.md`; ledger entry 25 note; this addendum. `dai`: none.
+
+status: Lean vs LeanSide Contract Audit v1 complete 2026-06-15 -- docs only; keep LeanSide (distinct evaluation key vs display prose); no code/schema/matcher/confidence/prompt/buyer change; no spend; outcomes/evals 12/12. Next: reconcile the 7 usable MLB runs after settlement via the proven statsapi path. Nothing pushed.
