@@ -8018,3 +8018,23 @@ Code: SourceSignalTaxonomy.cs (new); AgentRunContracts.cs (AgentRunArtifactDto +
 Files changed: `dai` -- SourceSignalTaxonomy.cs, AgentRunContracts.cs, AgentRunsController.cs, SourceSignalTaxonomyTests.cs, AgentRunsControllerTests.cs. `dai-vault` -- new source-group-taxonomy-v1.md; ledger entry 25 note; this addendum.
 
 status: Source Group Taxonomy v1 complete 2026-06-15 -- deterministic groups/tiers + server-side sufficiency band + structural null-reason, read-only projection, no gate. 680/680 tests; no spend, no writes (12/12), no migration/prompt/matcher/confidence/lean/buyer change. Enables Perceive Sufficiency Gate Contract v1 next. Reconciliation of 9 usable runs after settlement remains the calibration priority. Nothing pushed.
+
+---
+
+## addendum: Claude Native Skill Registration Audit v1 (2026-06-15)
+
+Tooling/workflow audit -- no skill body/frontmatter change, no code, no product-runtime change. Pre-state: `dai` + `dai-vault` in sync on `main` (pushed).
+
+Inspected: `dai/.claude/skills/` (10 skills + references/), `jera-workspace/.claude/skills/` (6 duplicate copies), `dai-skill-router`, existing `dai-skills-inventory-v1.md`. No workspace/user-level skills folder; no plugin.json (project-skills layout).
+
+Findings: native registration is HEALTHY -- correct path `dai/.claude/skills/<name>/SKILL.md`, frontmatter names match dirs, NO `disable-model-invocation` anywhere, all 10 loadable this session. Descriptions all strong (when/triggers/scope/boundary); they exceed the slice's proposed shorter examples, so NO frontmatter edits were made (avoid downgrade/churn). The one cosmetic deviation (dai-signal-follow-up-diagnostics opens "Diagnose...") is already noted in the inventory and doesn't impair discovery.
+
+Gate assessment: `dai-skill-router` is not redundant with native discovery -- it adds expected-but-missing detection (the original failure mode), accountability for deliberate omissions, and seeds the handoff skills-used line; but full ceremony is overkill on trivial slices. Recommendation/operating rule: native discovery primary; gate retained as audit/high-risk layer (mandatory when a prompt/handoff names skills or for high-risk slices; lightweight otherwise). Inventory stays the source of truth.
+
+Cross-repo duplication (jera-workspace copies) flagged as a drift risk; no canonical-source decision taken.
+
+Ledger: intentionally NOT touched -- this is a workflow decision, not a runtime/economic deferral (recorded in the skills inventory + audit doc instead).
+
+Files changed: `dai-vault` -- new `06 Execution/skills/claude-native-skill-registration-audit-v1.md`; inventory operating-rule note; this addendum. `dai`: none (no skill/frontmatter/code change).
+
+status: Claude Native Skill Registration Audit v1 complete 2026-06-15 -- native registration healthy, descriptions strong (no edits), gate reframed as audit/high-risk layer. No skill body, frontmatter, code, or runtime change. Next product priority unchanged: reconcile the 9 usable MLB runs after settlement. Nothing pushed.
