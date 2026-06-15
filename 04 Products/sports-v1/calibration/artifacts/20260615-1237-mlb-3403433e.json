@@ -1,0 +1,133 @@
+{
+  "agentRunId": "3403433e-f36b-1410-8163-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-15",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [
+    "signals_used contains bullpen but bullpen was not grounded",
+    "signals_used contains lineup_form but lineup_form was not grounded",
+    "signals_used contains ballpark but ballpark was not grounded"
+  ],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Degraded",
+      "note": "signals_used contains bullpen but bullpen was not grounded; signals_used contains lineup_form but lineup_form was not grounded; signals_used contains ballpark but ballpark was not grounded"
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The Rockies could capitalize on any bullpen fatigue from the Cubs.",
+  "watchFor": "Any significant lineup changes or injury updates before the game.",
+  "whatWouldChangeTheRead": [
+    "If the Rockies announce a strong lineup against left-handed pitching",
+    "If there are notable bullpen changes for the Cubs"
+  ],
+  "summary": "The Cubs have a slight edge with Shota Imanaga starting at home. The Rockies may struggle against left-handed pitching, and the Cubs' bullpen has been solid recently.",
+  "lean": "Slight lean toward Cubs based on home field advantage.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Cubs have home field advantage with a solid bullpen."
+      ],
+      "frame": "The Cubs host the Rockies with both starters being left-handed.",
+      "aim": [
+        "The primary factor is the Cubs' home performance."
+      ]
+    },
+    "interrogate": {
+      "question": "The Rockies could exploit any weaknesses in the Cubs' bullpen.",
+      "probe": null,
+      "verify": "The Rockies' lineup has shown resilience against left-handed pitching."
+    },
+    "discern": {
+      "weigh": "Starting pitching data is present, but lineup performance details are missing.",
+      "contrast": "Market confidence appears to favor the Cubs at home.",
+      "stress": "The read could weaken if the Rockies' lineup performs unexpectedly well."
+    },
+    "decide": {
+      "resolve": "Hold this read cautiously, watching for lineup changes.",
+      "position": "monitor",
+      "justify": "Confidence is based on the Cubs' home advantage and bullpen strength."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Cubs have home field advantage with a solid bullpen.",
+      "frame": "The Cubs host the Rockies with both starters being left-handed.",
+      "aim": "The primary factor is the Cubs' home performance."
+    },
+    "interrogate": {
+      "question": "The Rockies could exploit any weaknesses in the Cubs' bullpen.",
+      "probe": null,
+      "verify": "The Rockies' lineup has shown resilience against left-handed pitching."
+    },
+    "discern": {
+      "weigh": "Starting pitching data is present, but lineup performance details are missing.",
+      "contrast": "Market confidence appears to favor the Cubs at home.",
+      "stress": "The read could weaken if the Rockies' lineup performs unexpectedly well."
+    },
+    "decide": {
+      "resolve": "Hold this read cautiously, watching for lineup changes.",
+      "position": "monitor",
+      "justify": "Confidence is based on the Cubs' home advantage and bullpen strength."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "824666",
+  "scheduledStartUtc": "2026-06-15T20:05:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "chicago-cubs",
+  "awayTeamRef": "colorado-rockies"
+}

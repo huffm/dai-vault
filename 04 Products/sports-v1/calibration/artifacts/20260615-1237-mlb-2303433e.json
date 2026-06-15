@@ -1,0 +1,132 @@
+{
+  "agentRunId": "2303433e-f36b-1410-8163-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-15",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [
+    "signals_used contains bullpen but bullpen was not grounded",
+    "signals_used contains lineup_form but lineup_form was not grounded"
+  ],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Degraded",
+      "note": "signals_used contains bullpen but bullpen was not grounded; signals_used contains lineup_form but lineup_form was not grounded"
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The Marlins' lineup could outperform expectations, but recent struggles raise concerns. The lack of sharp/public data limits the strength of this lean.",
+  "watchFor": "Any significant lineup changes for the Marlins before the game.",
+  "whatWouldChangeTheRead": [
+    "A sudden improvement in the Marlins' lineup performance",
+    "Injury news affecting either starting pitcher"
+  ],
+  "summary": "The Phillies have a slight edge with Zack Wheeler on the mound against Ryan Gusto. Additionally, the Marlins may face challenges with their lineup form, while the Phillies' bullpen could play a crucial role late in the game.",
+  "lean": "Slight lean toward Phillies based on starting pitching advantage.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Zack Wheeler's right-handed advantage could impact the Marlins' offense."
+      ],
+      "frame": "The matchup features the Marlins at the Phillies with Wheeler facing Gusto.",
+      "aim": [
+        "Starting pitching performance is the primary factor in this matchup."
+      ]
+    },
+    "interrogate": {
+      "question": "The Marlins could surprise if their lineup finds rhythm against Wheeler.",
+      "probe": null,
+      "verify": "The Phillies' bullpen depth may mitigate any early struggles from Wheeler."
+    },
+    "discern": {
+      "weigh": "Starting pitching signals are strong, but lineup consistency for the Marlins is weak.",
+      "contrast": "Market confidence appears to favor the Phillies with Wheeler starting.",
+      "stress": "The read could fail if the Marlins' hitters suddenly break out."
+    },
+    "decide": {
+      "resolve": "Hold this read while watching for lineup changes or performance shifts.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the clear advantage in starting pitching."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Zack Wheeler's right-handed advantage could impact the Marlins' offense.",
+      "frame": "The matchup features the Marlins at the Phillies with Wheeler facing Gusto.",
+      "aim": "Starting pitching performance is the primary factor in this matchup."
+    },
+    "interrogate": {
+      "question": "The Marlins could surprise if their lineup finds rhythm against Wheeler.",
+      "probe": null,
+      "verify": "The Phillies' bullpen depth may mitigate any early struggles from Wheeler."
+    },
+    "discern": {
+      "weigh": "Starting pitching signals are strong, but lineup consistency for the Marlins is weak.",
+      "contrast": "Market confidence appears to favor the Phillies with Wheeler starting.",
+      "stress": "The read could fail if the Marlins' hitters suddenly break out."
+    },
+    "decide": {
+      "resolve": "Hold this read while watching for lineup changes or performance shifts.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the clear advantage in starting pitching."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "823452",
+  "scheduledStartUtc": "2026-06-15T18:40:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "philadelphia-phillies",
+  "awayTeamRef": "miami-marlins"
+}

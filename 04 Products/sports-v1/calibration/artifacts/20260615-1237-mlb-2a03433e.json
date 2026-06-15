@@ -1,0 +1,133 @@
+{
+  "agentRunId": "2a03433e-f36b-1410-8163-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-15",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [
+    "signals_used contains bullpen but bullpen was not grounded",
+    "signals_used contains lineup_form but lineup_form was not grounded",
+    "signals_used contains ballpark but ballpark was not grounded"
+  ],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Degraded",
+      "note": "signals_used contains bullpen but bullpen was not grounded; signals_used contains lineup_form but lineup_form was not grounded; signals_used contains ballpark but ballpark was not grounded"
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The Mets may have an edge if their lineup can capitalize on any Reds' bullpen vulnerabilities. The lack of recent performance data makes this a less certain read.",
+  "watchFor": "Any significant lineup changes or injury updates before the game.",
+  "whatWouldChangeTheRead": [
+    "A notable injury to a key player in the Reds' lineup",
+    "A shift in the starting pitcher for either team"
+  ],
+  "summary": "The Reds have a slight edge with home field advantage and favorable lineup matchups against the Mets' starter. Both teams' bullpens have been relatively fresh, which could play a crucial role in the later innings.",
+  "lean": "Slight lean toward Reds based on home field advantage and lineup matchups.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "The Reds' home field advantage is significant in this matchup."
+      ],
+      "frame": "The Mets face the Reds in Cincinnati with both starters being right-handed.",
+      "aim": [
+        "Home field advantage and lineup matchups are key factors."
+      ]
+    },
+    "interrogate": {
+      "question": "The Mets could exploit any weaknesses in the Reds' bullpen late in the game.",
+      "probe": null,
+      "verify": "The Reds' lineup has been performing well against right-handed pitchers."
+    },
+    "discern": {
+      "weigh": "Starting pitching data is available, but recent performance metrics are missing.",
+      "contrast": "Market confidence appears to favor the Reds as the home team.",
+      "stress": "The read could fail if the Mets' lineup performs unexpectedly well."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, as lineup performance can vary.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the Reds' home advantage and lineup matchups."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "The Reds' home field advantage is significant in this matchup.",
+      "frame": "The Mets face the Reds in Cincinnati with both starters being right-handed.",
+      "aim": "Home field advantage and lineup matchups are key factors."
+    },
+    "interrogate": {
+      "question": "The Mets could exploit any weaknesses in the Reds' bullpen late in the game.",
+      "probe": null,
+      "verify": "The Reds' lineup has been performing well against right-handed pitchers."
+    },
+    "discern": {
+      "weigh": "Starting pitching data is available, but recent performance metrics are missing.",
+      "contrast": "Market confidence appears to favor the Reds as the home team.",
+      "stress": "The read could fail if the Mets' lineup performs unexpectedly well."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, as lineup performance can vary.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the Reds' home advantage and lineup matchups."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "824505",
+  "scheduledStartUtc": "2026-06-15T19:10:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "cincinnati-reds",
+  "awayTeamRef": "new-york-mets"
+}

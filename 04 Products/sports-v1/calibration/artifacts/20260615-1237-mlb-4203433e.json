@@ -1,0 +1,129 @@
+{
+  "agentRunId": "4203433e-f36b-1410-8163-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-15",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.5,
+  "confidence": 0.5,
+  "evidenceRichness": 1,
+  "posture": "wait",
+  "counterCase": "The uncertainty surrounding the starters' handedness limits the ability to form a clear lean.",
+  "watchFor": "Any announcements regarding the handedness of the starters or lineup changes.",
+  "whatWouldChangeTheRead": [
+    "Confirmation of the starters' handedness",
+    "Details on lineup performance leading up to the game"
+  ],
+  "summary": "Both teams have young starters with unknown handedness advantages. Without additional context on their recent performance or lineup matchups, the signals do not favor either side.",
+  "lean": "No clear lean based on the current signal picture.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "The handedness of both starters is unknown, creating uncertainty."
+      ],
+      "frame": "The matchup features the Pirates visiting the Athletics with both starters unconfirmed.",
+      "aim": [
+        "Understanding the handedness advantage is crucial for evaluating this game."
+      ]
+    },
+    "interrogate": {
+      "question": "The uncertainty around the starters' handedness makes it difficult to lean toward either team.",
+      "probe": null,
+      "verify": "Both teams' lineups and recent performance data are missing, adding to the uncertainty."
+    },
+    "discern": {
+      "weigh": "Starting pitching information is available, but lineup and performance data are missing.",
+      "contrast": null,
+      "stress": "The lack of clarity on handedness and lineup performance could undermine the read."
+    },
+    "decide": {
+      "resolve": "Hold off on making any conclusions until more information on the starters and lineups is available.",
+      "position": "wait",
+      "justify": "Confidence is low due to the uncertainty surrounding the starters' handedness."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "The handedness of both starters is unknown, creating uncertainty.",
+      "frame": "The matchup features the Pirates visiting the Athletics with both starters unconfirmed.",
+      "aim": "Understanding the handedness advantage is crucial for evaluating this game."
+    },
+    "interrogate": {
+      "question": "The uncertainty around the starters' handedness makes it difficult to lean toward either team.",
+      "probe": null,
+      "verify": "Both teams' lineups and recent performance data are missing, adding to the uncertainty."
+    },
+    "discern": {
+      "weigh": "Starting pitching information is available, but lineup and performance data are missing.",
+      "contrast": null,
+      "stress": "The lack of clarity on handedness and lineup performance could undermine the read."
+    },
+    "decide": {
+      "resolve": "Hold off on making any conclusions until more information on the starters and lineups is available.",
+      "position": "wait",
+      "justify": "Confidence is low due to the uncertainty surrounding the starters' handedness."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "824993",
+  "scheduledStartUtc": "2026-06-15T21:40:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "athletics",
+  "awayTeamRef": "pittsburgh-pirates"
+}

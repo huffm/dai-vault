@@ -1,0 +1,133 @@
+{
+  "agentRunId": "4103433e-f36b-1410-8163-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-15",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [
+    "signals_used contains bullpen but bullpen was not grounded",
+    "signals_used contains lineup_form but lineup_form was not grounded",
+    "signals_used contains ballpark but ballpark was not grounded"
+  ],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Degraded",
+      "note": "signals_used contains bullpen but bullpen was not grounded; signals_used contains lineup_form but lineup_form was not grounded; signals_used contains ballpark but ballpark was not grounded"
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The Angels could outperform if their lineup hits well against right-handers. This is a market-only lean without sharp/public data.",
+  "watchFor": "Any significant lineup changes for the Angels before the game.",
+  "whatWouldChangeTheRead": [
+    "Angels' lineup shows strong performance against right-handed pitchers",
+    "Significant changes in bullpen availability for the Diamondbacks"
+  ],
+  "summary": "The Diamondbacks benefit from home field advantage and a potential pitching edge with Ryne Nelson. The Angels may face challenges against a right-handed pitcher, depending on their lineup composition.",
+  "lean": "Slight lean toward Diamondbacks based on home field advantage and starting pitching matchup.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "The starting pitching matchup leans slightly in favor of the Diamondbacks."
+      ],
+      "frame": "The Angels face the Diamondbacks in Arizona with both starters being right-handed.",
+      "aim": [
+        "The primary factor is the home field advantage for the Diamondbacks."
+      ]
+    },
+    "interrogate": {
+      "question": "The Angels could exploit any weaknesses in the Diamondbacks' bullpen.",
+      "probe": null,
+      "verify": "The Angels' lineup performance against right-handed pitchers may vary."
+    },
+    "discern": {
+      "weigh": "Starting pitching is noted, but specific recent form data is missing.",
+      "contrast": "Market confidence appears to favor the Diamondbacks as the home team.",
+      "stress": "The read could weaken if the Angels' lineup performs well against right-handers."
+    },
+    "decide": {
+      "resolve": "Hold the read with caution, as lineup dynamics may change.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the home advantage and starting pitching matchup."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "The starting pitching matchup leans slightly in favor of the Diamondbacks.",
+      "frame": "The Angels face the Diamondbacks in Arizona with both starters being right-handed.",
+      "aim": "The primary factor is the home field advantage for the Diamondbacks."
+    },
+    "interrogate": {
+      "question": "The Angels could exploit any weaknesses in the Diamondbacks' bullpen.",
+      "probe": null,
+      "verify": "The Angels' lineup performance against right-handed pitchers may vary."
+    },
+    "discern": {
+      "weigh": "Starting pitching is noted, but specific recent form data is missing.",
+      "contrast": "Market confidence appears to favor the Diamondbacks as the home team.",
+      "stress": "The read could weaken if the Angels' lineup performs well against right-handers."
+    },
+    "decide": {
+      "resolve": "Hold the read with caution, as lineup dynamics may change.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the home advantage and starting pitching matchup."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "825071",
+  "scheduledStartUtc": "2026-06-15T21:40:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "arizona-diamondbacks",
+  "awayTeamRef": "los-angeles-angels"
+}

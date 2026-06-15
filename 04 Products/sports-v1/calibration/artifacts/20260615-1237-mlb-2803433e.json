@@ -1,0 +1,132 @@
+{
+  "agentRunId": "2803433e-f36b-1410-8163-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-15",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [
+    "signals_used contains bullpen but bullpen was not grounded",
+    "signals_used contains lineup_form but lineup_form was not grounded"
+  ],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Degraded",
+      "note": "signals_used contains bullpen but bullpen was not grounded; signals_used contains lineup_form but lineup_form was not grounded"
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The Royals' offense could outperform expectations, challenging the lean.",
+  "watchFor": "Any changes in the starting lineup or late injury news.",
+  "whatWouldChangeTheRead": [
+    "A significant lineup change for the Royals boosting their offense",
+    "A late announcement of bullpen fatigue for the Nationals"
+  ],
+  "summary": "The Nationals have a slight edge with Andrew Alvarez on the mound against Mitch Spence. Both teams have been dealing with bullpen workload, but the Nationals' lineup shows some recent hitting form.",
+  "lean": "Slight lean toward Nationals based on starting pitching advantage.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "The starting pitching matchup favors the Nationals slightly."
+      ],
+      "frame": "The Royals face the Nationals in a matchup featuring Alvarez and Spence.",
+      "aim": [
+        "Starting pitching performance is crucial in this matchup."
+      ]
+    },
+    "interrogate": {
+      "question": "The Royals could counter with a strong offensive performance despite Spence's struggles.",
+      "probe": null,
+      "verify": "The Royals' lineup has potential to exploit any weaknesses in Alvarez."
+    },
+    "discern": {
+      "weigh": "Starting pitching favors the Nationals, but bullpen usage is a concern.",
+      "contrast": "Market confidence may reflect the Nationals' home advantage.",
+      "stress": "The read could weaken if the Royals' offense performs unexpectedly well."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution as lineup performance can vary.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the clear advantage in starting pitching."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "The starting pitching matchup favors the Nationals slightly.",
+      "frame": "The Royals face the Nationals in a matchup featuring Alvarez and Spence.",
+      "aim": "Starting pitching performance is crucial in this matchup."
+    },
+    "interrogate": {
+      "question": "The Royals could counter with a strong offensive performance despite Spence's struggles.",
+      "probe": null,
+      "verify": "The Royals' lineup has potential to exploit any weaknesses in Alvarez."
+    },
+    "discern": {
+      "weigh": "Starting pitching favors the Nationals, but bullpen usage is a concern.",
+      "contrast": "Market confidence may reflect the Nationals' home advantage.",
+      "stress": "The read could weaken if the Royals' offense performs unexpectedly well."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution as lineup performance can vary.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the clear advantage in starting pitching."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "822724",
+  "scheduledStartUtc": "2026-06-15T18:45:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "washington-nationals",
+  "awayTeamRef": "kansas-city-royals"
+}

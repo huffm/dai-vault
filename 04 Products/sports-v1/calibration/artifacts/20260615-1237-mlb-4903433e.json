@@ -1,0 +1,133 @@
+{
+  "agentRunId": "4903433e-f36b-1410-8163-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-15",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [
+    "signals_used contains bullpen but bullpen was not grounded",
+    "signals_used contains lineup_form but lineup_form was not grounded",
+    "signals_used contains ballpark but ballpark was not grounded"
+  ],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Degraded",
+      "note": "signals_used contains bullpen but bullpen was not grounded; signals_used contains lineup_form but lineup_form was not grounded; signals_used contains ballpark but ballpark was not grounded"
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The Rays have shown resilience against left-handed pitchers in previous matchups, which could challenge the lean.",
+  "watchFor": "Any significant lineup changes for the Rays before the game.",
+  "whatWouldChangeTheRead": [
+    "Rays announce a strong lineup against left-handed pitching",
+    "Market line moves significantly in favor of the Rays"
+  ],
+  "summary": "The Dodgers benefit from home field advantage and a favorable starting pitching matchup with Eric Lauer. The Rays may face challenges against left-handed pitching, which could impact their lineup performance.",
+  "lean": "Slight lean toward Dodgers based on home field advantage and starting pitching matchup.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "The left-handed advantage of Eric Lauer against the Rays' lineup is significant."
+      ],
+      "frame": "The Dodgers host the Rays with Eric Lauer starting against Nick Martinez.",
+      "aim": [
+        "The primary factor is the handedness advantage of the starting pitchers."
+      ]
+    },
+    "interrogate": {
+      "question": "The Rays could still perform well if they adjust to Lauer's pitching style.",
+      "probe": null,
+      "verify": "The Dodgers' bullpen depth may mitigate any early game struggles."
+    },
+    "discern": {
+      "weigh": "Starting pitching favors the Dodgers, while lineup performance is a concern for the Rays.",
+      "contrast": "Market confidence appears to favor the Dodgers at home.",
+      "stress": "The read could fail if the Rays adapt quickly to Lauer's left-handed pitching."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, noting the potential for lineup adjustments.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the clear advantage in starting pitching and home field."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "The left-handed advantage of Eric Lauer against the Rays' lineup is significant.",
+      "frame": "The Dodgers host the Rays with Eric Lauer starting against Nick Martinez.",
+      "aim": "The primary factor is the handedness advantage of the starting pitchers."
+    },
+    "interrogate": {
+      "question": "The Rays could still perform well if they adjust to Lauer's pitching style.",
+      "probe": null,
+      "verify": "The Dodgers' bullpen depth may mitigate any early game struggles."
+    },
+    "discern": {
+      "weigh": "Starting pitching favors the Dodgers, while lineup performance is a concern for the Rays.",
+      "contrast": "Market confidence appears to favor the Dodgers at home.",
+      "stress": "The read could fail if the Rays adapt quickly to Lauer's left-handed pitching."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, noting the potential for lineup adjustments.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the clear advantage in starting pitching and home field."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "823938",
+  "scheduledStartUtc": "2026-06-15T22:10:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "los-angeles-dodgers",
+  "awayTeamRef": "tampa-bay-rays"
+}

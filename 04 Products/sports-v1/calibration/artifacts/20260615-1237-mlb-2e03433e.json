@@ -1,0 +1,129 @@
+{
+  "agentRunId": "2e03433e-f36b-1410-8163-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-15",
+  "groundedSignals": [],
+  "missingSignals": [
+    "starting_pitching"
+  ],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Degraded",
+      "note": "retrieve: no signals grounded for mlb -- priors-only run"
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.5,
+  "confidence": 0.375,
+  "evidenceRichness": 0,
+  "posture": "wait",
+  "counterCase": "The absence of starting pitcher data creates a significant gap in analysis.",
+  "watchFor": "Any updates on starting pitchers or key lineup changes.",
+  "whatWouldChangeTheRead": [
+    "Confirmation of starting pitchers and their recent performance",
+    "Information on key player injuries or lineup changes"
+  ],
+  "summary": "Both teams have strengths and weaknesses, but no clear advantage emerges. Without specific data on starting pitchers or other key factors, the matchup remains balanced.",
+  "lean": "No clear lean based on the available signals.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "missing",
+      "source": "mlb_statsapi",
+      "reason": "unavailable",
+      "detail": null,
+      "quality": "unavailable",
+      "decisionUse": "not_usable",
+      "followUpSignals": null,
+      "confidenceEffect": "neutral"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "The absence of starting pitcher data leaves uncertainty."
+      ],
+      "frame": "The Padres face the Cardinals in a matchup with no clear signals.",
+      "aim": [
+        "Identifying starting pitchers will be crucial for analysis."
+      ]
+    },
+    "interrogate": {
+      "question": "Without starter data, it's difficult to assess pitching advantages.",
+      "probe": null,
+      "verify": "The lack of information on lineups and recent form adds to uncertainty."
+    },
+    "discern": {
+      "weigh": "No specific signals are present, leaving the analysis incomplete.",
+      "contrast": null,
+      "stress": "Missing starting pitcher information significantly impacts the read."
+    },
+    "decide": {
+      "resolve": "Holding off on a read until more information becomes available.",
+      "position": "wait",
+      "justify": "The confidence level reflects the lack of clear signals."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "The absence of starting pitcher data leaves uncertainty.",
+      "frame": "The Padres face the Cardinals in a matchup with no clear signals.",
+      "aim": "Identifying starting pitchers will be crucial for analysis."
+    },
+    "interrogate": {
+      "question": "Without starter data, it's difficult to assess pitching advantages.",
+      "probe": null,
+      "verify": "The lack of information on lineups and recent form adds to uncertainty."
+    },
+    "discern": {
+      "weigh": "No specific signals are present, leaving the analysis incomplete.",
+      "contrast": null,
+      "stress": "Missing starting pitcher information significantly impacts the read."
+    },
+    "decide": {
+      "resolve": "Holding off on a read until more information becomes available.",
+      "position": "wait",
+      "justify": "The confidence level reflects the lack of clear signals."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "823046",
+  "scheduledStartUtc": "2026-06-15T19:45:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "st-louis-cardinals",
+  "awayTeamRef": "san-diego-padres"
+}

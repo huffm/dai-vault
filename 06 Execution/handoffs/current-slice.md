@@ -7866,3 +7866,22 @@ Verification (no code changed): service health (API 200, SQL 1433 open); SQL inv
 Files changed: `04 Products/sports-v1/stage-0-larger-identity-bearing-batch-v1.md` (new); `02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md` (entry 26 WNBA confirmation + entry 25 batch-prep note); this addendum. `dai`: none.
 
 status: Stage 0 Larger Identity-Bearing Batch v1 complete 2026-06-15 -- dry-run/no-spend; MLB-only batch prepared (pending generation), WNBA deferred (support missing), NBA offseason. No runs/outcomes/code/schema/seed/catalog change. Sample base still insufficient for confidence-threshold changes (entry 12 gated). Next: a budgeted spend slice generates ~8-10 MLB runs, keeps non-null leans, reconciles after settlement via the proven statsapi path; WNBA support is a separate catalog+seed+odds+analyzer slice if pursued. Nothing committed yet, nothing pushed.
+
+---
+
+## addendum: Budgeted MLB Stage 0 Generation v1 (2026-06-15)
+
+Live-spend generation of the prepared MLB-only batch. 10/10 MLB runs completed via
+`run-artifact-calibration.ps1 -Competition mlb -Days 3 -Take 10 -Force` (FastAPI started for the run; API + devcore-sql already up). Pre-state: `dai` clean on `main` 0/0; `dai-vault` ahead 2.
+
+Results: 10 attempted / 10 successful / 0 failures. All identity-bearing (`mlb_statsapi` + statsapi gamePk + ScheduledStartUtc + Season 2026 + team refs); global identity-bearing 4 -> 14; all artifact v3; no duplicate keys; outcomes/evals unchanged at 12/12 (generation wrote nothing). Directional split: **7 usable** (`AgentRun.LeanSide=home`, posture monitor, conf 0.75, ev 1) / **3 null-lean** (posture wait). All games scheduled tonight UTC (22:40Z-02:10Z) -> all pending settlement, none reconciled this slice. Spend ~$0.0067 (10 gpt-4o-mini calls, configured estimate).
+
+Observation (not a defect, no code change): the calibration-export artifact JSON leaves `leanSide` null and carries lean as prose; the authoritative directional value the matcher reads is the `AgentRun.LeanSide` column, correctly populated for the 7 monitor runs.
+
+WNBA: untouched, remains deferred to a separate slice.
+
+Run report: `04 Products/sports-v1/budgeted-mlb-stage-0-generation-v1.md`. Per-run artifacts + batch calibration report under `04 Products/sports-v1/calibration/` (`20260615-1237-mlb-*`).
+
+Files changed: new run report; ledger entry 25 generation note; this addendum; 10 generated artifact JSONs + 1 calibration report under the vault calibration folder. `dai`: none (no code/schema/test change).
+
+status: Budgeted MLB Stage 0 Generation v1 complete 2026-06-15 -- 10 identity-bearing MLB runs generated (7 directionally usable), all pending settlement, no reconciliation, no code/schema/matcher/identity/confidence/buyer change. Entry 12 still gated. Next: reconcile the 7 usable runs after tonight's games settle via the proven statsapi `POST /api/agent-runs/reconcile` path; WNBA Support Setup v1 only if intentionally adding WNBA. Nothing pushed.

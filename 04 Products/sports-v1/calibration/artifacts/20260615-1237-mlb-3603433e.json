@@ -1,0 +1,129 @@
+{
+  "agentRunId": "3603433e-f36b-1410-8163-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-15",
+  "groundedSignals": [],
+  "missingSignals": [
+    "starting_pitching"
+  ],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Degraded",
+      "note": "retrieve: no signals grounded for mlb -- priors-only run"
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.5,
+  "confidence": 0.375,
+  "evidenceRichness": 0,
+  "posture": "wait",
+  "counterCase": "The lack of starter data significantly limits the ability to form a clear lean.",
+  "watchFor": "Any updates on starting pitchers or lineup changes before the game.",
+  "whatWouldChangeTheRead": [
+    "Confirmation of starting pitchers and their recent performance",
+    "Information on bullpen workload or availability"
+  ],
+  "summary": "Both teams have strengths and weaknesses, but no clear advantage emerges. Without specific data on pitching or other critical factors, the matchup remains balanced.",
+  "lean": "No clear lean based on the available signals.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "missing",
+      "source": "mlb_statsapi",
+      "reason": "unavailable",
+      "detail": null,
+      "quality": "unavailable",
+      "decisionUse": "not_usable",
+      "followUpSignals": null,
+      "confidenceEffect": "neutral"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "No significant signals or anomalies are present."
+      ],
+      "frame": "The Twins face the Rangers in a regular season game with no pitching data.",
+      "aim": [
+        "Identifying the starting pitchers will be crucial for analysis."
+      ]
+    },
+    "interrogate": {
+      "question": "Without starter data, it's difficult to assess pitching matchups effectively.",
+      "probe": null,
+      "verify": "The absence of lineup or bullpen information also limits insight."
+    },
+    "discern": {
+      "weigh": "No signals are present, making it challenging to form a read.",
+      "contrast": null,
+      "stress": "The lack of pitching data creates uncertainty in the matchup."
+    },
+    "decide": {
+      "resolve": "Holding off on a read until more data becomes available is prudent.",
+      "position": "wait",
+      "justify": "Confidence is low due to the absence of critical information."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "No significant signals or anomalies are present.",
+      "frame": "The Twins face the Rangers in a regular season game with no pitching data.",
+      "aim": "Identifying the starting pitchers will be crucial for analysis."
+    },
+    "interrogate": {
+      "question": "Without starter data, it's difficult to assess pitching matchups effectively.",
+      "probe": null,
+      "verify": "The absence of lineup or bullpen information also limits insight."
+    },
+    "discern": {
+      "weigh": "No signals are present, making it challenging to form a read.",
+      "contrast": null,
+      "stress": "The lack of pitching data creates uncertainty in the matchup."
+    },
+    "decide": {
+      "resolve": "Holding off on a read until more data becomes available is prudent.",
+      "position": "wait",
+      "justify": "Confidence is low due to the absence of critical information."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "822887",
+  "scheduledStartUtc": "2026-06-15T20:05:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "texas-rangers",
+  "awayTeamRef": "minnesota-twins"
+}

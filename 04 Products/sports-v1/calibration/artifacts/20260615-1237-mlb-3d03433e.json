@@ -1,0 +1,134 @@
+{
+  "agentRunId": "3d03433e-f36b-1410-8163-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-15",
+  "groundedSignals": [
+    "starting_pitching"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [
+    "signals_used contains bullpen but bullpen was not grounded",
+    "signals_used contains lineup_form but lineup_form was not grounded",
+    "signals_used contains ballpark but ballpark was not grounded"
+  ],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Degraded",
+      "note": "signals_used contains bullpen but bullpen was not grounded; signals_used contains lineup_form but lineup_form was not grounded; signals_used contains ballpark but ballpark was not grounded"
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The Tigers could take advantage if Teng struggles early or if Melton performs unexpectedly well.",
+  "watchFor": "Any significant lineup changes or injury updates before the game.",
+  "whatWouldChangeTheRead": [
+    "A significant performance metric for Teng or Melton is revealed.",
+    "Injury news affecting key players in either lineup.",
+    "A sharp line move indicating market confidence in the Tigers."
+  ],
+  "summary": "The Astros benefit from home field advantage and a favorable starting pitching matchup with Kai-Wei Teng. The Tigers may struggle against Teng's handedness, while the Astros' lineup shows better recent form.",
+  "lean": "Slight lean toward Astros based on home field advantage and starting pitching matchup.",
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "The Astros' home field and lineup form provide a notable advantage."
+      ],
+      "frame": "The matchup features the Tigers visiting the Astros with Teng and Melton starting.",
+      "aim": [
+        "The primary factor is the Astros' home field advantage."
+      ]
+    },
+    "interrogate": {
+      "question": "The Tigers could exploit any weaknesses in Teng's performance, if present.",
+      "probe": null,
+      "verify": "The Astros' lineup form could be less effective against left-handed pitchers."
+    },
+    "discern": {
+      "weigh": "Starting pitching data is present, but specific performance metrics are missing.",
+      "contrast": "Market confidence appears to favor the Astros at home.",
+      "stress": "The read could fail if the Astros' lineup underperforms unexpectedly."
+    },
+    "decide": {
+      "resolve": "Hold this read cautiously, as lineup changes could impact the outcome.",
+      "position": "monitor",
+      "justify": "Confidence is based on the Astros' home advantage and lineup strength."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "The Astros' home field and lineup form provide a notable advantage.",
+      "frame": "The matchup features the Tigers visiting the Astros with Teng and Melton starting.",
+      "aim": "The primary factor is the Astros' home field advantage."
+    },
+    "interrogate": {
+      "question": "The Tigers could exploit any weaknesses in Teng's performance, if present.",
+      "probe": null,
+      "verify": "The Astros' lineup form could be less effective against left-handed pitchers."
+    },
+    "discern": {
+      "weigh": "Starting pitching data is present, but specific performance metrics are missing.",
+      "contrast": "Market confidence appears to favor the Astros at home.",
+      "stress": "The read could fail if the Astros' lineup underperforms unexpectedly."
+    },
+    "decide": {
+      "resolve": "Hold this read cautiously, as lineup changes could impact the outcome.",
+      "position": "monitor",
+      "justify": "Confidence is based on the Astros' home advantage and lineup strength."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "824181",
+  "scheduledStartUtc": "2026-06-15T20:10:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "houston-astros",
+  "awayTeamRef": "detroit-tigers"
+}
