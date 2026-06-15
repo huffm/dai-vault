@@ -7952,3 +7952,25 @@ Verification: TDD red (filter removed -> 3 eligibility tests fail) -> green; ful
 Files changed: `dai` -- AgentRun.cs, AppDbContext.cs, OutcomeReconciliationService.cs, AgentRunContracts.cs, AgentRunsController.cs, migration (+Designer/snapshot), AgentRunsControllerTests.cs. `dai-vault` -- new `run-eligibility-and-supersession-contract-v1.md`; ledger entry 25 note; this addendum.
 
 status: Run Eligibility and Supersession Contract v1 complete 2026-06-15 -- duplicate runs now safe (active-only auto-matching + soft exclude/supersede); 665/665 tests; no spend, no writes (12/12). Enables future null-lean reruns (supersede old -> reconcile new); not executed. Next: reconcile the 7 usable MLB runs after settlement. Nothing pushed.
+
+---
+
+## addendum: Null-Lean MLB Rerun with Supersession v1 (2026-06-15)
+
+Exercised the eligibility/supersession contract end to end. Lookahead gate passed (all 3 target games Preview/pre-start at 20:06Z; earliest start 23:45Z). Pre-state: `dai` ahead 2, `dai-vault` ahead 7.
+
+Reran the 3 null-lean games via the per-game create endpoint `POST /api/agent-runs` (3 model calls, exactly the 3 matchups). Result:
+
+| matchup | gamePk | old->new | old lean | new lean | old grounded | new grounded | class |
+|---|---|---|---|---|---|---|---|
+| Padres @ Cardinals | 823046 | 2e03433e->5003433e | null | home | [] | [starting_pitching] | ImprovedSignalProducedLean (timing) |
+| Twins @ Rangers | 822887 | 3603433e->5403433e | null | home | [] | [starting_pitching] | ImprovedSignalProducedLean (timing) |
+| Pirates @ Athletics | 824993 | 4203433e->5703433e | null | null | [starting_pitching] | [starting_pitching] | StillNull_NoDirectionalSignal (stable abstention) |
+
+Finding: 2/3 original nulls were timing/source artifacts (starters unannounced at the 12:37Z original generation -> priors-only -> honest abstention; by 20:06Z starters posted -> directional home lean, conf 0.375->0.75). 1/3 is a stable abstention. Validates Directional Lean Contract v1 (null is honest; more signal can move null->directional).
+
+Supersession: `POST /{old}/exclude` reason=superseded + link, for all 3 old runs. Verified: exactly 1 active run per target gamePk (823046/822887/824993 each -> 1); 7 usable originals untouched/active; old OutputJson/traces preserved (soft flag, no delete); outcomes/evals 12/12 (no reconciliation). Active directionally usable MLB runs now 9 (7 original + 2 reruns) + 1 active null (5703433e).
+
+Files changed: `dai-vault` -- new `null-lean-mlb-rerun-with-supersession-v1.md`; ledger entry 25 note; this addendum. `dai`: none (used existing endpoints; new runs live in dev DB only, not exported to vault).
+
+status: Null-Lean MLB Rerun with Supersession v1 complete 2026-06-15 -- 3 reruns (2 gained a lean, 1 stable null), old runs superseded, 1 active run/game, 7 usable untouched, no reconciliation, no writes (12/12), 3 model calls, no code change. Next: reconcile the 9 active usable MLB runs after settlement. Nothing pushed.
