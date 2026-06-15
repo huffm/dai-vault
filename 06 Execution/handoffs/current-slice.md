@@ -7974,3 +7974,25 @@ Supersession: `POST /{old}/exclude` reason=superseded + link, for all 3 old runs
 Files changed: `dai-vault` -- new `null-lean-mlb-rerun-with-supersession-v1.md`; ledger entry 25 note; this addendum. `dai`: none (used existing endpoints; new runs live in dev DB only, not exported to vault).
 
 status: Null-Lean MLB Rerun with Supersession v1 complete 2026-06-15 -- 3 reruns (2 gained a lean, 1 stable null), old runs superseded, 1 active run/game, 7 usable untouched, no reconciliation, no writes (12/12), 3 model calls, no code change. Next: reconcile the 9 active usable MLB runs after settlement. Nothing pushed.
+
+---
+
+## addendum: Perceive Signal Sufficiency Audit v1 (2026-06-15)
+
+Read-only audit -- no code, no model calls, no generation/reconciliation, outcomes/evals 12/12 unchanged. Pre-state: `dai` ahead 2, `dai-vault` ahead 8. Inspected: 1 usable original, 3 old null artifacts (vault), 3 rerun artifacts (DB via /artifact).
+
+Signal trace today (good): named `groundedSignals`/`missingSignals`, `evidenceRichness` (count), `signalAvailability[]` (status/source/quality/decisionUse/confidenceEffect per signal), `signalFollowUps[]` (empty here). Catalog `_KNOWN_SIGNAL_CATEGORIES` in sports_analyzer.py.
+
+Protocol trace today (good as prose): `cognitiveProtocol` has model prose for perceive/interrogate/discern/decide/synthesize micro-stages. `interrogate.probe` null on all runs; no live fallback attempts recorded (chain dormant).
+
+Missing (the gap): no source-group taxonomy, no critical/supporting tiers, no persisted sufficiency band (only the count; band is a frontend derivation), no typed null/low-confidence reason code.
+
+Cause attribution: source insufficiency is STRUCTURAL (old 823046/822887 signalAvailability.status=unavailable -> rerun grounded -> home; the changed signal is starting_pitching). The grounded-but-null low-separation case (824993, grounded both times) is legible ONLY in prose (discern.contrast null, decide.justify "lack of clear signals beyond starting pitching"). So insufficiency vs low-separation is not yet structurally separable.
+
+Readiness: a first-cut source-group COVERAGE/band is derivable deterministically from existing named signals (no model change); criticality gating + typed cause-code are not yet present.
+
+Recommended next observability slice: Source Group Taxonomy v1 (deterministic groups + tiers + derived band + deterministic null-reason) -- prerequisite for a later Perceive Sufficiency Gate Contract v1. Independent of reconciliation (still the calibration priority after settlement).
+
+Files changed: `dai-vault` -- new `perceive-signal-sufficiency-audit-v1.md`; ledger entry 25 note; this addendum. `dai`: none.
+
+status: Perceive Signal Sufficiency Audit v1 complete 2026-06-15 -- diagnosis only, no gate. signal+protocol trace well instrumented; missing source-group taxonomy/tiers, persisted band, typed cause-code. source insufficiency structural; low-separation prose-only. Next observability: Source Group Taxonomy v1. Reconciliation of 9 usable runs after settlement remains the calibration priority. No code/spend/writes. Nothing pushed.
