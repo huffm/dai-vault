@@ -8038,3 +8038,30 @@ Ledger: intentionally NOT touched -- this is a workflow decision, not a runtime/
 Files changed: `dai-vault` -- new `06 Execution/skills/claude-native-skill-registration-audit-v1.md`; inventory operating-rule note; this addendum. `dai`: none (no skill/frontmatter/code change).
 
 status: Claude Native Skill Registration Audit v1 complete 2026-06-15 -- native registration healthy, descriptions strong (no edits), gate reframed as audit/high-risk layer. No skill body, frontmatter, code, or runtime change. Next product priority unchanged: reconcile the 9 usable MLB runs after settlement. Nothing pushed.
+
+---
+
+## addendum: Post-Taxonomy Vault Reconciliation v1 (2026-06-15)
+
+Bounded docs/ledger alignment after Source Group Taxonomy v1. No code, no tests, no model calls, no reconciliation. Pre-state verified: `dai` in sync on `main`; `dai-vault` ahead 1 (skills-audit `b859a58`, unpushed); both trees clean.
+
+Verification of existing docs (grill-with-vault): `source-group-taxonomy-v1.md` is accurate -- correctly states the signal catalog, source groups, tiers, sport-critical rule, band rules, null-reason rules, derive-on-read, no migration/no persistence, "the only band logic lived in the Angular buyer projection (now mirrored server-side, read-only)" (frontend derivation still separate), and "This slice does not gate." A grep for stale phrasing (gate active / persisted band / market_odds grounded for MLB / rich band proven) found none across sports-v1. So no taxonomy-doc edit was needed.
+
+Confirmed current state (no wording implies otherwise):
+- Source Group Taxonomy v1 complete; SourceSufficiency is derive-on-read, NOT persisted.
+- Perceive Sufficiency Gate is dormant/deferred -- not active.
+- Reconciliation of the 9 active usable MLB runs is intentionally waiting on settlement; the sample is unchanged by the taxonomy slice (still 7 original + 2 reruns active; 3 old nulls superseded).
+- market_odds is not grounded for MLB; moderate/rich bands are unit-tested only, not proven on real MLB artifacts; null reasons are structural (deterministic), not model-derived.
+- WNBA remains deferred.
+
+Ledger: consolidated the post-taxonomy deferrals into the existing entry 25 taxonomy note (gate dormant, band derive-on-read, live fallback, non-structural null codes, frontend/server band consolidation, moderate/rich real-data validation; 9 runs deferred-until-settlement; entry 12 / buyer track record gated; WNBA entry 26). No duplicate or contradictory entry added.
+
+Clean next-slice sequencing:
+1. Reconcile the 9 active usable MLB runs after settlement (calibration-evidence priority).
+2. Perceive Sufficiency Fulfillment Contract v1 (the gate contract; dormant) if reconciliation is still waiting -- inputs are the taxonomy's band/coverage/null-reason.
+3. Probe Fallback Catalog v1 after the fulfillment contract (Question-to-Probe handoff + acceptable proxies on the fallback_proxy group).
+4. WNBA Support Setup v1 -- separate and deferred.
+
+Files changed: `dai-vault` -- ledger entry 25 consolidation; this addendum. `dai`: none.
+
+status: Post-Taxonomy Vault Reconciliation v1 complete 2026-06-15 -- docs verified accurate, deferrals consolidated in the ledger, next-slice sequencing clean. No code/test/runtime/reconciliation change. Nothing pushed.
