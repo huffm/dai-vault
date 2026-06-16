@@ -8197,3 +8197,17 @@ Result: 0 reconciled; correct/incorrect/inconclusive 0/0/0. Timing block only --
 Files changed: `dai-vault` -- new `reconcile-9-active-usable-mlb-runs-v1.md`; ledger entry 25 wait-only note; this addendum. `dai`: none.
 
 status: Reconcile 9 Active Usable MLB Runs v1 wait-only 2026-06-16 -- 0/9 games Final, no reconciliation, no writes (12/12), no code/spend. Next: rerun after settlement (~05:30Z) via the proven statsapi path, then PerceiveFulfillment-vs-Outcome Calibration Review. Nothing pushed.
+
+---
+
+## addendum: Deferred Slice Readiness Triage v1 (2026-06-16)
+
+Read-only triage while MLB reconciliation waits on settlement. No code, no model calls, no reconciliation, no generation, no advisory/enforcement, no Probe execution. Pre-state: `dai` ahead 3, `dai-vault` ahead 7; both clean.
+
+Primary finding: **Probe Fallback Catalog Integration Readiness v1 is superseded/absorbed by Perceive Fulfillment Observed Activation v1.** Verified all 8 integration checks true in live code (read-only): `PerceiveFulfillmentProjection.Build` reads `ProbeFallbackCatalog.Find`, uses profile `RequiredGroups`, derives supported primary/fallback/proxy paths, feeds them into `PerceiveFulfillmentPolicy.Evaluate`, and projects read-only on `AgentRunArtifactDto.PerceiveFulfillment`; no Probe/Tool-Gateway execution; no analyzer mutation. No further integration slice needed.
+
+Deferred status table: superseded/absorbed (Probe Fallback Catalog Integration); blocked-by-reconciliation (Reconcile 9 runs, PerceiveFulfillment-vs-Outcome review, advisory promotion); blocked-by-source-support (moderate/rich real-data validation); blocked-by-Question-trace (structured decision-uncertainty producer); keep-deferred (live Probe execution, soft/hard enforcement, tenant overrides, buyer display, WNBA). Ready-now: only this docs correction + the cosmetic `decision` int-enum nit (out of no-code boundary).
+
+Files changed: `dai-vault` -- new `deferred-slice-readiness-triage-v1.md`; ledger entry 25 absorption note; this addendum. `dai`: none.
+
+status: Deferred Slice Readiness Triage v1 complete 2026-06-16 -- Probe Fallback Catalog Integration marked absorbed; remaining deferrals classified; no runtime change, no code/spend/reconciliation. Next: reconcile the 9 usable runs after settlement (~05:30Z), then PerceiveFulfillment-vs-Outcome Calibration Review. Nothing pushed.
