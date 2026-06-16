@@ -8167,3 +8167,19 @@ Docs: added `04 Products/sports-v1/perceive-fulfillment-observed-activation-v1.m
 Files changed: `dai` -- `SportSufficiencyProfile.cs`, `AgentRunContracts.cs`, `AgentRunsController.cs`, `SportSufficiencyProfileTests.cs`, `AgentRunsControllerTests.cs`. `dai-vault` -- new product report, ledger entry 25 note, this addendum.
 
 status: Perceive Fulfillment Observed Activation v1 complete 2026-06-15 -- live observed Perceive fulfillment projection on artifact reads only; no enforcement, no Probe/tool execution, no model spend, no reconciliation, no persistence. Full DevCore.Api.Tests 705/705. Nothing pushed.
+
+---
+
+## addendum: Perceive Fulfillment Observability Review v1 (2026-06-15)
+
+Review-only (no projection bug found -> no code change). Read-only inspection of the live observed `PerceiveFulfillment` projection against 13 real MLB artifacts. Pre-state verified: `dai` ahead 3 (15334c7 policy, a80a4d8 catalog, f952f34 observed projection), `dai-vault` ahead 5; both clean; API was down (started read-only for the review).
+
+Live cohort result (GET /artifact, observed mode): 7 original + 2 rerun directionally-usable thin runs -> FulfilledWithThinCoverage; active-null 824993 (5703433e) -> FulfilledWithThinCoverage preserving NoDirectionalSeparation; superseded starter-unavailable nulls 823046/822887 -> PrimaryFulfillmentRequired (primary=[starting_pitching]); superseded 824993 -> FulfilledWithThinCoverage. Source insufficiency vs no-directional-separation correctly distinguished on real data; market_odds never required/primary for MLB; probe groups empty (fallback disabled).
+
+Non-mutation confirmed: outcomes/evals 12/12; cohort eligibility 10 active / 3 superseded unchanged; projection read-only, non-persisted, consumed by nothing in generation/matcher/evaluator/buyer. PerceiveFulfillment and Run Eligibility are orthogonal (projection computed per-artifact regardless of ExclusionReason).
+
+Principal review: keep observed mode LIVE (accurate, non-invasive). Advisory NOT ready, enforcement NOT ready -- both need reconciled-outcome evidence that thin-fulfilled reads grade correct (9 usable runs pre-settlement); moderate/rich + ProbeRequired/BlockedNotEvaluable branches are unit-tested only (every active MLB run grounds one signal -> thin). Minor noted-not-fixed: decision serializes as int.
+
+Files changed: `dai-vault` -- new perceive-fulfillment-observability-review-v1.md; ledger entry 25 note; this addendum. `dai`: none (no code change; no bug found).
+
+status: Perceive Fulfillment Observability Review v1 complete 2026-06-15 -- observed projection verified accurate + non-invasive on real artifacts; stays live; advisory/enforcement deferred pending reconciled outcomes. No code/model/generation/reconciliation; outcomes 12/12. Next: reconcile the 9 usable MLB runs after settlement, then PerceiveFulfillment-vs-Outcome Calibration Review before advisory. Nothing pushed.
