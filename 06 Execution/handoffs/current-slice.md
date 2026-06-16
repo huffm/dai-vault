@@ -8183,3 +8183,17 @@ Principal review: keep observed mode LIVE (accurate, non-invasive). Advisory NOT
 Files changed: `dai-vault` -- new perceive-fulfillment-observability-review-v1.md; ledger entry 25 note; this addendum. `dai`: none (no code change; no bug found).
 
 status: Perceive Fulfillment Observability Review v1 complete 2026-06-15 -- observed projection verified accurate + non-invasive on real artifacts; stays live; advisory/enforcement deferred pending reconciled outcomes. No code/model/generation/reconciliation; outcomes 12/12. Next: reconcile the 9 usable MLB runs after settlement, then PerceiveFulfillment-vs-Outcome Calibration Review before advisory. Nothing pushed.
+
+---
+
+## addendum: Reconcile 9 Active Usable MLB Runs v1 -- wait-only (2026-06-16)
+
+Reconciliation blocked on settlement. At `2026-06-16 00:27Z` StatsAPI shows 0 of 9 target games Final: 823452/822724/824505/824666/824181/823046/822887 In Progress, 825071/823938 Pre-Game. Per the settlement gate, no `POST /api/agent-runs/reconcile` was sent and no in-progress score was posted. Pre-state: `dai` ahead 3, `dai-vault` ahead 6; API + SQL up.
+
+Cohort (7 original + 2 rerun active, all LeanSide=home) confirmed correct; null `5703433e` and superseded `2e03433e`/`3603433e`/`4203433e` held out. Outcomes/evals 12/12 unchanged; eligibility 10 active / 3 superseded unchanged. No code, no model calls, no generation, no advisory/enforcement, no Probe, no projection change.
+
+Result: 0 reconciled; correct/incorrect/inconclusive 0/0/0. Timing block only -- no identity/tenant/source/matcher issue. All 9 expected Final by ~`2026-06-16 05:30Z` (latest start 02:10Z + ~3h).
+
+Files changed: `dai-vault` -- new `reconcile-9-active-usable-mlb-runs-v1.md`; ledger entry 25 wait-only note; this addendum. `dai`: none.
+
+status: Reconcile 9 Active Usable MLB Runs v1 wait-only 2026-06-16 -- 0/9 games Final, no reconciliation, no writes (12/12), no code/spend. Next: rerun after settlement (~05:30Z) via the proven statsapi path, then PerceiveFulfillment-vs-Outcome Calibration Review. Nothing pushed.
