@@ -8275,3 +8275,19 @@ Corrected next slice: **MLB Market Evidence Integration v1** -- re-scoped as an 
 Files changed: `dai-vault` -- new `04 Products/sports-v1/mlb-market-odds-grounding-v1.md`; ledger entry 25 note; this addendum. `dai`: none.
 
 status: MLB Market Odds Grounding v1 STOPPED 2026-06-17 -- honest-gap finding; MLB market absent from evidence path, grounding it moves the lean (out of scope); no code/model/generation/reconciliation/migration; catalog unchanged. Next: re-scoped MLB Market Evidence Integration v1 (analyzer-behavior, accepts lean change + fresh calibration baseline) or free negative-state capture first. Nothing pushed.
+
+---
+
+## addendum: MLB Market Evidence Integration v1 -- IMPLEMENTED (2026-06-17)
+
+Built the real MLB market evidence path end to end (.NET retrieve + FastAPI analyzer), accepting that MLB runs are now market-aware (analyzer-behavior slice). TDD; pre-state `dai` clean/main == origin, `dai-vault` ahead 2. No advisory/enforcement, no buyer copy, no confidence/posture/threshold change, no migration, no live model spend (tests mock the model), no reconciliation.
+
+Path: odds-api `baseball_mlb` `spreads` (run line) -> new `market.baseball.spread` tool over `OddsMarketClient.GetBaseballSpreadAsync` -> MLB branch of `SportsRetriever` -> `BaseballMarketContext` on `SportsRetrievalOutput`/`SportsAnalysisRequest` -> FastAPI `analyze_mlb` `[market data]` block -> grounds `market` (-> `market_odds` via existing taxonomy). MLB `ExpectedSignalNames` now `["starting_pitching","market"]`; a starter+market MLB run reaches `SourceSufficiency=moderate` (off the structurally-pinned thin). `ProbeFallbackCatalog` MLB `market_odds` `future_candidate` -> `supported`. Reconciliation-key integrity guarded: MLB keeps the statsapi `gamePk` identity; the odds-event identity is discarded (tested).
+
+Lean is NOT neutral: the model now sees the run line, so MLB lean/confidence will shift vs the pre-change thin cohort. **New market-aware calibration regime** -- do NOT compare pre-change thin vs post-change moderate as if only the band changed; compare within the post-change regime. This corrects the implicit lean-neutral assumption in Source Coverage and Calibration Variance Plan v1.
+
+Files: `dai` -- new `DevCore.AiClient/BaseballMarketContext.cs`; edits to SportAnalysisContracts, GameIdentity, OddsMarketClient, MarketSpreadHandlers, ToolRegistry, ToolGatewayServiceCollectionExtensions, SportsRetriever, SportsRetrievalOutput, SportsAnalyzer, CompetitionCatalog, ProbeFallbackCatalog (+ 4 .NET test files); FastAPI models/routes/sports_analyzer (+ test). `dai-vault` -- new `04 Products/sports-v1/mlb-market-evidence-integration-v1.md`; ledger entry 25; this addendum. No migration, no frontend, no SQL.
+
+Verification: `DevCore.Api.Tests` 710/710; FastAPI pytest 113/113. No model call, no generation, no reconciliation, no migration, no buyer change; diff code+tests only.
+
+status: MLB Market Evidence Integration v1 complete 2026-06-17 -- real MLB market evidence wired; starter+market -> moderate; analyzer now market-aware (lean not neutral, new calibration regime); catalog market_odds supported; 710/710 + 113/113 green; no advisory/enforcement/buyer/threshold/migration; no live spend. Next: Market-Aware MLB Stage 0 Capture v1 (budgeted generation, within-regime thin-vs-moderate). Nothing pushed.
