@@ -8229,3 +8229,19 @@ No code change (`dai` still ahead 3, clean), no migration, no model call, no spo
 Files changed: `dai-vault` -- `04 Products/sports-v1/reconcile-9-active-usable-mlb-runs-v1.md` (settlement-execution section + header), ledger entry 25 note, this addendum. `dai`: none.
 
 status: Reconcile 9 Active Usable MLB Runs v1 settlement execution complete 2026-06-17 -- 9/9 Final, 9/9 reconciled SingleMatch, outcomes/evals 12/12 -> 21/21, 7 correct / 2 incorrect / 0 inconclusive; no code/model/generation/migration; projection still observed read-only. Next: PerceiveFulfillment-vs-Outcome Calibration Review v1. Nothing pushed.
+
+---
+
+## addendum: PerceiveFulfillment-vs-Outcome Calibration Review v1 (2026-06-17)
+
+Read-only calibration review on the 9 reconciled MLB runs. Pre-state: `dai` clean/main ahead 3; `dai-vault` clean/main ahead 9; devcore-sql up; API down (started read-only on :5007 to re-read the 9 artifacts, stopped after). No code, no model, no generation, no new reconciliation, no advisory/enforcement, no Probe, no migration.
+
+Evidence: DB confirms outcomes/evals 21/21 and the 9 rows (7 correct / 2 incorrect: 3d03433e, 5403433e). Live `GET /artifact` on all 9 confirms they are **projection-identical** -- `observed` / `FulfilledWithThinCoverage` (decision=1) / band `thin` / reason `thin_sport_critical_grounded` / grounded `[identity_schedule, starting_pitching]` / no missing critical / no null reason. The 2 incorrect runs are indistinguishable from the 7 correct: same band, same grounded profile, same missing recommended groups (market_odds/bullpen/lineup/weather/movement). PerceiveFulfillment had **zero discriminating power** over correctness on this cohort.
+
+Hit rates: total 77.8% (7/9); original active 85.7% (6/7); rerun active 50% (1/2, n=2 noise). Same-band-only data means the predictor has zero variance vs outcome -> correlation undefined; 77.8% is an existence result, not reliability.
+
+Decision (Option A): keep observed mode LIVE and neutral; no advisory (internal or buyer), no enforcement. Option B (advisory reserved for PrimaryFulfillmentRequired/ProbeRequired/BlockedNotEvaluable) is the right future shape but premature -- no reconciled real-data examples of those states exist. Deferred unchanged: advisory, buyer display, soft/hard enforcement, negative-state + moderate/rich real-data validation, structured Question trace, live Probe, tenant overrides, WNBA.
+
+Files changed: `dai-vault` -- new `04 Products/sports-v1/perceive-fulfillment-vs-outcome-calibration-review-v1.md`; ledger entry 25 + entry 12 notes; this addendum. `dai`: none.
+
+status: PerceiveFulfillment-vs-Outcome Calibration Review v1 complete 2026-06-17 -- n=9, 77.8%, single thin band, PF non-discriminating; keep observed-only (Option A), no advisory/enforcement; no code/model/generation/reconciliation/migration. Next: Calibration Variance Capture Plan v1 (obtain non-thin / negative-state reconciled outcomes so the predictor varies). Nothing pushed.
