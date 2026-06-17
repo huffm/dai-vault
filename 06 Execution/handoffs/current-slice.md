@@ -8211,3 +8211,21 @@ Deferred status table: superseded/absorbed (Probe Fallback Catalog Integration);
 Files changed: `dai-vault` -- new `deferred-slice-readiness-triage-v1.md`; ledger entry 25 absorption note; this addendum. `dai`: none.
 
 status: Deferred Slice Readiness Triage v1 complete 2026-06-16 -- Probe Fallback Catalog Integration marked absorbed; remaining deferrals classified; no runtime change, no code/spend/reconciliation. Next: reconcile the 9 usable runs after settlement (~05:30Z), then PerceiveFulfillment-vs-Outcome Calibration Review. Nothing pushed.
+
+---
+
+## addendum: Reconcile 9 Active Usable MLB Runs v1 -- settlement execution (2026-06-17)
+
+Settlement pass after the 2026-06-16 wait-only block. StatsAPI now shows **9 of 9 target games Final**; all 9 active directionally-usable runs reconciled via `POST /api/agent-runs/reconcile`. Pre-state: `dai` clean on `main` ahead 3; `dai-vault` clean ahead 8; devcore-sql up; API was down -> started read-only on :5007 for this slice; FastAPI :8000 not running (no model path).
+
+Identity verified in DB before posting: all 9 carry `SourceProvider=mlb_statsapi`, expected gamePks, `LeanSide=home`, `ExclusionReason=null`, `TenantKey=1` (= dev bypass tenant). Superseded `2e03433e`/`3603433e`/`4203433e` confirmed `ExclusionReason=superseded`, so shared gamePks 823046/822887 resolve to a single active run each (no MultipleMatches). Active-null `5703433e` (824993) held out.
+
+Result: all 9 `SingleMatch`. **7 correct, 2 incorrect, 0 inconclusive.** Incorrect = home leans on away wins: `3d03433e` (DET 9 @ HOU 3) and `5403433e` (MIN 4 @ TEX 2). Outcomes/evaluations **12/12 -> 21/21** (+9, exactly one per run). Whole-table eval after: correct 12 / incorrect 5 / inconclusive 4. Original cohort 6 correct + 1 incorrect; rerun cohort 1 correct + 1 incorrect.
+
+PerceiveFulfillment/SourceSufficiency captured read-only from `GET /artifact` (sampled 4, incl. both incorrect): all `enforcementMode=observed`, `decision=1`/`FulfilledWithThinCoverage`, `band=thin`, reason `thin_sport_critical_grounded` -- unchanged by the outcome writes. Calibration signal: all 9 thin-fulfilled reads -> 7/9 correct (77.8%), single thin band, n=9 (directional, not a calibrated threshold).
+
+No code change (`dai` still ahead 3, clean), no migration, no model call, no sports generation, no advisory/enforcement, no Probe, no Tool Gateway, no prompt/confidence/lean/posture/buyer change. Git diff docs-only; only DB mutation is the 9 outcome/eval rows via the existing reconcile write path.
+
+Files changed: `dai-vault` -- `04 Products/sports-v1/reconcile-9-active-usable-mlb-runs-v1.md` (settlement-execution section + header), ledger entry 25 note, this addendum. `dai`: none.
+
+status: Reconcile 9 Active Usable MLB Runs v1 settlement execution complete 2026-06-17 -- 9/9 Final, 9/9 reconciled SingleMatch, outcomes/evals 12/12 -> 21/21, 7 correct / 2 incorrect / 0 inconclusive; no code/model/generation/migration; projection still observed read-only. Next: PerceiveFulfillment-vs-Outcome Calibration Review v1. Nothing pushed.
