@@ -8245,3 +8245,17 @@ Decision (Option A): keep observed mode LIVE and neutral; no advisory (internal 
 Files changed: `dai-vault` -- new `04 Products/sports-v1/perceive-fulfillment-vs-outcome-calibration-review-v1.md`; ledger entry 25 + entry 12 notes; this addendum. `dai`: none.
 
 status: PerceiveFulfillment-vs-Outcome Calibration Review v1 complete 2026-06-17 -- n=9, 77.8%, single thin band, PF non-discriminating; keep observed-only (Option A), no advisory/enforcement; no code/model/generation/reconciliation/migration. Next: Calibration Variance Capture Plan v1 (obtain non-thin / negative-state reconciled outcomes so the predictor varies). Nothing pushed.
+
+---
+
+## addendum: Source Coverage and Calibration Variance Plan v1 (2026-06-17)
+
+Planning / architecture-control slice. Docs-only. Pre-state: `dai` clean/main == origin; `dai-vault` clean/main == origin (both synced after the prior push). No code, no model, no generation, no reconciliation, no source integration, no advisory/enforcement, no Probe, no migration. Read SourceSignalTaxonomy.cs, ProbeFallbackCatalog.cs, SportSufficiencyProfile.cs for ground truth.
+
+Core finding: the calibration bottleneck is **predictor variance, not outcome volume**. Band is driven by the count of grounded decision-useful signals (identity comes from the run row and does not count); MLB grounds exactly one signal (`starting_pitching`), so every MLB run is pinned at `thin`/`FulfilledWithThinCoverage`. MLB as wired can produce only thin, `PrimaryFulfillmentRequired` (pre-announcement), and `NoDirectionalSeparation` (grounded-but-null); it cannot produce moderate/rich (needs a 2nd grounded source) or `ProbeRequired`/`BlockedNotEvaluable` (`AllowProbeFallback=false`; required group always has a path). In June, MLB is the only in-season buyer-ready sport (NBA/NFL/NCAAF/NCAAMB out of season; WNBA unsupported), so near-term variance is MLB-internal.
+
+Decision recorded: **Option A -- add MLB `market_odds` (odds-api baseball) first** (lowest effort: provider+key already wired for NBA/football; highest product value: consensus line; clean thin->moderate band variance; low/known source risk), paired with a **no-code** sample-design capture of `PrimaryFulfillmentRequired` (generate pre-announcement, carry to settlement, do not supersede) and `NoDirectionalSeparation` (reconcile null-lean games as comparison). Do NOT pile more thin-only MLB. Sample-design targets: >=15-20 settled outcomes per observed state for a first directional read, >=30 before advisory consideration; null-lean = inconclusive comparison group tracked separately; superseded excluded; reruns tracked as as-of cohort; freeze identity/lean at generation to avoid lookahead. Advisory/enforcement/buyer-display/Probe/Question/tenant-overrides/WNBA/multi-sport all stay deferred.
+
+Files changed: `dai-vault` -- new `04 Products/sports-v1/source-coverage-and-calibration-variance-plan-v1.md`; ledger entry 25 note; this addendum. `dai`: none.
+
+status: Source Coverage and Calibration Variance Plan v1 complete 2026-06-17 -- recorded Option A (MLB market_odds grounding first) + no-code negative-state capture; variance, not volume, is the bottleneck; no code/model/generation/reconciliation/migration. Next: MLB Market Odds Grounding v1 (scoped implementation slice) + companion negative-state capture in the next budgeted generation. Nothing pushed.
