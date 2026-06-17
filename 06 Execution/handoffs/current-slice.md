@@ -8259,3 +8259,19 @@ Decision recorded: **Option A -- add MLB `market_odds` (odds-api baseball) first
 Files changed: `dai-vault` -- new `04 Products/sports-v1/source-coverage-and-calibration-variance-plan-v1.md`; ledger entry 25 note; this addendum. `dai`: none.
 
 status: Source Coverage and Calibration Variance Plan v1 complete 2026-06-17 -- recorded Option A (MLB market_odds grounding first) + no-code negative-state capture; variance, not volume, is the bottleneck; no code/model/generation/reconciliation/migration. Next: MLB Market Odds Grounding v1 (scoped implementation slice) + companion negative-state capture in the next budgeted generation. Nothing pushed.
+
+---
+
+## addendum: MLB Market Odds Grounding v1 -- STOPPED (docs-only honest-gap finding) (2026-06-17)
+
+Investigation-only; **no code written** (honest stop per the slice's own boundary). Pre-state: `dai` clean/main == origin; `dai-vault` clean/main ahead 1. No model, no generation, no reconciliation, no migration, no advisory/enforcement, no Probe, no buyer change.
+
+Finding: MLB market odds are NOT in the artifact evidence path, and the plan's "existing odds-api baseball plumbing" assumption was only partly true. Confirmed in code: `CompetitionCatalog.cs:111` carries `OddsApiKey="baseball_mlb"` but nothing reads it; `SportsRetriever.cs:79-92` (MLB branch) fetches only `pitching.mlb.probable_starters` (no market call); MLB `ExpectedSignalNames=["starting_pitching"]` (`CompetitionCatalog.cs:112`); only `market.football.spread` + `market.basketball.spread` tools exist (`ToolRegistry.cs:112-113`) -- there is no `market.baseball.spread` handler. So this is not a missing-trace case; the evidence is genuinely absent.
+
+Why stopped: honest grounding requires fetching the line and feeding it to the FastAPI analyzer; the model then consumes the strongest directional signal and **changes LeanSide/confidence**. `SourceSufficiencyBuilder.DeriveBand` counts every grounded signal as decision-useful, so there is no honest "grounded but does not move the lean" channel. That contradicts this slice's hard boundary ("ground the source; do not move the lean") and its gate ("no model behavior change unless the signal is already in the evidence path and only trace/projection is missing" -- it is not). Per the explicit stop rule, documented the gap instead of faking a signal. `ProbeFallbackCatalog` MLB `market_odds` left as `future_candidate` (NOT promoted).
+
+Corrected next slice: **MLB Market Evidence Integration v1** -- re-scoped as an *analyzer-behavior* slice (build the real tool/retriever/analyzer path; explicitly accept that MLB leans change; promote catalog to supported only on a real fetch). Calibration caveat surfaced: post-change moderate runs come from a different decision process than the existing thin cohort, so thin-vs-moderate must be compared within the post-change regime, not pre/post the analyzer change (corrects an implicit assumption in the variance plan). Alternative: capture the free negative-state variance (PrimaryFulfillmentRequired, NoDirectionalSeparation) first, with no analyzer change.
+
+Files changed: `dai-vault` -- new `04 Products/sports-v1/mlb-market-odds-grounding-v1.md`; ledger entry 25 note; this addendum. `dai`: none.
+
+status: MLB Market Odds Grounding v1 STOPPED 2026-06-17 -- honest-gap finding; MLB market absent from evidence path, grounding it moves the lean (out of scope); no code/model/generation/reconciliation/migration; catalog unchanged. Next: re-scoped MLB Market Evidence Integration v1 (analyzer-behavior, accepts lean change + fresh calibration baseline) or free negative-state capture first. Nothing pushed.
