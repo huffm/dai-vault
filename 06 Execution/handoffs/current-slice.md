@@ -8323,3 +8323,17 @@ New calibration baseline; do NOT compare to the pre-market thin cohort as if onl
 Files changed: `dai-vault` -- new `04 Products/sports-v1/reconcile-market-aware-mlb-moderate-cohort-v1.md`; ledger entry 25 note (2026-06-18 partial reconcile); this addendum. `dai`: none.
 
 status: Reconcile Market-Aware MLB Moderate Cohort v1 PARTIAL 2026-06-18 -- 2/8 Final, 2/2 reconciled SingleMatch, outcomes/evals 21/21 -> 23/23, 0 correct / 2 incorrect / 0 inconclusive (both home leans lost); 6 pending settlement (~2026-06-19T02:00Z); projection still observed read-only; no code/model/generation/migration. Next: settlement-completion pass on the remaining 6 (target 29/29), then within-regime full-cohort read; evaluate bdde423e on structured home. Nothing pushed.
+
+---
+
+## addendum: Market-Aware MLB Miss Signal-Gap Review v1 (2026-06-18)
+
+Post-outcome research on the 2 reconciled misses (`b0de423e`/824992, `b4de423e`/823127). Docs-only; no code, no model, no generation, no reconciliation, no migration, no advisory/enforcement, no Probe. Read both artifacts + StatsAPI postgame boxscores to test the seeded leads against evidence (postgame facts NOT treated as pregame-known).
+
+Highest-value finding: not "market failed." Both artifacts already NAMED the right risks (`b0de` counterCase = Pirates lineup vs RHP; `b4de` = "Kirby weakness, specific data lacking"); the gap is grounded DEPTH (starting_pitching quality/form) and breadth (team_form, lineup_injury), not model awareness. Leans rode market run-line + home-field. Postgame box confirmed the misses were dominated by variance: O'Hearn 6 RBI, Civale 6 ER/3 IP, Barlow 4 ER/0.1 IP, Bradish 12 K.
+
+Each lead classified (pregame-available / in-game-postgame-only / already-represented / missing-group / feasible-next-source / defer). Provisional source-depth hypotheses (NOT a decision): starting_pitching quality/form > team_form > lineup_injury > bullpen_availability > market confirmation (sharp_public/line_movement). Strict framing held: n=2, same direction, hypothesis generation not calibration truth, no single signal would have flipped either lean, no source priority final until the remaining 6 settle.
+
+Files changed: `dai-vault` -- new `04 Products/sports-v1/market-aware-mlb-miss-signal-gap-review-v1.md`; ledger entry 25 tentative note (2026-06-18); this addendum. `dai`: none.
+
+status: Market-Aware MLB Miss Signal-Gap Review v1 complete 2026-06-18 -- post-outcome hypothesis note on 2 misses; artifacts named the right risks but lacked grounded starter quality/form + team/lineup depth; provisional source-depth hypotheses recorded, no decision; no code/model/generation/reconciliation/migration. Next: settlement-completion pass on the remaining 6, then re-run this gap review across all 8 before any source decision. Nothing pushed.
