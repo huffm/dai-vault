@@ -8307,3 +8307,19 @@ Capture note: `bdde423e` (Twins at Rangers, gamePk 822889) has structured `LeanS
 Files changed: `dai-vault` -- new `04 Products/sports-v1/market-aware-mlb-stage-0-capture-v1.md`; committed existing generated calibration report/artifact exports; ledger entry 25 note; this addendum. `dai`: none.
 
 status: Market-Aware MLB Stage 0 Capture v1 captured 2026-06-17 -- first moderate market-aware MLB cohort verified and documented; pending settlement; new evidence regime, new calibration baseline. Next: Reconcile Market-Aware MLB Moderate Cohort v1 after all 8 games are Final. Nothing pushed.
+
+---
+
+## addendum: Reconcile Market-Aware MLB Moderate Cohort v1 -- PARTIAL (2026-06-18)
+
+First reconciliation of the post-market-aware moderate cohort. Pre-state verified, not assumed: `dai` clean on `main` ahead 1; `dai-vault` clean on `main` ahead 4; devcore-sql (docker container) up; platform-api was down -> started on :5007 for the reconcile writes, stopped after; FastAPI :8000 never started (no model path). No code change.
+
+Settlement gate (existing StatsAPI source `statsapi.mlb.com/api/v1/schedule`, checked `2026-06-18T13:28Z`): **2 of 8 Final, 6 not started** (first pitch 17:35Z onward). Reconciled only the 2 Final via `POST /api/agent-runs/reconcile`; recorded 6 pending with no writes. DB pre-check confirmed all 8 (`AgentRunKey` 180013-180020): run-id prefixes match the 8 targets, `SourceProvider=mlb_statsapi` + gamePk identity, `ExclusionReason=null` (active), `TenantKey=1`, 0 outcome/0 eval each; LeanSide 7 home / 1 away (`b8de423e`); `bdde423e`=structured home.
+
+Result: both Final games are structured home leans whose away team won -> both **incorrect**. `b0de423e` (824992, Pirates 12 @ Athletics 4, away_win) and `b4de423e` (823127, Orioles 5 @ Mariners 3, away_win), each `SingleMatch`. Outcomes/evals **21/21 -> 23/23** (+2, one per run); 6 pending unchanged. This slice: **0 correct / 2 incorrect / 0 inconclusive** (n=2, directional, not a threshold). Structured `LeanSide` drove evaluation (no prose parsing). Post-write `GET /artifact` on both: `observed`/`decision=0`-Fulfilled/`moderate` band/grounded `[identity_schedule, market_odds, starting_pitching]` -- projection unchanged, read-only. `bdde423e` (822889, structured home vs Twins prose) is pending -> evaluate on structured `home` next pass.
+
+New calibration baseline; do NOT compare to the pre-market thin cohort as if only the band changed. No code, no model, no generation, no migration, no advisory/enforcement, no Probe, no Tool Gateway, no confidence/posture/lean/buyer change. Git diff docs-only; only DB mutation is the 2 outcome/eval rows via the existing reconcile write path.
+
+Files changed: `dai-vault` -- new `04 Products/sports-v1/reconcile-market-aware-mlb-moderate-cohort-v1.md`; ledger entry 25 note (2026-06-18 partial reconcile); this addendum. `dai`: none.
+
+status: Reconcile Market-Aware MLB Moderate Cohort v1 PARTIAL 2026-06-18 -- 2/8 Final, 2/2 reconciled SingleMatch, outcomes/evals 21/21 -> 23/23, 0 correct / 2 incorrect / 0 inconclusive (both home leans lost); 6 pending settlement (~2026-06-19T02:00Z); projection still observed read-only; no code/model/generation/migration. Next: settlement-completion pass on the remaining 6 (target 29/29), then within-regime full-cohort read; evaluate bdde423e on structured home. Nothing pushed.
