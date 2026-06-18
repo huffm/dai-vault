@@ -8291,3 +8291,19 @@ Files: `dai` -- new `DevCore.AiClient/BaseballMarketContext.cs`; edits to SportA
 Verification: `DevCore.Api.Tests` 710/710; FastAPI pytest 113/113. No model call, no generation, no reconciliation, no migration, no buyer change; diff code+tests only.
 
 status: MLB Market Evidence Integration v1 complete 2026-06-17 -- real MLB market evidence wired; starter+market -> moderate; analyzer now market-aware (lean not neutral, new calibration regime); catalog market_odds supported; 710/710 + 113/113 green; no advisory/enforcement/buyer/threshold/migration; no live spend. Next: Market-Aware MLB Stage 0 Capture v1 (budgeted generation, within-regime thin-vs-moderate). Nothing pushed.
+
+---
+
+## addendum: Market-Aware MLB Stage 0 Capture v1 -- CAPTURED (2026-06-17)
+
+Finish/capture slice for the already-generated market-aware MLB cohort. No new generation, no model call, no reconciliation, no code, no migration, no Probe, no advisory/enforcement, no buyer/frontend change.
+
+Recovered cohort: 8 MLB runs generated through the normal calibration script at local `2026-06-17 20:09` (`run-artifact-calibration.ps1`, `mlb`, take 8, days 3). DB rows `AgentRunKey` 180013-180020 match the exported report and artifacts. All 8 are identity-bearing (`SourceProvider=mlb_statsapi`, gamePk stored in `ExternalGameId`, scheduled UTC, season 2026, team refs), active (`ExclusionReason=null`), no outcome/eval rows, and later reconciliation-eligible after Final. Outcomes/evals stayed `21/21`; `ProbeRefreshMergeAudits=0`; latest applied migration remains `20260615191124_AddRunMatchEligibility`.
+
+Projection result: all 8 ground `starting_pitching` + `market`, all have `SourceSufficiency=moderate`, all project observed `PerceiveFulfillment decision=0/Fulfilled` with reason `moderate_or_rich_sufficiency`, all are artifact v3. LeanSide split is 7 home / 1 away / 0 null. Market source is `odds_api` run-line evidence; `sharp_public` is missing as confirmation and `line_movement` remains a future candidate on every run.
+
+Capture note: `bdde423e` (Twins at Rangers, gamePk 822889) has structured `LeanSide=home` while prose/factor text points toward the Twins. The evaluator uses structured `LeanSide`; preserve this as an artifact-quality risk for settlement review, not a projection blocker.
+
+Files changed: `dai-vault` -- new `04 Products/sports-v1/market-aware-mlb-stage-0-capture-v1.md`; committed existing generated calibration report/artifact exports; ledger entry 25 note; this addendum. `dai`: none.
+
+status: Market-Aware MLB Stage 0 Capture v1 captured 2026-06-17 -- first moderate market-aware MLB cohort verified and documented; pending settlement; new evidence regime, new calibration baseline. Next: Reconcile Market-Aware MLB Moderate Cohort v1 after all 8 games are Final. Nothing pushed.

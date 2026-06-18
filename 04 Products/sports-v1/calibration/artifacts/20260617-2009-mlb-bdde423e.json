@@ -1,0 +1,245 @@
+{
+  "agentRunId": "bdde423e-f36b-1410-8164-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-18",
+  "groundedSignals": [
+    "starting_pitching",
+    "market"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The strongest case against the lean is Texas's home advantage and potential for offensive breakout, which could shift momentum.",
+  "watchFor": "A significant shift in the run line before game time could indicate market sentiment changes.",
+  "whatWouldChangeTheRead": [
+    "Jack Leiter shows strong pre-game performance metrics.",
+    "A notable lineup change for the Twins that weakens their offense."
+  ],
+  "summary": "The Twins have a slight edge with Joe Ryan on the mound against Jack Leiter, who may face challenges against the left-handed hitters in Minnesota's lineup. The market also shows support for the Twins with a run line favoring them.",
+  "lean": "Slight lean toward Minnesota Twins based on market support and starting pitching advantage.",
+  "leanSide": "home",
+  "sourceSufficiency": {
+    "band": "moderate",
+    "nullReason": null,
+    "groups": [
+      {
+        "group": "identity_schedule",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "market_odds",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "starting_pitching",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      }
+    ]
+  },
+  "perceiveFulfillment": {
+    "enforcementMode": "observed",
+    "profile": {
+      "competition": "mlb",
+      "enforcementMode": "observed",
+      "requiredGroups": [
+        "starting_pitching"
+      ],
+      "recommendedGroups": [
+        "market_odds",
+        "bullpen_availability",
+        "lineup_injury",
+        "weather_park",
+        "market_movement"
+      ],
+      "optionalGroups": [
+        "identity_schedule",
+        "team_form",
+        "rest_travel"
+      ],
+      "ignoredGroups": [
+        "fallback_proxy"
+      ],
+      "minimumBand": "thin",
+      "allowPrimaryFulfillment": true,
+      "allowProbeFallback": false,
+      "notes": "mlb observed profile: starting pitching is required; moderate/rich is not required because current real mlb data is intentionally thin"
+    },
+    "result": {
+      "decision": 0,
+      "sufficiencyBand": "moderate",
+      "missingCriticalGroups": [],
+      "missingSportCriticalGroups": [],
+      "groundedCriticalGroups": [
+        "identity_schedule",
+        "market_odds",
+        "starting_pitching"
+      ],
+      "groundedSupportingGroups": [],
+      "groundedContextualGroups": [],
+      "nullReason": null,
+      "primaryFulfillmentGroups": [],
+      "recommendedProbeGroups": [],
+      "reason": "moderate_or_rich_sufficiency"
+    }
+  },
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "directional_only_without_confirmation",
+      "followUpSignals": [
+        "sharp_public",
+        "line_movement"
+      ],
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [
+    {
+      "triggeredBy": "market",
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "primary_signal_missing",
+      "decisionUse": "missing_confirmation",
+      "detail": "sharp_public was the recommended confirmation but is missing for this run; market remains directional only",
+      "fallbackType": "unavailable_with_reason",
+      "equivalence": "none",
+      "confidencePermission": "confidence_reduced",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "market",
+      "signal": "line_movement",
+      "status": "candidate",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "confirmation_candidate",
+      "detail": "line movement could confirm market direction in the future; not implemented yet and adjacent in equivalence",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    }
+  ],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Joe Ryan's right-handed pitching may exploit Texas's lineup weaknesses."
+      ],
+      "frame": "The matchup features the Twins visiting the Rangers with market favoring Minnesota.",
+      "aim": [
+        "Starting pitching performance is critical for this matchup."
+      ]
+    },
+    "interrogate": {
+      "question": "The strongest case against the lean is Texas's home advantage and potential for offensive breakout.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "Jack Leiter's performance could surprise if he effectively manages Minnesota's hitters."
+    },
+    "discern": {
+      "weigh": "Starting pitching signals are present, but Texas's home field advantage is absent.",
+      "contrast": "The market run line indicates a preference for the Twins, suggesting confidence in their performance.",
+      "stress": "The read may fail if Jack Leiter delivers a strong performance against the Twins."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, acknowledging the potential for unexpected outcomes.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the combination of starting pitching advantage and market support."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Joe Ryan's right-handed pitching may exploit Texas's lineup weaknesses.",
+      "frame": "The matchup features the Twins visiting the Rangers with market favoring Minnesota.",
+      "aim": "Starting pitching performance is critical for this matchup."
+    },
+    "interrogate": {
+      "question": "The strongest case against the lean is Texas's home advantage and potential for offensive breakout.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "Jack Leiter's performance could surprise if he effectively manages Minnesota's hitters."
+    },
+    "discern": {
+      "weigh": "Starting pitching signals are present, but Texas's home field advantage is absent.",
+      "contrast": "The market run line indicates a preference for the Twins, suggesting confidence in their performance.",
+      "stress": "The read may fail if Jack Leiter delivers a strong performance against the Twins."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, acknowledging the potential for unexpected outcomes.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the combination of starting pitching advantage and market support."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "822889",
+  "scheduledStartUtc": "2026-06-18T14:35:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "texas-rangers",
+  "awayTeamRef": "minnesota-twins"
+}

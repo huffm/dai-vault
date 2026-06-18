@@ -1,0 +1,245 @@
+{
+  "agentRunId": "b0de423e-f36b-1410-8164-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-17",
+  "groundedSignals": [
+    "starting_pitching",
+    "market"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The Pirates may have a stronger lineup against right-handed pitchers, which could challenge the lean.",
+  "watchFor": "Any significant lineup changes or performance indicators before the game.",
+  "whatWouldChangeTheRead": [
+    "A notable performance trend from the Pirates' lineup against right-handers",
+    "A shift in the market line indicating stronger support for the Pirates"
+  ],
+  "summary": "The Athletics benefit from a home field advantage and market support, while the starting pitching matchup features two right-handed pitchers. This context suggests a competitive game with slight favor towards the Athletics.",
+  "lean": "Slight lean toward Athletics based on market support and home field advantage.",
+  "leanSide": "home",
+  "sourceSufficiency": {
+    "band": "moderate",
+    "nullReason": null,
+    "groups": [
+      {
+        "group": "identity_schedule",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "market_odds",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "starting_pitching",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      }
+    ]
+  },
+  "perceiveFulfillment": {
+    "enforcementMode": "observed",
+    "profile": {
+      "competition": "mlb",
+      "enforcementMode": "observed",
+      "requiredGroups": [
+        "starting_pitching"
+      ],
+      "recommendedGroups": [
+        "market_odds",
+        "bullpen_availability",
+        "lineup_injury",
+        "weather_park",
+        "market_movement"
+      ],
+      "optionalGroups": [
+        "identity_schedule",
+        "team_form",
+        "rest_travel"
+      ],
+      "ignoredGroups": [
+        "fallback_proxy"
+      ],
+      "minimumBand": "thin",
+      "allowPrimaryFulfillment": true,
+      "allowProbeFallback": false,
+      "notes": "mlb observed profile: starting pitching is required; moderate/rich is not required because current real mlb data is intentionally thin"
+    },
+    "result": {
+      "decision": 0,
+      "sufficiencyBand": "moderate",
+      "missingCriticalGroups": [],
+      "missingSportCriticalGroups": [],
+      "groundedCriticalGroups": [
+        "identity_schedule",
+        "market_odds",
+        "starting_pitching"
+      ],
+      "groundedSupportingGroups": [],
+      "groundedContextualGroups": [],
+      "nullReason": null,
+      "primaryFulfillmentGroups": [],
+      "recommendedProbeGroups": [],
+      "reason": "moderate_or_rich_sufficiency"
+    }
+  },
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "directional_only_without_confirmation",
+      "followUpSignals": [
+        "sharp_public",
+        "line_movement"
+      ],
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [
+    {
+      "triggeredBy": "market",
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "primary_signal_missing",
+      "decisionUse": "missing_confirmation",
+      "detail": "sharp_public was the recommended confirmation but is missing for this run; market remains directional only",
+      "fallbackType": "unavailable_with_reason",
+      "equivalence": "none",
+      "confidencePermission": "confidence_reduced",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "market",
+      "signal": "line_movement",
+      "status": "candidate",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "confirmation_candidate",
+      "detail": "line movement could confirm market direction in the future; not implemented yet and adjacent in equivalence",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    }
+  ],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "The market shows support for the Athletics with the run line."
+      ],
+      "frame": "The Pirates face the Athletics with both teams starting right-handed pitchers.",
+      "aim": [
+        "The home field advantage for the Athletics is significant."
+      ]
+    },
+    "interrogate": {
+      "question": "The Pirates could outperform if their lineup hits well against righties.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "The Athletics' home performance could be a strong factor."
+    },
+    "discern": {
+      "weigh": "The starting pitching is equal, but market support favors the Athletics.",
+      "contrast": "The market indicates confidence in the Athletics with the run line.",
+      "stress": "The read could fail if the Pirates' lineup performs unexpectedly well."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, as lineup performance can change outcomes.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the market's lean towards the Athletics and home advantage."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "The market shows support for the Athletics with the run line.",
+      "frame": "The Pirates face the Athletics with both teams starting right-handed pitchers.",
+      "aim": "The home field advantage for the Athletics is significant."
+    },
+    "interrogate": {
+      "question": "The Pirates could outperform if their lineup hits well against righties.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "The Athletics' home performance could be a strong factor."
+    },
+    "discern": {
+      "weigh": "The starting pitching is equal, but market support favors the Athletics.",
+      "contrast": "The market indicates confidence in the Athletics with the run line.",
+      "stress": "The read could fail if the Pirates' lineup performs unexpectedly well."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, as lineup performance can change outcomes.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the market's lean towards the Athletics and home advantage."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "824992",
+  "scheduledStartUtc": "2026-06-17T21:40:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "athletics",
+  "awayTeamRef": "pittsburgh-pirates"
+}
