@@ -8337,3 +8337,19 @@ Each lead classified (pregame-available / in-game-postgame-only / already-repres
 Files changed: `dai-vault` -- new `04 Products/sports-v1/market-aware-mlb-miss-signal-gap-review-v1.md`; ledger entry 25 tentative note (2026-06-18); this addendum. `dai`: none.
 
 status: Market-Aware MLB Miss Signal-Gap Review v1 complete 2026-06-18 -- post-outcome hypothesis note on 2 misses; artifacts named the right risks but lacked grounded starter quality/form + team/lineup depth; provisional source-depth hypotheses recorded, no decision; no code/model/generation/reconciliation/migration. Next: settlement-completion pass on the remaining 6, then re-run this gap review across all 8 before any source decision. Nothing pushed.
+
+---
+
+## addendum: Settled Miss Corpus and Artifact Consistency Review v1 (2026-06-18)
+
+Quality-control review of ALL 7 settled `incorrect` runs (read-only DB/artifact inspection via container sqlcmd + the 2 vault market-aware artifacts; no services started). Pre-state verified, not assumed: BOTH repos clean on `main` and SYNCED with origin (0 ahead) -- the slice's "ahead 6/1, nothing pushed" baseline was stale because both were pushed last turn. devcore-sql up. Docs-only; no code, model, generation, reconciliation, Probe, advisory/enforcement, migration.
+
+Corpus + regimes: pre-market thin MLB (6416433E, 3D03433E, 5403433E), market-aware moderate MLB (B0DE423E, B4DE423E), NBA market (5816433E v2 legacy, C1F3423E v3). No superseded/excluded incorrect; 4 inconclusive (null-lean) kept separate. Whole-table eval: correct 12 / incorrect 7 / inconclusive 4.
+
+Defect taxonomy (counts): NamedRiskUngrounded 7/7; SourceDepthInsufficient (starter identity/handedness only) 5/7 -- in BOTH pre-market and market-aware, so market integration added a second shallow signal, did not add depth; CounterCaseUnderweighted 5/7 (counter-cases named the actual failure mode; confidence flat 0.675-0.75); MarketOvertrust 4/7 incl. NBA (NOT MLB-market-aware-specific); EvaluationSurfaceRisk/StructuredProseMismatch systemic (prose names a team, structured lean drives eval; legacy 5816433E has structured home + prose "Thunder" + NO team ref -- same family as pending bdde423e, pre-dates market-aware). No miss was caused by a structured error.
+
+Highest leverage = artifact-quality/contract work, doc/seam-first, all-niche, no model: deterministic version-aware observed ArtifactDirectionConsistency check; formalize SourcePresence-vs-SourceDepth and NamedRiskUngrounded as inspectable observed seams (NamedRiskUngrounded = natural future Probe-trigger seam, activation deferred). Source-depth enrichment (starter form > team_form > lineup) = highest sport leverage but costlier; deferred. Refinement backlog recorded with scope/risk/leverage/timing.
+
+Files changed: `dai-vault` -- new `04 Products/sports-v1/settled-miss-corpus-and-artifact-consistency-review-v1.md`; ledger entry 25 taxonomy/backlog note (2026-06-18, NOT a decision); this addendum. `dai`: none.
+
+status: Settled Miss Corpus and Artifact Consistency Review v1 complete 2026-06-18 -- 7 settled misses inspected across 3 regimes; defect taxonomy + refinement backlog produced; recurring defects are artifact-quality/contract (NamedRiskUngrounded 7/7, EvaluationSurfaceRisk) + source-depth (starter identity-only 5/7), NOT a single missing source and NOT market-aware-specific; no code/model/generation/reconciliation/migration/threshold/buyer/advisory change. Next: Artifact Direction Consistency Guard v1 (+ Named Risk Grounding Review v1 doc seam); 6 pending market-aware runs still must settle before any source/calibration decision. Nothing pushed.
