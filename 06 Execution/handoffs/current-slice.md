@@ -8485,3 +8485,21 @@ Tests: `DevCore.Api.Tests` 747 -> 751 (+4 new MlbStarterClientTests: people stat
 Files changed: `dai` -- `DevCore.Api/Sports/MlbStarterClient.cs` (add pitcher id, revert hydrate, people-endpoint fetch + season derivation + per-pitcher cache, refactored BuildQuality); new `DevCore.Api.Tests/Sports/MlbStarterClientTests.cs`; `DevCore.Api.Tests/AgentRuns/SportsRetrieverTests.cs` (MlbRoutingHandler + mlbPeopleJson; 2 enriched tests updated). `dai-vault` -- new `04 Products/sports-v1/mlb-starter-enrichment-source-path-fix-v1.md`; ledger entry 25 note; this addendum.
 
 status: MLB Starter Enrichment Source-Path Fix v1 complete 2026-06-19 -- starter season quality/form now sourced from the people endpoint (2-call fan-out, fail-soft), SourceDepth flips identity_only->enriched when stats exist, confirmed live; SourceSufficiency breadth + wire contract unchanged; TDD 751/751; no model/generation/reconciliation/Probe/advisory/enforcement/buyer/migration. Next: depth-aware SourceSufficiency band review, then a budgeted starter-depth MLB generation + reconcile. dai + dai-vault committed separately. Nothing pushed.
+
+---
+
+## addendum: MLB Starter-Depth Live Cohort Capture v1 -- CAPTURED (2026-06-19)
+
+Generated a small live MLB cohort to prove the starter-enrichment fix reaches real artifacts. Pre-state: `dai` clean on `main` @ fa9a2d9; `dai-vault` on `main` @ 1c7f7f4 (ahead 5, not pushed). Services started this slice: FastAPI agent-service (:8000) + .NET API (:5007); devcore-sql already up; Angular not started. Model calls for the 6 generations ONLY. No reconciliation, no code change (dai clean throughout), no Probe/advisory/enforcement/buyer/migration/threshold/posture/confidence change.
+
+Generation: manual loop (not the calibration-report script). `GET /competitions/mlb/upcoming?days=3` -> 24 games; first 6 selected; `POST /agent-runs` per game (one gpt-4o-mini call each); captured each via read-only `GET /artifact`. Spend not persisted; configured estimate ~$0.06-0.18 for 6 runs. All 6 completed; no failures, no early stop.
+
+Result (6/6): artifact v3, identity-bearing (mlb_statsapi+gamePk), active, AgentRunKey 190013-190018, band=moderate, grounded [starting_pitching, market], PerceiveFulfillment 0/Fulfilled, conf 0.75, posture monitor, LeanSide=home, 0 outcome/0 eval. **SourceDepth.starting_pitching = enriched on ALL 6** (market_odds=shallow on all 6). Enriched season stats reached the analyzer -- summaries compare starter ERA/WHIP (Schlittler 1.82 vs Lowder 4.60; Skubal vs Eisert; deGrom edge). ArtifactDirectionConsistency: 5 Consistent, 1 PotentialMismatch (190017 Brewers@Braves). NamedRiskGrounding: Ungrounded 6/6. All observed-only.
+
+SourceSufficiency NON-CHANGE: band moderate + grounded [starting_pitching, market] identical to the identity-only cohort; depth nests inside the already-grounding starting_pitching, no new grounded signal/group, band unmoved. NEW REGIME: starter-depth enriched cohort (190013-190018) -- do NOT pool with the identity-only market-aware cohort (180013-180020); now machine-readable via SourceDepth=enriched. Outcome/eval totals unchanged 29/29.
+
+gamePks/starts (UTC): 824264 WhiteSox@Tigers 22:40Z; 823534 Reds@Yankees 23:05; 823853 Giants@Marlins 23:10; 822966 Nationals@Rays 23:10; 824910 Brewers@Braves 23:15; 822886 Padres@Rangers 00:05(06-20). All pending Final (~2026-06-20T04:00Z+).
+
+Files changed: `dai-vault` -- new `04 Products/sports-v1/mlb-starter-depth-live-cohort-capture-v1.md`; ledger entry 25 note; this addendum. `dai`: none. DB: 6 new agent-run rows + artifacts (generation); no outcome/eval rows.
+
+status: MLB Starter-Depth Live Cohort Capture v1 complete 2026-06-19 -- 6 live MLB runs generated, SourceDepth.starting_pitching=enriched on 6/6, enriched ERA/WHIP visible in analyzer output, SourceSufficiency breadth unchanged, no reconciliation (29/29), no code change; new enriched regime captured for later reconcile. Next: Reconcile MLB Starter-Depth Enriched Cohort v1 after settlement. Vault docs committed. Nothing pushed. Services (FastAPI/.NET/devcore-sql) left running.
