@@ -8503,3 +8503,19 @@ gamePks/starts (UTC): 824264 WhiteSox@Tigers 22:40Z; 823534 Reds@Yankees 23:05; 
 Files changed: `dai-vault` -- new `04 Products/sports-v1/mlb-starter-depth-live-cohort-capture-v1.md`; ledger entry 25 note; this addendum. `dai`: none. DB: 6 new agent-run rows + artifacts (generation); no outcome/eval rows.
 
 status: MLB Starter-Depth Live Cohort Capture v1 complete 2026-06-19 -- 6 live MLB runs generated, SourceDepth.starting_pitching=enriched on 6/6, enriched ERA/WHIP visible in analyzer output, SourceSufficiency breadth unchanged, no reconciliation (29/29), no code change; new enriched regime captured for later reconcile. Next: Reconcile MLB Starter-Depth Enriched Cohort v1 after settlement. Vault docs committed. Nothing pushed. Services (FastAPI/.NET/devcore-sql) left running.
+
+---
+
+## addendum: Reconcile MLB Starter-Depth Enriched Cohort v1 -- WAIT-ONLY (2026-06-19)
+
+Settlement-gated reconcile could not run: at the StatsAPI check (same day as generation, before first pitch) all 6 target games were Pre-Game (0 Final). No `POST /api/agent-runs/reconcile` submitted, no score posted, no outcome fabricated. Pre-state: `dai` clean on `main` @ fa9a2d9; `dai-vault` on `main` @ 34802c9 (ahead 6, not pushed). Services from the capture slice still up (FastAPI :8000, .NET :5007, devcore-sql); used read-only (DB + artifact + public StatsAPI settlement check). No code, no model call, no generation, no Probe, no advisory/enforcement, no buyer/frontend, no migration, no confidence/posture/band change.
+
+Settlement gate (2026-06-19, pre first-pitch): 824264 WhiteSox@Tigers, 823534 Reds@Yankees, 823853 Giants@Marlins, 822966 Nationals@Rays, 824910 Brewers@Braves, 822886 Padres@Rangers -- all Pre-Game (first pitch 22:40Z onward, latest 00:05Z 06-20). Timing block only; no identity/tenant/source/matcher issue.
+
+Cohort integrity confirmed read-only: 190013-190018 all active, completed, artifact v3, identity-bearing mlb_statsapi gamePk, LeanSide=home, 0 outcome/0 eval. Observed projections unchanged from capture: SourceDepth starting_pitching=enriched 6/6, market_odds=shallow 6/6; SourceSufficiency band moderate 6/6; PerceiveFulfillment 0/Fulfilled 6/6; ArtifactDirectionConsistency 5 Consistent / 1 PotentialMismatch (190017); NamedRiskGrounding Ungrounded 6/6. Outcome/eval totals unchanged 29/29.
+
+190017 (Brewers@Braves, PotentialMismatch) must be graded on structured LeanSide=home when settled.
+
+Files changed: `dai-vault` -- new `04 Products/sports-v1/reconcile-mlb-starter-depth-enriched-cohort-v1.md`; ledger entry 25 wait-only note; this addendum. `dai`: none.
+
+status: Reconcile MLB Starter-Depth Enriched Cohort v1 WAIT-ONLY 2026-06-19 -- all 6 games pre-start, 0 reconciled, nothing written, totals unchanged 29/29; cohort intact and reconcile-eligible once Final (~2026-06-20T04:00Z+). No code/model/generation/Probe/advisory/enforcement/migration. Next: rerun the reconcile after settlement (target 35/35), grade 190017 on structured home. Vault docs committed. Nothing pushed. Services left running.
