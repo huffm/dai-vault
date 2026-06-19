@@ -8395,3 +8395,23 @@ TDD red->green. 11 unit (`NamedRiskGroundingEvaluatorTests`: grounded starter-id
 Files changed: `dai` -- new `NamedRiskGrounding.cs`; edits to `AgentRunContracts.cs` (DTO field), `Controllers/AgentRunsController.cs` (derive-on-read wiring), `AgentRunsControllerTests.cs` (+2 tests), new `NamedRiskGroundingEvaluatorTests.cs`. `dai-vault` -- new `04 Products/sports-v1/named-risk-grounding-observed-projection-v1.md`; ledger entry note; this addendum.
 
 status: Named Risk Grounding Observed Projection v1 complete 2026-06-18 -- observed-only deterministic named-risk-vs-grounded-source classifier, surfaced read-only on the dev /artifact DTO; TDD 735/735; ProbeCandidate observed flag only (no probe); no model/generation/reconciliation/migration/threshold/buyer/advisory/enforcement change; gates nothing. Next: settlement-completion reconcile of the 6 pending market-aware MLB runs (separate pass, ~2026-06-19T02:00Z) OR MLB Starting Pitching Quality/Form Enrichment v1 (deferred). Committed dai + dai-vault separately. Nothing pushed.
+
+---
+
+## addendum: Reconcile Market-Aware MLB Moderate Cohort v1 -- COMPLETION PASS (2026-06-19)
+
+Reconciled the remaining 6 market-aware MLB moderate-cohort runs now that all games are Final. Pure reconciliation: outcome/eval rows only. No code, no model call, no generation, no Probe, no advisory/enforcement, no buyer/frontend change, no source integration, no migration, no confidence/posture/lean change. Pre-state verified: `dai` clean on `main` @ 00dfa84 (synced); `dai-vault` clean on `main` @ a17bc0b (synced). Stack started for read+reconcile only: Docker Desktop -> `devcore-sql` container (was down; daemon was down at slice start) -> .NET API on :5007. FastAPI (:8000) never started. No stray :5007 listener before start.
+
+Settlement gate: all 6 gamePks Final in StatsAPI (home-away) -- 824748 BlueJays@RedSox 4-3 away_win; 823772 Guardians@Brewers 4-2 away_win; 822889 Twins@Rangers 9-3 away_win; 823125 Orioles@Mariners 0-3 home_win; 823448 Mets@Phillies 6-4 away_win; 823533 WhiteSox@Yankees 5-1 away_win.
+
+Pre-reconcile gates (all 6): active (ExclusionReason null), identity-bearing (mlb_statsapi + gamePk), Status=completed, artifact v3, SourceSufficiency band=moderate, PerceiveFulfillment decision=0/Fulfilled (moderate_or_rich_sufficiency), TenantKey=1, 0 existing outcome / 0 existing eval. Reconciled via `POST /api/agent-runs/reconcile`; every result SingleMatch.
+
+Results (structured LeanSide drives eval; reconcile never parses prose): b8de423e away->correct; bede423e home->correct; bcde423e home->incorrect; bdde423e **home (structured)**->incorrect; c2de423e home->incorrect; c4de423e home->incorrect. **bdde423e was evaluated on structured LeanSide=home (Rangers), not the prose that leans the Twins** -- DB row: LeanSide=home, WinningSide=away, EvalStatus=incorrect.
+
+Completion pass: 2 correct / 4 incorrect / 0 inconclusive. Outcome/eval totals 23/23 -> 29/29 (+6, exactly one outcome + one eval per run, no double-write). Full 8-run market-aware moderate cohort (AgentRunKey 180013-180020): **2 correct / 6 incorrect / 0 inconclusive** (correct: bede423e, b8de423e). n=8, within-regime/directional only -- NOT a calibration threshold and NOT comparable to the pre-market thin cohort.
+
+ArtifactDirectionConsistency (live /artifact): Consistent on 5; **PotentialMismatch on bdde423e** ("structured lean=home but lean prose points to the opposite side") -- the guard surfaced the section-10 mismatch; eval still ran on structured home. NamedRiskGrounding: Ungrounded on 5 (bcde423e/bdde423e/bede423e/c2de423e/c4de423e), DepthInsufficient on b8de423e; 1 warning each -- consistent with intentionally thin MLB data (named risks map to grounded groups but at insufficient depth, or to ungrounded groups). Both observed-only; this pass creates labels, the next slice interprets them.
+
+Files changed: `dai-vault` -- `04 Products/sports-v1/reconcile-market-aware-mlb-moderate-cohort-v1.md` (status -> COMPLETE; new Completion Pass sections CP-1..CP-10); this addendum. `dai`: none (git clean, confirmed). Ledger: not touched -- no calibration/source decision was made this slice (labels only).
+
+status: Reconcile Market-Aware MLB Moderate Cohort v1 complete 2026-06-19 -- 8/8 reconciled, outcome/eval 29/29, cohort 2 correct / 6 incorrect / 0 inconclusive; bdde423e graded on structured home; no code/model/generation/Probe/advisory/enforcement/buyer/migration/threshold change. Next: Market-Aware MLB Moderate Calibration Review v1 (interprets these labels; no labels created there). Vault docs committed. Nothing pushed.

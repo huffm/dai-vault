@@ -1,7 +1,7 @@
 # Reconcile Market-Aware MLB Moderate Cohort v1
 
-**date:** 2026-06-18
-**status:** PARTIAL RECONCILE - 2 of 8 Final reconciled, 6 pending settlement.
+**date:** 2026-06-18 (partial) / 2026-06-19 (completion pass)
+**status:** COMPLETE - 8 of 8 reconciled. All games Final; outcome/eval totals 29/29.
 **classification:** reconciliation slice; docs + DB outcome/eval rows only. No code, no model, no generation.
 
 **Anchor:** New evidence regime, new calibration baseline.
@@ -121,3 +121,104 @@ Post-reconcile `GET /artifact` on both reconciled runs returned identical projec
 **Reconcile Market-Aware MLB Moderate Cohort v1 - settlement completion** after the remaining 6 games are Final (expected ~2026-06-19T02:00Z). Reconcile the 6 pending gamePks via the same path, evaluate on structured `LeanSide` (explicitly evaluate `bdde423e` on structured `home`), and confirm outcome/eval totals reach 29/29 if all 6 settle normally. Then a within-regime read of the full 8-run market-aware moderate cohort (correct/incorrect distribution) - compared only against other market-aware runs, never against the pre-market thin cohort.
 
 Deferred unchanged: advisory/enforcement, buyer display, moneyline enrichment, WNBA, tenant overrides, live Probe, scheduled settlement automation.
+
+---
+
+## Completion Pass (2026-06-19)
+
+The remaining 6 runs settled and were reconciled via the same `POST /api/agent-runs/reconcile`
+path. No code, no model calls, no generation, no Probe, no advisory/enforcement, no buyer/frontend
+changes, no migrations. Outcome/eval rows only.
+
+### CP-1. Settlement Gate Result (all 6 Final)
+
+Final status + scores via StatsAPI `schedule` at `2026-06-19` (home-away):
+
+| gamePk | run | game | StatsAPI state | final (away-home) | winner |
+|---|---|---|---|---|---|
+| 824748 | b8de423e | Blue Jays at Red Sox | Final | 4-3 | Blue Jays (away) |
+| 823772 | bcde423e | Guardians at Brewers | Final | 4-2 | Guardians (away) |
+| 822889 | bdde423e | Twins at Rangers | Final | 9-3 | Twins (away) |
+| 823125 | bede423e | Orioles at Mariners | Final | 0-3 | Mariners (home) |
+| 823448 | c2de423e | Mets at Phillies | Final | 6-4 | Mets (away) |
+| 823533 | c4de423e | White Sox at Yankees | Final | 5-1 | White Sox (away) |
+
+All 6 Final -> all 6 reconciled.
+
+### CP-2. Pre-reconcile gates (per run, before any write)
+
+All 6 confirmed: active (`ExclusionReason=null`), identity-bearing (`mlb_statsapi` + gamePk),
+`Status=completed`, `artifactVersion=sports_decision_artifact_v3`, `SourceSufficiency.band=moderate`,
+`PerceiveFulfillment result.decision=0 (Fulfilled)` reason `moderate_or_rich_sufficiency`,
+`TenantKey=1`, and 0 existing outcome / 0 existing eval rows. Table totals before: 23/23.
+
+### CP-3. Reconciliation Table (completion pass)
+
+| field | b8de423e | bcde423e | bdde423e | bede423e | c2de423e | c4de423e |
+|---|---|---|---|---|---|---|
+| AgentRunKey | 180015 | 180016 | 180017 | 180018 | 180019 | 180020 |
+| gamePk | 824748 | 823772 | 822889 | 823125 | 823448 | 823533 |
+| teams (away at home) | Blue Jays at Red Sox | Guardians at Brewers | Twins at Rangers | Orioles at Mariners | Mets at Phillies | White Sox at Yankees |
+| final (home-away) | 3-4 | 2-4 | 3-9 | 3-0 | 4-6 | 1-5 |
+| winner | away | away | away | home | away | away |
+| reconcile status | SingleMatch | SingleMatch | SingleMatch | SingleMatch | SingleMatch | SingleMatch |
+| structured LeanSide | away | home | **home** | home | home | home |
+| outcomeStatus posted | away_win | away_win | away_win | home_win | away_win | away_win |
+| evaluation result | **correct** | **incorrect** | **incorrect** | **correct** | **incorrect** | **incorrect** |
+| SourceSufficiency band | moderate | moderate | moderate | moderate | moderate | moderate |
+| PerceiveFulfillment | 0 / Fulfilled | 0 / Fulfilled | 0 / Fulfilled | 0 / Fulfilled | 0 / Fulfilled | 0 / Fulfilled |
+| ArtifactDirectionConsistency | Consistent | Consistent | **PotentialMismatch** | Consistent | Consistent | Consistent |
+| NamedRiskGrounding | DepthInsufficient | Ungrounded | Ungrounded | Ungrounded | Ungrounded | Ungrounded |
+
+### CP-4. Outcome / Evaluation Totals
+
+- Before completion pass: `AgentRunOutcomes=23`, `AgentRunEvaluations=23`.
+- After completion pass: `AgentRunOutcomes=29`, `AgentRunEvaluations=29` (+6, one outcome + one eval per run).
+- DB verified: each of the 6 shows the structured `LeanSide`, derived `WinningSide`, and `EvalStatus`
+  above; `Source=mlb_statsapi`; no double-write (each had 0 rows before).
+
+### CP-5. Completion-pass result
+
+- This pass (6 reconciled): **2 correct / 4 incorrect / 0 inconclusive.**
+  - correct: bede423e (home lean, Mariners won), b8de423e (away lean, Blue Jays won).
+  - incorrect: bcde423e, bdde423e, c2de423e, c4de423e (all home leans, away team won).
+
+### CP-6. Full 8-run market-aware moderate cohort (AgentRunKey 180013-180020)
+
+- **2 correct / 6 incorrect / 0 inconclusive.**
+- correct: bede423e, b8de423e. incorrect: b0de423e, b4de423e, bcde423e, bdde423e, c2de423e, c4de423e.
+- n=8, within-regime only. Directional, not yet a calibration threshold. Compare only against other
+  market-aware runs, never against the pre-market thin cohort.
+
+### CP-7. Structured LeanSide confirmation (incl. bdde423e)
+
+Evaluation used the denormalized `AgentRun.LeanSide` column on every run; the reconcile path never
+parses prose. `bdde423e` (gamePk 822889) was evaluated on its structured `LeanSide=home` (Rangers),
+not the prose that leans Minnesota. DB row confirms `LeanSide=home`, `WinningSide=away`,
+`EvalStatus=incorrect`. The structured/prose mismatch (section 10) persists as an artifact-quality
+risk and is unchanged by this pass.
+
+### CP-8. ArtifactDirectionConsistency observations
+
+`artifactDirectionConsistency` projected (read live via `GET /artifact`): **Consistent** on 5 runs
+(b8de423e away, bcde423e/bede423e/c2de423e/c4de423e home) and **PotentialMismatch** on **bdde423e**
+with warning "structured lean=home but lean prose points to the opposite side" (detected prose side
+= away). The guard surfaced exactly the section-10 artifact-quality risk: bdde423e carries structured
+`LeanSide=home` (Rangers) while its prose leans the Twins (away). The reconcile path still evaluated
+on the structured `home` and graded it incorrect. Observation only this slice; no decision made --
+the PotentialMismatch is a candidate input for the calibration-review slice's artifact-quality read.
+
+### CP-9. NamedRiskGrounding observations
+
+`namedRiskGrounding` rolled up to **Ungrounded** on 5 of 6 (bcde423e, bdde423e, bede423e, c2de423e,
+c4de423e) and **DepthInsufficient** on b8de423e; each run carried exactly 1 warning. Pattern: named
+risks in the prose map to grounded groups but at insufficient depth, or to groups not grounded at
+all -- consistent with the intentionally thin current MLB data. Observation only; this pass creates
+the labels, the next slice interprets them.
+
+### CP-10. Recommended next slice
+
+**Market-Aware MLB Moderate Calibration Review v1** -- interpret the 8 labels now recorded. Do the
+within-regime read (2/6/0), examine the NamedRiskGrounding Ungrounded/DepthInsufficient pattern and
+the null ArtifactDirectionConsistency on all v3 runs, and only then consider source-priority or
+calibration decisions. No labels are created in that slice; it reads what this slice wrote.
