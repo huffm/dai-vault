@@ -8519,3 +8519,21 @@ Cohort integrity confirmed read-only: 190013-190018 all active, completed, artif
 Files changed: `dai-vault` -- new `04 Products/sports-v1/reconcile-mlb-starter-depth-enriched-cohort-v1.md`; ledger entry 25 wait-only note; this addendum. `dai`: none.
 
 status: Reconcile MLB Starter-Depth Enriched Cohort v1 WAIT-ONLY 2026-06-19 -- all 6 games pre-start, 0 reconciled, nothing written, totals unchanged 29/29; cohort intact and reconcile-eligible once Final (~2026-06-20T04:00Z+). No code/model/generation/Probe/advisory/enforcement/migration. Next: rerun the reconcile after settlement (target 35/35), grade 190017 on structured home. Vault docs committed. Nothing pushed. Services left running.
+
+---
+
+## addendum: Interactive Evidence Artifact v1 (Source Depth on buyer surface) -- 2026-06-19
+
+Surfaced Source Depth on the buyer analyzer artifact page (frontend only). Pre-state: `dai` clean on `main` @ fa9a2d9; `dai-vault` @ cca3ed9. No backend/model/migration change; observed-only buyer rendering. Confidence/lean/posture unchanged (rendered straight from the artifact; depth projection never recomputes them).
+
+Implementation: additive frontend model types (`SourceDepthRecordDto`, `SourceSufficiencyDto` on `AgentRunArtifactDto`); new pure buyer-safe projection `source-depth-summary.ts` (`buildSourceDepthSummary`) mirroring the existing `buyer-signal-summary` pattern -- maps SourceDepth levels (none|identity_only|shallow|enriched) to buyer-safe phrases ("Enriched starter context", "Identity only", "Market context available", "Not grounded"), buyer-safe detail (raw internal text like "no season pitching stats published" -> "Season form not available"; never leaks the stat list), an observed/inferred label, an evidence-regime label, and a cautions list. Wired into `analyzer.component.ts` (`sourceDepthSummary` computed + presentation-only tone/gauge helpers) and `analyzer.component.html` (new Source Depth section after the Signal Summary + an "Evidence regime" chip in the Current Lean card). Signature element: a 4-segment depth gauge (none->enriched). Caution panel uses `@defer (on viewport)`. Uses the existing dark-card Tailwind tokens/gradient -- the stable visual system was not reopened.
+
+Buyer copy safety: no edge/lock/guaranteed/sharp-money/AI-knows wording; depth detail is buyer-safe-mapped, unknown source groups title-cased (no raw snake_case leak); the projection ignores confidence (proven by test).
+
+Tests: TDD red->green. New `source-depth-summary.spec.ts` (10 tests: enriched label, identity_only conservative, missing-reason buyer-safe, shallow market, none/inferred, regime label, null + empty fail-soft, confidence-ignored, no snake_case leak). Full sports-app suite 47 -> 57 (6 files) green. `ng build` succeeds. `git diff --check` clean. Frontend-only diff (5 files under apps/sports-app).
+
+Visual QA limitation (honest): live populated browser QA was NOT run -- the buyer Source Depth section only renders after a completed analysis, which needs a model call (out of scope this slice). Section reuses the already-shipped Signal Summary's responsive card/grid patterns (single `sm:grid-cols-2` section, no duplicate mobile/desktop blocks). Populated-state screenshot QA at 390px/tablet/desktop is deferred to the next generation slice.
+
+Files changed: `dai` -- `apps/sports-app/src/app/core/models/agent-run.model.ts` (+SourceDepth/SourceSufficiency DTOs), new `apps/sports-app/src/app/analyzer/source-depth-summary.ts` + `source-depth-summary.spec.ts`, `analyzer/analyzer.component.ts` (+computed/helpers), `analyzer/analyzer.component.html` (+Source Depth section + regime chip). `dai-vault` -- this addendum.
+
+status: Interactive Evidence Artifact v1 (Source Depth on buyer surface) complete 2026-06-19 -- buyer-safe source-depth rendering, observed-only, confidence/lean/posture unchanged; TDD 57/57 + build green; visual QA of populated state deferred (needs generation). Next: populated-state visual QA during the next live MLB generation, then optional buyer evidence-card polish. dai + dai-vault committed separately. Not pushed.
