@@ -8537,3 +8537,27 @@ Visual QA limitation (honest): live populated browser QA was NOT run -- the buye
 Files changed: `dai` -- `apps/sports-app/src/app/core/models/agent-run.model.ts` (+SourceDepth/SourceSufficiency DTOs), new `apps/sports-app/src/app/analyzer/source-depth-summary.ts` + `source-depth-summary.spec.ts`, `analyzer/analyzer.component.ts` (+computed/helpers), `analyzer/analyzer.component.html` (+Source Depth section + regime chip). `dai-vault` -- this addendum.
 
 status: Interactive Evidence Artifact v1 (Source Depth on buyer surface) complete 2026-06-19 -- buyer-safe source-depth rendering, observed-only, confidence/lean/posture unchanged; TDD 57/57 + build green; visual QA of populated state deferred (needs generation). Next: populated-state visual QA during the next live MLB generation, then optional buyer evidence-card polish. dai + dai-vault committed separately. Not pushed.
+
+---
+
+## addendum: Live MLB Enriched Artifact Visual QA + Source-Depth Polish v1 (2026-06-19)
+
+Populated-state visual QA of the buyer Source Depth surface against a REAL enriched MLB artifact, plus two targeted polish fixes. Pre-state: `dai` clean on `main` @ fd189f8 (ahead 1); `dai-vault` @ af0dee5 (ahead 1); both IEA commits present. Frontend-only; no backend/migration/confidence/lean/posture/source-sufficiency change.
+
+Artifact used for QA: live MLB run (Los Angeles Angels @ Athletics, 2026-06-19) generated through the real analyzer UI. First QA run `09aa433e-f36b-1410-8166-00373db4b724` -> SourceDepth starting_pitching=enriched, market_odds=shallow, band moderate, regime "Enriched starter context", model summary cites starter ERA (José Soriano vs Jeffrey Springs). A second generation was run only to re-capture the POLISHED state at all three viewports in one session (the dev-server reload after the code edits cleared the populated state) -- two generations total (~$0.04 gpt-4o-mini), not artifact-hunting.
+
+Viewports inspected: 390px (mobile), 768px (tablet), 1280px (desktop). Screenshots (polished state) in `04 Products/sports-v1/qa/`: `qa-iea-mobile-390.png`, `qa-iea-tablet-768.png`, `qa-iea-desktop-1280.png`.
+
+Visual findings: Source Depth section renders cleanly at all three widths -- two depth cards (Starting pitching enriched, green full gauge; Market context, partial gauge), legible 4-segment gauges, "Observed from data · Season form available" / "· Run line available". Single column on mobile, two-column at tablet/desktop (sm:grid-cols-2), no duplicated sections, no clipped text. Buyer-safe throughout: "Starting pitching", "Market context", "Enriched starter context", "Season form available", "Run line available" -- no snake_case, no raw internal values, no dev terms (sourceDepth/missingReason/DTO) leaked. Two issues found: (1) the "Evidence regime: Enriched starter context" chip appeared twice (lean card AND Source Depth header) -- redundant; (2) shallow market context would have been framed as a caution ("not fully grounded") next to "available" -- contradictory.
+
+Polish made (both allowed by the slice): (1) removed the redundant regime chip from the Source Depth section header, keeping it once in the Current Lean decision card; (2) cautions now include only identity-only and not-grounded sources (tone limited/none), excluding shallow ("present") context that is available-but-not-deep -- projection + 2 new tests. No copy/confidence/lean/posture changes beyond these.
+
+Tests/build: TDD red->green for the cautions change. `source-depth-summary.spec.ts` 10 -> 12. Full sports-app suite 57 -> 59 green. `ng build` succeeds. `git diff --check` clean. dai diff is code-only (3 files): analyzer.component.html, source-depth-summary.ts, source-depth-summary.spec.ts.
+
+Buyer copy safety: confirmed live -- only buyer-safe labels/phrases shown; no edge/lock/guaranteed/sharp-money/AI-knows wording; no raw internal terms or snake_case.
+
+Outcome reconciliation: STILL PENDING. Visual QA does not require it. The starter-depth enriched cohort 190013-190018 remains pre-start/unsettled (separate Reconcile slice). The two QA runs (09aa433e + the second) are additional active MLB runs, not part of that cohort; they are not reconciled here.
+
+Files changed: `dai` -- analyzer.component.html (removed duplicate regime chip), source-depth-summary.ts (cautions filter), source-depth-summary.spec.ts (+2 caution tests). `dai-vault` -- new `04 Products/sports-v1/qa/` (3 screenshots); this addendum.
+
+status: Live MLB Enriched Artifact Visual QA + Source-Depth Polish v1 complete 2026-06-19 -- populated buyer Source Depth validated on a real enriched MLB artifact at 390/768/1280; deduped the regime chip and stopped framing shallow context as a caution; buyer-safe, no internal leaks; sports-app 59/59 + build green. Outcome reconciliation of the enriched cohort still pending settlement. Next: Reconcile MLB Starter-Depth Enriched Cohort v1 after settlement; optional buyer evidence-card polish if desired. dai + dai-vault committed separately. Not pushed.
