@@ -1,0 +1,323 @@
+{
+  "agentRunId": "a6b5433e-f36b-1410-8167-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-22",
+  "groundedSignals": [
+    "starting_pitching",
+    "market"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "Valdez's home field could lead to a better performance than expected, challenging the lean.",
+  "watchFor": "Any shifts in the run line before the game could indicate market sentiment changes.",
+  "whatWouldChangeTheRead": [
+    "Valdez shows improved performance in pre-game warm-ups.",
+    "Significant lineup changes for the Yankees that weaken their offense."
+  ],
+  "summary": "The Yankees benefit from Gerrit Cole's strong season form compared to Framber Valdez. The market indicates a preference for the Yankees with a -1.5 run line.",
+  "lean": "Slight lean toward New York Yankees based on starting pitching advantage.",
+  "leanSide": "away",
+  "sourceSufficiency": {
+    "band": "moderate",
+    "nullReason": null,
+    "groups": [
+      {
+        "group": "identity_schedule",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "market_odds",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "starting_pitching",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      }
+    ]
+  },
+  "perceiveFulfillment": {
+    "enforcementMode": "observed",
+    "profile": {
+      "competition": "mlb",
+      "enforcementMode": "observed",
+      "requiredGroups": [
+        "starting_pitching"
+      ],
+      "recommendedGroups": [
+        "market_odds",
+        "bullpen_availability",
+        "lineup_injury",
+        "weather_park",
+        "market_movement"
+      ],
+      "optionalGroups": [
+        "identity_schedule",
+        "team_form",
+        "rest_travel"
+      ],
+      "ignoredGroups": [
+        "fallback_proxy"
+      ],
+      "minimumBand": "thin",
+      "allowPrimaryFulfillment": true,
+      "allowProbeFallback": false,
+      "notes": "mlb observed profile: starting pitching is required; moderate/rich is not required because current real mlb data is intentionally thin"
+    },
+    "result": {
+      "decision": 0,
+      "sufficiencyBand": "moderate",
+      "missingCriticalGroups": [],
+      "missingSportCriticalGroups": [],
+      "groundedCriticalGroups": [
+        "identity_schedule",
+        "market_odds",
+        "starting_pitching"
+      ],
+      "groundedSupportingGroups": [],
+      "groundedContextualGroups": [],
+      "nullReason": null,
+      "primaryFulfillmentGroups": [],
+      "recommendedProbeGroups": [],
+      "reason": "moderate_or_rich_sufficiency"
+    }
+  },
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "directional_only_without_confirmation",
+      "followUpSignals": [
+        "sharp_public",
+        "line_movement"
+      ],
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [
+    {
+      "triggeredBy": "market",
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "primary_signal_missing",
+      "decisionUse": "missing_confirmation",
+      "detail": "sharp_public was the recommended confirmation but is missing for this run; market remains directional only",
+      "fallbackType": "unavailable_with_reason",
+      "equivalence": "none",
+      "confidencePermission": "confidence_reduced",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "market",
+      "signal": "line_movement",
+      "status": "candidate",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "confirmation_candidate",
+      "detail": "line movement could confirm market direction in the future; not implemented yet and adjacent in equivalence",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    }
+  ],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Gerrit Cole's strong ERA of 2.57 is a key signal."
+      ],
+      "frame": "The Yankees face the Tigers with Cole's strong form against Valdez's 4.09 ERA.",
+      "aim": [
+        "Starting pitching quality is the primary factor in this matchup."
+      ]
+    },
+    "interrogate": {
+      "question": "Framber Valdez could outperform expectations given home field advantage.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "The Yankees' lineup may struggle against left-handed pitching."
+    },
+    "discern": {
+      "weigh": "Cole's strong performance is clear, but Valdez's home advantage is missing.",
+      "contrast": "The market shows confidence in the Yankees with a -1.5 run line.",
+      "stress": "The read could fail if Valdez has an unexpectedly strong outing."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, acknowledging potential variability.",
+      "position": "monitor",
+      "justify": "The confidence level reflects Cole's strong season stats compared to Valdez."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Gerrit Cole's strong ERA of 2.57 is a key signal.",
+      "frame": "The Yankees face the Tigers with Cole's strong form against Valdez's 4.09 ERA.",
+      "aim": "Starting pitching quality is the primary factor in this matchup."
+    },
+    "interrogate": {
+      "question": "Framber Valdez could outperform expectations given home field advantage.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "The Yankees' lineup may struggle against left-handed pitching."
+    },
+    "discern": {
+      "weigh": "Cole's strong performance is clear, but Valdez's home advantage is missing.",
+      "contrast": "The market shows confidence in the Yankees with a -1.5 run line.",
+      "stress": "The read could fail if Valdez has an unexpectedly strong outing."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, acknowledging potential variability.",
+      "position": "monitor",
+      "justify": "The confidence level reflects Cole's strong season stats compared to Valdez."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "824261",
+  "scheduledStartUtc": "2026-06-22T18:10:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "detroit-tigers",
+  "awayTeamRef": "new-york-yankees",
+  "artifactDirectionConsistency": {
+    "status": "Consistent",
+    "structuredLeanSide": "away",
+    "structuredLeanTeam": "new-york-yankees",
+    "detectedProseSides": [
+      "away"
+    ],
+    "checkedSections": [
+      "lean",
+      "summary",
+      "factors"
+    ],
+    "warnings": [],
+    "reason": "prose_supports_structured_side_in_lean",
+    "artifactVersion": "sports_decision_artifact_v3"
+  },
+  "namedRiskGrounding": {
+    "status": "NotMappable",
+    "namedRisks": [
+      {
+        "riskText": "Valdez's home field could lead to a better performance than expected, challenging the lean.",
+        "section": "counter_case",
+        "riskSourceGroup": null,
+        "status": "NotMappable",
+        "probeCandidate": false,
+        "depthNote": null,
+        "reason": "named risk does not map to a canonical source group; taxonomy-review candidate"
+      },
+      {
+        "riskText": "Any shifts in the run line before the game could indicate market sentiment changes.",
+        "section": "watch_for",
+        "riskSourceGroup": "market_odds",
+        "status": "Grounded",
+        "probeCandidate": false,
+        "depthNote": null,
+        "reason": "mapped group grounded at sufficient depth for the named risk"
+      },
+      {
+        "riskText": "Starting Pitching: Gerrit Cole has a significant ERA advantage over Framber Valdez. Market: The run line favors the Yankees at -1.5.",
+        "section": "factors",
+        "riskSourceGroup": "starting_pitching",
+        "status": "Grounded",
+        "probeCandidate": false,
+        "depthNote": null,
+        "reason": "mapped group grounded at sufficient depth for the named risk"
+      }
+    ],
+    "groundedGroups": [
+      "identity_schedule",
+      "market_odds",
+      "starting_pitching"
+    ],
+    "checkedSections": [
+      "counter_case",
+      "watch_for",
+      "factors",
+      "summary"
+    ],
+    "warnings": [],
+    "reason": "named risks classified against grounded groups",
+    "artifactVersion": "sports_decision_artifact_v3"
+  },
+  "sourceDepth": [
+    {
+      "group": "starting_pitching",
+      "level": "enriched",
+      "observed": true,
+      "detail": "season pitching stats available (era, whip, k, bb, innings, games started)",
+      "missingReason": null
+    },
+    {
+      "group": "market_odds",
+      "level": "shallow",
+      "observed": true,
+      "detail": "run line only (no moneyline / consensus depth)",
+      "missingReason": null
+    }
+  ]
+}

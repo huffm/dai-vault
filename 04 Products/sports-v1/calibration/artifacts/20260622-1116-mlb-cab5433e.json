@@ -1,0 +1,334 @@
+{
+  "agentRunId": "cab5433e-f36b-1410-8167-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-22",
+  "groundedSignals": [
+    "starting_pitching",
+    "market"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The Dodgers' lineup could significantly outperform Lauer, undermining the Twins' advantage.",
+  "watchFor": "Any lineup changes that could impact the Dodgers' offensive strength.",
+  "whatWouldChangeTheRead": [
+    "A significant improvement in Eric Lauer's performance on game day",
+    "Lineup changes that strengthen the Dodgers' batting order"
+  ],
+  "summary": "The Twins benefit from home field advantage and the market shows support for them with the run line. Both starters have elevated ERAs, but the Twins' Zebby Matthews has a slight edge in WHIP and K/BB ratio compared to Eric Lauer.",
+  "lean": "Slight lean toward Minnesota Twins based on home field advantage and market support.",
+  "leanSide": "home",
+  "sourceSufficiency": {
+    "band": "moderate",
+    "nullReason": null,
+    "groups": [
+      {
+        "group": "identity_schedule",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "market_odds",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "starting_pitching",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      }
+    ]
+  },
+  "perceiveFulfillment": {
+    "enforcementMode": "observed",
+    "profile": {
+      "competition": "mlb",
+      "enforcementMode": "observed",
+      "requiredGroups": [
+        "starting_pitching"
+      ],
+      "recommendedGroups": [
+        "market_odds",
+        "bullpen_availability",
+        "lineup_injury",
+        "weather_park",
+        "market_movement"
+      ],
+      "optionalGroups": [
+        "identity_schedule",
+        "team_form",
+        "rest_travel"
+      ],
+      "ignoredGroups": [
+        "fallback_proxy"
+      ],
+      "minimumBand": "thin",
+      "allowPrimaryFulfillment": true,
+      "allowProbeFallback": false,
+      "notes": "mlb observed profile: starting pitching is required; moderate/rich is not required because current real mlb data is intentionally thin"
+    },
+    "result": {
+      "decision": 0,
+      "sufficiencyBand": "moderate",
+      "missingCriticalGroups": [],
+      "missingSportCriticalGroups": [],
+      "groundedCriticalGroups": [
+        "identity_schedule",
+        "market_odds",
+        "starting_pitching"
+      ],
+      "groundedSupportingGroups": [],
+      "groundedContextualGroups": [],
+      "nullReason": null,
+      "primaryFulfillmentGroups": [],
+      "recommendedProbeGroups": [],
+      "reason": "moderate_or_rich_sufficiency"
+    }
+  },
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "directional_only_without_confirmation",
+      "followUpSignals": [
+        "sharp_public",
+        "line_movement"
+      ],
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [
+    {
+      "triggeredBy": "market",
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "primary_signal_missing",
+      "decisionUse": "missing_confirmation",
+      "detail": "sharp_public was the recommended confirmation but is missing for this run; market remains directional only",
+      "fallbackType": "unavailable_with_reason",
+      "equivalence": "none",
+      "confidencePermission": "confidence_reduced",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "market",
+      "signal": "line_movement",
+      "status": "candidate",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "confirmation_candidate",
+      "detail": "line movement could confirm market direction in the future; not implemented yet and adjacent in equivalence",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    }
+  ],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Zebby Matthews' superior WHIP and K/BB ratio signal potential effectiveness."
+      ],
+      "frame": "The Dodgers face the Twins in Minnesota, with a run line favoring the Twins.",
+      "aim": [
+        "Starting pitching performance is critical in this matchup."
+      ]
+    },
+    "interrogate": {
+      "question": "The Dodgers have a stronger overall lineup which could exploit Lauer's weaknesses.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "The Twins' home advantage may not fully offset the Dodgers' offensive capabilities."
+    },
+    "discern": {
+      "weigh": "Matthews' stats are better, but both pitchers have high ERAs, indicating potential vulnerabilities.",
+      "contrast": "The market run line shows support for the Twins, indicating confidence in their performance.",
+      "stress": "The read could fail if Lauer performs unexpectedly well against the Twins' lineup."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, acknowledging the potential for lineup impact.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the balance of starting pitching and market support."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Zebby Matthews' superior WHIP and K/BB ratio signal potential effectiveness.",
+      "frame": "The Dodgers face the Twins in Minnesota, with a run line favoring the Twins.",
+      "aim": "Starting pitching performance is critical in this matchup."
+    },
+    "interrogate": {
+      "question": "The Dodgers have a stronger overall lineup which could exploit Lauer's weaknesses.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "The Twins' home advantage may not fully offset the Dodgers' offensive capabilities."
+    },
+    "discern": {
+      "weigh": "Matthews' stats are better, but both pitchers have high ERAs, indicating potential vulnerabilities.",
+      "contrast": "The market run line shows support for the Twins, indicating confidence in their performance.",
+      "stress": "The read could fail if Lauer performs unexpectedly well against the Twins' lineup."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, acknowledging the potential for lineup impact.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the balance of starting pitching and market support."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "823692",
+  "scheduledStartUtc": "2026-06-22T19:40:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "minnesota-twins",
+  "awayTeamRef": "los-angeles-dodgers",
+  "artifactDirectionConsistency": {
+    "status": "Consistent",
+    "structuredLeanSide": "home",
+    "structuredLeanTeam": "minnesota-twins",
+    "detectedProseSides": [
+      "home"
+    ],
+    "checkedSections": [
+      "lean",
+      "summary",
+      "factors"
+    ],
+    "warnings": [],
+    "reason": "prose_supports_structured_side_in_lean",
+    "artifactVersion": "sports_decision_artifact_v3"
+  },
+  "namedRiskGrounding": {
+    "status": "Ungrounded",
+    "namedRisks": [
+      {
+        "riskText": "The Dodgers' lineup could significantly outperform Lauer, undermining the Twins' advantage.",
+        "section": "counter_case",
+        "riskSourceGroup": "lineup_injury",
+        "status": "Ungrounded",
+        "probeCandidate": true,
+        "depthNote": null,
+        "reason": "mapped group not grounded; feasible pregame source -> probe candidate"
+      },
+      {
+        "riskText": "Starting Pitching: Zebby Matthews has a better WHIP and K/BB ratio than Eric Lauer. Market: The run line indicates market favoring the Twins.",
+        "section": "factors",
+        "riskSourceGroup": "starting_pitching",
+        "status": "Grounded",
+        "probeCandidate": false,
+        "depthNote": null,
+        "reason": "mapped group grounded at sufficient depth for the named risk"
+      },
+      {
+        "riskText": "Starting Pitching: Zebby Matthews has a better WHIP and K/BB ratio than Eric Lauer. Market: The run line indicates market favoring the Twins.",
+        "section": "factors",
+        "riskSourceGroup": "market_odds",
+        "status": "Grounded",
+        "probeCandidate": false,
+        "depthNote": null,
+        "reason": "mapped group grounded at sufficient depth for the named risk"
+      },
+      {
+        "riskText": "The Twins benefit from home field advantage and the market shows support for them with the run line. Both starters have elevated ERAs, but the Twins' Zebby Matthews has a slight edge in WHIP and K/BB ratio compared to Eric Lauer.",
+        "section": "summary",
+        "riskSourceGroup": null,
+        "status": "NotMappable",
+        "probeCandidate": false,
+        "depthNote": null,
+        "reason": "named risk does not map to a canonical source group; taxonomy-review candidate"
+      }
+    ],
+    "groundedGroups": [
+      "identity_schedule",
+      "market_odds",
+      "starting_pitching"
+    ],
+    "checkedSections": [
+      "counter_case",
+      "watch_for",
+      "factors",
+      "summary"
+    ],
+    "warnings": [
+      "counter_case: lineup_injury Ungrounded"
+    ],
+    "reason": "named risks classified against grounded groups",
+    "artifactVersion": "sports_decision_artifact_v3"
+  },
+  "sourceDepth": [
+    {
+      "group": "starting_pitching",
+      "level": "enriched",
+      "observed": true,
+      "detail": "season pitching stats available (era, whip, k, bb, innings, games started)",
+      "missingReason": null
+    },
+    {
+      "group": "market_odds",
+      "level": "shallow",
+      "observed": true,
+      "detail": "run line only (no moneyline / consensus depth)",
+      "missingReason": null
+    }
+  ]
+}

@@ -1,0 +1,314 @@
+{
+  "agentRunId": "c7b5433e-f36b-1410-8167-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-22",
+  "groundedSignals": [
+    "starting_pitching",
+    "market"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The strongest case against the lean is the uncertainty of Kay's home performance, which could negate Williams' advantage.",
+  "watchFor": "A significant improvement in Kay's performance metrics before the game.",
+  "whatWouldChangeTheRead": [
+    "A notable shift in Kay's home performance metrics.",
+    "Any injury news affecting either starting pitcher."
+  ],
+  "summary": "Cleveland's Gavin Williams has a better ERA and WHIP compared to Chicago's Anthony Kay. The market reflects a slight favoring of the Guardians with the current run line.",
+  "lean": "Slight lean toward Cleveland Guardians based on starting pitching advantage.",
+  "leanSide": "away",
+  "sourceSufficiency": {
+    "band": "moderate",
+    "nullReason": null,
+    "groups": [
+      {
+        "group": "identity_schedule",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "market_odds",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "starting_pitching",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      }
+    ]
+  },
+  "perceiveFulfillment": {
+    "enforcementMode": "observed",
+    "profile": {
+      "competition": "mlb",
+      "enforcementMode": "observed",
+      "requiredGroups": [
+        "starting_pitching"
+      ],
+      "recommendedGroups": [
+        "market_odds",
+        "bullpen_availability",
+        "lineup_injury",
+        "weather_park",
+        "market_movement"
+      ],
+      "optionalGroups": [
+        "identity_schedule",
+        "team_form",
+        "rest_travel"
+      ],
+      "ignoredGroups": [
+        "fallback_proxy"
+      ],
+      "minimumBand": "thin",
+      "allowPrimaryFulfillment": true,
+      "allowProbeFallback": false,
+      "notes": "mlb observed profile: starting pitching is required; moderate/rich is not required because current real mlb data is intentionally thin"
+    },
+    "result": {
+      "decision": 0,
+      "sufficiencyBand": "moderate",
+      "missingCriticalGroups": [],
+      "missingSportCriticalGroups": [],
+      "groundedCriticalGroups": [
+        "identity_schedule",
+        "market_odds",
+        "starting_pitching"
+      ],
+      "groundedSupportingGroups": [],
+      "groundedContextualGroups": [],
+      "nullReason": null,
+      "primaryFulfillmentGroups": [],
+      "recommendedProbeGroups": [],
+      "reason": "moderate_or_rich_sufficiency"
+    }
+  },
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "directional_only_without_confirmation",
+      "followUpSignals": [
+        "sharp_public",
+        "line_movement"
+      ],
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [
+    {
+      "triggeredBy": "market",
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "primary_signal_missing",
+      "decisionUse": "missing_confirmation",
+      "detail": "sharp_public was the recommended confirmation but is missing for this run; market remains directional only",
+      "fallbackType": "unavailable_with_reason",
+      "equivalence": "none",
+      "confidencePermission": "confidence_reduced",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "market",
+      "signal": "line_movement",
+      "status": "candidate",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "confirmation_candidate",
+      "detail": "line movement could confirm market direction in the future; not implemented yet and adjacent in equivalence",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    }
+  ],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Gavin Williams' superior season stats signal a potential advantage."
+      ],
+      "frame": "Cleveland Guardians face Chicago White Sox with a run line favoring Guardians.",
+      "aim": [
+        "Starting pitching performance is the primary factor in this matchup."
+      ]
+    },
+    "interrogate": {
+      "question": "The strongest case against the lean is Anthony Kay's home performance, which could improve.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "Kay's home starts may yield better results than his overall stats suggest."
+    },
+    "discern": {
+      "weigh": "While Williams has better stats, Kay's home performance is unaccounted for.",
+      "contrast": "The market run line shows a preference for the Guardians, indicating confidence in their performance.",
+      "stress": "The read could weaken if Kay performs significantly better at home."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, acknowledging potential variability in Kay's performance.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the clear advantage in starting pitching stats."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Gavin Williams' superior season stats signal a potential advantage.",
+      "frame": "Cleveland Guardians face Chicago White Sox with a run line favoring Guardians.",
+      "aim": "Starting pitching performance is the primary factor in this matchup."
+    },
+    "interrogate": {
+      "question": "The strongest case against the lean is Anthony Kay's home performance, which could improve.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "Kay's home starts may yield better results than his overall stats suggest."
+    },
+    "discern": {
+      "weigh": "While Williams has better stats, Kay's home performance is unaccounted for.",
+      "contrast": "The market run line shows a preference for the Guardians, indicating confidence in their performance.",
+      "stress": "The read could weaken if Kay performs significantly better at home."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, acknowledging potential variability in Kay's performance.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the clear advantage in starting pitching stats."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "824585",
+  "scheduledStartUtc": "2026-06-22T19:40:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "chicago-white-sox",
+  "awayTeamRef": "cleveland-guardians",
+  "artifactDirectionConsistency": {
+    "status": "Consistent",
+    "structuredLeanSide": "away",
+    "structuredLeanTeam": "cleveland-guardians",
+    "detectedProseSides": [
+      "away"
+    ],
+    "checkedSections": [
+      "lean",
+      "summary",
+      "factors"
+    ],
+    "warnings": [],
+    "reason": "prose_supports_structured_side_in_lean",
+    "artifactVersion": "sports_decision_artifact_v3"
+  },
+  "namedRiskGrounding": {
+    "status": "Grounded",
+    "namedRisks": [
+      {
+        "riskText": "Starting Pitching: Gavin Williams has a lower ERA and WHIP than Anthony Kay. Market: Current run line indicates market favoring Cleveland Guardians.",
+        "section": "factors",
+        "riskSourceGroup": "starting_pitching",
+        "status": "Grounded",
+        "probeCandidate": false,
+        "depthNote": null,
+        "reason": "mapped group grounded at sufficient depth for the named risk"
+      },
+      {
+        "riskText": "Starting Pitching: Gavin Williams has a lower ERA and WHIP than Anthony Kay. Market: Current run line indicates market favoring Cleveland Guardians.",
+        "section": "factors",
+        "riskSourceGroup": "market_odds",
+        "status": "Grounded",
+        "probeCandidate": false,
+        "depthNote": null,
+        "reason": "mapped group grounded at sufficient depth for the named risk"
+      }
+    ],
+    "groundedGroups": [
+      "identity_schedule",
+      "market_odds",
+      "starting_pitching"
+    ],
+    "checkedSections": [
+      "counter_case",
+      "watch_for",
+      "factors",
+      "summary"
+    ],
+    "warnings": [],
+    "reason": "named risks classified against grounded groups",
+    "artifactVersion": "sports_decision_artifact_v3"
+  },
+  "sourceDepth": [
+    {
+      "group": "starting_pitching",
+      "level": "enriched",
+      "observed": true,
+      "detail": "season pitching stats available (era, whip, k, bb, innings, games started)",
+      "missingReason": null
+    },
+    {
+      "group": "market_odds",
+      "level": "shallow",
+      "observed": true,
+      "detail": "run line only (no moneyline / consensus depth)",
+      "missingReason": null
+    }
+  ]
+}

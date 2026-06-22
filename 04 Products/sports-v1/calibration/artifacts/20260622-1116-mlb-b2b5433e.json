@@ -1,0 +1,325 @@
+{
+  "agentRunId": "b2b5433e-f36b-1410-8167-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-22",
+  "groundedSignals": [
+    "starting_pitching",
+    "market"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "Texas Rangers have a competitive lineup that could exploit Phillips's weaknesses.",
+  "watchFor": "Any significant lineup changes for Texas Rangers before the game.",
+  "whatWouldChangeTheRead": [
+    "A notable injury to a key player in the Marlins lineup",
+    "A shift in the starting pitcher for either team"
+  ],
+  "summary": "The Miami Marlins have a slight edge with Tyler Phillips on the mound, who has a solid ERA of 3.10 compared to Texas's Tyler Alexander at 2.97. The market also favors the Marlins with a run line of -1.5, indicating confidence in their performance.",
+  "lean": "Slight lean toward Miami Marlins based on starting pitching advantage.",
+  "leanSide": "home",
+  "sourceSufficiency": {
+    "band": "moderate",
+    "nullReason": null,
+    "groups": [
+      {
+        "group": "identity_schedule",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "market_odds",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "starting_pitching",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      }
+    ]
+  },
+  "perceiveFulfillment": {
+    "enforcementMode": "observed",
+    "profile": {
+      "competition": "mlb",
+      "enforcementMode": "observed",
+      "requiredGroups": [
+        "starting_pitching"
+      ],
+      "recommendedGroups": [
+        "market_odds",
+        "bullpen_availability",
+        "lineup_injury",
+        "weather_park",
+        "market_movement"
+      ],
+      "optionalGroups": [
+        "identity_schedule",
+        "team_form",
+        "rest_travel"
+      ],
+      "ignoredGroups": [
+        "fallback_proxy"
+      ],
+      "minimumBand": "thin",
+      "allowPrimaryFulfillment": true,
+      "allowProbeFallback": false,
+      "notes": "mlb observed profile: starting pitching is required; moderate/rich is not required because current real mlb data is intentionally thin"
+    },
+    "result": {
+      "decision": 0,
+      "sufficiencyBand": "moderate",
+      "missingCriticalGroups": [],
+      "missingSportCriticalGroups": [],
+      "groundedCriticalGroups": [
+        "identity_schedule",
+        "market_odds",
+        "starting_pitching"
+      ],
+      "groundedSupportingGroups": [],
+      "groundedContextualGroups": [],
+      "nullReason": null,
+      "primaryFulfillmentGroups": [],
+      "recommendedProbeGroups": [],
+      "reason": "moderate_or_rich_sufficiency"
+    }
+  },
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "directional_only_without_confirmation",
+      "followUpSignals": [
+        "sharp_public",
+        "line_movement"
+      ],
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [
+    {
+      "triggeredBy": "market",
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "primary_signal_missing",
+      "decisionUse": "missing_confirmation",
+      "detail": "sharp_public was the recommended confirmation but is missing for this run; market remains directional only",
+      "fallbackType": "unavailable_with_reason",
+      "equivalence": "none",
+      "confidencePermission": "confidence_reduced",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "market",
+      "signal": "line_movement",
+      "status": "candidate",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "confirmation_candidate",
+      "detail": "line movement could confirm market direction in the future; not implemented yet and adjacent in equivalence",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    }
+  ],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Tyler Phillips's solid season form gives Miami an advantage."
+      ],
+      "frame": "The matchup features Texas Rangers at Miami Marlins with Miami favored by -1.5.",
+      "aim": [
+        "Starting pitching quality is the primary factor in this matchup."
+      ]
+    },
+    "interrogate": {
+      "question": "Texas Rangers could challenge with their lineup against Phillips.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "The handedness of both starters may not significantly impact the lineups."
+    },
+    "discern": {
+      "weigh": "Starting pitching stats are available; lineup form is missing.",
+      "contrast": "The market shows confidence in Miami with a -1.5 run line.",
+      "stress": "Market confidence could shift if lineup changes occur."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, watching for lineup changes.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the clear advantage in starting pitching."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Tyler Phillips's solid season form gives Miami an advantage.",
+      "frame": "The matchup features Texas Rangers at Miami Marlins with Miami favored by -1.5.",
+      "aim": "Starting pitching quality is the primary factor in this matchup."
+    },
+    "interrogate": {
+      "question": "Texas Rangers could challenge with their lineup against Phillips.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "The handedness of both starters may not significantly impact the lineups."
+    },
+    "discern": {
+      "weigh": "Starting pitching stats are available; lineup form is missing.",
+      "contrast": "The market shows confidence in Miami with a -1.5 run line.",
+      "stress": "Market confidence could shift if lineup changes occur."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, watching for lineup changes.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the clear advantage in starting pitching."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "823851",
+  "scheduledStartUtc": "2026-06-22T18:40:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "miami-marlins",
+  "awayTeamRef": "texas-rangers",
+  "artifactDirectionConsistency": {
+    "status": "Consistent",
+    "structuredLeanSide": "home",
+    "structuredLeanTeam": "miami-marlins",
+    "detectedProseSides": [
+      "home"
+    ],
+    "checkedSections": [
+      "lean",
+      "summary",
+      "factors"
+    ],
+    "warnings": [],
+    "reason": "prose_supports_structured_side_in_lean",
+    "artifactVersion": "sports_decision_artifact_v3"
+  },
+  "namedRiskGrounding": {
+    "status": "Ungrounded",
+    "namedRisks": [
+      {
+        "riskText": "Texas Rangers have a competitive lineup that could exploit Phillips's weaknesses.",
+        "section": "counter_case",
+        "riskSourceGroup": "lineup_injury",
+        "status": "Ungrounded",
+        "probeCandidate": true,
+        "depthNote": null,
+        "reason": "mapped group not grounded; feasible pregame source -> probe candidate"
+      },
+      {
+        "riskText": "Starting Pitching: Miami's Tyler Phillips has a slight ERA advantage. Market: The run line favors Miami Marlins at -1.5.",
+        "section": "factors",
+        "riskSourceGroup": "starting_pitching",
+        "status": "Grounded",
+        "probeCandidate": false,
+        "depthNote": null,
+        "reason": "mapped group grounded at sufficient depth for the named risk"
+      },
+      {
+        "riskText": "Starting Pitching: Miami's Tyler Phillips has a slight ERA advantage. Market: The run line favors Miami Marlins at -1.5.",
+        "section": "factors",
+        "riskSourceGroup": "market_odds",
+        "status": "Grounded",
+        "probeCandidate": false,
+        "depthNote": null,
+        "reason": "mapped group grounded at sufficient depth for the named risk"
+      }
+    ],
+    "groundedGroups": [
+      "identity_schedule",
+      "market_odds",
+      "starting_pitching"
+    ],
+    "checkedSections": [
+      "counter_case",
+      "watch_for",
+      "factors",
+      "summary"
+    ],
+    "warnings": [
+      "counter_case: lineup_injury Ungrounded"
+    ],
+    "reason": "named risks classified against grounded groups",
+    "artifactVersion": "sports_decision_artifact_v3"
+  },
+  "sourceDepth": [
+    {
+      "group": "starting_pitching",
+      "level": "enriched",
+      "observed": true,
+      "detail": "season pitching stats available (era, whip, k, bb, innings, games started)",
+      "missingReason": null
+    },
+    {
+      "group": "market_odds",
+      "level": "shallow",
+      "observed": true,
+      "detail": "run line only (no moneyline / consensus depth)",
+      "missingReason": null
+    }
+  ]
+}

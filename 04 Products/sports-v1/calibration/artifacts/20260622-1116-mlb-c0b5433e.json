@@ -1,0 +1,317 @@
+{
+  "agentRunId": "c0b5433e-f36b-1410-8167-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-22",
+  "groundedSignals": [
+    "market"
+  ],
+  "missingSignals": [
+    "starting_pitching"
+  ],
+  "artifactQualityWarnings": [
+    "signals_used contains situational but situational was not grounded"
+  ],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Degraded",
+      "note": "retrieve: 1 of 2 signals grounded for mlb"
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Degraded",
+      "note": "signals_used contains situational but situational was not grounded"
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.6,
+  "confidence": 0.54,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The market's slight favor towards the Brewers is not strongly backed by other signals.",
+  "watchFor": "Any significant lineup changes or injury updates before the game.",
+  "whatWouldChangeTheRead": [
+    "Confirmation of starting pitchers with a clear advantage.",
+    "Major lineup changes affecting either team."
+  ],
+  "summary": "The market shows a close contest with the Brewers favored by the run line. Both teams are likely to be competitive, but no clear advantage emerges from the current signals.",
+  "lean": "No clear lean based on the current market signals and situational context.",
+  "leanSide": null,
+  "sourceSufficiency": {
+    "band": "thin",
+    "nullReason": "SourceInsufficient_MissingCriticalGroup",
+    "groups": [
+      {
+        "group": "identity_schedule",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "market_odds",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "starting_pitching",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": false,
+        "isUnavailable": true
+      }
+    ]
+  },
+  "perceiveFulfillment": {
+    "enforcementMode": "observed",
+    "profile": {
+      "competition": "mlb",
+      "enforcementMode": "observed",
+      "requiredGroups": [
+        "starting_pitching"
+      ],
+      "recommendedGroups": [
+        "market_odds",
+        "bullpen_availability",
+        "lineup_injury",
+        "weather_park",
+        "market_movement"
+      ],
+      "optionalGroups": [
+        "identity_schedule",
+        "team_form",
+        "rest_travel"
+      ],
+      "ignoredGroups": [
+        "fallback_proxy"
+      ],
+      "minimumBand": "thin",
+      "allowPrimaryFulfillment": true,
+      "allowProbeFallback": false,
+      "notes": "mlb observed profile: starting pitching is required; moderate/rich is not required because current real mlb data is intentionally thin"
+    },
+    "result": {
+      "decision": 2,
+      "sufficiencyBand": "thin",
+      "missingCriticalGroups": [
+        "starting_pitching"
+      ],
+      "missingSportCriticalGroups": [
+        "starting_pitching"
+      ],
+      "groundedCriticalGroups": [
+        "identity_schedule",
+        "market_odds"
+      ],
+      "groundedSupportingGroups": [],
+      "groundedContextualGroups": [],
+      "nullReason": "SourceInsufficient_MissingCriticalGroup",
+      "primaryFulfillmentGroups": [
+        "starting_pitching"
+      ],
+      "recommendedProbeGroups": [],
+      "reason": "missing_sport_critical_primary_fulfillment_available"
+    }
+  },
+  "signalAvailability": [
+    {
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "directional_only_without_confirmation",
+      "followUpSignals": [
+        "sharp_public",
+        "line_movement"
+      ],
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "starting_pitching",
+      "status": "missing",
+      "source": "mlb_statsapi",
+      "reason": "unavailable",
+      "detail": null,
+      "quality": "unavailable",
+      "decisionUse": "not_usable",
+      "followUpSignals": null,
+      "confidenceEffect": "neutral"
+    }
+  ],
+  "signalFollowUps": [
+    {
+      "triggeredBy": "market",
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "primary_signal_missing",
+      "decisionUse": "missing_confirmation",
+      "detail": "sharp_public was the recommended confirmation but is missing for this run; market remains directional only",
+      "fallbackType": "unavailable_with_reason",
+      "equivalence": "none",
+      "confidencePermission": "confidence_reduced",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "market",
+      "signal": "line_movement",
+      "status": "candidate",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "confirmation_candidate",
+      "detail": "line movement could confirm market direction in the future; not implemented yet and adjacent in equivalence",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    }
+  ],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "The run line indicates a competitive matchup with no strong lean."
+      ],
+      "frame": "The Brewers face the Reds in a balanced contest with equal rest.",
+      "aim": [
+        "Market sentiment shows a slight preference for the Brewers."
+      ]
+    },
+    "interrogate": {
+      "question": "The run line suggests the Brewers are favored, but the margin is slim.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "Market confidence is moderate, indicating uncertainty in the matchup."
+    },
+    "discern": {
+      "weigh": "Market signals are present, but starting pitching data is missing.",
+      "contrast": "The run line reflects a slight market favoring of the Brewers.",
+      "stress": "The read could shift if significant lineup changes occur."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution as more information may emerge.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the balanced nature of the current signals."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "The run line indicates a competitive matchup with no strong lean.",
+      "frame": "The Brewers face the Reds in a balanced contest with equal rest.",
+      "aim": "Market sentiment shows a slight preference for the Brewers."
+    },
+    "interrogate": {
+      "question": "The run line suggests the Brewers are favored, but the margin is slim.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "Market confidence is moderate, indicating uncertainty in the matchup."
+    },
+    "discern": {
+      "weigh": "Market signals are present, but starting pitching data is missing.",
+      "contrast": "The run line reflects a slight market favoring of the Brewers.",
+      "stress": "The read could shift if significant lineup changes occur."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution as more information may emerge.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the balanced nature of the current signals."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "824502",
+  "scheduledStartUtc": "2026-06-22T19:10:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "cincinnati-reds",
+  "awayTeamRef": "milwaukee-brewers",
+  "artifactDirectionConsistency": {
+    "status": "NotEvaluable",
+    "structuredLeanSide": null,
+    "structuredLeanTeam": null,
+    "detectedProseSides": [],
+    "checkedSections": [],
+    "warnings": [],
+    "reason": "no_structured_lean",
+    "artifactVersion": "sports_decision_artifact_v3"
+  },
+  "namedRiskGrounding": {
+    "status": "Ungrounded",
+    "namedRisks": [
+      {
+        "riskText": "Any significant lineup changes or injury updates before the game.",
+        "section": "watch_for",
+        "riskSourceGroup": "lineup_injury",
+        "status": "Ungrounded",
+        "probeCandidate": true,
+        "depthNote": null,
+        "reason": "mapped group not grounded; feasible pregame source -> probe candidate"
+      },
+      {
+        "riskText": "Market: Brewers favored by the run line at -1.5. Situational: Both teams are on equal rest.",
+        "section": "factors",
+        "riskSourceGroup": "market_odds",
+        "status": "Grounded",
+        "probeCandidate": false,
+        "depthNote": null,
+        "reason": "mapped group grounded at sufficient depth for the named risk"
+      }
+    ],
+    "groundedGroups": [
+      "identity_schedule",
+      "market_odds"
+    ],
+    "checkedSections": [
+      "counter_case",
+      "watch_for",
+      "factors",
+      "summary"
+    ],
+    "warnings": [
+      "watch_for: lineup_injury Ungrounded"
+    ],
+    "reason": "named risks classified against grounded groups",
+    "artifactVersion": "sports_decision_artifact_v3"
+  },
+  "sourceDepth": [
+    {
+      "group": "starting_pitching",
+      "level": "none",
+      "observed": false,
+      "detail": null,
+      "missingReason": "probable starters not announced or unavailable"
+    },
+    {
+      "group": "market_odds",
+      "level": "shallow",
+      "observed": true,
+      "detail": "run line only (no moneyline / consensus depth)",
+      "missingReason": null
+    }
+  ]
+}

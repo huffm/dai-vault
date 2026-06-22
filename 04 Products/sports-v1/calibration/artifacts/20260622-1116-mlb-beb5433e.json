@@ -1,0 +1,314 @@
+{
+  "agentRunId": "beb5433e-f36b-1410-8167-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-22",
+  "groundedSignals": [
+    "starting_pitching",
+    "market"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "Senga's potential for a strong outing could undermine Imanaga's advantage.",
+  "watchFor": "Any reports on Senga's recent adjustments or improvements.",
+  "whatWouldChangeTheRead": [
+    "A significant improvement in Senga's recent form",
+    "Lineup changes that favor the Mets' hitting against Imanaga"
+  ],
+  "summary": "The Cubs benefit from a stronger starting pitcher in Shota Imanaga compared to Kodai Senga, who has struggled this season. The market reflects this with a run line favoring the Cubs.",
+  "lean": "Slight lean toward Chicago Cubs based on starting pitching advantage.",
+  "leanSide": "away",
+  "sourceSufficiency": {
+    "band": "moderate",
+    "nullReason": null,
+    "groups": [
+      {
+        "group": "identity_schedule",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "market_odds",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "starting_pitching",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      }
+    ]
+  },
+  "perceiveFulfillment": {
+    "enforcementMode": "observed",
+    "profile": {
+      "competition": "mlb",
+      "enforcementMode": "observed",
+      "requiredGroups": [
+        "starting_pitching"
+      ],
+      "recommendedGroups": [
+        "market_odds",
+        "bullpen_availability",
+        "lineup_injury",
+        "weather_park",
+        "market_movement"
+      ],
+      "optionalGroups": [
+        "identity_schedule",
+        "team_form",
+        "rest_travel"
+      ],
+      "ignoredGroups": [
+        "fallback_proxy"
+      ],
+      "minimumBand": "thin",
+      "allowPrimaryFulfillment": true,
+      "allowProbeFallback": false,
+      "notes": "mlb observed profile: starting pitching is required; moderate/rich is not required because current real mlb data is intentionally thin"
+    },
+    "result": {
+      "decision": 0,
+      "sufficiencyBand": "moderate",
+      "missingCriticalGroups": [],
+      "missingSportCriticalGroups": [],
+      "groundedCriticalGroups": [
+        "identity_schedule",
+        "market_odds",
+        "starting_pitching"
+      ],
+      "groundedSupportingGroups": [],
+      "groundedContextualGroups": [],
+      "nullReason": null,
+      "primaryFulfillmentGroups": [],
+      "recommendedProbeGroups": [],
+      "reason": "moderate_or_rich_sufficiency"
+    }
+  },
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "directional_only_without_confirmation",
+      "followUpSignals": [
+        "sharp_public",
+        "line_movement"
+      ],
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [
+    {
+      "triggeredBy": "market",
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "primary_signal_missing",
+      "decisionUse": "missing_confirmation",
+      "detail": "sharp_public was the recommended confirmation but is missing for this run; market remains directional only",
+      "fallbackType": "unavailable_with_reason",
+      "equivalence": "none",
+      "confidencePermission": "confidence_reduced",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "market",
+      "signal": "line_movement",
+      "status": "candidate",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "confirmation_candidate",
+      "detail": "line movement could confirm market direction in the future; not implemented yet and adjacent in equivalence",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    }
+  ],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Shota Imanaga's superior season stats provide a notable advantage."
+      ],
+      "frame": "The Cubs face the Mets in a matchup with a run line favoring the Cubs.",
+      "aim": [
+        "Starting pitching quality is the primary factor in this matchup."
+      ]
+    },
+    "interrogate": {
+      "question": "Kodai Senga's potential for improvement could challenge the lean.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "Senga's past performance might indicate he could rebound."
+    },
+    "discern": {
+      "weigh": "Imanaga's strong stats are clear, while Senga's struggles are evident.",
+      "contrast": "The market shows confidence in the Cubs with a -1.5 run line.",
+      "stress": "Senga's ability to turn around his performance could alter the outcome."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution as Senga's form could improve.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the clear advantage in starting pitching."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Shota Imanaga's superior season stats provide a notable advantage.",
+      "frame": "The Cubs face the Mets in a matchup with a run line favoring the Cubs.",
+      "aim": "Starting pitching quality is the primary factor in this matchup."
+    },
+    "interrogate": {
+      "question": "Kodai Senga's potential for improvement could challenge the lean.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "Senga's past performance might indicate he could rebound."
+    },
+    "discern": {
+      "weigh": "Imanaga's strong stats are clear, while Senga's struggles are evident.",
+      "contrast": "The market shows confidence in the Cubs with a -1.5 run line.",
+      "stress": "Senga's ability to turn around his performance could alter the outcome."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution as Senga's form could improve.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the clear advantage in starting pitching."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "823613",
+  "scheduledStartUtc": "2026-06-22T19:10:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "new-york-mets",
+  "awayTeamRef": "chicago-cubs",
+  "artifactDirectionConsistency": {
+    "status": "Consistent",
+    "structuredLeanSide": "away",
+    "structuredLeanTeam": "chicago-cubs",
+    "detectedProseSides": [
+      "away"
+    ],
+    "checkedSections": [
+      "lean",
+      "summary",
+      "factors"
+    ],
+    "warnings": [],
+    "reason": "prose_supports_structured_side_in_lean",
+    "artifactVersion": "sports_decision_artifact_v3"
+  },
+  "namedRiskGrounding": {
+    "status": "Grounded",
+    "namedRisks": [
+      {
+        "riskText": "Starting Pitching: Imanaga shows better ERA and WHIP than Senga. Market: Current run line favors Cubs at -1.5.",
+        "section": "factors",
+        "riskSourceGroup": "starting_pitching",
+        "status": "Grounded",
+        "probeCandidate": false,
+        "depthNote": null,
+        "reason": "mapped group grounded at sufficient depth for the named risk"
+      },
+      {
+        "riskText": "Starting Pitching: Imanaga shows better ERA and WHIP than Senga. Market: Current run line favors Cubs at -1.5.",
+        "section": "factors",
+        "riskSourceGroup": "market_odds",
+        "status": "Grounded",
+        "probeCandidate": false,
+        "depthNote": null,
+        "reason": "mapped group grounded at sufficient depth for the named risk"
+      }
+    ],
+    "groundedGroups": [
+      "identity_schedule",
+      "market_odds",
+      "starting_pitching"
+    ],
+    "checkedSections": [
+      "counter_case",
+      "watch_for",
+      "factors",
+      "summary"
+    ],
+    "warnings": [],
+    "reason": "named risks classified against grounded groups",
+    "artifactVersion": "sports_decision_artifact_v3"
+  },
+  "sourceDepth": [
+    {
+      "group": "starting_pitching",
+      "level": "enriched",
+      "observed": true,
+      "detail": "season pitching stats available (era, whip, k, bb, innings, games started)",
+      "missingReason": null
+    },
+    {
+      "group": "market_odds",
+      "level": "shallow",
+      "observed": true,
+      "detail": "run line only (no moneyline / consensus depth)",
+      "missingReason": null
+    }
+  ]
+}

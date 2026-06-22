@@ -1,0 +1,315 @@
+{
+  "agentRunId": "b8b5433e-f36b-1410-8167-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-22",
+  "groundedSignals": [
+    "market"
+  ],
+  "missingSignals": [
+    "starting_pitching"
+  ],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Degraded",
+      "note": "retrieve: 1 of 2 signals grounded for mlb"
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.5,
+  "confidence": 0.45,
+  "evidenceRichness": 1,
+  "posture": "monitor",
+  "counterCase": "The run line suggests a slight favor for the Phillies, but without additional context, this could be misleading.",
+  "watchFor": "Any significant lineup changes or injury news before the game.",
+  "whatWouldChangeTheRead": [
+    "Injury updates for key players on either team",
+    "Lineup changes that impact overall strength"
+  ],
+  "summary": "The market indicates a close matchup with the run line favoring the Phillies slightly. However, without additional signals, the lean remains unclear.",
+  "lean": "No clear lean based on the current market signals.",
+  "leanSide": null,
+  "sourceSufficiency": {
+    "band": "thin",
+    "nullReason": "SourceInsufficient_MissingCriticalGroup",
+    "groups": [
+      {
+        "group": "identity_schedule",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "market_odds",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "starting_pitching",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": false,
+        "isUnavailable": true
+      }
+    ]
+  },
+  "perceiveFulfillment": {
+    "enforcementMode": "observed",
+    "profile": {
+      "competition": "mlb",
+      "enforcementMode": "observed",
+      "requiredGroups": [
+        "starting_pitching"
+      ],
+      "recommendedGroups": [
+        "market_odds",
+        "bullpen_availability",
+        "lineup_injury",
+        "weather_park",
+        "market_movement"
+      ],
+      "optionalGroups": [
+        "identity_schedule",
+        "team_form",
+        "rest_travel"
+      ],
+      "ignoredGroups": [
+        "fallback_proxy"
+      ],
+      "minimumBand": "thin",
+      "allowPrimaryFulfillment": true,
+      "allowProbeFallback": false,
+      "notes": "mlb observed profile: starting pitching is required; moderate/rich is not required because current real mlb data is intentionally thin"
+    },
+    "result": {
+      "decision": 2,
+      "sufficiencyBand": "thin",
+      "missingCriticalGroups": [
+        "starting_pitching"
+      ],
+      "missingSportCriticalGroups": [
+        "starting_pitching"
+      ],
+      "groundedCriticalGroups": [
+        "identity_schedule",
+        "market_odds"
+      ],
+      "groundedSupportingGroups": [],
+      "groundedContextualGroups": [],
+      "nullReason": "SourceInsufficient_MissingCriticalGroup",
+      "primaryFulfillmentGroups": [
+        "starting_pitching"
+      ],
+      "recommendedProbeGroups": [],
+      "reason": "missing_sport_critical_primary_fulfillment_available"
+    }
+  },
+  "signalAvailability": [
+    {
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "directional_only_without_confirmation",
+      "followUpSignals": [
+        "sharp_public",
+        "line_movement"
+      ],
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "starting_pitching",
+      "status": "missing",
+      "source": "mlb_statsapi",
+      "reason": "unavailable",
+      "detail": null,
+      "quality": "unavailable",
+      "decisionUse": "not_usable",
+      "followUpSignals": null,
+      "confidenceEffect": "neutral"
+    }
+  ],
+  "signalFollowUps": [
+    {
+      "triggeredBy": "market",
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "primary_signal_missing",
+      "decisionUse": "missing_confirmation",
+      "detail": "sharp_public was the recommended confirmation but is missing for this run; market remains directional only",
+      "fallbackType": "unavailable_with_reason",
+      "equivalence": "none",
+      "confidencePermission": "confidence_reduced",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "market",
+      "signal": "line_movement",
+      "status": "candidate",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "confirmation_candidate",
+      "detail": "line movement could confirm market direction in the future; not implemented yet and adjacent in equivalence",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    }
+  ],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "The run line suggests a competitive matchup."
+      ],
+      "frame": "Phillies face the Nationals with a run line of -1.5 for Philadelphia.",
+      "aim": [
+        "Market confidence is split, indicating uncertainty."
+      ]
+    },
+    "interrogate": {
+      "question": "The run line indicates a slight market favor for the Phillies, but no other signals support a strong lean.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "Market signals alone do not provide a clear directional read."
+    },
+    "discern": {
+      "weigh": "Only market data is present; no other signals are available.",
+      "contrast": "The run line implies the market sees the Phillies as marginally favored.",
+      "stress": "The read could change significantly with lineup or injury updates."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, as market signals are thin.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the lack of strong supporting signals."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "The run line suggests a competitive matchup.",
+      "frame": "Phillies face the Nationals with a run line of -1.5 for Philadelphia.",
+      "aim": "Market confidence is split, indicating uncertainty."
+    },
+    "interrogate": {
+      "question": "The run line indicates a slight market favor for the Phillies, but no other signals support a strong lean.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "Market signals alone do not provide a clear directional read."
+    },
+    "discern": {
+      "weigh": "Only market data is present; no other signals are available.",
+      "contrast": "The run line implies the market sees the Phillies as marginally favored.",
+      "stress": "The read could change significantly with lineup or injury updates."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, as market signals are thin.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the lack of strong supporting signals."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "822720",
+  "scheduledStartUtc": "2026-06-22T18:45:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "washington-nationals",
+  "awayTeamRef": "philadelphia-phillies",
+  "artifactDirectionConsistency": {
+    "status": "NotEvaluable",
+    "structuredLeanSide": null,
+    "structuredLeanTeam": null,
+    "detectedProseSides": [],
+    "checkedSections": [],
+    "warnings": [],
+    "reason": "no_structured_lean",
+    "artifactVersion": "sports_decision_artifact_v3"
+  },
+  "namedRiskGrounding": {
+    "status": "Ungrounded",
+    "namedRisks": [
+      {
+        "riskText": "The run line suggests a slight favor for the Phillies, but without additional context, this could be misleading.",
+        "section": "counter_case",
+        "riskSourceGroup": "market_odds",
+        "status": "Grounded",
+        "probeCandidate": false,
+        "depthNote": null,
+        "reason": "mapped group grounded at sufficient depth for the named risk"
+      },
+      {
+        "riskText": "Any significant lineup changes or injury news before the game.",
+        "section": "watch_for",
+        "riskSourceGroup": "lineup_injury",
+        "status": "Ungrounded",
+        "probeCandidate": true,
+        "depthNote": null,
+        "reason": "mapped group not grounded; feasible pregame source -> probe candidate"
+      }
+    ],
+    "groundedGroups": [
+      "identity_schedule",
+      "market_odds"
+    ],
+    "checkedSections": [
+      "counter_case",
+      "watch_for",
+      "factors",
+      "summary"
+    ],
+    "warnings": [
+      "watch_for: lineup_injury Ungrounded"
+    ],
+    "reason": "named risks classified against grounded groups",
+    "artifactVersion": "sports_decision_artifact_v3"
+  },
+  "sourceDepth": [
+    {
+      "group": "starting_pitching",
+      "level": "none",
+      "observed": false,
+      "detail": null,
+      "missingReason": "probable starters not announced or unavailable"
+    },
+    {
+      "group": "market_odds",
+      "level": "shallow",
+      "observed": true,
+      "detail": "run line only (no moneyline / consensus depth)",
+      "missingReason": null
+    }
+  ]
+}

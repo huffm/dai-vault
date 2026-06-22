@@ -1,0 +1,325 @@
+{
+  "agentRunId": "d1b5433e-f36b-1410-8167-00373db4b724",
+  "status": "completed",
+  "competition": "mlb",
+  "gameDate": "2026-06-22",
+  "groundedSignals": [
+    "starting_pitching",
+    "market"
+  ],
+  "missingSignals": [],
+  "artifactQualityWarnings": [],
+  "pipelineSteps": [
+    {
+      "stepName": "retrieve",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "analyze",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "evaluate",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "quality_check",
+      "status": "Succeeded",
+      "note": null
+    },
+    {
+      "stepName": "compose",
+      "status": "Succeeded",
+      "note": null
+    }
+  ],
+  "analyzerConfidence": 0.75,
+  "confidence": 0.75,
+  "evidenceRichness": 2,
+  "posture": "monitor",
+  "counterCase": "The Diamondbacks could capitalize on Kelly's struggles, making this a risky lean.",
+  "watchFor": "Any significant line movement before the game could indicate changing market sentiment.",
+  "whatWouldChangeTheRead": [
+    "Kelly shows improved performance in warmups or pre-game reports.",
+    "Lineup changes favoring the Diamondbacks are announced."
+  ],
+  "summary": "The Cardinals have a starting pitching advantage with Andre Pallante's better ERA and WHIP compared to Merrill Kelly. The market also favors St. Louis with a -1.5 run line, indicating confidence in their performance.",
+  "lean": "Slight lean toward St. Louis Cardinals based on starting pitching advantage.",
+  "leanSide": "home",
+  "sourceSufficiency": {
+    "band": "moderate",
+    "nullReason": null,
+    "groups": [
+      {
+        "group": "identity_schedule",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "market_odds",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      },
+      {
+        "group": "starting_pitching",
+        "tier": "Critical",
+        "isCritical": true,
+        "isGrounded": true,
+        "isUnavailable": false
+      }
+    ]
+  },
+  "perceiveFulfillment": {
+    "enforcementMode": "observed",
+    "profile": {
+      "competition": "mlb",
+      "enforcementMode": "observed",
+      "requiredGroups": [
+        "starting_pitching"
+      ],
+      "recommendedGroups": [
+        "market_odds",
+        "bullpen_availability",
+        "lineup_injury",
+        "weather_park",
+        "market_movement"
+      ],
+      "optionalGroups": [
+        "identity_schedule",
+        "team_form",
+        "rest_travel"
+      ],
+      "ignoredGroups": [
+        "fallback_proxy"
+      ],
+      "minimumBand": "thin",
+      "allowPrimaryFulfillment": true,
+      "allowProbeFallback": false,
+      "notes": "mlb observed profile: starting pitching is required; moderate/rich is not required because current real mlb data is intentionally thin"
+    },
+    "result": {
+      "decision": 0,
+      "sufficiencyBand": "moderate",
+      "missingCriticalGroups": [],
+      "missingSportCriticalGroups": [],
+      "groundedCriticalGroups": [
+        "identity_schedule",
+        "market_odds",
+        "starting_pitching"
+      ],
+      "groundedSupportingGroups": [],
+      "groundedContextualGroups": [],
+      "nullReason": null,
+      "primaryFulfillmentGroups": [],
+      "recommendedProbeGroups": [],
+      "reason": "moderate_or_rich_sufficiency"
+    }
+  },
+  "signalAvailability": [
+    {
+      "signal": "starting_pitching",
+      "status": "grounded",
+      "source": "mlb_statsapi",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "supporting_context",
+      "followUpSignals": null,
+      "confidenceEffect": "support_cautiously"
+    },
+    {
+      "signal": "market",
+      "status": "grounded",
+      "source": "odds_api",
+      "reason": "grounded",
+      "detail": null,
+      "quality": "usable",
+      "decisionUse": "directional_only_without_confirmation",
+      "followUpSignals": [
+        "sharp_public",
+        "line_movement"
+      ],
+      "confidenceEffect": "support_cautiously"
+    }
+  ],
+  "signalFollowUps": [
+    {
+      "triggeredBy": "market",
+      "signal": "sharp_public",
+      "status": "missing",
+      "source": "actionnetwork",
+      "reason": "primary_signal_missing",
+      "decisionUse": "missing_confirmation",
+      "detail": "sharp_public was the recommended confirmation but is missing for this run; market remains directional only",
+      "fallbackType": "unavailable_with_reason",
+      "equivalence": "none",
+      "confidencePermission": "confidence_reduced",
+      "posturePermission": "aggressive_blocked"
+    },
+    {
+      "triggeredBy": "market",
+      "signal": "line_movement",
+      "status": "candidate",
+      "source": "not_configured",
+      "reason": "future_signal_candidate",
+      "decisionUse": "confirmation_candidate",
+      "detail": "line movement could confirm market direction in the future; not implemented yet and adjacent in equivalence",
+      "fallbackType": "adjacent_proxy",
+      "equivalence": "adjacent",
+      "confidencePermission": "confidence_conservative",
+      "posturePermission": "aggressive_blocked"
+    }
+  ],
+  "protocolView": {
+    "perceive": {
+      "detect": [
+        "Pallante's superior season stats present a notable advantage."
+      ],
+      "frame": "The matchup features the Diamondbacks at the Cardinals with Pallante and Kelly as starters.",
+      "aim": [
+        "Starting pitching performance is the primary factor in this matchup."
+      ]
+    },
+    "interrogate": {
+      "question": "The Diamondbacks could exploit Kelly's high WHIP and ERA.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "Kelly's strikeout rate may still pose challenges for the Cardinals."
+    },
+    "discern": {
+      "weigh": "Pallante's performance is strong, while Kelly's is concerning; no injury data is present.",
+      "contrast": "The market favors the Cardinals with a -1.5 run line, suggesting confidence.",
+      "stress": "The read may fail if Kelly outperforms expectations significantly."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, acknowledging potential for unexpected performances.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the clear starting pitching advantage and market support."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "artifactVersion": "sports_decision_artifact_v3",
+  "cognitiveProtocol": {
+    "perceive": {
+      "detect": "Pallante's superior season stats present a notable advantage.",
+      "frame": "The matchup features the Diamondbacks at the Cardinals with Pallante and Kelly as starters.",
+      "aim": "Starting pitching performance is the primary factor in this matchup."
+    },
+    "interrogate": {
+      "question": "The Diamondbacks could exploit Kelly's high WHIP and ERA.",
+      "probe": "Sharp/public signal missing; market read relies on price movement only.",
+      "verify": "Kelly's strikeout rate may still pose challenges for the Cardinals."
+    },
+    "discern": {
+      "weigh": "Pallante's performance is strong, while Kelly's is concerning; no injury data is present.",
+      "contrast": "The market favors the Cardinals with a -1.5 run line, suggesting confidence.",
+      "stress": "The read may fail if Kelly outperforms expectations significantly."
+    },
+    "decide": {
+      "resolve": "Hold this read with caution, acknowledging potential for unexpected performances.",
+      "position": "monitor",
+      "justify": "The confidence level reflects the clear starting pitching advantage and market support."
+    },
+    "synthesize": {
+      "integrate": "platform operation: combine validated material from prior protocols without adding new claims",
+      "compose": "platform operation: assemble the final decision artifact shape",
+      "deliver": "platform operation: return the consumable result and persist the full artifact"
+    }
+  },
+  "sourceProvider": "mlb_statsapi",
+  "externalGameId": "823040",
+  "scheduledStartUtc": "2026-06-22T19:45:00-04:00",
+  "season": "2026",
+  "homeTeamRef": "st-louis-cardinals",
+  "awayTeamRef": "arizona-diamondbacks",
+  "artifactDirectionConsistency": {
+    "status": "Consistent",
+    "structuredLeanSide": "home",
+    "structuredLeanTeam": "st-louis-cardinals",
+    "detectedProseSides": [
+      "home"
+    ],
+    "checkedSections": [
+      "lean",
+      "summary",
+      "factors"
+    ],
+    "warnings": [],
+    "reason": "prose_supports_structured_side_in_lean",
+    "artifactVersion": "sports_decision_artifact_v3"
+  },
+  "namedRiskGrounding": {
+    "status": "Ungrounded",
+    "namedRisks": [
+      {
+        "riskText": "Any significant line movement before the game could indicate changing market sentiment.",
+        "section": "watch_for",
+        "riskSourceGroup": "market_movement",
+        "status": "Ungrounded",
+        "probeCandidate": true,
+        "depthNote": null,
+        "reason": "mapped group not grounded; feasible pregame source -> probe candidate"
+      },
+      {
+        "riskText": "Starting Pitching: Pallante has a better ERA and WHIP than Kelly. Market: Cardinals are favored by a -1.5 run line.",
+        "section": "factors",
+        "riskSourceGroup": "starting_pitching",
+        "status": "Grounded",
+        "probeCandidate": false,
+        "depthNote": null,
+        "reason": "mapped group grounded at sufficient depth for the named risk"
+      },
+      {
+        "riskText": "Starting Pitching: Pallante has a better ERA and WHIP than Kelly. Market: Cardinals are favored by a -1.5 run line.",
+        "section": "factors",
+        "riskSourceGroup": "market_odds",
+        "status": "Grounded",
+        "probeCandidate": false,
+        "depthNote": null,
+        "reason": "mapped group grounded at sufficient depth for the named risk"
+      }
+    ],
+    "groundedGroups": [
+      "identity_schedule",
+      "market_odds",
+      "starting_pitching"
+    ],
+    "checkedSections": [
+      "counter_case",
+      "watch_for",
+      "factors",
+      "summary"
+    ],
+    "warnings": [
+      "watch_for: market_movement Ungrounded"
+    ],
+    "reason": "named risks classified against grounded groups",
+    "artifactVersion": "sports_decision_artifact_v3"
+  },
+  "sourceDepth": [
+    {
+      "group": "starting_pitching",
+      "level": "enriched",
+      "observed": true,
+      "detail": "season pitching stats available (era, whip, k, bb, innings, games started)",
+      "missingReason": null
+    },
+    {
+      "group": "market_odds",
+      "level": "shallow",
+      "observed": true,
+      "detail": "run line only (no moneyline / consensus depth)",
+      "missingReason": null
+    }
+  ]
+}
