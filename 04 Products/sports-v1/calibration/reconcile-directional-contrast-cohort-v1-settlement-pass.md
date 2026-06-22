@@ -1,12 +1,23 @@
 # Directional-Contrast Cohort Reconciliation v1
 
-**status:** WAIT-ONLY -- settlement gate not met. 0 of 10 reconciled; all 10 Preview/Scheduled (not
-started). No outcome/eval rows written. Totals unchanged 35/35.
+**status:** WAIT-ONLY (2 gate checks) -- settlement gate still not met. 0 of 10 reconciled; all 10
+Preview/Scheduled (not started). No outcome/eval rows written. Totals unchanged 35/35.
 **classification:** reconciliation slice (settlement-gated). No reconciliation performed; docs-only. No
 code, model, generation, confidence, posture, lean, buyer, source-depth, or reconciliation-logic change.
 
 **Anchor:** Grade only Final games, only on structured LeanSide. Presence of a captured cohort is not a
 settled outcome.
+
+## 0. Gate Re-check Log (settlement-completion attempt)
+
+- **Check 1 -- 2026-06-22 ~11:30 EDT (capture day):** all 10 games Preview/Scheduled, pre first pitch.
+  Wait-only; nothing written.
+- **Check 2 -- 2026-06-22 11:59 EDT (15:59Z), settlement-completion rerun:** StatsAPI re-queried for all
+  10 gamePks; still all `Preview/Scheduled`, `totalGamesInProgress=0`. First pitches are 18:10-19:45Z
+  *today* (still ~2-4h away); games are not expected Final until ~2026-06-23T04:00Z+. The "games should
+  be settled" premise did not yet hold at re-check time. Gate not met again -> no reconciliation, no rows
+  written, totals remain 35/35. The cohort is unchanged and reconcile-eligible the moment the games go
+  Final; rerun this slice after ~2026-06-23T04:00Z.
 
 ## 1. Summary
 
