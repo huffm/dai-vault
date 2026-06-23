@@ -29,9 +29,9 @@ The first set of major DAI concepts to convert into durable vault doctrine, so t
 
 ### 3. Source Depth and Evidence Sufficiency
 - why it matters: defines when a read is grounded enough to ship; directly governs product quality and the "missing context" failure mode.
-- already documented: partial -- `04 Products/sports-v1/source-depth-contract-v1.md`, `source-group-taxonomy-v1.md`, `sources/cross-sport-source-*`, `cognitive-factory/signal-cost-and-feasibility-model-v1.md`, `signal-fallback-ladder.md`, plus the `dai-signal-follow-up-diagnostics` skill. Sufficiency doctrine itself is implicit.
-- recommended next slice: Source Depth and Evidence Sufficiency Doctrine v1 -- canonical "when is a read well-grounded" doctrine over the existing contracts.
-- priority: P1.
+- already documented: DONE (2026-06-23) -- `04 Products/sports-v1/source-depth-and-evidence-sufficiency-doctrine-v1.md` is the canonical anchor reconciling `confidence-calibration-rules-v1`, `source-group-taxonomy-v1`, `source-depth-contract-v1`, `evidence-sufficiency-band-gate-v1`, and `buyer-copy-safety-v1` into the two-axis model (confidence vs evidence sufficiency; breadth vs depth) and the thin-evidence buyer-honesty cap.
+- recommended next slice: none (complete).
+- priority: P1 (done).
 
 ### 4. Decision Freshness
 - why it matters: read-only freshness layer (baseline vs refreshed sources); easily confused with confidence/reconciliation/CLV.
@@ -77,11 +77,11 @@ The first set of major DAI concepts to convert into durable vault doctrine, so t
 
 ## top 3 recommended next docs
 
-1. Source Depth and Evidence Sufficiency Doctrine v1 (#3, P1) -- core product-quality doctrine currently left implicit.
-2. Tool Gateway and Agent Permissions Doctrine v1 (#6, P1) -- security-adjacent and partly tribal; documenting it de-risks capability changes.
-3. Cognitive Protocol Doctrine Anchor v1 (#2, P2) -- a compact canonical entry point over the existing scattered protocol docs.
+1. Tool Gateway and Agent Permissions Doctrine v1 (#6, P1) -- security-adjacent and partly tribal; documenting it de-risks capability changes.
+2. Cognitive Protocol Doctrine Anchor v1 (#2, P2) -- a compact canonical entry point over the existing scattered protocol docs.
+3. Tenant as Economic Boundary Doctrine v1 (#9, P2) -- canonical statement linking tenant isolation to billing truth.
 
-Done: Agent Slice Workflow Doctrine v1 (#8, P1) shipped 2026-06-23. These remaining items are the least-documented-yet-highest-leverage topics. The well-covered topics (graphify done; buyer copy, decision freshness all have strong docs) can wait for lower-priority "anchor/index" passes.
+Done: Agent Slice Workflow Doctrine v1 (#8, P1) and Source Depth and Evidence Sufficiency Doctrine v1 (#3, P1) shipped 2026-06-23. The remaining items are the least-documented-yet-highest-leverage topics. The well-covered topics (graphify done; buyer copy, decision freshness all have strong docs) can wait for lower-priority "anchor/index" passes.
 
 ## related
 
