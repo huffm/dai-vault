@@ -107,6 +107,8 @@ Before DAI Skills Normalization and Expansion v1 (2026-06-11), only `dai-signal-
 
 ## The DAI Skills Gate (reusable prompt snippet)
 
+The Skills Gate is step 1 of the canonical slice lifecycle; the full lifecycle (gates, truth hierarchy, handoff contract) lives in `06 Execution/agent-slice-workflow-doctrine-v1.md`.
+
 Include this in future slice prompts:
 
 > Before starting this slice, run the DAI Skills Gate:

@@ -59,9 +59,9 @@ The first set of major DAI concepts to convert into durable vault doctrine, so t
 
 ### 8. Agent Slice Workflow
 - why it matters: how every slice is run (skills gate, grill, plan, verify, handoff). Pure tribal/process knowledge spread across skills and the handoff log; highest alignment leverage.
-- already documented: tribal -- lives in `dai-skill-router`, `dai-agent-handoff`, `dai-write-skill`, and `current-slice.md`. No canonical doctrine doc.
-- recommended next slice: Agent Slice Workflow Doctrine v1 -- canonical end-to-end slice lifecycle and its guardrails.
-- priority: P1.
+- already documented: DONE (2026-06-23) -- `06 Execution/agent-slice-workflow-doctrine-v1.md` is the canonical end-to-end slice lifecycle, gates, truth hierarchy, and handoff contract. Previously tribal across `dai-skill-router`, `dai-agent-handoff`, `dai-write-skill`, and `current-slice.md`.
+- recommended next slice: none (complete). A future `dai-slice-runner` skill should encode this doctrine.
+- priority: P1 (done).
 
 ### 9. Tenant as Economic Boundary
 - why it matters: tenant = the business/billing boundary (stripe = truth); underpins multi-tenant isolation and monetization.
@@ -77,11 +77,11 @@ The first set of major DAI concepts to convert into durable vault doctrine, so t
 
 ## top 3 recommended next docs
 
-1. Agent Slice Workflow Doctrine v1 (#8, P1) -- the only fully tribal item; governs how every future slice runs.
-2. Source Depth and Evidence Sufficiency Doctrine v1 (#3, P1) -- core product-quality doctrine currently left implicit.
-3. Tool Gateway and Agent Permissions Doctrine v1 (#6, P1) -- security-adjacent and partly tribal; documenting it de-risks capability changes.
+1. Source Depth and Evidence Sufficiency Doctrine v1 (#3, P1) -- core product-quality doctrine currently left implicit.
+2. Tool Gateway and Agent Permissions Doctrine v1 (#6, P1) -- security-adjacent and partly tribal; documenting it de-risks capability changes.
+3. Cognitive Protocol Doctrine Anchor v1 (#2, P2) -- a compact canonical entry point over the existing scattered protocol docs.
 
-These are first because they are the least-documented-yet-highest-leverage topics. The well-covered topics (graphify done; buyer copy, decision freshness, cognitive protocol all have strong docs) can wait for lower-priority "anchor/index" passes.
+Done: Agent Slice Workflow Doctrine v1 (#8, P1) shipped 2026-06-23. These remaining items are the least-documented-yet-highest-leverage topics. The well-covered topics (graphify done; buyer copy, decision freshness all have strong docs) can wait for lower-priority "anchor/index" passes.
 
 ## related
 
