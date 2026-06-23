@@ -73,6 +73,12 @@ Before DAI Skills Normalization and Expansion v1 (2026-06-11), only `dai-signal-
 - **Not when:** copy/visual slices (pair with `product-ui-design-architect`); backend C#.
 - **Kind:** DAI-specific. **Provenance:** original; editor-feedback discipline inspired by Matt Pocock / Total TypeScript (attribution section in the skill; no text copied).
 
+### dai-docs-architect (new, 2026-06-23)
+- **Purpose:** turn DAI concepts into durable vault doctrine: enforce one-doctrine-per-doc, a standard topic template, a documentation-slice workflow, and a verify-before-assert / doctrine-vs-deferred discipline.
+- **Use when:** documenting or canonicalizing a major architectural/strategic/agent-workflow topic; a concept keeps being re-explained across slices.
+- **Not when:** one-off notes or run logs; pure session handoff (`dai-agent-handoff`); authoring a skill (`dai-write-skill`); the claim/decision is not yet verified (`dai-grill-with-vault` first).
+- **Kind:** DAI-specific. **Provenance:** original, written this slice. Routed from `dai-skill-router`. Partially absorbs the doctrine-layer intent of the recommended `dai-vault-doc-conventions` (which remains a candidate for low-level format mechanics).
+
 ## Jera skills intentionally NOT brought into DAI
 
 - None currently identified beyond what was already copied; the Jera pack's five dai-* skills and the workspace's product-ui skill are all present. Future Jera-side skills should pass `dai-write-skill`'s duplication check before being copied here.
@@ -110,3 +116,7 @@ Include this in future slice prompts:
 ## Operating-rule update (2026-06-15)
 
 Claude Native Skill Registration Audit v1 (`claude-native-skill-registration-audit-v1.md`) confirmed all 10 skills are correctly registered for native Claude Code discovery (correct path, names match dirs, no `disable-model-invocation`, strong descriptions, all loadable this session). No frontmatter was changed -- the existing descriptions already meet/exceed Claude's auto-selection criteria. Decision: **native discovery is the primary skill-selection mechanism; `dai-skill-router`'s gate is retained as an audit/high-risk layer** (mandatory when a prompt/handoff names skills or for high-risk slices; lightweight on trivial/read-only slices). The gate's durable value is the expected-but-missing check + accountability + seeding the handoff skills-used line, not re-listing obviously relevant skills. Cross-repo note: `jera-workspace/.claude/skills/` holds 6 duplicate copies -- a drift risk, no canonical-source decision taken.
+
+## Skill-layer update (2026-06-23)
+
+DAI Documentation Skill and Topic Slice System v1 added `dai-docs-architect` (skill count 10 -> 11). It governs durable topic doctrine: one-doctrine-per-doc decomposition, a standard topic template, and a documentation-slice workflow. `dai-skill-router` now routes doctrine-documentation work to it and pairs with it. A companion documentation backlog lives at `06 Execution/backlog/documentation-doctrine-backlog-v1.md`. No runtime code or behavior changed.
