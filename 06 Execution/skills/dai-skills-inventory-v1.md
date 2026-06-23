@@ -79,6 +79,15 @@ Before DAI Skills Normalization and Expansion v1 (2026-06-11), only `dai-signal-
 - **Not when:** one-off notes or run logs; pure session handoff (`dai-agent-handoff`); authoring a skill (`dai-write-skill`); the claim/decision is not yet verified (`dai-grill-with-vault` first).
 - **Kind:** DAI-specific. **Provenance:** original, written this slice. Routed from `dai-skill-router`. Partially absorbs the doctrine-layer intent of the recommended `dai-vault-doc-conventions` (which remains a candidate for low-level format mechanics).
 
+### dai-code-reviewer (new, 2026-06-23)
+- **Purpose:** pre-completion code review for implementation slices through a productized, production-minded, minimal-design lens; catch correctness/syntax/idiom/simplicity/naming/comment/architecture/test issues and refuse to rubber-stamp unverified completion.
+- **Use when:** a code-changing slice (application code, DTOs/contracts, db/read models, frontend projections, agent-service models, or tests) is about to complete or hand off.
+- **Not when:** docs-only slices (unless code/technical claims need review); pure planning; one-off notes.
+- **Pairs with:** `dai-test-discipline` (test strategy), `dai-typescript-angular-quality` (TS/Angular depth), `dai-grill-with-vault` (architecture alignment), `dai-agent-handoff` (final handoff), `superpowers:verification-before-completion`.
+- **Runtime behavior:** none -- read-only review skill; edits no files, recommends fixes that the implementing slice applies.
+- **Graphify relationship:** may use Graphify for orientation/blast-radius (`query`/`explain`/`path`/`affected`) as navigation evidence only; verifies all findings against source/tests/vault; never enables semantic/cloud extraction, never runs on `dai-vault`, never commits graph artifacts.
+- **Kind:** DAI-specific. **Provenance:** original, written this slice. Routed from `dai-skill-router`.
+
 ## Jera skills intentionally NOT brought into DAI
 
 - None currently identified beyond what was already copied; the Jera pack's five dai-* skills and the workspace's product-ui skill are all present. Future Jera-side skills should pass `dai-write-skill`'s duplication check before being copied here.
@@ -120,3 +129,7 @@ Claude Native Skill Registration Audit v1 (`claude-native-skill-registration-aud
 ## Skill-layer update (2026-06-23)
 
 DAI Documentation Skill and Topic Slice System v1 added `dai-docs-architect` (skill count 10 -> 11). It governs durable topic doctrine: one-doctrine-per-doc decomposition, a standard topic template, and a documentation-slice workflow. `dai-skill-router` now routes doctrine-documentation work to it and pairs with it. A companion documentation backlog lives at `06 Execution/backlog/documentation-doctrine-backlog-v1.md`. No runtime code or behavior changed.
+
+## Skill-layer update (2026-06-23, code review)
+
+DAI Code Review Skill v1 added `dai-code-reviewer` (skill count 11 -> 12): a read-only pre-completion review for code-changing slices, covering correctness/syntax/idiom/simplicity/naming/comments/architecture/product/testing/security with a fixed `DAI CODE REVIEW` output and an approve / approve-with-notes / request-changes verdict. `dai-skill-router` now routes any code-changing slice to it before final handoff and lists its pairings. No runtime code or behavior changed.
