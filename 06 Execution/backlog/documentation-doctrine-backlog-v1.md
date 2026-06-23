@@ -47,9 +47,9 @@ The first set of major DAI concepts to convert into durable vault doctrine, so t
 
 ### 6. Tool Gateway and Agent Permissions
 - why it matters: the security and capability boundary for agents; what tools a station may call. Security-adjacent, so tribal knowledge here is a real risk.
-- already documented: partial -- `02 Platform/architecture/security-and-permissions.md` exists; tool-gateway behavior lives mostly in handoff addenda (Wire-In, Market Spread Wrap, Retrieve Parity). No dedicated tool-gateway doctrine doc.
-- recommended next slice: Tool Gateway and Agent Permissions Doctrine v1 -- canonical doctrine tying the gateway to the permissions model and verified against the registry/policy code.
-- priority: P1.
+- already documented: DONE (2026-06-23) -- `02 Platform/architecture/tool-gateway-and-agent-permissions-doctrine-v1.md` is the canonical anchor tying the charter to the implemented gateway (`ToolGateway` fail-closed via `IProtocolToolAccessPolicy` + `AllowedProtocolNodes`, `ToolGatewayInvocation` telemetry), the station blueprint (cards derive permissions; no self-widening), and the probe-refresh readiness review (safe-by-default, merge audit, protected fields). Verified against source/tests.
+- recommended next slice: none (complete).
+- priority: P1 (done).
 
 ### 7. Buyer Artifact Safety and Copy Doctrine
 - why it matters: governs buyer-visible language and prevents unsafe claims (CLV/lock/guarantee).
@@ -77,11 +77,11 @@ The first set of major DAI concepts to convert into durable vault doctrine, so t
 
 ## top 3 recommended next docs
 
-1. Tool Gateway and Agent Permissions Doctrine v1 (#6, P1) -- security-adjacent and partly tribal; documenting it de-risks capability changes.
-2. Cognitive Protocol Doctrine Anchor v1 (#2, P2) -- a compact canonical entry point over the existing scattered protocol docs.
-3. Tenant as Economic Boundary Doctrine v1 (#9, P2) -- canonical statement linking tenant isolation to billing truth.
+1. Cognitive Protocol Doctrine Anchor v1 (#2, P2) -- a compact canonical entry point over the existing scattered protocol docs.
+2. Tenant as Economic Boundary Doctrine v1 (#9, P2) -- canonical statement linking tenant isolation to billing truth; pairs with the tool-gateway doc's deferred tenant/cost boundary.
+3. Outcome Reconciliation Doctrine Anchor v1 (#5, P2) -- canonical doctrine over the reconciliation contract + matcher, with the run docs as evidence beneath it.
 
-Done: Agent Slice Workflow Doctrine v1 (#8, P1) and Source Depth and Evidence Sufficiency Doctrine v1 (#3, P1) shipped 2026-06-23. The remaining items are the least-documented-yet-highest-leverage topics. The well-covered topics (graphify done; buyer copy, decision freshness all have strong docs) can wait for lower-priority "anchor/index" passes.
+Done: all three P1 items shipped 2026-06-23 -- Agent Slice Workflow Doctrine v1 (#8), Source Depth and Evidence Sufficiency Doctrine v1 (#3), and Tool Gateway and Agent Permissions Doctrine v1 (#6). Remaining items are P2 "anchor/index" passes over already-strong doc clusters. With the P1 doctrine set complete, DAI Slice Runner Skill v1 (encode the slice-workflow doctrine) is now a sensible next non-doc slice.
 
 ## related
 
