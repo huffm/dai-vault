@@ -88,6 +88,15 @@ Before DAI Skills Normalization and Expansion v1 (2026-06-11), only `dai-signal-
 - **Graphify relationship:** may use Graphify for orientation/blast-radius (`query`/`explain`/`path`/`affected`) as navigation evidence only; verifies all findings against source/tests/vault; never enables semantic/cloud extraction, never runs on `dai-vault`, never commits graph artifacts.
 - **Kind:** DAI-specific. **Provenance:** original, written this slice. Routed from `dai-skill-router`.
 
+### dai-slice-runner (new, 2026-06-23)
+- **Purpose:** drive a DAI slice end to end through the canonical lifecycle (orient -> bound -> select skills -> execute -> verify -> review -> handoff -> commit/push discipline); the executable encoding of `06 Execution/agent-slice-workflow-doctrine-v1.md`. Coordinates the other skills; does not replace judgment or restate their internals.
+- **Use when:** starting any non-trivial slice; coordinating repo+vault work; a task needing multiple skills or with code/docs/architecture/test/handoff implications.
+- **Not when:** one-off explanation, pure Q&A, tiny wording edits, when the user opts out of the full process, or nested inside an already-running slice.
+- **Pairs with:** `dai-skill-router` (its step 3 Skills Gate), `dai-agent-handoff` (final handoff / close output), `dai-code-reviewer` (code-changing slices), `dai-test-discipline`, `dai-docs-architect`, `dai-grill-with-vault`, `dai-token-tight`.
+- **Runtime behavior:** none -- a process driver; it edits no files of its own and pushes only when explicitly instructed.
+- **Graphify relationship:** uses Graphify for code orientation/blast-radius only (navigation evidence; verify against source/tests); never runs it on `dai-vault`, never enables semantic/cloud extraction, never commits `graphify-out/`.
+- **Kind:** DAI-specific. **Provenance:** original, written this slice; encodes the slice-workflow doctrine. Routed from `dai-skill-router`.
+
 ## Jera skills intentionally NOT brought into DAI
 
 - None currently identified beyond what was already copied; the Jera pack's five dai-* skills and the workspace's product-ui skill are all present. Future Jera-side skills should pass `dai-write-skill`'s duplication check before being copied here.
@@ -135,3 +144,7 @@ DAI Documentation Skill and Topic Slice System v1 added `dai-docs-architect` (sk
 ## Skill-layer update (2026-06-23, code review)
 
 DAI Code Review Skill v1 added `dai-code-reviewer` (skill count 11 -> 12): a read-only pre-completion review for code-changing slices, covering correctness/syntax/idiom/simplicity/naming/comments/architecture/product/testing/security with a fixed `DAI CODE REVIEW` output and an approve / approve-with-notes / request-changes verdict. `dai-skill-router` now routes any code-changing slice to it before final handoff and lists its pairings. No runtime code or behavior changed.
+
+## Skill-layer update (2026-06-23, slice runner)
+
+DAI Slice Runner Skill v1 added `dai-slice-runner` (skill count 12 -> 13): the executable encoding of `06 Execution/agent-slice-workflow-doctrine-v1.md` -- an 8-step lifecycle driver (orient, bound, select skills, execute, verify, review, handoff, commit/push discipline) with required `DAI SLICE START` and `DAI SLICE CLOSE` outputs. It coordinates the existing skills (it is not a replacement) and routes from `dai-skill-router` as its step-3 Skills Gate. No runtime code or behavior changed.
