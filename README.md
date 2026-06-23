@@ -119,6 +119,14 @@ Use GPT for:
 - niche comparison
 - synthesis
 
+## Development tooling
+
+Graphify has been adopted as a local development navigation layer over the code
+repo. It helps agent-assisted development with orientation and blast-radius
+awareness before edits. It is not a source of truth and not a runtime dependency.
+The full doctrine, approved/disallowed uses, and truth hierarchy live in
+[[graphify-development-navigation-doctrine-v1]].
+
 ## Path layout
 
 Workspace root:
