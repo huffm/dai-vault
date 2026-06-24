@@ -8,8 +8,12 @@
 - **source handoff/doc:** `06 Execution/handoffs/current-slice.md` (Directional-Contrast Cohort Capture v2 + Market
   Baseline Capture v1); `04 Products/sports-v1/calibration/directional-contrast-cohort-capture-v2.md`;
   `reconciled-outcome-calibration-read-v2.md`.
-- **expected repo heads:** `<DAI_REPO_ROOT>` main `1a7c84c`; `<DAI_VAULT_ROOT>` main `5c9ff79` or later (this
-  slice's commit may have advanced it).
+- **expected repo heads:** `<DAI_REPO_ROOT>` main `1a7c84c` or later; `<DAI_VAULT_ROOT>` main `5c9ff79` or later.
+  Skills/docs-only commits since generation (e.g. prompt-architect skill work) are **immaterial** -- the material
+  precondition is the sports state below, not exact head equality. As of 2026-06-24 the heads have advanced to
+  `ba0e611` / `498de2a` via skills slices that do not touch the proposed sports slice.
+- **material precondition:** cohort-v2 (the 14 runs captured 2026-06-24) is UNSETTLED and the settled corpus is
+  47/47. If that no longer holds, re-derive.
 - **supersession/expiration:** valid until the cohort-v2 games are settled and a newer `next-slice.md` is generated.
   Expires if the captured gamePks reach Final and remain unreconciled past ~2026-06-26 (re-derive from fresh state).
 
@@ -100,8 +104,8 @@ Opportunity Cost: Chosen over Calibration Read v3 because settlement data is tim
 
 ## Validation checklist for dai-slice-runner (run before executing)
 
-- [ ] `<DAI_REPO_ROOT>` head == `1a7c84c` (or note divergence and re-derive).
-- [ ] `<DAI_VAULT_ROOT>` head == `5c9ff79` or later; working trees clean.
+- [ ] `<DAI_REPO_ROOT>` / `<DAI_VAULT_ROOT>` heads at or after `1a7c84c` / `5c9ff79`; working trees clean.
+      Skills/docs-only drift is immaterial -- only a runtime/sports change to the proposed area forces re-derivation.
 - [ ] Cohort-v2 gamePks are Final in StatsAPI (else settle the Final subset, defer the rest).
 - [ ] Pre-state corpus totals == 47/47 by sqlcmd before any write.
 - [ ] No tuning / no runtime-code change in scope; this remains an operational + read slice.
