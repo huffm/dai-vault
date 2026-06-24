@@ -97,6 +97,16 @@ Before DAI Skills Normalization and Expansion v1 (2026-06-11), only `dai-signal-
 - **Graphify relationship:** uses Graphify for code orientation/blast-radius only (navigation evidence; verify against source/tests); never runs it on `dai-vault`, never enables semantic/cloud extraction, never commits `graphify-out/`.
 - **Kind:** DAI-specific. **Provenance:** original, written this slice; encodes the slice-workflow doctrine. Routed from `dai-skill-router`.
 
+### dai-slice-prompt-architect (new, 2026-06-24)
+- **Purpose:** doctrine-backed prompt compiler -- convert verified project state (handoffs, current-slice, vault doctrine, skills inventory, calibration/backlog/repo state, Graphify orientation) into a reviewable, executable next-slice prompt. Proposes; does not execute or decide strategy.
+- **Use when:** drafting the next slice prompt; turning a handoff into a prompt; reviewing previous prompt quality; saving/updating `next-slice.md`; proposing skill/doctrine improvements from repeated prompt failures.
+- **Not when:** executing a slice (`dai-slice-runner`); non-prompt doctrine (`dai-docs-architect`); authoring a non-prompt skill (`dai-write-skill`); plain session handoff (`dai-agent-handoff`); deciding product/business strategy (user/architect).
+- **Pairs with:** `dai-slice-runner` (proposes vs executes), `dai-agent-handoff` (handoff in, prompt out), `dai-docs-architect` (promote a stable lesson to doctrine), `dai-token-tight` (dense prompts), `dai-grill-with-vault` (challenge a draft), `dai-write-skill` (the only applier of its MODE 4 proposals).
+- **Runtime impact:** none -- writes prompts and `06 Execution/prompting/*` vault notes only; edits no runtime code, product/model prompts, or other skills.
+- **Graphify relationship:** navigation evidence only; never on `dai-vault`; never semantic/cloud; never commits `graphify-out/`.
+- **Learning-loop boundary:** never self-modifies. MODE 4 PROPOSES skill/doctrine updates (>=2 instances or 1 severe failure, overfitting risk stated); a separate user-approved skill-update slice (under `dai-write-skill`) APPLIES them. The user/architect remains the strategic approver.
+- **Kind:** DAI-specific. **Provenance:** original, written this slice. Routed from `dai-skill-router`. Encodes `06 Execution/prompting/slice-prompt-architecture-doctrine-v1.md`.
+
 ## Jera skills intentionally NOT brought into DAI
 
 - None currently identified beyond what was already copied; the Jera pack's five dai-* skills and the workspace's product-ui skill are all present. Future Jera-side skills should pass `dai-write-skill`'s duplication check before being copied here.
@@ -148,3 +158,7 @@ DAI Code Review Skill v1 added `dai-code-reviewer` (skill count 11 -> 12): a rea
 ## Skill-layer update (2026-06-23, slice runner)
 
 DAI Slice Runner Skill v1 added `dai-slice-runner` (skill count 12 -> 13): the executable encoding of `06 Execution/agent-slice-workflow-doctrine-v1.md` -- an 8-step lifecycle driver (orient, bound, select skills, execute, verify, review, handoff, commit/push discipline) with required `DAI SLICE START` and `DAI SLICE CLOSE` outputs. It coordinates the existing skills (it is not a replacement) and routes from `dai-skill-router` as its step-3 Skills Gate. No runtime code or behavior changed.
+
+## Skill-layer update (2026-06-24, slice prompt architect)
+
+DAI Slice Prompt Architect Skill v1 added `dai-slice-prompt-architect` (skill count 13 -> 14): a doctrine-backed prompt compiler that converts verified project state into a reviewable, executable next-slice prompt. It proposes (6 internal modes: next-slice-prompt, prompt-review, prompt-learning-note, skill-improvement-proposal, next-slice-file, slice-type-specialization), the runner executes, and the user/architect approves. It is explicitly NOT self-modifying: MODE 4 proposes skill/doctrine updates, a separate user-approved skill slice applies them. `dai-skill-router` now routes next-prompt drafting/review/saving/improvement-proposals to it and pairs with it. Companion vault area `06 Execution/prompting/` adds the doctrine (`slice-prompt-architecture-doctrine-v1.md`), the lessons log (`prompt-patterns-and-lessons-v1.md`), the live proposal (`next-slice.md`), and `archive/`. No runtime code or behavior changed.
