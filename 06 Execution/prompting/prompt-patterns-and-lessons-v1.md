@@ -26,6 +26,10 @@ proposal (cite both instances; state overfitting risk). One slice is an anecdote
 - **A next-slice prompt is a proposal until validated by repo state.** The runner checks live heads before acting.
 - **Specialize the prompt by slice type.** Implementation, calibration-read, cohort-capture, settlement, docs, and
   skills slices need different required skills, verification styles, and non-goals (see the doctrine's type table).
+- **Lead with a Strategic Snapshot + Opportunity Cost (MODE 1).** Compress WhyNow / Factory-vs-Product / RevenuePath /
+  DecisionScarcity / Horizon / Invalidation / OpportunityCost into 5-7 lines + one comparison sentence (< 60 tokens).
+  Prefer slices that resolve scarce information (DAI-vs-market disagreements, confidence outliers, high-confidence
+  misses, sparse cohorts) over volume. Prioritization only -- no execution authority.
 
 ## Anti-patterns
 

@@ -44,6 +44,19 @@ DAI-vs-market-vs-outcome dataset -- without tuning anything. Also settle the pos
 - Single-provider outcome dependency (StatsAPI); a postponed game (as happened with 823613) leaves a run pending.
 - DAI~market agreement may persist, keeping the discriminating sample small even across slates -- size accordingly.
 
+## Strategic snapshot
+
+```
+STRATEGIC SNAPSHOT
+Type: Factory
+Horizon: Immediate
+Why Now: cohort-v2 settles 2026-06-25; authoritative outcomes are perishable to capture cleanly.
+Scarce Signal: DAI-vs-market disagreements + decided away leans (only ~1/slate).
+Revenue Path: Indirect (calibration gates any future paid directional claim).
+Primary Risk: DAI~market agreement keeps the discriminating sample small; under-powered if only one slate added.
+Opportunity Cost: Chosen over Calibration Read v3 because settlement data is time-sensitive and <3 pooled slates exist.
+```
+
 ## Full prompt draft (ready to run)
 
 > Slice: Directional-Contrast Multi-Slate Settlement + Capture Continuation v1
