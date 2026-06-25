@@ -122,6 +122,8 @@ conceptual outcome record:
 
 the learning loop does not change model behavior in real-time. it informs signal weight tuning in a future offline calibration pass.
 
+**governance:** when that offline calibration pass is permitted to inform tuning is gated by evidence quality, not by implementation readiness -- see `02 Platform/architecture/governance/evidence-readiness-gates-v1.md` (Gate 4 calibration sufficiency unlocks tuning proposals; Gate 5 unlocks production tuning). as of 2026-06-25 the loop is integrity-clean and operational (Gate 3) but Gate 4 is not yet achieved, so tuning is deferred.
+
 ---
 
 ## 6. storage by purpose

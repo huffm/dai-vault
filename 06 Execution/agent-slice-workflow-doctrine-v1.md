@@ -130,6 +130,7 @@ A code-changing sports slice: run the Skills Gate and select `dai-test-disciplin
 - `06 Execution/backlog/documentation-doctrine-backlog-v1.md`
 - `02 Platform/architecture/devtooling/graphify-development-navigation-doctrine-v1.md`
 - `02 Platform/architecture/cognitive-worker-doctrine.md`
+- `02 Platform/architecture/governance/evidence-readiness-gates-v1.md` -- program-level evidence gates; a slice should declare which gate it advances/crosses/strengthens as part of planning, alongside the Skills Gate. The per-slice lifecycle gates here govern HOW a slice runs; the evidence gates govern WHEN a class of work is permitted.
 - `<DAI_REPO_ROOT>/CLAUDE.md`
 
 ## recommended next slice
