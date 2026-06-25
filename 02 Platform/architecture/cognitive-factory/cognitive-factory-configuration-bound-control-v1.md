@@ -77,9 +77,14 @@ control** -> Read-only execution -> Controlled mutation (Gate 4/5) -> Production
 
 ## what remains before Stage 2 (read-only execution)
 
+**done 2026-06-25** -- Stage 2 is implemented (`cognitive-factory-read-only-execution-v1.md`). _Today_ a dev-only
+`POST /api/dev/cognitive-factory/probe/audit-only` reads `AllowExecution`+`AuditOnly` and runs one deterministic,
+non-mutating protocol-node probe (no model/tool/external call, no db write). It writes no audit-ledger row -- the
+existing merge-audit schema is merge-specific, so the result is in-memory only (durable audit deferred). The note
+below was the Stage-2 plan when this Stage-1 doc was written.
+
 A dev-only consumer that reads `AllowExecution` (and `AuditOnly`) to gate a single audit-only, non-mutating probe
-run -- producing one audit-ledger row and no artifact mutation, observable on this surface and reversible by the
-config flag. No such consumer exists yet; until it does, `executionBlocked` stays structurally true.
+run -- no artifact mutation, observable on the surface and reversible by the config flag.
 
 ## verification evidence
 

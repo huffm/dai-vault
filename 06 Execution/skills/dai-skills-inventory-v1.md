@@ -178,3 +178,7 @@ Cognitive Factory Observability Surface v1 added a Runtime-Activation-Ladder sec
 ## Skill-layer update (2026-06-25, stage-1 config-bound checklist)
 
 Cognitive Factory Configuration-Bound Control v1 added a Stage-1 (configuration-bound) checklist to `dai-slice-prompt-architect` sec 18 (no new skill; count stays 14): config-bound rungs must bind options default-off, resolve missing/invalid config to all-off, default off in every environment, surface the bound posture, add NO execution consumer (a "config true does not execute" test must prove observable-but-blocked), and roll back by config only; bind narrow flags, never an EnableEverything. Skill doc only; no runtime change.
+
+## Skill-layer update (2026-06-25, stage-2 read-only-execution checklist)
+
+Cognitive Factory Read-Only Execution v1 added a Stage-2 (read-only execution) checklist to `dai-slice-prompt-architect` sec 18 (no new skill; count stays 14): Stage-2 prompts must not say "read-only" without specifying audit-only vs decision-read-only vs artifact-non-mutating vs DB-read-only; require an allowed-write ledger, config-gate refusal tests, forbidden-write assertions, proof a valid run does not call model/tools unless that is the stated goal, a structured result with truthful did-not-mutate/did-not-call flags, and a gate-naming refusal; prefer a proven-safe inert path; if no audit schema fits, return in-memory and document the deferral. Skill doc only; no runtime change.
