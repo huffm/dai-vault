@@ -15,6 +15,11 @@ Gate 4/5 activity, and Gate 4 is not yet achieved.
 
 ## headline finding
 
+**update 2026-06-25:** Stage 0 (Layer-0) observability is now implemented -- a dev-only read-only diagnostics
+endpoint (`cognitive-factory-observability-surface-v1.md`). The statements below that the runtime diagnostics are
+"surfaced by no endpoint" and that observability is "Weak (runtime)" predate that slice; they describe the state
+this assessment found, which the observability surface has since begun to address (read-only; no runtime activated).
+
 The premise "the whole factory is dormant" is half right. There are **two distinct bodies of runtime**:
 
 1. **The Tool Gateway is LIVE** -- it is on the critical path of every sports run today, enforcing fail-closed
