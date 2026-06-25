@@ -196,6 +196,7 @@ requires.
 - `04 Products/sports-v1/calibration/decision-encoding-integrity-077a-root-cause-v1.md` -- Gate 1.
 - `04 Products/sports-v1/calibration/mismatch-remediation-v1.md` -- Gate 3 denominator doctrine.
 - `04 Products/sports-v1/calibration/calibration-assessment-v3.md` -- Gate 4 status + Gate 5 baseline.
+- `02 Platform/architecture/cognitive-factory/cognitive-factory-runtime-activation-readiness-v1.md` -- applies these gates to runtime activation: a mutating/decision runtime activation is a Gate 4/5 activity (not yet permitted); read-only activations are not.
 - `04 Products/sports-v1/confidence-calibration-rules-v1.md` -- the no-tuning-until-discrimination rule (Gate 4/5).
 
 ## acceptance criteria
