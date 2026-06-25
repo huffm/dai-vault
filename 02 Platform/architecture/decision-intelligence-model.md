@@ -29,7 +29,7 @@ the sports matchup analyzer is the first concrete expression of this doctrine. e
 
 ## 2. evidence-backed architecture
 
-**current truth:** a single LLM call (gpt-4o-mini, temperature=0.3) produces the entire analysis. the model uses its training weights as the evidence base. no external data is retrieved at runtime. no source citations exist.
+**current truth:** the analysis is still a single sports model call, but it is no longer ungrounded -- external data is now retrieved at runtime and passed as explicit inputs. the analyzer receives grounded signals (e.g. starting pitching from `mlb_statsapi`, market from `odds_api`) with per-signal source and quality attribution (`SignalAvailability`), and the artifact distinguishes grounded vs missing signals. the near-term direction below is therefore partially realized. _Originally (2026-04-18): a single LLM call (gpt-4o-mini, temperature=0.3) produced the entire analysis from training weights, with no external retrieval and no source citations._
 
 **near-term direction:** the FastAPI sports analyzer already receives team names, sport, and date. the next concrete step is attaching real retrieved signals as explicit prompt inputs: current spread + line movement, sharp money %, public betting %, injury report status, and weather for outdoor NFL. these become grounded inputs, not things the model guesses from memory.
 
@@ -104,9 +104,9 @@ conceptual shape:
 
 ## 5. learning loop
 
-**current truth:** runs are stored in the `AgentRun` table with `InputJson` and `OutputJson`. no outcome data exists. no signal accuracy is tracked.
+**current truth:** runs settle to authoritative outcomes and a derived per-run lean-direction evaluation (`AgentRunOutcome` + `AgentRunEvaluation`); lean accuracy is tracked and read per regime and confidence band. the corpus is integrity-qualified -- contradictory runs are excluded, and the calibration denominator is settled AND `ExclusionReason IS NULL`. _Originally (2026-04-18) no outcome data existed and no accuracy was tracked -- correct then; the learning-loop foundation has since been built, reconciled, and assessed (see `04 Products/sports-v1/calibration/calibration-assessment-v3.md`)._
 
-**near-term direction:** no action required now. the storage foundation is already in place. outcome tracking is correctly deferred until the decision artifact is worth comparing outcomes against.
+**near-term direction:** outcome tracking is implemented and in use. the near-term need has shifted from *building* the loop to *accumulating sufficient evidence* -- balanced, market-backed slates -- before the loop may inform tuning. in gate terms the loop is integrity-clean and operational (Gate 3) but Gate 4 calibration sufficiency is not yet achieved (see `02 Platform/architecture/governance/evidence-readiness-gates-v1.md`). _Originally this section said outcome tracking was correctly deferred; that deferral is resolved._
 
 **longer-term target:** after a game concludes, an outcome collector retrieves the final score and spread result. it compares the outcome against the stored decision artifact for that game. over time, signal accuracy and lean-direction accuracy accumulate per sport, signal category, and confidence band. this is the feedback loop that informs signal weight calibration.
 

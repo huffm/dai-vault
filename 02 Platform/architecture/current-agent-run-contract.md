@@ -118,7 +118,7 @@ this is the raw real-world result of a game. it is NOT the decision (that is Age
 **separation rationale:** three things are intentionally kept separate:
 1. decision-time snapshot → `AgentRun` + `OutputJson`
 2. raw real-world outcome → `AgentRunOutcome`
-3. derived run evaluation (was the lean correct?) → future work, not yet implemented
+3. derived run evaluation (was the lean correct?) → implemented: `AgentRunEvaluation`, with `RunEvaluator` deriving correct / incorrect / inconclusive from lean vs outcome. _Originally future work; now built and integrity-guarded -- a run whose persisted lean contradicts its own artifact prose is refused settlement (see `02 Platform/architecture/governance/evidence-readiness-gates-v1.md`, Gates 1-3)._
 
 do not collapse these into one field or one record. the learning loop compares (1) against (2) to produce (3).
 
