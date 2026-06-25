@@ -82,9 +82,13 @@ reconciled with an Originally/Today note.
 
 ## what remains before Stage 1 (configuration-bound activation)
 
-- Bind `ProbeRefreshChainAssemblyOptions` / `ProbeRefreshExecutorOptions` from `IConfiguration` (default off), so a
-  switch becomes a reviewable, reversible config decision instead of a source edit, and surface the bound value on
-  this endpoint. No execution -- defaults stay off.
+**done 2026-06-25** -- Stage 1 is implemented (`cognitive-factory-configuration-bound-control-v1.md`). _Today_ the
+endpoint reports `activationStage` 1 and a `ConfiguredActivation` block bound from `IConfiguration` section
+`CognitiveFactory` (default off, observable, inert). The note below was the Stage-1 plan when this Stage-0 doc was
+written.
+
+- Bind a default-off activation posture from `IConfiguration`, so a switch becomes a reviewable, reversible config
+  decision instead of a source edit, and surface the bound value on this endpoint. No execution -- defaults stay off.
 - Only after Stage 1 does Stage 2 (dev-only, audit-only, non-mutating probe run) become appropriate; Stage 3
   (controlled mutation / merge writer) remains gated by Evidence Readiness Gate 4/5 (not met).
 
