@@ -27,6 +27,12 @@ Records live external-first, addressed by convention, never hard-coded into app 
 
 Placeholders: `<OBSIDIAN_PROMPT_LEDGER_ROOT>`, `<PROJECT_KEY>` (e.g. `dai`), `<SLICE_NAME>`, `<DATE>`.
 
+**Configured (2026-06-26):** `<OBSIDIAN_PROMPT_LEDGER_ROOT>` is now set on the working machine to a `prompt-ledger`
+folder that is a sibling of `dai/` and `dai-vault/` under the workspace root (outside both git repos). The literal
+path lives only in the gitignored local path map (`<DAI_WORKSPACE_ROOT>/.local/agent-paths.md`, template at
+`dai/docs/examples/agent-paths.example.md`); committed docs reference the placeholder only. Records resolve to
+`<OBSIDIAN_PROMPT_LEDGER_ROOT>/dai/prompts/<YYYY>/<MM>/...`.
+
 The ledger may live: outside the git repo; in an Obsidian-synced folder; in a workspace folder that is gitignored;
 or -- only if the human explicitly wants versioning -- inside the vault (e.g. `06 Execution/prompting/ledger/`).
 **Do not force the ledger into `dai` or `dai-vault`**, and **do not commit external Obsidian files** unless the
@@ -183,5 +189,7 @@ dai-slice-prompt-architect sec 18 gained a Stage-2 read-only-execution checklist
 
 ## recommended next slice
 
-None required. Adopt the hook in practice: the next finalized canonical prompt should produce a `pre-execution`
-record at the agreed `<OBSIDIAN_PROMPT_LEDGER_ROOT>` once the human confirms the ledger location.
+The ledger root is now confirmed and configured (see the **Configured (2026-06-26)** note in section A). Adopt the
+hook in practice: the next finalized canonical prompt produces a `pre-execution` record at
+`<OBSIDIAN_PROMPT_LEDGER_ROOT>/dai/prompts/<YYYY>/<MM>/...` -- no skill change is needed; the wiring already exists in
+`dai-slice-prompt-architect` (sec 19), `dai-docs-architect`, and `dai-agent-handoff`.

@@ -123,9 +123,12 @@ External-first by convention, never hard-coded into app code:
 `<OBSIDIAN_PROMPT_LEDGER_ROOT>/<PROJECT_KEY>/prompts/<YYYY>/<MM>/<YYYY-MM-DD>-<SLICE_NAME>.md`. The ledger may live
 outside git, in an Obsidian-synced folder, or in a gitignored workspace folder; in-vault only if the human explicitly
 wants versioning. If the root is unavailable, the record is embedded as an example rather than fabricating an external
-path. (Current operational state: `OBSIDIAN_PROMPT_LEDGER_ROOT` is unset and no agreed in-vault ledger folder exists,
-so recent captures embed the record -- e.g. the 2026-06-26 cohort capture embedded its pre-execution record in the
-cohort doc. This is the doctrine's fallback working as designed, not a gap.)
+path. (Operational state -- Originally (audit time, earlier 2026-06-26): `<OBSIDIAN_PROMPT_LEDGER_ROOT>` was unset and
+no agreed ledger folder existed, so captures embedded the record -- e.g. the 2026-06-26 cohort capture embedded its
+pre-execution record in the cohort doc. Today (same day, follow-up config slice): the root is configured to a
+`prompt-ledger` folder sibling to `dai/` and `dai-vault/` under the workspace root (outside both repos); the literal
+path lives only in the gitignored `<DAI_WORKSPACE_ROOT>/.local/agent-paths.md`. See [[prompt-ledger-hook-v1]] section A
+"Configured (2026-06-26)". The embed fallback remains available if the root is ever unavailable.)
 
 ## capture modes
 
@@ -149,9 +152,11 @@ invoker or undocumented element). Not `COMPLETE WITH MINOR DOC GAPS` (no inconsi
 **No correctable gaps. No skill or doctrine edits made.** Two non-blocking observations, deferred (do not act without
 an explicit slice):
 
-1. **Ledger root not yet configured (operational, by design).** `OBSIDIAN_PROMPT_LEDGER_ROOT` is unset; the doctrine
-   already handles this via the embed fallback, and the hook doc's own "recommended next slice" defers the first real
-   external record until the human confirms the ledger location. Not a doc gap -- a pending human decision.
+1. **Ledger root configuration -- RESOLVED (2026-06-26 follow-up slice).** Originally unset (the audit's only open
+   item); now configured to a `prompt-ledger` sibling folder under the workspace root, with the literal path stored
+   only in the gitignored `<DAI_WORKSPACE_ROOT>/.local/agent-paths.md` and the placeholder added to the committed
+   example (`dai/docs/examples/agent-paths.example.md`). See [[prompt-ledger-hook-v1]] section A. No skill change was
+   needed. The embed fallback stays available for any unconfigured machine.
 2. **Embed-location nuance.** The hook doc's fallback says "embed the record as an example in this doc"; recent
    practice embeds it in the slice's own deliverable doc instead (e.g. the 2026-06-26 cohort doc). Both satisfy "do
    not fabricate an external path." If this should be pinned one way, it is a one-line doctrine clarification for a
@@ -159,10 +164,11 @@ an explicit slice):
 
 ## recommendations
 
-- **No change required now.** The hook is complete and isolated; leave it.
-- **When ready:** configure `OBSIDIAN_PROMPT_LEDGER_ROOT` (external/Obsidian-synced or gitignored workspace path),
-  then the next finalized canonical prompt produces the first real `pre-execution` external record -- no skill change
-  needed (the wiring already exists).
+- **No change required to the hook.** It is complete and isolated; leave it.
+- **Ledger root: DONE (2026-06-26).** `<OBSIDIAN_PROMPT_LEDGER_ROOT>` is configured to a `prompt-ledger` sibling
+  folder under the workspace root (outside both repos); literal path in the gitignored path map only. The next
+  finalized canonical prompt produces the first real `pre-execution` external record there -- no skill change needed
+  (wiring already exists).
 - **Optional, deferred:** a one-line clarification in [[prompt-ledger-hook-v1]] on where the fallback record embeds
   (hook doc vs slice deliverable doc). Low priority; bundle into an unrelated docs slice if ever done.
 
@@ -170,8 +176,10 @@ an explicit slice):
 
 Prompt Ledger Hook v1 is **canonically implemented, process-layer-only, and runtime-isolated.** It exists in
 doctrine, is invoked by composition from `dai-slice-prompt-architect`, `dai-docs-architect`, and `dai-agent-handoff`,
-is recorded in the skills inventory, and has zero application/runtime footprint. The only open item is the
-human-pending ledger-root configuration, which the doctrine already accommodates. **Classification: COMPLETE.**
+is recorded in the skills inventory, and has zero application/runtime footprint. The audit's one open item -- ledger-root
+configuration -- was resolved the same day in a follow-up config slice (`<OBSIDIAN_PROMPT_LEDGER_ROOT>` set to a
+`prompt-ledger` sibling folder under the workspace root, literal path in the gitignored path map only). **Classification:
+COMPLETE.**
 
 ## related docs
 
