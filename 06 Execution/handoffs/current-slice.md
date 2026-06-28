@@ -8943,3 +8943,30 @@ depth) -- not one static template. Byte-equivalence needs data-regime overlay co
 engine + one golden fixture. Doc: `04 Products/sports-v1/prompting/prompt-assembly-engine-v1.md`.
 **Discipline.** No prompt/model/confidence tuning; no cohort settlement/capture; no Drive/FIFA. Attribution clean.
 Push: NOT performed. Next: Phase 3.1 Data-Regime Overlay + MLB Prompt Equivalence v1 (shadow-only golden equality).
+
+---
+
+## Data-Regime Overlay + MLB Prompt Equivalence v1 -- complete 2026-06-28 (Phase 3.1, non-live)
+
+**What.** Added overlay/recipe composition + deterministic MLB dataRegime mapping, and proved the non-live
+registry/builder path assembles BYTE-IDENTICAL text to the live MLB prompt across the 4 regimes. Extracted
+`build_mlb_user_message` from analyze_mlb (verbatim, behavior-preserving) as the equivalence oracle; analyze_mlb calls
+it -> live prompt output unchanged. New: `dataregime.py` (mlb_data_regime + MLB_REGIMES), PromptRecipe +
+PromptRecipeSelectionResult contracts, manifest `recipes` + 5 shadow pieces (base + starter enriched/missing + market
+backed/missing), registry.select_recipe/get_template, builder.render_recipe/assemble_recipe (rstrip pieces, join
+"\n\n"). PromptAssemblyResult += recipeId/dataRegime/pieceHashes.
+
+**Equivalence.** render_recipe == build_mlb_user_message for all 4 regimes (Astros@Tigers fixture). market_backed
+overlay = run-line (no multi-book depth) variant; depth + starter-named are deferred overlays (documented).
+
+**Non-live.** Live prompt output unchanged (verbatim extraction; 109 analyzer tests + 4 equivalence tests confirm).
+Builder/recipes imported by nothing on the request path; all shadow_only, fail closed in live. sports_analyzer.py
+edited only for the extraction.
+
+**Tests.** tests/test_mlb_prompt_equivalence.py (17): regime mapping, 4-regime byte-equivalence, stable/changing hash,
+pieceHashes slot-independent, unknown-regime/brace-injection/unknown-slot/shadow-in-live fail closed, metadata.
+Targeted registry+assembly+equivalence -> 47 passed; full agent-service suite -> **173 passed, 0 failed**. .NET unchanged.
+
+**Discipline.** No prompt wording/model/confidence tuning; no cohort settlement/capture; no Drive/FIFA. No skill file
+changed (skill recommendation documented). Doc: `04 Products/sports-v1/prompting/data-regime-overlay-mlb-prompt-equivalence-v1.md`.
+Attribution clean. Push: NOT performed. Next: Phase 3.2 Market Depth + Starter-Named overlays (shadow equivalence).
