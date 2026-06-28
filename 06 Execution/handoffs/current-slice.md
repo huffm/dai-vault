@@ -9553,3 +9553,67 @@ real cohorts on slates/markets that exercise the named/missing-starter + backed-
 all 9 regimes have a clean real soak); only then Registry-Authoritative Prompt v1, only for proven-clean regimes. Alternatively,
 a small .NET slice to persist retrieved starter/market context at retrieve time so future cohorts rebuild from persisted data
 with no new model calls.
+
+## Registry-Authoritative Prompt Canary v1 -- complete 2026-06-28 (DEFAULT OFF; no real canary execution)
+
+**What.** The first place the registry-built prompt can become the MODEL INPUT, tightly bounded. `app/services/registry_prompt_canary.py`:
+`DEFAULT_ALLOWLIST` = the two real-soak-proven regimes only (starter_enriched_market_backed_depth,
+starter_enriched_market_missing); `RegistryPromptCanaryConfig` (env-driven, default off); `select_model_prompt` returns the
+registry prompt as model input ONLY for an allowlisted regime AND ONLY after it is proven byte-identical to the live prompt;
+`run_mlb_prompt_canary` is the analyzer-facing wrapper. `analyze_mlb` gains a keyword-only `canary_config`; a guarded block
+selects `model_msg` (default `user_msg`) before the single `_call_model(model_msg, ...)`.
+
+**Canary enablement behavior.** Default off. Disabled = byte-identical (registry not consulted; model_msg stays user_msg).
+Enabled = may use the registry prompt as model input for allowlisted regimes, only after byte equality.
+
+**Allowlisted regimes.** starter_enriched_market_backed_depth, starter_enriched_market_missing -- the only two with clean
+REAL-soak evidence (real-cohort-live-soak-v1: 15-game GO). The default allowlist is exactly these two, never all 9.
+
+**Fallback behavior (non-allowlisted).** Falls back to the live prompt (info.reason=regime_not_allowlisted) before building the
+registry prompt.
+
+**Equality mismatch behavior.** Falls back to the live prompt + loud "registry prompt canary MISMATCH" error log; no misleading
+success provenance emitted (the canary emits no provenance at all).
+
+**Model input byte-identical?** YES, in all paths -- adversarially verified across 10 attack paths (disabled, allowlisted+equal,
+allowlisted+mismatch, non-allowlisted, assembly failure, any exception, allowlisted-but-divergent, unchecked-return, allowlist
+default, concurrency): the model never receives bytes different from the live prompt. The registry text is returned only
+downstream of a strict `registry_text != live_prompt` guard against the passed-in user_msg.
+
+**Paid calls run?** NO. The optional real canary run needs explicit operator approval; not granted this slice. Byte-identity is
+fully proven offline.
+
+**sports_analyzer.py changed?** YES -- additive guarded canary block + `_call_model(model_msg)` (model_msg always == live bytes;
+disabled byte-identical). **.NET changed?** NO.
+
+**Manifest integrity.** `python scripts/check_prompt_manifest.py` -> OK (8 templates, 9 recipes), exit 0.
+
+**Tests (exact, venv python, from services/agent-service).**
+- `pytest tests/test_registry_prompt_canary.py -q` -> 10 passed (incl. model-input==live in every analyzer path + single
+  model call + config default/override + all fallbacks).
+- `pytest -q` (full suite) -> **330 passed, 0 failed** (320 prior + 10 new).
+- `python scripts/check_prompt_manifest.py` -> OK, exit 0. .NET unchanged (no dotnet test).
+
+**Review.** Skills Gate (dai-skill-router): all dai-* skills loadable. dai-code-reviewer: approve with notes, no required fixes;
+an adversarial subagent confirmed the cardinal invariant holds on all 10 paths (no way to make the model receive non-live
+bytes). dai-docs-architect wrote the doctrine doc. superpowers:verification-before-completion applied. Selected skills used:
+dai-skill-router, dai-test-discipline, superpowers:test-driven-development, dai-code-reviewer, dai-docs-architect,
+superpowers:verification-before-completion, dai-agent-handoff.
+
+**Repo before/after.** dai `95769ee` -> `f3e431e` (feat: add default-off registry-authoritative prompt canary). dai-vault
+`62752eb` -> this commit (docs: registry-authoritative prompt canary v1 + this handoff entry). Both repos were synced with
+origin/main at slice start. This slice's two commits are NOT pushed.
+
+**Services/env posture.** Unchanged this slice (left as the prior slice ended): agent-service :8000 DEFAULT (capture OFF, and
+the canary is also default-off there since no DAI_MLB_REGISTRY_PROMPT_CANARY env is set), platform-api :5007, devcore-sql up. No
+real canary run was performed.
+
+**Discipline.** No broad registry-authoritative routing (2 regimes, equality-gated); no prompt wording/model/temperature/
+confidence/artifact-copy change; no second model call per run; no second artifact; no buyer UI; no DB schema; no
+template/manifest change; no cohort settlement/calibration scoring; no betting outcome claims; no protocol-as-execution; no
+Drive/FIFA; canary default-off. Attribution clean (huffm, no co-authored-by, no AI attribution, no emojis). Push: NOT performed.
+Pre-existing untracked `06 Execution/system-state-synopsis-v1.md` left untracked by design. Doc:
+`04 Products/sports-v1/prompting/registry-authoritative-prompt-canary-v1.md`. Next: Registry Canary Real Confirmation v1
+(operator-approved, 1 paid allowlisted run -> confirm HTTP 200, model input registry-selected but byte-identical, no mismatch,
+no second call); then Multi-Slate Regime Coverage v1 to earn real-soak evidence for the other 7 regimes before widening the
+allowlist. Only a complete clean allowlist moves toward broad Registry-Authoritative Prompt migration.
