@@ -8970,3 +8970,30 @@ Targeted registry+assembly+equivalence -> 47 passed; full agent-service suite ->
 **Discipline.** No prompt wording/model/confidence tuning; no cohort settlement/capture; no Drive/FIFA. No skill file
 changed (skill recommendation documented). Doc: `04 Products/sports-v1/prompting/data-regime-overlay-mlb-prompt-equivalence-v1.md`.
 Attribution clean. Push: NOT performed. Next: Phase 3.2 Market Depth + Starter-Named overlays (shadow equivalence).
+
+---
+
+## Market Depth + Starter-Named Overlays v1 -- complete 2026-06-28 (Phase 3.2, non-live)
+
+**What.** Closed the two deferred MLB prompt branches: multi-book MARKET DEPTH and STARTER NAMED-ONLY. Added 2
+shadow_only overlay pieces (mlb.overlay.starter.named.v1; mlb.overlay.market.backed_depth.v1 = run-line + full depth in
+one piece, since live concatenates depth into the market section with a single \n) + 5 recipes. Extended dataregime.py
+(additive, backward-compatible): STARTER_STATES/MARKET_STATES, mlb_regime(starter_state, market_state),
+mlb_starter_state, mlb_market_state; kept the Phase 3.1 boolean mlb_data_regime as a facade. PromptRecipe += optional
+starterState/marketState metadata. MLB now covers all 9 regimes.
+
+**Equivalence.** render_recipe == build_mlb_user_message byte-for-byte for the 5 new branches (named x {backed, missing,
+backed_depth}; {enriched, missing} x backed_depth). Depth leaf values formatted exactly as live (`*100:.0f`, `:.1f`,
+`<0.05` strength branch) and passed as typed slots.
+
+**Non-live.** sports_analyzer.py NOT modified this slice (oracle existed from 3.1); registry imported by nothing on the
+request path; all shadow_only, fail closed in live. Live prompt output unchanged.
+
+**Tests.** tests/test_mlb_branch_overlays.py (13): state detection, 5-branch byte-equivalence, hash stable+slot-sensitive
+(median change), pieceHashes slot-independent, unknown-state/unknown-slot/brace-injection/shadow-in-live fail closed.
+Targeted (4 prompting files) -> 60 passed; full agent-service suite -> **186 passed, 0 failed**. .NET unchanged.
+
+**Discipline.** No prompt wording/model/confidence tuning; no cohort settlement/capture; no Drive/FIFA. No skill file
+changed (recommendation documented). Doc: `04 Products/sports-v1/prompting/market-depth-starter-named-overlays-v1.md`.
+Attribution clean. Push: NOT performed. Next: Phase 4 Prompt Audit Logging v1 (non-live) + CI hash-check + .NET
+sourceDepth->dataRegime.
