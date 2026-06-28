@@ -8997,3 +8997,49 @@ Targeted (4 prompting files) -> 60 passed; full agent-service suite -> **186 pas
 changed (recommendation documented). Doc: `04 Products/sports-v1/prompting/market-depth-starter-named-overlays-v1.md`.
 Attribution clean. Push: NOT performed. Next: Phase 4 Prompt Audit Logging v1 (non-live) + CI hash-check + .NET
 sourceDepth->dataRegime.
+
+---
+
+## Prompt Provenance + Manifest Integrity v1 -- complete 2026-06-28 (Phase 4, non-live)
+
+**What.** Two shadow-only additions the Phase 4 next-slice called for. (a) PROVENANCE: `app/prompting/provenance.py`
+(NEW) -- `PromptProvenance` (frozen, extra='forbid') + `build_provenance` (pure fn over recipe + assembly result) +
+`utc_now_iso`; `PromptBuilder.assemble_recipe_with_provenance(...)` returns `(result, provenance)` and fails closed
+unless mode=="shadow". Captures recipeId, recipeVersion, dataRegime, starterState, marketState, pieceIds, pieceHashes,
+assembledHash, routeContext, outputSchemaId, lifecycle, mode, createdUtc (injectable -> deterministic). (b) INTEGRITY:
+`app/prompting/integrity.py` (NEW) -- `verify_manifest_integrity` is fail-COLLECTING (reports every defect, vs the
+fail-fast `load_manifest`): missing_manifest/invalid_json/invalid_structure/wrong_algorithm/duplicate_template/
+duplicate_recipe/missing_file/stale_hash/invalid_piece_reference; `main()` CLI + `scripts/check_prompt_manifest.py`
+(exit 0 clean / 1 defective). Added `split_mlb_regime` to dataregime.py (fail-closed inverse of mlb_regime).
+
+**Provenance != prompt mutation.** build_provenance reads only the recipe + the already-computed result; never
+re-renders. Tests prove for ALL 9 regimes that render_recipe == build_mlb_user_message byte-for-byte AND the provenance
+path reports the same assembledHash as plain assemble_recipe. Emitted only for shadow; mode="live" fails closed.
+
+**No DB persistence (deliberate).** Returned in-memory; no clearly-correct shadow-metadata sink exists yet, so
+persisting now would force a premature schema. Persistence is the next slice.
+
+**Non-live.** sports_analyzer.py, platform/ (.NET), and app/prompting/templates/ (manifest.json + template files) all
+UNCHANGED (git-confirmed) -> prompt bytes byte-identical to Phase 3.2. Provenance/integrity imported by nothing on the
+request path; all recipes shadow_only, fail closed in live.
+
+**Tests.** tests/test_prompt_provenance.py (29) + tests/test_manifest_integrity.py (12). Targeted prompting -> 98 passed
+(60 prior + 38) + 3 regression = new files 41 passed. Full agent-service suite -> **227 passed, 0 failed** (186 prior +
+41 new). `python scripts/check_prompt_manifest.py` -> OK (8 templates, 9 recipes), exit 0. .NET unchanged (no dotnet test).
+
+**Review.** /code-review high run; findings resolved: removed double recipe-selection (provenance + result now share one
+selection), aligned `_resolve_states` to its docstring (canonical dataRegime authoritative, explicit metadata
+cross-checked, fail closed on disagreement), clear "malformed" error in split_mlb_regime, hoisted provenance import,
+assembledHash passed through (fail loud), lowercased a comment. Deferred (documented): integrity + load_manifest keep
+parallel rule sets -- consolidating would drop load_manifest's typed exceptions that Phase 2 tests assert.
+
+**Repo state.** dai before/after HEAD: `cb708fa` (unchanged; work uncommitted in working tree). dai-vault before HEAD:
+`1ffbdbe` (this doc + product doc uncommitted). Both repos were already synced with origin/main at slice start (the
+operator's stated "1 ahead" did not hold against live state -- verified by `git log origin/main..HEAD` empty).
+
+**Discipline.** No prompt wording/model/temperature/confidence/artifact-copy tuning; no cohort settlement/capture; no
+buyer UI; no protocol-as-execution; no Drive/FIFA. Skills Gate: dai-* slice skills not installed -> superpowers
+test-driven-development + verification-before-completion + code-review substituted. Attribution clean. Push: NOT
+performed (no operator instruction; nothing committed). Doc:
+`04 Products/sports-v1/prompting/prompt-provenance-and-manifest-integrity-v1.md`. Next: Phase 4.1 Prompt Provenance
+Persistence v1 (choose audit sink) + wire integrity into CI + .NET sourceDepth->dataRegime.
