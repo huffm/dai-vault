@@ -9174,3 +9174,74 @@ no AI attribution, no emojis). Push: NOT performed (no operator instruction). Pr
 harness inside the request path behind a default-off flag with disabled-path regression tests; first extract the shared MLB
 depth-phrase formatter + promote `_format_pitcher_quality` to public (the deferred sports_analyzer.py edit); defer .NET
 mapping, DB persistence, protocol-as-execution, buyer UI.
+
+## Live Prompt Routing (Shadow-Parallel) v1 -- complete 2026-06-28 (default-off)
+
+**What.** A DEFAULT-OFF shadow-parallel prompt validation sidecar wired into the real MLB analyzer. When enabled it builds the
+live prompt as today, builds the shadow registry prompt, asserts byte equality, and captures provenance after equality -- while
+the live prompt stays the only prompt sent to the model (no second model call, no second artifact, no buyer change). When
+disabled (default) the request path is byte-identical. Also extracted the shared MLB formatters so the live path and the
+migration oracle share one source of truth.
+
+**Exact sports_analyzer.py changes.** (1) Promoted `_format_pitcher_quality` -> public `format_pitcher_quality`; in-module
+`build_mlb_user_message` callers use the public name; `_format_pitcher_quality` kept as a thin alias for existing test imports.
+(2) Added `format_pct_whole` (`{x*100:.0f}`), `format_one_decimal` (`{x:.1f}`), `mlb_disagreement_strength` (`<0.05` ->
+"books largely agree" else "books disagree noticeably"); `build_mlb_user_message`'s market-depth block calls them (byte-identical
+output). (3) `analyze_mlb` gained a keyword-only `shadow_config: ShadowValidationConfig | None = None`; after building the live
+`user_msg` (unchanged), if config resolves enabled it runs `run_mlb_shadow_validation(..., live_prompt=user_msg)` as a
+side-effect; the live `user_msg` is always sent to `_call_model`. The sidecar is imported LAZILY (avoids a module-load cycle
+shadow_validation -> migration_readiness -> sports_analyzer); the annotation is a string (`from __future__ import annotations`).
+
+**.NET changed?** NO. Regime ownership stays with python `dataregime.py`; the `.NET sourceDepth -> dataRegime` mapping remains
+deferred.
+
+**Shadow flag/config behavior.** `app/services/shadow_validation.py` (NEW): `ShadowValidationConfig(enabled=False,
+sink_path=None)` default-off; `load_shadow_validation_config` reads `DAI_MLB_SHADOW_VALIDATION` (truthy 1/true/yes/on) +
+optional `DAI_MLB_SHADOW_SINK_PATH`; `run_mlb_shadow_validation` no-ops when disabled (constructs nothing) and validates +
+captures-after-equality when enabled. The entire sidecar is wrapped in a broad guard so it can NEVER break the live request --
+mismatch / partial-evidence / manifest-or-cwd error / post-equality sink-write error are all logged loudly (markers: MISMATCH /
+could not assemble / FAILED (non-fatal)) and returned in the outcome, never raised. Sink optional.
+
+**Disabled-mode regression result.** Byte-identical. With an explicit disabled config, `analyze_mlb` imports neither the loader
+nor the sidecar and `user_msg`/`_call_model` args are unchanged; with no config + env unset, the env default resolves disabled
+and the sidecar does not run. Disabled never constructs or writes a sink. Proven by `test_disabled_mode_is_byte_identical_and_runs_no_shadow`
+and `test_default_env_path_is_disabled`.
+
+**Enabled-mode provenance behavior.** Provenance captured only when enabled AND a sink_path is set AND byte equality proven
+first (downstream of the single shadow compose, never re-rendered). On any gap nothing is captured. The standalone oracle
+`check_mlb_shadow_equivalence` still raises (fail loud) for harness/tests; the analyzer sidecar logs-and-continues
+(production-style). Proven the analyzer completes with the authoritative prompt even when the sidecar errors.
+
+**Prompt byte-equivalence.** Live prompt bytes unchanged across all 9 MLB regimes (the formatter extraction is byte-preserving;
+9-regime equivalence suite still 30 passed; depth-substring test confirms "55%", "4% (books largely agree)", "8.5 (secondary
+context)").
+
+**Manifest integrity.** `python scripts/check_prompt_manifest.py` -> OK (8 templates, 9 recipes), exit 0.
+
+**Tests (exact commands + results, venv python, from services/agent-service).**
+- `pytest tests/test_shadow_validation.py -q` -> 16 passed.
+- `pytest tests/test_mlb_prompt_equivalence.py tests/test_mlb_branch_overlays.py -q` -> 30 passed (byte-preservation guard).
+- `pytest tests/test_migration_readiness.py -q` -> 17 passed (unchanged).
+- `pytest -q` (full suite) -> **278 passed, 0 failed** (262 prior + 16 new).
+- `python scripts/check_prompt_manifest.py` -> OK, exit 0. .NET unchanged (no dotnet test).
+
+**Review.** `/code-review high` (8 angles + verify). Resolved: wrapped the ENTIRE sidecar in a broad guard so an enabled sidecar
+can never break the live request (added 3 tests incl. an end-to-end analyzer non-fatal test); migrated in-module callers to the
+public `format_pitcher_quality` so the alias is test-only. Kept (verified deliberate): env fallback alongside injected config
+(established pattern; injected param is the DI path); `ShadowValidationOutcome.equal` (a mismatch is a returned state, not an
+exception, so it carries real info). No correctness bug survived.
+
+**Repo before/after.** dai `045e2e1` -> `4527297` (feat: add default-off shadow-parallel prompt validation). dai-vault
+`bed07c2` -> this commit (docs: live prompt routing shadow-parallel v1 + this handoff entry). Both repos were 3 ahead of
+origin/main at slice start (Phase 4 + 4.1 + Live Migration Readiness, unpushed); now 4 ahead each.
+
+**Discipline.** No prompt wording/model/temperature/confidence/artifact-copy tuning; no second model call; no second artifact;
+no cohort settlement/capture; no calibration change; no buyer UI; no protocol-as-execution; no live routing (shadow prompt
+never reaches the model); no DB schema; no cross-stack runtime coupling; no Drive/FIFA; no hidden background services. Skills
+Gate: dai-* slice skills not installed -> superpowers test-driven-development + verification-before-completion + code-review
+substituted. Attribution clean (huffm, no co-authored-by, no AI attribution, no emojis). Push: NOT performed (no operator
+instruction). Pre-existing untracked `06 Execution/system-state-synopsis-v1.md` left untracked by design. Doc:
+`04 Products/sports-v1/prompting/live-prompt-routing-shadow-parallel-v1.md`. Next: Shadow-Parallel Cohort Soak v1 (operational:
+flag on in dev/canary, run a real MLB cohort, confirm zero MISMATCH/FAILED + clean provenance) then Registry-Authoritative
+Prompt v1 (registry prompt becomes model input only for proven-clean regimes, live builder as fallback/guard); add the
+registry/builder cache + decide .NET regime ownership first; defer DB persistence, protocol-as-execution, buyer UI.
