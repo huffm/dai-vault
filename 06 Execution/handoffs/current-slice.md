@@ -9245,3 +9245,67 @@ instruction). Pre-existing untracked `06 Execution/system-state-synopsis-v1.md` 
 flag on in dev/canary, run a real MLB cohort, confirm zero MISMATCH/FAILED + clean provenance) then Registry-Authoritative
 Prompt v1 (registry prompt becomes model input only for proven-clean regimes, live builder as fallback/guard); add the
 registry/builder cache + decide .NET regime ownership first; defer DB persistence, protocol-as-execution, buyer UI.
+
+## Shadow-Parallel Cohort Soak v1 -- complete 2026-06-28 (operational, non-live)
+
+**What.** An operational harness that runs a representative MLB cohort through the default-off shadow validator (enabled only
+for the soak) and produces a go/no-go report. `app/services/shadow_cohort_soak.py` (NEW): 18-game representative cohort (all 9
+regimes x2 matchups), `run_soak` tallying the required buckets, `SoakSummary` with derived `attempted` + `clean`.
+`scripts/run_shadow_cohort_soak.py` (NEW): runnable, truncates the sink for a fresh run, prints a json report, exits 0 iff GO.
+`shadow_validation.py` (MODIFIED): added `ShadowValidationOutcome.reason` classifier and restructured the sidecar into prove-
+equality (sink=None) then isolated-capture, so `sink_failed` is distinct from drift and still never breaks the live request.
+No model call (the sidecar is independent of the model response).
+
+**sports_analyzer.py changed?** NO (git-confirmed). **.NET changed?** NO. Only `shadow_validation.py` modified (additive
+reason + sidecar refactor; analyzer enabled path behavior preserved) plus 3 new files.
+
+**Cohort source and size.** Representative fixtures (NOT live data -- no DB/network here, and the slice forbids
+settlement/calibration). 18 games = all 9 MLB regimes x 2 matchups. They prove prompt byte-equivalence across the full branch
+matrix; they do NOT prove live retrieval/data-quality/accuracy/outcomes. Known partial-evidence shapes (one-sided starter
+quality / partial depth) are not representable by the overlay templates and are counted separately as
+`partial_evidence_unrepresentable` (a documented template gap, not drift).
+
+**Shadow validation summary counts (recorded run).** cohort_size 18; attempted 18; matched 18; captured 18; mismatched 0;
+assembly_failed 0; sink_failed 0; errored 0; skipped_no_sink 0; skipped_disabled 0; partial_evidence_unrepresentable 0;
+regimes all 9 x2; failures []; clean true; go true; persisted_provenance_lines 18; exit 0.
+
+**JSONL provenance capture status.** All 18 representable games captured provenance (each AFTER byte equality). Provenance
+sanity (read back): 18 lines, all mode=shadow, all lifecycle=shadow_only, 18 distinct 64-char assembledHash, 9 distinct
+dataRegime. Sink was a scratchpad path OUTSIDE the repo; NO jsonl artifact committed.
+
+**Any mismatch/failure details.** None. Zero mismatch/assembly/sink/error on the representable cohort -> clean/GO.
+
+**Manifest integrity.** `python scripts/check_prompt_manifest.py` -> OK (8 templates, 9 recipes), exit 0.
+
+**Tests (exact commands + results, venv python, from services/agent-service).**
+- `pytest tests/test_shadow_cohort_soak.py -q` -> 9 passed.
+- `pytest tests/test_shadow_validation.py -q` -> 16 passed (unchanged after reason/refactor).
+- `pytest -q` (full suite) -> **287 passed, 0 failed** (278 prior + 9 new).
+- `python scripts/check_prompt_manifest.py` -> OK, exit 0.
+- `python scripts/run_shadow_cohort_soak.py <scratchpad>.jsonl` -> GO, clean, 18/18 matched+captured, exit 0.
+- .NET unchanged (no dotnet test).
+
+**Review.** `/code-review high` (8 angles + verify). Resolved: partial-evidence no longer pollutes the `failures` list; added
+a distinct `errored` bucket (reason=='error' infra failure not mislabeled assembly_failed; breaks clean); script truncates the
+sink for a fresh run and gates GO on clean AND matched==cohort_size (clean-but-empty must not pass); `attempted` made a derived
+property; removed dead test var + unused import. Kept (verified deliberate): per-game registry/builder load (mirrors the real
+sidecar); app-module cohort builders not shared with tests. No correctness bug survived.
+
+**Repo before/after.** dai `4527297` -> `dfbe832` (feat: add shadow-parallel cohort soak harness). dai-vault `4f4f398` ->
+this commit (docs: shadow-parallel cohort soak v1 + this handoff entry). NOTE: the four prior slices (Phase 4, 4.1, Live
+Migration Readiness, Live Prompt Routing) were PUSHED to origin/main at the operator's explicit instruction in the prior turn;
+at this slice start both repos were 0 ahead / fully synced (the slice prompt's "4 ahead, unpushed" was stale). This slice's two
+commits are NOT pushed.
+
+**Discipline.** No prompt wording/model/temperature/confidence/artifact-copy tuning; no second model call; no second artifact;
+no cohort settlement/calibration scoring; no betting outcome claims; no buyer UI; no protocol-as-execution; no live routing
+(shadow prompt never reaches the model); no DB schema; no cross-stack runtime coupling; no Drive/FIFA; no hidden background
+services; validator stays default-off (enabled only for the soak via explicit config). Skills Gate: dai-* slice skills not
+installed -> superpowers test-driven-development + verification-before-completion + code-review substituted. Attribution clean
+(huffm, no co-authored-by, no AI attribution, no emojis). Push: NOT performed (no operator instruction this slice). Pre-existing
+untracked `06 Execution/system-state-synopsis-v1.md` left untracked by design. Doc:
+`04 Products/sports-v1/prompting/shadow-parallel-cohort-soak-v1.md`. Next: Live-Data Shadow Soak v1 (when DB/network access
+exists: run the soak against a real captured MLB slate, read-only, confirm zero failures across the real regime distribution)
+then Registry-Authoritative Prompt v1 (registry prompt becomes model input only for proven-clean regimes, live builder as
+fallback/guard); add registry/builder cache + decide .NET regime ownership first; defer DB persistence, protocol-as-execution,
+buyer UI.
