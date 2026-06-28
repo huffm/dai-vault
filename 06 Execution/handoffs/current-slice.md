@@ -9043,3 +9043,74 @@ test-driven-development + verification-before-completion + code-review substitut
 performed (no operator instruction; nothing committed). Doc:
 `04 Products/sports-v1/prompting/prompt-provenance-and-manifest-integrity-v1.md`. Next: Phase 4.1 Prompt Provenance
 Persistence v1 (choose audit sink) + wire integrity into CI + .NET sourceDepth->dataRegime.
+
+## Prompt Provenance Persistence + CI Integrity Wiring v1 -- complete 2026-06-28 (Phase 4.1, non-live)
+
+**Phase 4 committed first.** This slice opened with Phase 4 (provenance + manifest integrity) uncommitted exactly as the
+prior handoff described; re-verified clean (227 passed, manifest OK 8 templates/9 recipes, exit 0) and committed before any
+4.1 change. dai `cb708fa` -> `f016486` (feat: add shadow prompt provenance and manifest integrity verifier). dai-vault
+`1ffbdbe` -> `d9ef169` (docs: provenance + manifest integrity v1). The unrelated, pre-Phase-4 untracked vault file
+`06 Execution/system-state-synopsis-v1.md` (2026-06-26; says "commit only if instructed") was left untracked, not swept in.
+
+**What (Phase 4.1).** Persistence path for `PromptProvenance`, still shadow-only / non-live. `app/prompting/provenance_sink.py`
+(NEW): `ProvenanceSink` Protocol + `InMemoryProvenanceSink` + append-only `JsonlProvenanceSink` (one `model_dump_json` line
+per record, `read_all` via symmetric `model_validate_json`) + `capture_provenance(*, mode: RouteMode)` + `ProvenanceSinkError`.
+`PromptBuilder.assemble_recipe_with_provenance` gains an optional `sink`; the built record is captured AFTER assembly
+(`sink=None` byte-identical to Phase 4). `__init__` exports the new symbols. CI integrity wired into the test surface:
+`test_manifest_integrity` test 13 runs the real wrapper `scripts/check_prompt_manifest.py` as a subprocess (exit 0 + OK).
+
+**Persistence sink chosen + why.** Append-only local JSONL audit file; DB persistence DEFERRED (not yet justified). The agent
+service has NO db layer (verified: no sqlite/sqlalchemy/pyodbc/engine under the service); the .NET platform owns persistence.
+A db sink now would force a premature `prompt_provenance` schema + cross-stack runtime coupling -- both forbidden this slice.
+The narrowest durable, zero-coupling sink is an append-only file. Exact future db contract documented (append-only
+`prompt_provenance` table, non-null `tenantId`, audit key `(tenantId, createdUtc, assembledHash)`, never updated/deleted,
+tenant-scoped reads, written only from shadow). `tenantId` is the one field not in `PromptProvenance` today; the db slice
+must thread it in.
+
+**Shadow-only fail-closed at three layers (intentional).** (1) builder raises for `mode != "shadow"` before building/capturing;
+(2) `capture_provenance` refuses a non-shadow `mode` arg AND a record whose `mode != "shadow"`; (3) `JsonlProvenanceSink.record`
+refuses a non-shadow record directly. Overlap of (2)+(3) is deliberate defense in depth (a direct `sink.record(live)` would
+otherwise persist a live record); test 8 locks it in.
+
+**Prompt equivalence.** Capture is downstream of assembly and never re-renders. New test
+`test_persistence_preserves_byte_equivalence` proves for ALL 9 MLB regimes `render_recipe == build_mlb_user_message` (live
+oracle) byte-for-byte AND persisted `assembledHash` == result hash. `manifest.json` + templates unchanged (git-confirmed) ->
+prompt bytes byte-identical to Phase 3.2/4.
+
+**Live analyzer path.** UNCHANGED. `sports_analyzer.py`, the FastAPI analyze path, `platform/` (.NET), `manifest.json`, and
+templates all unmodified (git-confirmed). Nothing on the request path imports the sink. `mode="live"` fails closed before any
+capture.
+
+**.NET sourceDepth -> dataRegime.** Assessed read-only; mapping is well-defined and pure (starting_pitching
+none/identity_only/enriched -> starter missing/named/enriched; market_odds absent/shallow/enriched -> market
+missing/backed/backed_depth; `dataRegime = starter_{s}_market_{m}`, already owned by python `dataregime.py`).
+DESIGN + DEFER (documented). Implementing it now would create a second source of truth for the regime and add dead code to
+the live platform (routing is non-live); the migration slice should decide ownership and add it then. `.NET` untouched.
+
+**CI integrity status.** Wired into the test surface (test 13 runs the actual CI command). Single CI command (from
+`services/agent-service`): `python scripts/check_prompt_manifest.py` (exit 0 clean / 1 defective). Actual pipeline wiring
+DEFERRED: `dai/.github/workflows/` is empty + untracked (no tracked CI to amend; monorepo also has .NET), so authoring a
+workflow now would be speculative; a ready-to-adopt step is documented in the product doc.
+
+**Tests (exact commands + results, venv python).**
+- `pytest tests/test_provenance_sink.py -q` -> 17 passed.
+- `pytest tests/test_manifest_integrity.py -q` -> 13 passed (12 prior + 1 CI-command test).
+- `pytest -q` (full agent-service suite) -> **245 passed, 0 failed** (227 prior + 17 sink + 1 CI test).
+- `python scripts/check_prompt_manifest.py` -> OK (8 templates, 9 recipes), exit 0.
+- .NET unchanged (no dotnet test).
+
+**Review.** `/code-review high` (8 angles + verify). Resolved: `read_all` -> symmetric `model_validate_json` (drop `import
+json`); `capture_provenance` mode typed `RouteMode`; single-writer note added to `JsonlProvenanceSink`. Kept (verified
+intentional): the three-layer shadow-only check. No correctness bug survived verification.
+
+**Repo state.** dai `f016486` -> `ae07178` (feat: add shadow provenance persistence sink). dai-vault `d9ef169` ->
+this commit (docs: provenance persistence v1 + this handoff entry). Both repos were synced with origin/main at slice start
+(0 ahead / 0 behind).
+
+**Discipline.** No prompt wording/model/temperature/confidence/artifact-copy tuning; no cohort settlement/capture; no buyer
+UI; no protocol-as-execution; no live routing; no Drive/FIFA; no hidden background services. Skills Gate: dai-* slice skills
+not installed -> superpowers test-driven-development + verification-before-completion + code-review substituted. Attribution
+clean (huffm, no co-authored-by, no AI attribution, no emojis). Push: NOT performed (no operator instruction). Doc:
+`04 Products/sports-v1/prompting/prompt-provenance-persistence-v1.md`. Next: Phase 4.2 Provenance DB Sink + Tenant Threading
+v1, or (smaller) Live Migration Readiness v1 (shadow byte-equality assertion on real runs, emitting to the JSONL sink);
+establish CI before wiring the manifest check; defer the .NET mapping to the migration slice; defer protocol-as-execution.
