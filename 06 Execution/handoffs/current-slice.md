@@ -8864,3 +8864,33 @@ CanonicalDecisionComposition + SettlementDirectionIntegrity -> **17 passed** (no
 **Discipline.** No prompt/model/confidence tuning; no Cohort v4 settlement; 0 outcomes written; no new cohort; no
 Drive/FIFA work. Doc: `04 Products/sports-v1/calibration/analyzer-generation-side-lean-agreement-hardening-v1.md`.
 Attribution clean. Push: NOT performed.
+
+---
+
+## Controlled Dynamic Prompt Assembly Architecture v1 -- complete 2026-06-28 (docs only)
+
+**Type:** architecture/design slice. No code, no production prompt change, no model call, no tuning, no cohort work.
+
+**Problem.** Sports prompts are static Python f-strings (`_MLB_SYSTEM`/`_FOOTBALL_SYSTEM`/`_BASKETBALL_SYSTEM` +
+`_JSON_SHAPE`, evidence concatenated inline in `analyze_*`; dispatch by `if competition`). No registry, router,
+versioning, hashing, per-call prompt audit, or station separation -- does not scale to new competitions/workflows or
+future protocol-as-execution.
+
+**Design.** Controlled dynamic prompt assembly (NOT free-form): route to approved, versioned, allowlisted templates by
+typed `PromptRouteContext` facts, then fill validated typed slots. Six separated components -- Prompt Registry
+(file-based in code, PR-reviewed, hashed), Prompt Router (facts-only selection), Prompt Builder (layered compose +
+typed slot fill), Prompt Contract (required inputs/output schema/allowed tools/station purpose), Prompt Validator
+(pre-call metadata + post-call schema + lean/prose invariant), future Protocol Runner. Layered stack: Base Doctrine +
+Workflow + Station + Sport/Competition/Data-Regime/Decision-Type overlays + Output Schema + immutable Safety + typed
+Evidence Slots. Security: model/frontend cannot select prompts or inject rules (data-slot-only, escaped); deterministic
+assembly; template+assembled hashes + routeContext + schema logged per call. CanonicalDecision becomes the Decide
+station's output schema; Synthesize projects prose from it. 5 Mermaid diagrams included.
+
+**Phases.** P1 this doc; P2 Prompt Registry Contract v1 (shapes + manifest + hash-check, no live path); P3 byte-
+equivalent MLB assembly through the registry (golden-equality gate); P4 audit logging; P5-6 Interrogate route +
+runtime shadow; P7 protocol-as-execution pilot only after measured. Keep one-call generation with stronger invariants
+for now; defer staged execution.
+
+**Doc.** `04 Products/sports-v1/prompting/controlled-dynamic-prompt-assembly-architecture-v1.md` (new folder).
+**Discipline.** No code/prompt/model/confidence change; no settlement/capture; no Drive/FIFA. Attribution clean. Push:
+NOT performed. Next: Phase 2 Prompt Registry Contract v1 (contracts + tests, no live change).
