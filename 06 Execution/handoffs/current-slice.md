@@ -8807,3 +8807,33 @@ next-slice prompt: `03 Niches/sports-analytics/fifa-world-cup-feasibility-v1.md`
 settings merged includeCoAuthoredBy=false + empty attribution; outside repos, uncommitted). dai HEAD `fee495d`
 (unchanged). Push: NOT performed. Next: settle Cohort v4 after 2026-06-29 finals; pool >=3 settled directional-contrast
 slates before Calibration Assessment v4; do not tune.
+
+---
+
+## Canonical Decision Composition Hardening v1 -- complete 2026-06-28
+
+**Problem.** Structured lean (`AgentRun.LeanSide` / analyzer `lean_side`) and narrative prose could diverge; the only
+protection was the settlement-time 422 guard, which fires *after* the contradictory artifact is already persisted with
+a confident side. Composition-boundary bug (run 4f37433e Phillies@Mets: structured home, prose Phillies/away).
+
+**Fix (dai, .NET, composition boundary).** `SportsComposer.Compose` now computes the lean-agreement verdict once from
+the analyzer output + canonical matchup identity (reusing the deterministic `ArtifactDirectionConsistencyEvaluator`)
+and persists it as a new `AgentRunExecutionResult.LeanAgreement` field. New pure helper `CompositionEligibility` maps a
+`PotentialMismatch` to `RunExclusionReasons.Invalid`; `AgentRunsController` sets `ExclusionReason=invalid` at persist
+time so a mismatch is **born settlement-ineligible** (matcher never selects it; no outcome ever written; out of the
+valid denominator). Artifact lean/prose/confidence preserved verbatim. The 422 `SettlementDirectionIntegrity` guard is
+preserved as the independent safety net. No Python change; no prompt/model/confidence/buyer tuning.
+
+**Tests.** New `CanonicalDecisionCompositionTests.cs` (consistent home/away, null=no invented side,
+home-prose-away + away-prose-home mismatches, modeled 4f37433e shape born-invalid, eligibility mapping, settlement-guard
+parity). Targeted 72/72; full `DevCore.Api.Tests` **940/940 pass, 0 fail**. Commands:
+`dotnet test .\DevCore.Api.Tests\DevCore.Api.Tests.csproj [--filter ...]`.
+
+**Historical 4f37433e.** Preserved artifact; classified PotentialMismatch; settlement 422-blocked; excluded from the
+denominator via the audited `POST /exclude {"reason":"invalid"}` (same path as BDDE/01AA). Supersedes the v4 note's
+interim "left as-is" disposition. Live DB verify: v4 = 14 clean (ExclusionReason NULL) + 1 invalid; v4 outcomes/evals
+written = 0; corpus outcomes/evals = 76 (unchanged); valid denominator = 74; 0 duplicate outcomes.
+
+**Docs.** `04 Products/sports-v1/calibration/canonical-decision-composition-hardening-v1.md`.
+**Discipline.** No tuning; no Cohort v4 settlement; no new cohort; no Drive/FIFA work. Attribution clean. Push: NOT
+performed. dai gains its first code commit since fee495d; dai-vault gains a doc commit.
