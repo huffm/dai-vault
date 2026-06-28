@@ -9114,3 +9114,63 @@ clean (huffm, no co-authored-by, no AI attribution, no emojis). Push: NOT perfor
 `04 Products/sports-v1/prompting/prompt-provenance-persistence-v1.md`. Next: Phase 4.2 Provenance DB Sink + Tenant Threading
 v1, or (smaller) Live Migration Readiness v1 (shadow byte-equality assertion on real runs, emitting to the JSONL sink);
 establish CI before wiring the manifest check; defer the .NET mapping to the migration slice; defer protocol-as-execution.
+
+## Live Migration Readiness v1 -- complete 2026-06-28 (non-live)
+
+**What.** A non-live validation harness proving the shadow prompt registry reproduces the live MLB prompt byte-for-byte FROM
+REAL ANALYZER INPUTS (not hand-built fixtures), capturing provenance only after equality is proven. `app/services/migration_readiness.py`
+(NEW): `mlb_route_and_slots` (PURE) derives the shadow `(route_context, slots, regime)` from the same `MlbStarterContext` /
+`BaseballMarketContext` / teams / date the live path consumes -- regime via `mlb_starter_state`/`mlb_market_state`/`mlb_regime`,
+slot values via the SAME formatters the live prompt uses (reuses live `_format_pitcher_quality`; mirrors the market-depth
+numeric specs + `< 0.05` threshold). `check_mlb_shadow_equivalence` builds the live prompt (authoritative), composes the shadow
+prompt ONCE, asserts `shadow == live`, then captures provenance via the existing `ProvenanceSink` only after equality.
+`builder.assemble_recipe_for_migration` (NEW): shadow-only single-compose helper returning `(text, result, provenance)` from one
+render (never re-rendered); `_build_recipe_result` now also surfaces the rendered text (two existing callers updated,
+behavior-preserving).
+
+**sports_analyzer.py changed?** NO. Imported READ-ONLY (`build_mlb_user_message`, `_format_pitcher_quality`); byte-for-byte
+unchanged (git-confirmed). Not wired into the FastAPI request path.
+
+**.NET changed?** NO. Not required this slice; regime ownership stays with python `dataregime.py`. The designed mapping
+(prompt-provenance-persistence-v1 sec 8) remains deferred to the live-routing slice.
+
+**Shadow/live equality validation.** Literal byte comparison (`shadow == live`) proven for ALL 9 MLB regimes from DERIVED real
+inputs. Single shadow compose per check.
+
+**Provenance capture behavior.** Captured only when a sink is given AND equality is proven first (downstream of the single
+render, never re-rendered). Readiness gaps fail loud and capture nothing, in two ways: `ShadowEqualityError` (bytes differ) or
+`PromptAssemblyError` (shadow recipe cannot assemble for a partial-evidence input shape -- one-sided starter quality, or a
+multi-book market missing a depth metric). Both proven fail-loud-no-capture by tests. The shadow path stays shadow-only
+(`mode="live"` fails closed).
+
+**Manifest integrity.** `python scripts/check_prompt_manifest.py` -> OK (8 templates, 9 recipes), exit 0. Manifest/templates
+unchanged.
+
+**Tests (exact commands + results, venv python, from services/agent-service).**
+- `pytest tests/test_migration_readiness.py -q` -> 17 passed.
+- `pytest tests/test_mlb_prompt_equivalence.py tests/test_mlb_branch_overlays.py -q` -> 30 passed (9-regime equivalence
+  unchanged).
+- `pytest -q` (full suite) -> **262 passed, 0 failed** (245 prior + 16 migration + 1 partial-evidence test).
+- `python scripts/check_prompt_manifest.py` -> OK, exit 0. .NET unchanged (no dotnet test).
+
+**Review.** `/code-review high` (8 angles + verify). Resolved: documented both fail-loud readiness modes; added a
+partial-evidence fail-loud test; removed the redundant `MigrationReadinessResult.equal` field (one failure channel via
+exception); narrowed `provenance` to non-Optional. Kept (verified deliberate): reuse of the live `_format_pitcher_quality` as
+the oracle formatter (prevents drift). Documented test-guarded drift surface: the market-depth phrase formatting is duplicated
+between `sports_analyzer.py` and the harness because the live prompt builds it inline; fully de-duping requires editing
+`sports_analyzer.py` (deferred to the live-routing slice). No correctness bug survived.
+
+**Repo before/after.** dai `ae07178` -> `045e2e1` (feat: add live migration readiness harness). dai-vault `40e9ea7` -> this
+commit (docs: live migration readiness v1 + this handoff entry). Both repos were 2 ahead of origin/main at slice start (Phase
+4 + 4.1, unpushed); now 3 ahead each.
+
+**Discipline.** No prompt wording/model/temperature/confidence/artifact-copy tuning; no cohort settlement/capture; no
+calibration change; no buyer UI; no protocol-as-execution; no live routing; no DB schema; no cross-stack runtime coupling; no
+Drive/FIFA; no hidden background services. Skills Gate: dai-* slice skills not installed -> superpowers
+test-driven-development + verification-before-completion + code-review substituted. Attribution clean (huffm, no co-authored-by,
+no AI attribution, no emojis). Push: NOT performed (no operator instruction). Pre-existing untracked
+`06 Execution/system-state-synopsis-v1.md` left untracked by design. Doc:
+`04 Products/sports-v1/prompting/live-migration-readiness-v1.md`. Next: Live Prompt Routing (Shadow-Parallel) v1 -- run the
+harness inside the request path behind a default-off flag with disabled-path regression tests; first extract the shared MLB
+depth-phrase formatter + promote `_format_pitcher_quality` to public (the deferred sports_analyzer.py edit); defer .NET
+mapping, DB persistence, protocol-as-execution, buyer UI.
