@@ -9490,3 +9490,66 @@ co-authored-by, no AI attribution, no emojis). Push: NOT performed. Pre-existing
 real MLB runs -> real multi-regime cohort -> soak -> regime distribution + any partial_evidence/mismatch), OR source persisted
 InputJson via the sanctioned /api/agent-runs API + export tool (no new model calls). Only a clean GO across a representative
 real cohort moves toward Registry-Authoritative Prompt v1.
+
+## Real-Cohort Live Soak v1 -- complete 2026-06-28 (clean GO on 15 real games / 2 regimes)
+
+**What.** Operational slice: ran the operator-approved real MLB slate through the live analyzer / capture / shadow-soak path.
+NO runtime code changed (operational execution + reporting only).
+
+**Approval path.** PAID cohort (path 2), explicitly operator-approved this turn ("Run full slate"). Path 1 (no-new-model-call)
+was investigated and REJECTED as insufficient: persisted InputJson via sanctioned GET /api/agent-runs/{id} is identity-only
+(Competition/HomeTeam/AwayTeam/GameDate) -- no starter/market contexts persisted, no model-free retrieval endpoint -> path 1
+would collapse all games to starter_missing_market_missing (non-representative).
+
+**Paid model calls run?** YES -- one normal live analyze call per game (no SECOND call per run). 14 new runs (+1 prior) = 15.
+
+**Cohort source/size.** Real MLB slate 2026-06-28 (15 games, statsapi) via platform-api retrieval + capture-enabled
+agent-service. Size 15. Capture path scratch live_capture.jsonl; sink scratch cohort_soak.jsonl. NEITHER committed.
+
+**Regime distribution.** starter_enriched_market_backed_depth: 2; starter_enriched_market_missing: 13. Real data is
+enriched-starter-heavy; odds depth present for only 2 games. 2 of 9 regimes exercised on real data; other 7 remain
+fixture-only (coverage gap, not a failure).
+
+**Capture/provenance JSONL status.** 15 captured input-only records (verified: no output keys, all competition=mlb, 15 distinct
+matchups). 15 provenance lines, all mode=shadow / lifecycle=shadow_only, 15 distinct 64-char assembledHash. Scratch/out-of-repo;
+NONE committed.
+
+**Shadow soak summary counts.** cohort_size 15, attempted 15, matched 15, captured 15, mismatched 0, assembly_failed 0,
+sink_failed 0, errored 0, skipped_no_sink 0, skipped_disabled 0, partial_evidence_unrepresentable 0, persisted_provenance_lines
+15, clean true, GO, exit 0.
+
+**Any mismatch/failure/partial-evidence.** NONE. Shadow prompt == live prompt byte-for-byte across all 15 real games.
+
+**sports_analyzer.py changed?** NO. **.NET changed?** NO. (No code changed this slice.)
+
+**Manifest integrity.** OK (8 templates, 9 recipes), exit 0.
+
+**Tests (exact, venv python, from services/agent-service).**
+- `pytest -q` -> **320 passed, 0 failed** (no code changed -> baseline unchanged).
+- `pytest tests/test_mlb_request_capture.py tests/test_shadow_cohort_soak.py tests/test_shadow_validation.py -q` -> 44 passed.
+- `pytest tests/test_mlb_prompt_equivalence.py tests/test_mlb_soak_export.py -q` -> 31 passed.
+- `python scripts/check_prompt_manifest.py` -> OK, exit 0.
+- live: 14 real agent-runs (HTTP 200) + 1 real-cohort soak (GO).
+
+**Review.** Skills Gate (dai-skill-router): all dai-* skills loadable. No code changed -> dai-code-reviewer not required (per its
+"when to use"); dai-docs-architect wrote the evidence report; superpowers:verification-before-completion applied (all counts +
+provenance + input-only verified against the real artifacts). dai-agent-handoff for this handoff.
+
+**Repo before/after.** dai `95769ee` -> `95769ee` (UNCHANGED -- no code this slice). dai-vault `5986640` -> this commit (docs:
+real-cohort live soak v1 evidence + this handoff entry). Both repos were synced with origin/main at slice start (prior slices
+pushed). This vault commit is NOT pushed.
+
+**Services posture.** Left RUNNING per the operator's standing "bring it up": agent-service :8000, platform-api :5007,
+devcore-sql docker. After the cohort, the agent-service was restarted to DEFAULT (capture OFF) -- it is up without the
+DAI_MLB_REQUEST_CAPTURE env vars, so it now reflects default behavior. (See note below if restart was deferred.)
+
+**Discipline.** No registry-authoritative routing; no prompt wording/model/temperature/confidence/artifact-copy change; no second
+model call per run; no second artifact; no DB schema; no template/manifest change; no cohort settlement/calibration scoring; no
+betting outcome claims; no buyer UI; no protocol-as-execution; no Drive/FIFA; no secrets harvested; no captured/soak jsonl
+committed. Attribution clean (huffm, no co-authored-by, no AI attribution, no emojis). Push: NOT performed. Pre-existing
+untracked `06 Execution/system-state-synopsis-v1.md` left untracked by design. Doc:
+`04 Products/sports-v1/prompting/real-cohort-live-soak-v1.md`. Next: Multi-Slate Regime Coverage v1 (operator-approved -- capture
+real cohorts on slates/markets that exercise the named/missing-starter + backed-single-book regimes today's slate did not, until
+all 9 regimes have a clean real soak); only then Registry-Authoritative Prompt v1, only for proven-clean regimes. Alternatively,
+a small .NET slice to persist retrieved starter/market context at retrieve time so future cohorts rebuild from persisted data
+with no new model calls.
