@@ -8837,3 +8837,30 @@ written = 0; corpus outcomes/evals = 76 (unchanged); valid denominator = 74; 0 d
 **Docs.** `04 Products/sports-v1/calibration/canonical-decision-composition-hardening-v1.md`.
 **Discipline.** No tuning; no Cohort v4 settlement; no new cohort; no Drive/FIFA work. Attribution clean. Push: NOT
 performed. dai gains its first code commit since fee495d; dai-vault gains a doc commit.
+
+---
+
+## Analyzer Generation-Side Lean Agreement Hardening v1 -- complete 2026-06-28
+
+**What was wrong.** `sports_analyzer.py` `_parse_response` read structured `lean_side` and the prose `lean`/`summary`
+from the same model JSON but trusted them independently -- no agreement check, and the function lacked the team names
+to detect the prose side. The prompt instructs agreement (line 128) but cannot enforce it. Root cause = parser trust
+without validation. The prior .NET fix was downstream (quarantine at compose); this slice contains at the source.
+
+**Fix (dai, Python).** New deterministic helpers (`_prose_supported_side`, `_contain_lean_agreement`, token helpers)
+mirror the .NET ArtifactDirectionConsistency semantics. `_call_model` now takes `home_team`/`away_team` (single
+enforcement point for all 3 sports) and, after parsing, degrades `lean_side` to null (NoLean) when it clearly
+contradicts the prose; logs an integrity warning; preserves prose/summary/confidence. Contract-safe (no new field; no
+.NET change). Consistent/ambiguous/not-evaluable prose left unchanged.
+
+**Tests.** New `tests/test_lean_agreement_containment.py` (11). Updated 8 `_call_model` test doubles to the new
+signature (mechanical). `pytest tests/test_lean_agreement_containment.py` -> 11 passed; `tests/test_sports_analyzer.py`
+-> 109 passed; full agent-service suite -> **126 passed, 0 failed**. .NET safety net re-confirmed:
+CanonicalDecisionComposition + SettlementDirectionIntegrity -> **17 passed** (no .NET source change).
+
+**Behavior.** Before: contradictory `lean_side` emitted as a valid decision. After: degraded to null at the source ->
+.NET sees a clean null lean (NotEvaluable), never a contradiction. Defense in depth with the composition net.
+
+**Discipline.** No prompt/model/confidence tuning; no Cohort v4 settlement; 0 outcomes written; no new cohort; no
+Drive/FIFA work. Doc: `04 Products/sports-v1/calibration/analyzer-generation-side-lean-agreement-hardening-v1.md`.
+Attribution clean. Push: NOT performed.
