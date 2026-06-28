@@ -8894,3 +8894,27 @@ for now; defer staged execution.
 **Doc.** `04 Products/sports-v1/prompting/controlled-dynamic-prompt-assembly-architecture-v1.md` (new folder).
 **Discipline.** No code/prompt/model/confidence change; no settlement/capture; no Drive/FIFA. Attribution clean. Push:
 NOT performed. Next: Phase 2 Prompt Registry Contract v1 (contracts + tests, no live change).
+
+---
+
+## Prompt Registry Contract v1 -- complete 2026-06-28 (Phase 2, non-live)
+
+**What.** First code contracts for controlled dynamic prompt assembly, in a new non-live Python package
+`services/agent-service/app/prompting/`: typed `PromptRouteContext` (frozen, extra=forbid -> no smuggled prompt-text
+selector), `PromptTemplate`/`PromptManifest`/`PromptSelectionResult`/`PromptAssemblyResult` (pydantic v2), SHA-256
+`hash_verifier`, `load_manifest` (fail-closed on bad json/algorithm/duplicates/missing-file/hash-mismatch), and
+`PromptRegistry.select()` -- deterministic, no fuzzy matching, lifecycle-gated (disabled never; deprecated opt-in only;
+shadow_only only in shadow mode; ambiguous/no-match fail closed). One non-live shadow_only example template
+(`mlb.pregame.analysis.current_equivalent.v1`) + manifest.json.
+
+**Non-live.** sports_analyzer.py UNCHANGED (git-confirmed); nothing imports the registry on the request path; example
+template cannot be selected in live mode. No .NET change.
+
+**Tests.** `tests/test_prompt_registry_contract.py` (17): manifest load, hash ok/mismatch, duplicate id, unknown route
+fail-closed, matching selection, disabled/deprecated/shadow_only gating, missing file, deterministic, required-facts
+enforced, prompt-text selector rejected, outputSchemaId carried, assembly metadata complete, invalid json, wrong algo.
+`pytest tests/test_prompt_registry_contract.py` -> 17 passed; full agent-service suite -> **143 passed, 0 failed**.
+
+**Discipline.** No prompt/model/confidence tuning; no live path change; no cohort settlement/capture; no Drive/FIFA.
+Doc: `04 Products/sports-v1/prompting/prompt-registry-contract-v1.md`. Attribution clean. Push: NOT performed.
+Next: Phase 3 Prompt Assembly Engine v1 (Builder + byte-equivalent MLB template + golden-equality test, shadow-only).
