@@ -8918,3 +8918,28 @@ enforced, prompt-text selector rejected, outputSchemaId carried, assembly metada
 **Discipline.** No prompt/model/confidence tuning; no live path change; no cohort settlement/capture; no Drive/FIFA.
 Doc: `04 Products/sports-v1/prompting/prompt-registry-contract-v1.md`. Attribution clean. Push: NOT performed.
 Next: Phase 3 Prompt Assembly Engine v1 (Builder + byte-equivalent MLB template + golden-equality test, shadow-only).
+
+---
+
+## Prompt Assembly Engine v1 -- complete 2026-06-28 (Phase 3, non-live)
+
+**What.** Added `PromptBuilder` (services/agent-service/app/prompting/builder.py): assembles a prompt from an
+approved, hash-verified template + typed slot values. `assemble()` fails closed on missing/unknown/undeclared slots,
+brace-injecting values, over-length values, hash drift, or any unresolved placeholder; single deterministic
+substitution pass. `assemble_selected()` selects via the Phase 2 registry (lifecycle/mode gated) then assembles --
+shadow_only template cannot assemble in live mode. PromptAssemblyResult now carries assembledHash + providedSlots +
+unresolvedSlots; templateHash (file bytes) stays separate from assembledHash (final text).
+
+**Non-live.** sports_analyzer.py UNCHANGED (git-confirmed); reused the Phase 2 shadow template unmodified (no hash
+churn); nothing on the request path imports the builder; example template unselectable in live. No .NET change.
+
+**Tests.** tests/test_prompt_assembly_engine.py (13): golden assembled hash (9bca5e1f...), deterministic, slot-change
+changes hash, templateHash slot-independent, missing/unknown/undeclared/brace-injection fail closed, shadow-in-live
+fails, shadow-in-shadow assembles, full metadata, route-context rejects prompt text. Targeted registry+assembly -> 30
+passed; full agent-service suite -> **156 passed, 0 failed** (143 prior + 13).
+
+**Equivalence deferred.** Live analyze_mlb prompt is data-conditional (starter/market present/absent, multi-book
+depth) -- not one static template. Byte-equivalence needs data-regime overlay composition; this slice delivers the
+engine + one golden fixture. Doc: `04 Products/sports-v1/prompting/prompt-assembly-engine-v1.md`.
+**Discipline.** No prompt/model/confidence tuning; no cohort settlement/capture; no Drive/FIFA. Attribution clean.
+Push: NOT performed. Next: Phase 3.1 Data-Regime Overlay + MLB Prompt Equivalence v1 (shadow-only golden equality).
