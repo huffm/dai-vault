@@ -1,0 +1,353 @@
+{
+  "summary": {
+    "total": 15,
+    "completed": 15,
+    "market_backed": 15,
+    "lean_home": 12,
+    "lean_away": 3,
+    "lean_null": 0,
+    "dirConsistency_consistent": 14,
+    "dirConsistency_potential_mismatch": 1,
+    "mismatch_runs": [
+      "Philadelphia Phillies @ New York Mets"
+    ],
+    "decided_market_agree": 12,
+    "decided_market_disagree": 3,
+    "disagreements": [
+      "Los Angeles Dodgers @ San Diego Padres",
+      "Philadelphia Phillies @ New York Mets",
+      "Seattle Mariners @ Cleveland Guardians"
+    ],
+    "richness_2": 15,
+    "outcomes_written": 0
+  },
+  "capture_metadata": {
+    "cohort": "directional-contrast-cohort-v4 + market-baseline-v3",
+    "slate_date": "2026-06-28",
+    "lane": "B evidence-acquisition",
+    "dai_head": "fee495d",
+    "pipeline": "sports.matchup.analysis (normal path, no Cognitive Factory)",
+    "artifact_version": "sports_decision_artifact_v3",
+    "market_source": "the-odds-api.com v4 baseball_mlb h2h, us region, american odds",
+    "market_devig": "per-book two-way normalization, consensus = mean across books",
+    "tenantKey": 1,
+    "settlement": "NOT performed; no outcomes/evaluations written"
+  },
+  "rows": [
+    {
+      "agentRunId": "4537433e-f36b-1410-816c-00373db4b724",
+      "matchup": "Texas Rangers @ Toronto Blue Jays",
+      "gamePk": "822795",
+      "persistedLean": "home",
+      "dirConsistency": "Consistent",
+      "confidence": 0.75,
+      "evidenceRichness": 2,
+      "posture": "monitor",
+      "sourceProvider": "mlb_statsapi",
+      "externalGameId": "822795",
+      "market": {
+        "books": 9,
+        "devig_home": 0.5462,
+        "devig_away": 0.4538,
+        "favorite_side": "home",
+        "favorite": "Toronto Blue Jays",
+        "favorite_prob": 0.5462
+      },
+      "agreeWithMarket": "yes"
+    },
+    {
+      "agentRunId": "4c37433e-f36b-1410-816c-00373db4b724",
+      "matchup": "Arizona Diamondbacks @ Tampa Bay Rays",
+      "gamePk": "822959",
+      "persistedLean": "home",
+      "dirConsistency": "Consistent",
+      "confidence": 0.8,
+      "evidenceRichness": 2,
+      "posture": "monitor",
+      "sourceProvider": "mlb_statsapi",
+      "externalGameId": "822959",
+      "market": {
+        "books": 9,
+        "devig_home": 0.6303,
+        "devig_away": 0.3697,
+        "favorite_side": "home",
+        "favorite": "Tampa Bay Rays",
+        "favorite_prob": 0.6303
+      },
+      "agreeWithMarket": "yes"
+    },
+    {
+      "agentRunId": "5d37433e-f36b-1410-816c-00373db4b724",
+      "matchup": "Miami Marlins @ St. Louis Cardinals",
+      "gamePk": "823037",
+      "persistedLean": "home",
+      "dirConsistency": "Consistent",
+      "confidence": 0.75,
+      "evidenceRichness": 2,
+      "posture": "monitor",
+      "sourceProvider": "mlb_statsapi",
+      "externalGameId": "823037",
+      "market": {
+        "books": 9,
+        "devig_home": 0.5422,
+        "devig_away": 0.4578,
+        "favorite_side": "home",
+        "favorite": "St. Louis Cardinals",
+        "favorite_prob": 0.5422
+      },
+      "agreeWithMarket": "yes"
+    },
+    {
+      "agentRunId": "6437433e-f36b-1410-816c-00373db4b724",
+      "matchup": "Atlanta Braves @ San Francisco Giants",
+      "gamePk": "823204",
+      "persistedLean": "away",
+      "dirConsistency": "Consistent",
+      "confidence": 0.75,
+      "evidenceRichness": 2,
+      "posture": "monitor",
+      "sourceProvider": "mlb_statsapi",
+      "externalGameId": "823204",
+      "market": {
+        "books": 9,
+        "devig_home": 0.4093,
+        "devig_away": 0.5907,
+        "favorite_side": "away",
+        "favorite": "Atlanta Braves",
+        "favorite_prob": 0.5907
+      },
+      "agreeWithMarket": "yes"
+    },
+    {
+      "agentRunId": "6a37433e-f36b-1410-816c-00373db4b724",
+      "matchup": "Los Angeles Dodgers @ San Diego Padres",
+      "gamePk": "823281",
+      "persistedLean": "home",
+      "dirConsistency": "Consistent",
+      "confidence": 0.75,
+      "evidenceRichness": 2,
+      "posture": "monitor",
+      "sourceProvider": "mlb_statsapi",
+      "externalGameId": "823281",
+      "market": {
+        "books": 9,
+        "devig_home": 0.4399,
+        "devig_away": 0.5601,
+        "favorite_side": "away",
+        "favorite": "Los Angeles Dodgers",
+        "favorite_prob": 0.5601
+      },
+      "agreeWithMarket": "NO"
+    },
+    {
+      "agentRunId": "4337433e-f36b-1410-816c-00373db4b724",
+      "matchup": "Cincinnati Reds @ Pittsburgh Pirates",
+      "gamePk": "823362",
+      "persistedLean": "home",
+      "dirConsistency": "Consistent",
+      "confidence": 0.75,
+      "evidenceRichness": 2,
+      "posture": "monitor",
+      "sourceProvider": "mlb_statsapi",
+      "externalGameId": "823362",
+      "market": {
+        "books": 9,
+        "devig_home": 0.5506,
+        "devig_away": 0.4494,
+        "favorite_side": "home",
+        "favorite": "Pittsburgh Pirates",
+        "favorite_prob": 0.5506
+      },
+      "agreeWithMarket": "yes"
+    },
+    {
+      "agentRunId": "4f37433e-f36b-1410-816c-00373db4b724",
+      "matchup": "Philadelphia Phillies @ New York Mets",
+      "gamePk": "823608",
+      "persistedLean": "home",
+      "dirConsistency": "PotentialMismatch",
+      "confidence": 0.75,
+      "evidenceRichness": 2,
+      "posture": "monitor",
+      "sourceProvider": "mlb_statsapi",
+      "externalGameId": "823608",
+      "market": {
+        "books": 9,
+        "devig_home": 0.427,
+        "devig_away": 0.573,
+        "favorite_side": "away",
+        "favorite": "Philadelphia Phillies",
+        "favorite_prob": 0.573
+      },
+      "agreeWithMarket": "NO"
+    },
+    {
+      "agentRunId": "5237433e-f36b-1410-816c-00373db4b724",
+      "matchup": "Colorado Rockies @ Minnesota Twins",
+      "gamePk": "823686",
+      "persistedLean": "home",
+      "dirConsistency": "Consistent",
+      "confidence": 0.75,
+      "evidenceRichness": 2,
+      "posture": "monitor",
+      "sourceProvider": "mlb_statsapi",
+      "externalGameId": "823686",
+      "market": {
+        "books": 9,
+        "devig_home": 0.5962,
+        "devig_away": 0.4038,
+        "favorite_side": "home",
+        "favorite": "Minnesota Twins",
+        "favorite_prob": 0.5962
+      },
+      "agreeWithMarket": "yes"
+    },
+    {
+      "agentRunId": "5737433e-f36b-1410-816c-00373db4b724",
+      "matchup": "Chicago Cubs @ Milwaukee Brewers",
+      "gamePk": "823769",
+      "persistedLean": "home",
+      "dirConsistency": "Consistent",
+      "confidence": 0.8,
+      "evidenceRichness": 2,
+      "posture": "monitor",
+      "sourceProvider": "mlb_statsapi",
+      "externalGameId": "823769",
+      "market": {
+        "books": 9,
+        "devig_home": 0.6345,
+        "devig_away": 0.3655,
+        "favorite_side": "home",
+        "favorite": "Milwaukee Brewers",
+        "favorite_prob": 0.6345
+      },
+      "agreeWithMarket": "yes"
+    },
+    {
+      "agentRunId": "6237433e-f36b-1410-816c-00373db4b724",
+      "matchup": "Athletics @ Los Angeles Angels",
+      "gamePk": "824011",
+      "persistedLean": "away",
+      "dirConsistency": "Consistent",
+      "confidence": 0.75,
+      "evidenceRichness": 2,
+      "posture": "monitor",
+      "sourceProvider": "mlb_statsapi",
+      "externalGameId": "824011",
+      "market": {
+        "books": 9,
+        "devig_home": 0.476,
+        "devig_away": 0.524,
+        "favorite_side": "away",
+        "favorite": "Athletics",
+        "favorite_prob": 0.524
+      },
+      "agreeWithMarket": "yes"
+    },
+    {
+      "agentRunId": "3b37433e-f36b-1410-816c-00373db4b724",
+      "matchup": "Houston Astros @ Detroit Tigers",
+      "gamePk": "824256",
+      "persistedLean": "away",
+      "dirConsistency": "Consistent",
+      "confidence": 0.8,
+      "evidenceRichness": 2,
+      "posture": "monitor",
+      "sourceProvider": "mlb_statsapi",
+      "externalGameId": "824256",
+      "market": {
+        "books": 9,
+        "devig_home": 0.4558,
+        "devig_away": 0.5442,
+        "favorite_side": "away",
+        "favorite": "Houston Astros",
+        "favorite_prob": 0.5442
+      },
+      "agreeWithMarket": "yes"
+    },
+    {
+      "agentRunId": "4b37433e-f36b-1410-816c-00373db4b724",
+      "matchup": "Seattle Mariners @ Cleveland Guardians",
+      "gamePk": "824422",
+      "persistedLean": "home",
+      "dirConsistency": "Consistent",
+      "confidence": 0.75,
+      "evidenceRichness": 2,
+      "posture": "monitor",
+      "sourceProvider": "mlb_statsapi",
+      "externalGameId": "824422",
+      "market": {
+        "books": 9,
+        "devig_home": 0.4992,
+        "devig_away": 0.5008,
+        "favorite_side": "away",
+        "favorite": "Seattle Mariners",
+        "favorite_prob": 0.5008
+      },
+      "agreeWithMarket": "NO"
+    },
+    {
+      "agentRunId": "5437433e-f36b-1410-816c-00373db4b724",
+      "matchup": "Kansas City Royals @ Chicago White Sox",
+      "gamePk": "824580",
+      "persistedLean": "home",
+      "dirConsistency": "Consistent",
+      "confidence": 0.75,
+      "evidenceRichness": 2,
+      "posture": "monitor",
+      "sourceProvider": "mlb_statsapi",
+      "externalGameId": "824580",
+      "market": {
+        "books": 9,
+        "devig_home": 0.5549,
+        "devig_away": 0.4451,
+        "favorite_side": "home",
+        "favorite": "Chicago White Sox",
+        "favorite_prob": 0.5549
+      },
+      "agreeWithMarket": "yes"
+    },
+    {
+      "agentRunId": "7137433e-f36b-1410-816c-00373db4b724",
+      "matchup": "New York Yankees @ Boston Red Sox",
+      "gamePk": "824744",
+      "persistedLean": "home",
+      "dirConsistency": "Consistent",
+      "confidence": 0.8,
+      "evidenceRichness": 2,
+      "posture": "monitor",
+      "sourceProvider": "mlb_statsapi",
+      "externalGameId": "824744",
+      "market": {
+        "books": 9,
+        "devig_home": 0.5171,
+        "devig_away": 0.4829,
+        "favorite_side": "home",
+        "favorite": "Boston Red Sox",
+        "favorite_prob": 0.5171
+      },
+      "agreeWithMarket": "yes"
+    },
+    {
+      "agentRunId": "3c37433e-f36b-1410-816c-00373db4b724",
+      "matchup": "Washington Nationals @ Baltimore Orioles",
+      "gamePk": "824821",
+      "persistedLean": "home",
+      "dirConsistency": "Consistent",
+      "confidence": 0.75,
+      "evidenceRichness": 2,
+      "posture": "monitor",
+      "sourceProvider": "mlb_statsapi",
+      "externalGameId": "824821",
+      "market": {
+        "books": 9,
+        "devig_home": 0.6333,
+        "devig_away": 0.3667,
+        "favorite_side": "home",
+        "favorite": "Baltimore Orioles",
+        "favorite_prob": 0.6333
+      },
+      "agreeWithMarket": "yes"
+    }
+  ]
+}
