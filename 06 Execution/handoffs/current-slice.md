@@ -9424,3 +9424,69 @@ Attribution clean (huffm, no co-authored-by, no AI attribution, no emojis). Push
 access exists (obtain a raw source via an approved path -> `export_mlb_soak_requests.py` -> `run_shadow_cohort_soak.py
 --requests`); if partial_evidence_unrepresentable > 0 scope a partial-evidence overlay before routing; only a clean live GO
 unlocks Registry-Authoritative Prompt v1.
+
+## MLB Analyzer Request Capture v1 -- complete 2026-06-28 (capture shipped; first LIVE capture + soak RAN, GO on n=1)
+
+**What.** A DEFAULT-OFF capture of input-only MLB analyzer context at the analyzer boundary, feeding the live-data soak.
+`app/services/mlb_request_capture.py`: `MlbRequestCaptureConfig` (env `DAI_MLB_REQUEST_CAPTURE` + `_PATH`, default off);
+`mlb_request_input_record` (pure, SportsAnalysisRequest input shape, built from typed contexts BEFORE the model call so no
+output can leak); `capture_mlb_request` (append-only scratch jsonl; no-op when disabled/no-path; write failure logged + False,
+never raised). `analyze_mlb` gains a keyword-only `capture_config`, wired as a second default-off sidecar INDEPENDENT of shadow
+validation, after build_mlb_user_message + before the model call, fully guarded so a broken import/write can never break the
+live request.
+
+**Operator brought services up** ("if anything is down bring it up"): devcore-sql (docker) up; platform-api on :5007
+(Development, EF -> devcore-sql); agent-service on :8000 from the working tree with capture ENABLED (scratch path). NOTE:
+services are STILL RUNNING; to return the agent-service to default, restart it without the DAI_MLB_REQUEST_CAPTURE env vars.
+
+**Capture enablement behavior.** Default off. Disabled = byte-identical, no file, no import touch (test + adversarial review).
+Enabled = one input-only jsonl record per run. Independent of shadow validation.
+
+**Captured request count.** 1 (one controlled real run; a larger paid-call cohort was BLOCKED by the sandbox classifier as
+beyond "one controlled invocation" -- correct; needs explicit operator approval).
+
+**Whether captured requests fed the soak.** YES.
+
+**Live capture + soak result.** Real run: POST /api/agent-runs Yankees @ Red Sox 2026-06-28 -> HTTP 200, real artifact (Sonny
+Gray vs Carlos Rodon, market support Boston). Capture wrote ONE real input-only record: real starters w/ season stats (Gray ERA
+2.95 / Rodon ERA 3.70), real 9-book DraftKings market (consensus home, median home prob 0.528, disagreement 0.020, total 8.0).
+Capture keys = exactly the 6 input fields, ZERO output keys (verified). Soak on the real capture:
+`run_shadow_cohort_soak.py --requests <cap> --sink <scratch>` -> cohort_size 1, matched 1, captured 1, 0 mismatch/assembly/
+sink/error, regimes {starter_enriched_market_backed_depth: 1}, clean true, GO, persisted_provenance_lines 1, exit 0. Provenance:
+mode=shadow, lifecycle=shadow_only, 64-char assembledHash, 3 pieces. **First shadow-equivalence GO on REAL captured analyzer
+input (not fixtures).** Generated capture/soak files are scratch/out-of-repo; NONE committed.
+
+**sports_analyzer.py changed?** YES -- additive default-off capture block (intentional analyzer-boundary wiring; disabled
+byte-identical, proven). **.NET changed?** NO.
+
+**Manifest integrity.** `python scripts/check_prompt_manifest.py` -> OK (8 templates, 9 recipes), exit 0.
+
+**Tests (exact commands + results, venv python, from services/agent-service).**
+- `pytest tests/test_mlb_request_capture.py -q` -> 13 passed.
+- `pytest tests/test_mlb_request_capture.py tests/test_shadow_validation.py tests/test_shadow_cohort_soak.py
+  tests/test_mlb_soak_export.py -q` -> 58 passed.
+- `pytest -q` (full suite) -> **320 passed, 0 failed** (307 prior + 13 new).
+- `python scripts/check_prompt_manifest.py` -> OK, exit 0. .NET unchanged (no dotnet test).
+- live: 1 real agent-run (HTTP 200) + 1 live-data soak (GO).
+
+**Review.** Skills Gate (dai-skill-router): all dai-* skills loadable. dai-code-reviewer: approve with notes; an adversarial
+subagent verified disabled byte-identity, independence from shadow, input-only-by-construction, never-breaks-the-request, and
+round-trip. Two low-severity hardening notes fixed in-slice: wrapped the whole capture wiring in analyze_mlb in a broad guard
+(a broken import/config can never break the live request); added a single-writer/low-concurrency note to the capture module.
+Selected skills used: dai-skill-router, dai-test-discipline, superpowers:test-driven-development, dai-code-reviewer,
+dai-docs-architect, superpowers:verification-before-completion, dai-agent-handoff.
+
+**Repo before/after.** dai `7059440` -> `95769ee` (feat: add default-off mlb analyzer request capture). dai-vault `357dc83` ->
+this commit (docs: mlb analyzer request capture v1 + this handoff entry). This slice's two commits are NOT pushed (the prior
+slice's commit is also unpushed -> each repo now 2 ahead of origin/main).
+
+**Discipline.** No registry-authoritative routing; no prompt wording/model/temperature/confidence/artifact-copy change; no
+second model call (capture is not a model call; the one analyze invocation IS the normal live call); no second artifact; no DB
+schema; no cohort settlement/calibration scoring; no betting outcome claims; no buyer UI; no protocol-as-execution; no
+Drive/FIFA; no secrets harvested; no captured jsonl committed; capture default-off. Attribution clean (huffm, no
+co-authored-by, no AI attribution, no emojis). Push: NOT performed. Pre-existing untracked
+`06 Execution/system-state-synopsis-v1.md` left untracked by design. Doc:
+`04 Products/sports-v1/prompting/mlb-analyzer-request-capture-v1.md`. Next: Real-Cohort Live Soak v1 (operator-approved batch of
+real MLB runs -> real multi-regime cohort -> soak -> regime distribution + any partial_evidence/mismatch), OR source persisted
+InputJson via the sanctioned /api/agent-runs API + export tool (no new model calls). Only a clean GO across a representative
+real cohort moves toward Registry-Authoritative Prompt v1.
