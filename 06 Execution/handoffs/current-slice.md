@@ -9309,3 +9309,59 @@ exists: run the soak against a real captured MLB slate, read-only, confirm zero 
 then Registry-Authoritative Prompt v1 (registry prompt becomes model input only for proven-clean regimes, live builder as
 fallback/guard); add registry/builder cache + decide .NET regime ownership first; defer DB persistence, protocol-as-execution,
 buyer UI.
+
+## Live-Data Shadow Soak v1 -- complete 2026-06-28 (readiness; live data UNAVAILABLE, not run)
+
+**What.** Added a LIVE-DATA mode to the existing soak harness and verified it offline; live-data access was unavailable, so no
+live soak was run (honest readiness report, no simulation). `app/services/shadow_cohort_soak.py`: `cohort_from_request_records`
++ `load_cohort_from_requests` build the cohort from real analyzer request records (validated by the same `SportsAnalysisRequest`
+model the live endpoint uses; non-mlb/malformed fail loud). `_is_partial_evidence` detects, on the assembly-failure path, real
+shapes the overlay templates cannot represent, so a real partial-evidence run is classified as the known gap (not a bug);
+`SoakSummary.unrepresented` records those shapes with detail (separate from the drift `failures` list).
+`scripts/run_shadow_cohort_soak.py`: `--requests` selects live-data mode, `--sink` the sink; representative mode unchanged.
+
+**Live-data access status.** UNAVAILABLE. platform-api not running (no :5000/:5028/:7028 -> retrieval path unreachable); vault
+calibration artifacts are OUTPUT decision artifacts with no input contexts (verified: no starter/market keys); no persisted
+request-input files on disk (grep `mlbStarterContext|baseballMarketContext` over the workspace = 0 json hits); devcore-sql is
+up but extracting inputs would require harvesting DB credentials (the sandbox correctly blocked a credential scan; not an
+approved path). Per the slice access rule, did NOT simulate or overclaim.
+
+**sports_analyzer.py changed?** NO (git-confirmed). **.NET changed?** NO. Only the soak harness/script/tests changed (additive).
+
+**Cohort source/size, regime distribution, summary counts, mismatches, partial evidence.** n/a for live data (not run).
+Representative harness health (re-confirmed): 18 games, all 9 regimes x2, attempted 18, matched 18, captured 18, 0 mismatch/
+assembly/sink/error, partial_evidence_unrepresentable 0, clean true, GO, 18 provenance lines. The `--requests` plumbing was
+smoke-tested mechanically with 2 SYNTHETIC request shapes (clearly labeled, NOT live data): cohort_size 2, matched 2, GO.
+
+**JSONL provenance capture status.** No live capture (not run). Representative + smoke sinks were scratch/out-of-repo; NO jsonl
+artifact committed.
+
+**Manifest integrity.** `python scripts/check_prompt_manifest.py` -> OK (8 templates, 9 recipes), exit 0.
+
+**Tests (exact commands + results, venv python, from services/agent-service).**
+- `pytest tests/test_shadow_cohort_soak.py -q` -> 15 passed (9 prior + 6 live-data).
+- `pytest -q` (full suite) -> **293 passed, 0 failed** (287 prior + 6 new).
+- `python scripts/check_prompt_manifest.py` -> OK, exit 0.
+- representative soak -> GO 18/18; `--requests` smoke (synthetic) -> GO 2/2. .NET unchanged (no dotnet test).
+
+**Review.** Skills Gate run (dai-skill-router) -- the dai-* skills are now loadable (every prior handoff this session correctly
+recorded them as not installed; that changed this slice). dai-code-reviewer: approve with notes, no required fixes; an
+adversarial subagent verified `_is_partial_evidence` matches the actual assembly-failure condition exactly (6/6 cases, no false
+flags/negatives). dai-docs-architect wrote the readiness report. Selected skills actually used: dai-skill-router,
+dai-test-discipline, superpowers:test-driven-development, dai-code-reviewer, dai-docs-architect,
+superpowers:verification-before-completion, dai-agent-handoff.
+
+**Repo before/after.** dai `dfbe832` -> `e8360cb` (feat: add live-data mode to shadow cohort soak). dai-vault `6623e93` ->
+this commit (docs: live-data shadow soak v1 readiness + this handoff entry). This slice's two commits are NOT pushed. NOTE: the
+five prior slices are already on origin/main; at this slice start both repos were 1 ahead (the prior soak slice), and that prior
+commit is still unpushed too -- so dai/vault are now 2 ahead of origin/main.
+
+**Discipline.** No prompt wording/model/temperature/confidence/artifact-copy tuning; no registry-authoritative routing; no
+second model call; no second artifact; no cohort settlement/calibration scoring; no betting outcome claims; no buyer UI; no
+protocol-as-execution; no live routing; no DB schema; no template/manifest change; no Drive/FIFA; validator stays default-off.
+Attribution clean (huffm, no co-authored-by, no AI attribution, no emojis). Push: NOT performed. Pre-existing untracked
+`06 Execution/system-state-synopsis-v1.md` left untracked by design. Doc:
+`04 Products/sports-v1/prompting/live-data-shadow-soak-v1.md`. Next: Execute Live-Data Shadow Soak when DB/network access exists
+(bring up platform-api + devcore-sql or export persisted request inputs -> requests file -> `--requests` run); if
+partial_evidence_unrepresentable > 0 scope a partial-evidence overlay before routing; only a clean live GO unlocks
+Registry-Authoritative Prompt v1. Defer DB persistence, .NET regime ownership, protocol-as-execution, buyer UI.
