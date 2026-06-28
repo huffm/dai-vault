@@ -9365,3 +9365,62 @@ Attribution clean (huffm, no co-authored-by, no AI attribution, no emojis). Push
 (bring up platform-api + devcore-sql or export persisted request inputs -> requests file -> `--requests` run); if
 partial_evidence_unrepresentable > 0 scope a partial-evidence overlay before routing; only a clean live GO unlocks
 Registry-Authoritative Prompt v1. Defer DB persistence, .NET regime ownership, protocol-as-execution, buyer UI.
+
+## MLB Request Input Export v1 -- complete 2026-06-28 (export tool shipped; live export NOT run, access unavailable)
+
+**What.** A sanctioned export stage that turns raw analyzer records into the validated, INPUT-ONLY `--requests` file the soak
+consumes. `app/services/mlb_soak_export.py`: `extract_mlb_request_input` validates a raw record via the same
+`SportsAnalysisRequest` model the live endpoint uses, whitelists only the request input fields (any model output / artifact
+fields are STRIPPED so an output can never leak into the request input), derives the regime, re-serializes input-only;
+`export_mlb_requests` tallies exported/skipped/skip_reasons/regime_distribution; `write_requests_file` emits the `--requests`
+jsonl; `read_raw_records` is BOM-tolerant (utf-8-sig). `scripts/export_mlb_soak_requests.py`: `--source/--out/--source-label`,
+prints the summary, exit 0 iff anything exported; output file is directly consumable by `run_shadow_cohort_soak.py --requests`.
+Also fixed `load_cohort_from_requests` to read utf-8-sig (BOM tolerance). Source-agnostic: no model call, no network/db, no
+credentials.
+
+**Export source used or blocker.** BLOCKER: live-data access unavailable. platform-api not running (no :5000/:5028/:7028/:8080);
+no model-free retrieval endpoint in `AgentRunsController` (analyze always calls the model; `GET {id}/artifact` is output-only,
+confirmed last slice to lack input contexts); no captured request-input artifacts on disk (grep `mlbStarterContext|
+baseballMarketContext` over *.json/*.jsonl = 0); devcore-sql is up but extracting inputs would require harvesting DB
+credentials (prohibited -- a credential scan was correctly blocked by the sandbox); no operator-provided file. Did NOT
+fabricate live data.
+
+**Exported request count / regime distribution.** n/a for live data (not run). Offline verification: an end-to-end
+export-script -> soak-script chain (synthetic shapes, clearly NOT live) exports 2/2 and the soak goes GO; a synthetic demo (4
+raw -> 2 exported, 2 skipped: 1 non_mlb + 1 missing_identity) confirmed strip + skip + regime counting + input-only output.
+
+**Whether live-data soak was run.** NO (no source available). The export+soak pipeline is ready; the exact operator commands
+are documented.
+
+**sports_analyzer.py changed?** NO (git-confirmed). **.NET changed?** NO. Only the export module/script/tests + a BOM fix to
+the soak loader (additive).
+
+**Manifest integrity.** `python scripts/check_prompt_manifest.py` -> OK (8 templates, 9 recipes), exit 0.
+
+**Tests (exact commands + results, venv python, from services/agent-service).**
+- `pytest tests/test_mlb_soak_export.py -q` -> 12 passed (incl. input-only stripping, 3 skip reasons, regime distribution,
+  count invariant, BOM tolerance, null/blank/absent identity, round-trip into the soak, end-to-end script chain).
+- `pytest tests/test_mlb_soak_export.py tests/test_shadow_cohort_soak.py -q` -> 29 passed.
+- `pytest -q` (full suite) -> **307 passed, 0 failed** (293 prior + 14 new).
+- `python scripts/check_prompt_manifest.py` -> OK, exit 0. .NET unchanged (no dotnet test).
+
+**Review.** Skills Gate (dai-skill-router): all dai-* skills loadable; selected dai-test-discipline, TDD,
+verification-before-completion, dai-code-reviewer, dai-docs-architect, dai-agent-handoff. dai-code-reviewer: approve with notes;
+an adversarial subagent verified the input-only guarantee (triple-protected), skip ordering, round-trip parity, regime parity,
+and the count invariant. Two findings fixed in-slice: BOM crash in read_raw_records + the twin load_cohort_from_requests
+(utf-8-sig); a json-null identity mislabeled invalid_shape -> now missing_identity (both with tests).
+
+**Repo before/after.** dai `e8360cb` -> `7059440` (feat: add mlb request-input export for the shadow soak). dai-vault `8a41fcb`
+-> this commit (docs: mlb request input export v1 + this handoff entry). At slice start both repos were fully synced with
+origin/main (the prior slices were pushed at the operator's "Push" instruction; the slice prompt's "2 ahead, unpushed" was
+stale). This slice's two commits are NOT pushed.
+
+**Discipline.** No registry-authoritative routing; no prompt wording/model/temperature/confidence/artifact-copy change; no model
+call; no second artifact; no DB schema; no cohort settlement/calibration scoring; no betting outcome claims; no buyer UI; no
+protocol-as-execution; no Drive/FIFA; no secrets harvested; no generated request files committed (scratch/out-of-repo).
+Attribution clean (huffm, no co-authored-by, no AI attribution, no emojis). Push: NOT performed. Pre-existing untracked
+`06 Execution/system-state-synopsis-v1.md` left untracked by design. Doc:
+`04 Products/sports-v1/prompting/mlb-request-input-export-v1.md`. Next: Execute MLB Request Input Export + Live-Data Soak when
+access exists (obtain a raw source via an approved path -> `export_mlb_soak_requests.py` -> `run_shadow_cohort_soak.py
+--requests`); if partial_evidence_unrepresentable > 0 scope a partial-evidence overlay before routing; only a clean live GO
+unlocks Registry-Authoritative Prompt v1.
