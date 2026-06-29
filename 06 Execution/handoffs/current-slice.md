@@ -10243,3 +10243,60 @@ Provenance Calibration Export v1, or Live-Scheduled Starter-Missing Soak v1.
 **Discipline.** .NET only persists+exposes; never selects prompts (boundary held). No buyer UX/copy/body; no
 prompt template/recipe; no allowlist change; no confidence/model change; tenant scoping preserved; no
 chain-of-thought; no paid calls.
+
+## Platform-Side Prompt Provenance Calibration Export v1 -- complete 2026-06-29 (export reads durable AgentRun provenance; JSONL retained)
+
+**What.** Added a platform-side .NET calibration export that reads prompt route provenance from the durable
+AgentRun.PromptRouteProvenanceJson column (system of record) and joins AgentRunOutcome, in the same
+calibration-ready schema as the python export. Internal, tenant-scoped, read-only. The python analyzer-JSONL
+export is retained unchanged as legacy/fallback. Export/read-model slice.
+
+**Start state.** dai a9cf539 (synced, both prior commits on origin), dai-vault c8a99c3 (synced) + pre-existing
+untracked synopsis. Verified.
+
+**Source-of-truth shift.** primary = durable AgentRun row (PromptRouteProvenanceJson) + AgentRunOutcome join;
+JSONL path kept as legacy/fallback for analyzer-local audit and pre-persistence runs.
+
+**Export surface.** DevCore.Api/AgentRuns/PromptRouteCalibrationExport.cs: IPromptRouteCalibrationExporter /
+PromptRouteCalibrationExporter.ExportAsync(tenantKey, ct) -> IReadOnlyList<PromptRouteCalibrationRow>. Tenant-
+scoped LEFT JOIN AgentRuns(sports) -> AgentRunOutcomes, AsNoTracking; defensive provenance parse
+(TryParseHeader) + bounded OutputJson deserialize (Confidence/Posture/EvidenceRichness) + AdvertisedStrength
+re-derive, all in memory after ToListAsync. DI-registered scoped in Program.cs; no HTTP endpoint yet.
+
+**Schema (camelCase, matches python).** identity (agentRunId, tenantKey, createdUtc, competition,
+externalGameId, sourceProvider, homeTeamRef, awayTeamRef, commenceTime) + 10 provenance fields + promptRouteKey
+(recipe@version::regime|unknown) + decision (leanSide, confidence, advertisedStrength, posture) + outcome
+(outcomeStatus, resultSide derived from outcomeStatus, matchedOutcome, reconciledAtUtc=ResolvedUtc). No prompt
+text/bytes/chain-of-thought/protocol prose. evidenceSufficiency/sourceDepthBand deferred (available per-run on
+/artifact).
+
+**Historical/missing/malformed.** null provenance -> route fields null, promptRouteKey "unknown", still exported.
+malformed provenance/OutputJson -> swallowed -> null, no crash. no outcome -> outcome fields null. no backfill.
+
+**Tenant scoping.** ExportAsync filters WHERE TenantKey == tenantKey; cross-tenant rows never returned (tested).
+
+**Migration/local DB.** No NEW migration this slice (reads existing column). Prior migration
+20260629174632_AddAgentRunPromptRouteProvenance still NOT applied to live/dev SQL (docker/devcore-sql down);
+in-memory EF tests build schema from the model and pass. Apply on next deploy.
+
+**Tests.** dotnet build 0/0. `dotnet test DevCore.Api.Tests --filter PromptRouteCalibrationExporterTests` -> 6
+passed. `dotnet test DevCore.Api.Tests` (full) -> 958 passed, 0 failed (+6). `pytest <route_calibration_export +
+route_provenance + exposure>` -> 28 passed (JSONL intact). check_prompt_manifest -> OK. No paid calls.
+
+**Code changes.** NEW DevCore.Api/AgentRuns/PromptRouteCalibrationExport.cs (row + service). Program.cs (one DI
+line). **Test changes.** NEW DevCore.Api.Tests/AgentRuns/PromptRouteCalibrationExporterTests.cs (6).
+**Doc changes.** NEW 06 Execution/platform-side-prompt-provenance-calibration-export-v1.md + this entry.
+
+**Buyer-facing impact.** None. Internal read-only service; no endpoint/UX/body/copy. DEFAULT_ALLOWLIST unchanged
+(4). No model call.
+
+**Rollback.** Delete the exporter + test + the one DI line. Additive; no schema/contract/data change. Python
+JSONL export untouched.
+
+**Repo before/after.** dai a9cf539 -> uncommitted (1 mod Program.cs + 2 new). dai-vault c8a99c3 -> uncommitted (1
+new doc + this entry). Pre-existing untracked synopsis untouched. Commit: pending verification. Push: NOT performed.
+
+**Discipline.** .NET only reads+projects; never selects prompts. No dashboard; no buyer UX/copy/body; no prompt
+template/recipe; no allowlist change; no confidence/model change; tenant scoping enforced; no chain-of-thought;
+no paid calls; JSONL path preserved. Next: Calibration Outcome Metrics by Prompt Route v1, or a thin export
+endpoint/job, or Live-Scheduled Starter-Missing Soak v1.
