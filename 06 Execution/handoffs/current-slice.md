@@ -10078,3 +10078,56 @@ Commit: NOT performed (awaiting instruction). Push: NOT performed.
 change; no buyer UX/copy; no auth/billing/tenant/dashboard; no model-selection/confidence change; env override
 preserved; single-model-call invariant intact; 0 paid calls. Next: live-scheduled starter-missing soak, or
 Prompt Provenance Read-Model Exposure v1.
+
+## Prompt Provenance Read-Model Exposure v1 -- complete 2026-06-29 (live route provenance projected + exposed; no buyer change)
+
+**What.** Project the live-path PromptRouteDecision into a stable PromptRouteProvenance read model, expose it on
+the /sports/analyze response header X-Prompt-Route-Provenance (mlb only, anchored by X-Agent-Run-Id), and persist
+it via an env-gated append-only JSONL sink (default-off). Implementation slice. No buyer artifact change, no extra
+model call, DEFAULT_ALLOWLIST unchanged.
+
+**Start state.** dai 5395e5e (synced), dai-vault e085705 (synced) + pre-existing untracked synopsis. Verified.
+
+**Provenance fields (read model).** promptSource, registryAuthoritativeEnabled, legacyFallbackUsed,
+regimeAllowlisted, routingReason, fallbackReason, selectedDataRegime, selectedPromptRecipeId,
+selectedPromptVersion, assembledHash + run anchor agentRunId, competition, createdUtc.
+
+**Persistence.** agent-service has no DB (.NET persists); used the established no-DB pattern: JsonlRouteProvenance
+Sink (append-only, read_all) + InMemoryRouteProvenanceSink, env-gated via DAI_MLB_ROUTE_PROVENANCE_PATH
+(default-off, no file i/o when unset). Live-capable (NOT shadow-gated; the shadow PromptProvenance stays separate).
+
+**Exposure.** X-Prompt-Route-Provenance response header (json) on POST /sports/analyze for mlb. analyze_mlb now
+computes the decision for EVERY run (run_mlb_prompt_canary self-guards when disabled -> live user_msg, no
+registry work, single model call) and hands it to an optional on_route_decision callback; the route builds the
+projection, sets the header, env-gated persists. Buyer SportsAnalysisResponse body unchanged; non-mlb carries no
+header.
+
+**Historical/null.** Pre-slice runs have no header and no JSONL line; read_all on a missing file returns [];
+calibration treats absent provenance as unknown route. No backfill.
+
+**Code changes.** NEW app/prompting/route_provenance.py (projection + sinks + env-gated persist). __init__.py
+(exports). sports_analyzer.py analyze_mlb (always compute decision; on_route_decision callback, guarded).
+routes/sports.py (Response param; mlb callback sets header + persists).
+
+**Test changes.** NEW tests/test_route_provenance.py (9), tests/test_route_provenance_exposure.py (7).
+
+**Tests run (venv, services/agent-service).**
+- `pytest tests/test_route_provenance.py tests/test_route_provenance_exposure.py -q` -> 16 passed.
+- `pytest <route_decision+canary+provenance+registry_contract+route_provenance+exposure+sports_analyzer> -q` -> 207 passed.
+- `python scripts/check_prompt_manifest.py` -> OK (8 templates, 9 recipes), exit 0.
+- `pytest -q` (full suite) -> 372 passed (was 356; +16 new), 0 failed.
+- No paid model calls.
+
+**Buyer-facing impact.** None. DEFAULT_ALLOWLIST unchanged (4). Single model call intact.
+
+**Rollback.** Drop route_provenance.py + 2 test files + __init__ exports; revert analyze_mlb to call canary only
+when enabled; remove the route callback/header/Response param. No migration/env change.
+
+**Repo before/after.** dai 5395e5e -> uncommitted (3 mod + 3 new). dai-vault e085705 -> uncommitted (1 new doc +
+this entry). Pre-existing untracked synopsis untouched. Commit: pending verification (commit-on-pass per slice).
+Push: NOT performed.
+
+**Discipline.** No buyer UX/copy; no prompt/template/recipe/manifest change; no allowlist change; no model/
+confidence change; no new frontend/dashboard; no cross-tenant; no chain-of-thought exposed (route metadata only);
+single model call; 0 paid calls. Next: Live-Scheduled Starter-Missing Soak v1, or Prompt Provenance Calibration
+Export v1.
