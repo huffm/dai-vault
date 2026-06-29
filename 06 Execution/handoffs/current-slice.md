@@ -9617,3 +9617,60 @@ Pre-existing untracked `06 Execution/system-state-synopsis-v1.md` left untracked
 (operator-approved, 1 paid allowlisted run -> confirm HTTP 200, model input registry-selected but byte-identical, no mismatch,
 no second call); then Multi-Slate Regime Coverage v1 to earn real-soak evidence for the other 7 regimes before widening the
 allowlist. Only a complete clean allowlist moves toward broad Registry-Authoritative Prompt migration.
+
+## Registry Canary Real Confirmation v1 -- complete 2026-06-28 (PASSED; 1 paid call; no code change)
+
+**What.** One operator-approved paid real MLB execution confirming the default-off registry-authoritative prompt canary works
+end-to-end. NO runtime code changed (no defect found). The agent-service was restarted from the working tree with the canary
+enabled (default 2-regime allowlist) + request capture enabled (for evidence), ONE real run was triggered, evidence captured,
+then the service returned to default-off.
+
+**The run.** Los Angeles Dodgers @ San Diego Padres, 2026-06-28, via POST /api/agent-runs. agentRunId
+21de423e-f36b-1410-816d-00373db4b724.
+
+**Evidence (all success criteria met).** HTTP 200; artifact completed/normal (lean "Slight lean toward Padres...", confidence
+0.675, posture monitor, 4 factors); canary enabled true (env-confirmed); derived regime starter_enriched_market_missing
+(ALLOWLISTED); registry prompt selected true (select_model_prompt source=registry); model input byte-identical to live
+(model_msg == build_mlb_user_message, assembledHash 6c4e9429...); 0 MISMATCH log lines; exactly 1 "sports model-call cost" line
+(status ok, finish_reason stop); 0 retries / second calls.
+
+**How "registry selected + byte-identical" was established.** Canary success emits no log by design, so confirmed via three
+facts: (1) process had canary enabled (env-confirmed at startup); (2) select_model_prompt (pure fn) reproduced on the EXACT
+captured analyzer input returns source=registry + model_msg==live byte-for-byte; (3) zero MISMATCH log lines (equality failure
+would have logged + fallen back). A direct runtime success log does not exist by design; adding one would be a code change and
+no defect was found.
+
+**Whether the run landed allowlisted.** YES (starter_enriched_market_missing). Not inconclusive.
+
+**Whether any mismatch occurred.** NO.
+
+**sports_analyzer.py changed?** NO. **.NET changed?** NO. No code changed this slice (git-confirmed).
+
+**Manifest integrity.** OK (8 templates, 9 recipes), exit 0.
+
+**Tests (exact, venv python, from services/agent-service).**
+- `pytest tests/test_registry_prompt_canary.py -q` -> 10 passed.
+- `pytest -q` (full suite) -> **330 passed, 0 failed**.
+- `python scripts/check_prompt_manifest.py` -> OK, exit 0.
+- live: 1 real paid agent-run (HTTP 200).
+
+**Paid calls.** Exactly 1 (the confirmation run). No retries, no second call.
+
+**Review.** Skills Gate (dai-skill-router): all prompt-required skills loadable. Used: dai-skill-router, dai-test-discipline,
+superpowers:verification-before-completion, superpowers:systematic-debugging (held ready; not needed -- clean run),
+dai-docs-architect, dai-agent-handoff. dai-code-reviewer NOT required (no code change). None missing.
+
+**Repo before/after.** dai `f3e431e` -> `f3e431e` (UNCHANGED -- no code). dai-vault `e1a8ded` -> this commit (docs:
+registry canary real confirmation v1 evidence + this handoff entry). Both repos were synced with origin/main at slice start
+(prior slices pushed; the prompt's "1 ahead, not pushed" was stale). This vault commit is NOT pushed.
+
+**Services/env posture.** agent-service :8000 RESTARTED to DEFAULT (canary OFF, capture OFF -- no DAI_MLB_* env in the running
+process), platform-api :5007, devcore-sql up. Canary capture/response/log files are scratch/out-of-repo; NONE committed.
+
+**Discipline.** Did not broaden the allowlist; did not enable all regimes; no prompt wording/recipe/template/manifest change;
+no caching added; no .NET change; exactly one paid model call; no second call; canary returned to default-off. Attribution clean
+(huffm, no co-authored-by, no AI attribution, no emojis). Push: NOT performed. Pre-existing untracked
+`06 Execution/system-state-synopsis-v1.md` left untracked by design. Doc:
+`04 Products/sports-v1/prompting/registry-canary-real-confirmation-v1.md`. Next: Multi-Slate Regime Coverage v1 (earn real-soak
+evidence for the other 7 regimes before any allowlist widening); optionally a single confirmation landing in
+starter_enriched_market_backed_depth. Only a complete clean allowlist moves toward broad registry-authoritative migration.
