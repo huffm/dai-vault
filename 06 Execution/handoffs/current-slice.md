@@ -9975,3 +9975,59 @@ wording/recipe/template/manifest change; no model/temperature/confidence/artifac
 second model call; no .NET; no DB schema; no buyer UX/copy; no auth/billing/tenant/dashboard. Push: NOT performed.
 Commit: NOT performed. Next: Starter-Missing Canary Confirmation + Allowlist Widening v1 (operator-approved paid),
 or prompt provenance read-model exposure for calibration.
+
+## Starter-Missing Registry Canary Confirmation v1 -- complete 2026-06-29 (both starter_missing regimes runtime-confirmed; allowlist NOT widened)
+
+**What.** Operator-approved 4-run paid canary confirming the two real-soak-clean starter_missing regimes route
+registry-authoritative under an explicit env override, without widening DEFAULT_ALLOWLIST. Controlled confirmation
+only, not a promotion slice.
+
+**Start state.** Phase 3.2 committed + clean (dai 3f1b21f, dai-vault 088f039). Verified before any canary work.
+
+**Target regimes.** starter_missing_market_missing, starter_missing_market_backed_depth.
+
+**Operator canary config.** DAI_MLB_REGISTRY_PROMPT_CANARY=1 +
+DAI_MLB_REGISTRY_PROMPT_CANARY_REGIMES=starter_missing_market_missing,starter_missing_market_backed_depth (env
+override only). DEFAULT_ALLOWLIST UNCHANGED = (starter_enriched_market_backed_depth, starter_enriched_market_missing);
+proven by the driver printing the live config at runtime.
+
+**Execution + blocker.** Full live stack down (agent-service :8000, platform-api :5007, docker/devcore-sql all
+down), so live-scheduled retrieval (POST /api/agent-runs) was unavailable. Paid call + PromptRouteDecision both
+live in agent-service, so analyze_mlb was driven directly with representative starter_missing inputs (the shapes
+the equivalence suites prove byte-equal to live) under the operator canary env -- the slice-sanctioned
+fixture-based canary. Real runtime + real paid call, NOT a live-scheduled game (documented; no faked evidence).
+
+**Non-paid tests (venv, services/agent-service).**
+- `pytest tests/test_prompt_route_decision.py tests/test_registry_prompt_canary.py tests/test_prompt_provenance.py
+  tests/test_prompt_registry_contract.py -q` -> 74 passed.
+- `python scripts/check_prompt_manifest.py` -> OK (8 templates, 9 recipes), exit 0.
+
+**Paid calls.** 4 real gpt-4o-mini calls (1 per run, no second call/retry), approx <$0.01 total. NOTE: an initial
+driver attempt made 0 paid calls (dotenv resolved the scratchpad dir, OPENAI_API_KEY unset -> _get_client raised
+before any network call); fixed with load_dotenv(find_dotenv(usecwd=True)) and the 4 approved runs then ran clean.
+
+**Route decision evidence (all 4).** status=ok, modelCallCount=1, promptSource=registry,
+registryAuthoritativeEnabled=true, legacyFallbackUsed=false, regimeAllowlisted=true, fallbackReason=null,
+selectedDataRegime matches expected, recipeId+version populated, assembledHash populated (4 distinct). Buyer
+artifact keys identical across all 4 (standard SportsAnalysisResponse). regimeAllowlisted=true reflects explicit
+canary eligibility via override, NOT DEFAULT_ALLOWLIST promotion.
+
+**Buyer-facing impact.** None. Identical response shape; model received live-identical bytes.
+
+**Code changes.** NONE (driver is scratch/out-of-repo, NOT committed). DOC: new
+`06 Execution/starter-missing-registry-canary-confirmation-v1.md` + this handoff entry.
+
+**Rollback.** Automatic -- the canary env lived only in the driver process (no persistent service started);
+DEFAULT_ALLOWLIST never touched.
+
+**Repo before/after.** dai 3f1b21f -> 3f1b21f (UNCHANGED, no code). dai-vault 088f039 -> uncommitted (1 new doc +
+this handoff entry). Pre-existing untracked `06 Execution/system-state-synopsis-v1.md` left untouched.
+
+**Recommendation.** Both regimes meet the bar for a SEPARATE Default Allowlist Widening v1 (real-soak-clean +
+deterministic routing tests + runtime registry-authoritative confirmation). Caveat: re-confirm on a genuinely
+live-scheduled game when the stack is up, or accept fixture+real-soak evidence and pair widening with a live-data
+soak. Allowlist widening remains an explicit decision; confirmation != automatic promotion.
+
+**Discipline.** No allowlist widening; no code change; no prompt/template/recipe/manifest change; no buyer UX/copy;
+no auth/billing/tenant/dashboard; no second model call; 4 approved paid calls only. Push: NOT performed. Next:
+Default Allowlist Widening v1, or Prompt Provenance Read-Model Exposure v1.
