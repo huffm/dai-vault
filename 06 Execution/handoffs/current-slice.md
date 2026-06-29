@@ -10457,3 +10457,61 @@ Broad Cohort Rerun Grouped by Prompt Recipe v1, or Calibration Metrics Export Do
 **Discipline.** Applied/verified an existing migration; did not reopen schema design; no new migration; no
 backfill; no data reset/drop; no prompt template/recipe; no allowlist change; no buyer UX/body/copy; no paid
 calls. Secrets: dev sa password read from appsettings at runtime, never printed/committed.
+
+## Live-Scheduled Starter-Missing Soak v1 -- complete 2026-06-29 (BOTH target regimes confirmed registry-authoritative on genuine live games)
+
+**What.** Operator-approved 3-run live-scheduled soak through the real .NET -> FastAPI path on genuine scheduled
+MLB games with TBD starters. Both target starter-missing regimes confirmed registry-authoritative; provenance
+persisted to the durable AgentRun row and visible via /artifact + metrics endpoint. No code change; docs-only commit.
+
+**Start state.** dai 289777f (synced), dai-vault b0fc720 (synced) + pre-existing untracked synopsis. devcore-sql
+up (migration applied prior slice). Verified.
+
+**Services.** Brought up FastAPI agent-service (uvicorn :8000, canary on) + .NET API (dotnet run :5007); SQL up.
+Health ok. Stopped both after the soak (canary env dropped); devcore-sql left up.
+
+**Candidates (free statsapi probe).** TBD-starter live games: 824338 Marlins@Rockies (06-30), 825066
+Giants@Dbacks (06-30), 824818 WhiteSox@Orioles (07-01). 06-29 had 0 TBD (all announced).
+
+**Config.** DAI_MLB_REGISTRY_PROMPT_CANARY=1 on agent-service (default allowlist, no override);
+DAI_MLB_ROUTE_PROVENANCE_PATH scratch sink; OPENAI_API_KEY from .env; dev auth bypass.
+
+**Paid calls.** 3 gpt-4o-mini (one per run; no retries -- agent log: 3 "mlb analysis response" + 3 "routing
+decision"). Approx <$0.01. Quota available.
+
+**Run evidence (all status=completed, registry-authoritative).**
+- RUN1 1fbd433e... Marlins@Rockies -> starter_missing_market_backed_depth | recipe ...backed_depth.v1@v1 | hash 5d24dd60
+- RUN2 25bd433e... Giants@Dbacks -> starter_missing_market_missing | recipe ...missing.v1@v1 | hash 1a481863
+- RUN3 28bd433e... WhiteSox@Orioles -> starter_missing_market_missing | recipe ...missing.v1@v1 | hash b4e6a168
+All: promptSource=registry, registryAuthoritativeEnabled=true, legacyFallbackUsed=false, fallbackReason=null,
+regimeAllowlisted=true, recipe+version+hash populated. Both target regimes covered live (backed_depth + missing).
+
+**Durable persistence.** dev-SQL query: all 3 prov_not_null=1, correct regime, src=registry. /artifact returns
+promptRouteProvenance for each. Path proven end-to-end (header -> .NET capture -> AgentRuns.PromptRouteProvenanceJson
+-> /artifact).
+
+**Metrics endpoint.** /api/agent-runs/prompt-route-calibration/metrics: totalRows=238 (235+3), registryRows=3;
+both target routes present (missing total=2/registry=2; backed_depth total=1/registry=1). New runs unreconciled
+(future games) -> not in matchRate (correct).
+
+**Tests.** Pre-paid: build 0 errors; targeted PromptRouteProvenance|PromptRouteCalibration|AgentRunsController ->
+90 passed; manifest OK. Post-paid: DB + /artifact + metrics verification. No code changed.
+
+**Blocked regimes.** None -- both produced naturally; no fabrication, no fixture-only data.
+
+**Buyer-facing impact.** None. SportsAnalysisResponse unchanged. DEFAULT_ALLOWLIST unchanged (4). No
+chain-of-thought exposed.
+
+**Code changes.** NONE (live evidence slice). **Doc changes.** NEW 06 Execution/
+live-scheduled-starter-missing-soak-v1.md + this entry.
+
+**Repo before/after.** dai 289777f -> 289777f (UNCHANGED). dai-vault b0fc720 -> uncommitted (1 new doc + this
+entry). Pre-existing untracked synopsis untouched. Commit: docs only, pending. Push: NOT performed.
+
+**Risks/deferred.** 3 runs unreconciled (future games) -> match-rate later once results settle. Staging/prod
+migration still pending on deploy. Canary stays DEFAULT OFF normally (was env-enabled only for the soak).
+
+**Discipline.** Real live-scheduled path (not fixtures); both regimes natural (no fabrication); 3 approved paid
+calls only, one model call each; no prompt template/recipe change; no allowlist change; no buyer UX/body/copy; no
+chain-of-thought/prompt-text exposed; no data backfill/reset. Next: Broad Cohort Rerun Grouped by Prompt Recipe
+v1, or Calibration Metrics Export Download v1, or outcome reconciliation for these routes once games settle.
