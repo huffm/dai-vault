@@ -10031,3 +10031,50 @@ soak. Allowlist widening remains an explicit decision; confirmation != automatic
 **Discipline.** No allowlist widening; no code change; no prompt/template/recipe/manifest change; no buyer UX/copy;
 no auth/billing/tenant/dashboard; no second model call; 4 approved paid calls only. Push: NOT performed. Next:
 Default Allowlist Widening v1, or Prompt Provenance Read-Model Exposure v1.
+
+## Default Allowlist Widening v1 -- complete 2026-06-29 (2 starter-missing regimes promoted; allowlist now 4)
+
+**What.** Narrow promotion: added exactly starter_missing_market_missing and starter_missing_market_backed_depth
+to DEFAULT_ALLOWLIST (now 4 regimes). No other regime promoted. Implementation slice; TDD red->green.
+
+**Start state.** Phase 3.2 committed + clean (dai 3f1b21f); canary confirmation docs committed (dai-vault 0a3eeeb).
+Verified before edit.
+
+**Default allowlist before/after.** Before: (starter_enriched_market_backed_depth, starter_enriched_market_missing).
+After: + starter_missing_market_missing, starter_missing_market_backed_depth = 4 exact. File:
+services/agent-service/app/services/registry_prompt_canary.py :: DEFAULT_ALLOWLIST. Env-override mechanism and
+default-off posture unchanged.
+
+**Code changes.** registry_prompt_canary.py: DEFAULT_ALLOWLIST 2->4 (+ comment). No other code path changed.
+
+**Test changes.** tests/test_registry_prompt_canary.py: updated test_config_default_disabled_and_allowlist to the
+4-regime set; added test_default_allowlist_promotion_boundary. tests/test_prompt_route_decision.py: added
+default-allowlist promotes-starter-missing (2 params), non-promoted-falls-back (4 params), env-override-narrows.
+
+**Tests run (venv, services/agent-service).**
+- `pytest tests/test_prompt_route_decision.py tests/test_registry_prompt_canary.py -q` -> 36 passed.
+- `pytest tests/test_prompt_provenance.py tests/test_prompt_registry_contract.py -q` -> 46 passed.
+- `python scripts/check_prompt_manifest.py` -> OK (8 templates, 9 recipes), exit 0.
+- `pytest -q` (full suite) -> 356 passed (was 348; +8 new), 0 failed.
+- No paid model calls.
+
+**Non-promoted (stay off, still fall back to live).** starter_enriched_market_backed (single-book),
+starter_missing_market_backed (single-book), starter_named_market_backed, starter_named_market_missing,
+starter_named_market_backed_depth.
+
+**Caveat.** Runtime canary confirmation was fixture-based, not live-scheduled (stack was down). Byte-equality
+guard still fails closed to live on any divergence; canary remains default-off (promotion = eligibility only).
+
+**Buyer-facing impact.** None. Model receives live-identical bytes; artifact shape unchanged.
+
+**Rollback.** Remove the 2 added lines from DEFAULT_ALLOWLIST (restore 2-regime tuple) + revert the 2 test deltas.
+No migration/env/service change.
+
+**Repo before/after.** dai 3f1b21f -> uncommitted (1 code file + 2 test files). dai-vault 0a3eeeb -> uncommitted
+(1 new doc + this handoff entry). Pre-existing untracked `06 Execution/system-state-synopsis-v1.md` untouched.
+Commit: NOT performed (awaiting instruction). Push: NOT performed.
+
+**Discipline.** Promoted exactly 2 regimes; no named/single-book promotion; no prompt/template/recipe/manifest
+change; no buyer UX/copy; no auth/billing/tenant/dashboard; no model-selection/confidence change; env override
+preserved; single-model-call invariant intact; 0 paid calls. Next: live-scheduled starter-missing soak, or
+Prompt Provenance Read-Model Exposure v1.
