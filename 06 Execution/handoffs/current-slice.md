@@ -10407,3 +10407,53 @@ caller-supplied); no cross-tenant/admin view; no buyer UX/copy/body; no prompt t
 metric-definition/reconciliation change; no chain-of-thought; no paid calls; no broad auth refactor. Next: Apply
 AgentRun Provenance Migration to Dev SQL v1, or Calibration Metrics Export Download v1, or Live-Scheduled
 Starter-Missing Soak v1.
+
+## Apply AgentRun Provenance Migration to Dev SQL v1 -- complete 2026-06-29 (migration applied + verified on dev SQL; docs-only)
+
+**What.** Operational slice: brought up the dev SQL container and applied the pending migration
+20260629174632_AddAgentRunPromptRouteProvenance to the real dev database, then verified schema + data safety.
+Clears the standing migration debt from the .NET persistence slice. No code change (DB-only); docs-only commit.
+
+**Start state.** dai 289777f (synced, prior commits on origin), dai-vault 509acc9 (synced) + pre-existing
+untracked synopsis. Verified.
+
+**Container.** Docker daemon was down + devcore-sql Exited(137). Started Docker Desktop (daemon up), then
+`docker start devcore-sql` -> Up, 0.0.0.0:1433->1433, logs "SQL Server is now ready for client connections".
+
+**Migration status.** APPLIED this slice. `dotnet ef migrations list` showed it (Pending) (only pending one);
+`dotnet ef database update` ran `ALTER TABLE [AgentRuns] ADD [PromptRouteProvenanceJson] nvarchar(max) NULL;` +
+inserted the __EFMigrationsHistory row. Re-list shows no (Pending).
+
+**Schema verification (sqlcmd, db=devcore).** __EFMigrationsHistory has the migration (mig=1); column
+PromptRouteProvenanceJson type=nvarchar nullable=YES.
+
+**Data safety.** AgentRuns total=235 rows intact (no reset/delete); prov_not_null=0 (all historical rows null;
+NO backfill). Purely additive nullable column.
+
+**Tests.** dotnet build 0 errors. `dotnet test DevCore.Api.Tests --filter
+PromptRouteProvenance|PromptRouteCalibration|AgentRunsController` -> 90 passed, 0 failed. (Full suite 971 at prior
+slice; no code changed.) Tests use in-memory EF; dev-SQL column verified directly via sqlcmd. No paid calls.
+
+**Commands.** Start-Process Docker Desktop; docker start devcore-sql; dotnet ef migrations list / database update
+(--project DevCore.Data --startup-project DevCore.Api --no-build, ASPNETCORE_ENVIRONMENT=Development);
+docker exec devcore-sql sqlcmd -d devcore -Q <checks>.
+
+**Code changes.** NONE (DB-only). **Doc changes.** NEW 06 Execution/
+apply-agentrun-provenance-migration-to-dev-sql-v1.md + this entry.
+
+**Buyer-facing impact.** None. DEFAULT_ALLOWLIST unchanged (4). No model call. No schema redesign.
+
+**Rollback.** Not performed/needed (nullable, additive, all-null). If required: `dotnet ef database update
+20260622205819_AddMarketSnapshotLedger` runs the Down DROP COLUMN.
+
+**Repo before/after.** dai 289777f -> 289777f (UNCHANGED, no code). dai-vault 509acc9 -> uncommitted (1 new doc +
+this entry). Pre-existing untracked synopsis untouched. Commit: docs only, pending. Push: NOT performed.
+
+**Risks/deferred.** Applied to LOCAL dev DB only -- staging/prod still need the same update on deploy. devcore-sql
+persists Exited across reboots (just `docker start`). No real provenance rows yet in dev (prov_not_null=0); will
+populate as new MLB runs flow through the .NET capture path. Next: Live-Scheduled Starter-Missing Soak v1, or
+Broad Cohort Rerun Grouped by Prompt Recipe v1, or Calibration Metrics Export Download v1.
+
+**Discipline.** Applied/verified an existing migration; did not reopen schema design; no new migration; no
+backfill; no data reset/drop; no prompt template/recipe; no allowlist change; no buyer UX/body/copy; no paid
+calls. Secrets: dev sa password read from appsettings at runtime, never printed/committed.
