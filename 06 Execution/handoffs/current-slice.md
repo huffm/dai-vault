@@ -9674,3 +9674,60 @@ no caching added; no .NET change; exactly one paid model call; no second call; c
 `04 Products/sports-v1/prompting/registry-canary-real-confirmation-v1.md`. Next: Multi-Slate Regime Coverage v1 (earn real-soak
 evidence for the other 7 regimes before any allowlist widening); optionally a single confirmation landing in
 starter_enriched_market_backed_depth. Only a complete clean allowlist moves toward broad registry-authoritative migration.
+
+## Registry Canary Backed-Depth Confirmation v1 -- complete 2026-06-28 (PASSED; 1 paid call; no code change)
+
+**What.** One operator-approved paid real MLB execution confirming the default-off registry-authoritative prompt canary for the
+SECOND allowlisted regime, starter_enriched_market_backed_depth. NO runtime code changed (no defect). agent-service restarted
+from working tree with canary + capture enabled, ONE real backed-depth run, evidence captured, service returned to default-off.
+Both allowlisted regimes now have real-execution confirmation (missing: prior slice; backed_depth: this slice).
+
+**Backed-depth candidate available?** YES. New York Yankees @ Boston Red Sox (reliably multi-book; backed_depth in prior
+confirmation + cohort). Run confirmed: market present, bookCount 6, consensus home.
+
+**Paid call run?** YES, exactly 1.
+
+**Matchup / agentRunId.** New York Yankees @ Boston Red Sox, 2026-06-28; agentRunId 27de423e-f36b-1410-816d-00373db4b724.
+
+**Derived regime.** starter_enriched_market_backed_depth (the target; allowlisted).
+
+**Registry prompt selection status.** SELECTED (select_model_prompt source=registry).
+
+**Model input byte-equivalence.** byte-identical (model_msg == build_mlb_user_message); assembledHash
+5c4b7402cc1b0dcadaa2d44396491f0c2897b197ee58da0b5c97a33bad831126.
+
+**Model-call count / retries.** Exactly 1 model call (status ok, finish_reason stop); 0 retries; 0 second calls.
+
+**Mismatch-log status.** 0 "registry prompt canary MISMATCH" lines; 0 canary wiring-failure lines.
+
+**Method.** Canary success emits no log by design -> confirmed via (1) env-enabled process, (2) deterministic reproduction of
+select_model_prompt on the EXACT captured input (source=registry, byte-identical, hash above), (3) zero MISMATCH lines.
+
+**Code changed?** NO. **sports_analyzer.py changed?** NO. **.NET changed?** NO. (git-confirmed clean.)
+
+**Manifest integrity.** OK (8 templates, 9 recipes), exit 0.
+
+**Tests (exact, venv python, from services/agent-service).**
+- `pytest tests/test_registry_prompt_canary.py -q` -> 10 passed.
+- `pytest -q` (full suite) -> **330 passed, 0 failed**.
+- `python scripts/check_prompt_manifest.py` -> OK, exit 0.
+- live: 1 real paid agent-run (HTTP 200).
+
+**Review.** Skills Gate (dai-skill-router): all prompt-required skills loadable. Used: dai-skill-router, dai-test-discipline,
+superpowers:verification-before-completion, superpowers:systematic-debugging (ready; not needed -- clean run), dai-docs-architect,
+dai-agent-handoff. dai-code-reviewer NOT required (no code change). None missing.
+
+**Repo before/after.** dai `f3e431e` -> `f3e431e` (UNCHANGED -- no code). dai-vault `56211b1` -> this commit (docs: backed-depth
+confirmation evidence + this handoff entry). Both repos synced with origin/main at slice start (prior slices pushed; the
+prompt's "1 ahead, not pushed" was stale). This vault commit is NOT pushed.
+
+**Services/env posture.** agent-service :8000 DEFAULT (canary OFF, capture OFF -- no DAI_MLB_* env in the running process),
+platform-api :5007, devcore-sql up. Canary capture/response/log files scratch/out-of-repo; NONE committed.
+
+**Discipline.** No allowlist expansion; no broad routing; no prompt wording/recipe/template/manifest change; no model/temperature/
+confidence/artifact-copy change; exactly one paid model call; no second call/retry; no .NET change; no DB schema; canary returned
+to default-off. Attribution clean (huffm, no co-authored-by, no AI attribution, no emojis). Push: NOT performed. Pre-existing
+untracked `06 Execution/system-state-synopsis-v1.md` left untracked by design. Doc:
+`04 Products/sports-v1/prompting/registry-canary-backed-depth-confirmation-v1.md`. Next: Multi-Slate Regime Coverage v1 (earn
+real-soak evidence for the other 7 regimes before any allowlist widening). Both allowlisted regimes are now runtime-confirmed;
+broad registry-authoritative routing stays gated on a complete clean allowlist.
