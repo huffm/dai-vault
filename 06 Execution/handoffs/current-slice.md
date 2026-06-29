@@ -9921,3 +9921,57 @@ routing; no allowlist widening in the confirmation slice.
 template/manifest change; no DB schema; no .NET change; no Drive/FIFA. Push: NOT performed. Pre-existing untracked
 `06 Execution/system-state-synopsis-v1.md` left untracked by design. Doc:
 `06 Execution/prompt-migration-closeout-2026-06-28.md`.
+
+## Phase 3.2 Global Prompt Routing Hardening v1 -- complete 2026-06-29 (typed routing decision; DEFAULT OFF; 0 paid calls)
+
+**What.** Hardened the registry-authoritative prompt path into an explicit, testable, regime-aware routing
+contract. Added a typed `PromptRouteDecision` value object that records, per analyzer run, which prompt fed the
+model and why; proved deterministic selection across all 9 regimes; kept the canary DEFAULT OFF and the
+single-model-call + byte-identical-to-live invariants intact. No prompt wording/template/recipe/manifest change,
+no allowlist change, no .NET, no DB, no buyer-facing change.
+
+**Routing contract.** `app/prompting/contracts.py :: PromptRouteDecision` (frozen, extra=forbid, self-validating
+via a model_validator so a contradictory record is unconstructible). Fields: promptSource (live|registry),
+registryAuthoritativeEnabled, legacyFallbackUsed, regimeAllowlisted, routingReason, fallbackReason
+(disabled|regime_not_allowlisted|mismatch|assembly_error|error|None), selectedDataRegime, selectedPromptRecipeId,
+selectedPromptVersion, assembledHash, plus to_info() legacy projection. Core: `decide_model_prompt(...)` returns
+(model_prompt, decision); `select_model_prompt` is now a back-compat shim; `run_mlb_prompt_canary` returns the
+typed decision; analyzer logs it (observability only).
+
+**Regime matrix.** 9 regimes, all shadow/equivalence-proven and now all deterministically routing-tested (new
+parametrized test). allowlisted=2 (enriched_backed_depth, enriched_missing -- canary-confirmed, real-soak-clean);
+real-soak-clean-not-allowlisted=2 (missing_missing, missing_backed_depth); representative-only/under-tested=5 (3
+named + 2 single-book backed). No allowlist widening (DEFAULT_ALLOWLIST unchanged = the same two regimes).
+
+**Code changed.** contracts.py (+PromptRouteDecision/PromptSource/FallbackReason/validator/to_info),
+__init__.py (export), registry_prompt_canary.py (decide_model_prompt + _live helper; select_model_prompt shim;
+run_mlb_prompt_canary returns decision; assembly_error split from generic error), sports_analyzer.py (capture +
+log decision; model bytes unchanged). New test tests/test_prompt_route_decision.py (18 tests).
+
+**Docs.** New `06 Execution/phase-3-2-global-prompt-routing-hardening-v1.md` (purpose, contract field-map, regime
+matrix, default-off/fallback posture, model-call invariant, what changed/didn't, tests, risks, next slice) + this
+handoff entry.
+
+**Tests (exact, venv python, from services/agent-service).**
+- `pytest tests/test_prompt_route_decision.py tests/test_registry_prompt_canary.py -q` -> 27 passed.
+- `pytest tests/test_mlb_prompt_equivalence.py tests/test_migration_readiness.py tests/test_mlb_branch_overlays.py
+  tests/test_shadow_validation.py tests/test_prompt_registry_contract.py tests/test_prompt_provenance.py -q` -> 109 passed.
+- `python scripts/check_prompt_manifest.py` -> OK (8 templates, 9 recipes), exit 0.
+- `pytest -q` (full suite, final verification) -> 348 passed (was 330; +18 new), 0 failed.
+- No paid model calls.
+
+**Review.** Skills Gate (dai-skill-router): all named skills loadable. Used: dai-slice-runner, dai-skill-router,
+dai-test-discipline, superpowers:test-driven-development (red->green), superpowers:verification-before-completion,
+dai-token-tight, dai-agent-handoff. Code review run (2 parallel finders, high effort): correctness clean ([]),
+cleanup found 2 (disabled-branch dup + decision-field invariant) -- both fixed (delegated disabled decision to
+the core; added a model_validator). No conventions violations.
+
+**Repo before/after.** dai `f3e431e` -> uncommitted working tree (4 files modified + 1 new test); NOT committed
+(no instruction to commit). dai-vault `f3e431e`-era -> uncommitted (1 new doc + this handoff entry); NOT committed.
+Pre-existing untracked `06 Execution/system-state-synopsis-v1.md` left untouched.
+
+**Discipline.** No allowlist widening; no registry-authoritative default-on; no broad routing; no prompt
+wording/recipe/template/manifest change; no model/temperature/confidence/artifact change; 0 paid model calls; no
+second model call; no .NET; no DB schema; no buyer UX/copy; no auth/billing/tenant/dashboard. Push: NOT performed.
+Commit: NOT performed. Next: Starter-Missing Canary Confirmation + Allowlist Widening v1 (operator-approved paid),
+or prompt provenance read-model exposure for calibration.
