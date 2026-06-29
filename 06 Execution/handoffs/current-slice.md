@@ -9731,3 +9731,70 @@ untracked `06 Execution/system-state-synopsis-v1.md` left untracked by design. D
 `04 Products/sports-v1/prompting/registry-canary-backed-depth-confirmation-v1.md`. Next: Multi-Slate Regime Coverage v1 (earn
 real-soak evidence for the other 7 regimes before any allowlist widening). Both allowlisted regimes are now runtime-confirmed;
 broad registry-authoritative routing stays gated on a complete clean allowlist.
+
+## Multi-Slate Regime Coverage v1 -- complete 2026-06-28 (coverage matrix; 0 paid calls; no code change; allowlist NOT widened)
+
+**What.** Evidence-expansion slice: built a real-data coverage matrix for all 9 MLB regimes with ZERO new paid model calls.
+Re-soaked the EXISTING real captured inputs (15 unique real matchups from 2026-06-28) + did free multi-slate starter discovery
+via statsapi. No regime fabricated; unobserved regimes marked representative-only/unavailable. Allowlist UNCHANGED.
+
+**Code changed?** NO. **sports_analyzer.py changed?** NO. **.NET changed?** NO. (git-confirmed clean.)
+
+**Paid call count.** 0 (re-soak used already-captured real inputs; discovery was statsapi-only).
+
+**Cohort source/size.** 15 unique real captured matchups (2026-06-28 slate, from prior default-off request capture; merged +
+deduped). Scratch/out-of-repo; NOT committed.
+
+**Regime coverage matrix.**
+- starter_enriched_market_missing -> real canary + real soak, 14 games, ALLOWLISTED.
+- starter_enriched_market_backed_depth -> real canary + real soak, 1 (+confirmation runs), ALLOWLISTED.
+- starter_enriched_market_backed (single-book) -> representative-only (single-book market never observed in real data), off.
+- starter_named_market_{missing,backed,backed_depth} -> representative-only (announced-no-stats not observed), off.
+- starter_missing_market_missing -> representative-only but REAL-AVAILABLE (one-announced games on 6/29-30), uncaptured, off.
+- starter_missing_market_backed -> representative-only, off.
+- starter_missing_market_backed_depth -> representative-only but REAL-AVAILABLE (one-announced + multi-book), uncaptured, off.
+
+**Shadow soak summary counts (existing real cohort).** cohort_size 15, attempted 15, matched 15, captured 15, mismatched 0,
+assembly_failed 0, sink_failed 0, errored 0, partial_evidence_unrepresentable 0, persisted_provenance_lines 15, clean true, GO.
+Real regimes: enriched_backed_depth 1, enriched_missing 14 (2 distinct).
+
+**Multi-slate discovery (statsapi, free).** 2026-06-28: 15 games, 15 both-announced; 06-29: 13 games, 11 both / 2 one-announced;
+06-30: 15 games, 14 both / 1 one-announced. Real slates are enriched-heavy; one-announced games are the only realistic
+starter_missing path; no named or single-book-market signal observed.
+
+**Canary-authoritative confirmation status.** 2 regimes runtime-confirmed canary-authoritative (enriched_missing,
+enriched_backed_depth); 0 new this slice. No regime added to the allowlist.
+
+**Any mismatch/failure/partial-evidence.** NONE. 15/15 matched, zero failures, zero partial-evidence on the real cohort.
+
+**Why allowlist NOT widened.** Slice forbids it; AND no new regime earned a clean real soak (the only real-soak-clean regimes
+remain the two already allowlisted). Widening needs paid capture of target regimes + a clean soak (next slice).
+
+**Manifest integrity.** OK (8 templates, 9 recipes), exit 0.
+
+**Tests (exact, venv python, from services/agent-service).**
+- `pytest -q` (full suite) -> **330 passed, 0 failed**.
+- `pytest tests/test_registry_prompt_canary.py tests/test_mlb_request_capture.py tests/test_shadow_validation.py
+  tests/test_shadow_cohort_soak.py tests/test_mlb_soak_export.py tests/test_mlb_prompt_equivalence.py
+  tests/test_mlb_branch_overlays.py -q` -> 98 passed.
+- `python scripts/check_prompt_manifest.py` -> OK, exit 0.
+- No paid model calls.
+
+**Review.** Skills Gate (dai-skill-router): all prompt-required skills loadable. Used: dai-skill-router, dai-test-discipline,
+superpowers:verification-before-completion, superpowers:systematic-debugging (ready; not needed -- clean), dai-docs-architect,
+dai-agent-handoff. dai-code-reviewer NOT required (no code change). None missing.
+
+**Repo before/after.** dai `f3e431e` -> `f3e431e` (UNCHANGED -- no code). dai-vault `fd28e8d` -> this commit (docs: multi-slate
+regime coverage matrix + this handoff entry). NOTE: the prior slice's vault commit (fd28e8d) was NOT pushed, so dai-vault is now
+2 commits ahead of origin/main; dai is synced. NOT pushed this slice.
+
+**Services/env posture.** UNCHANGED this slice (no analyzer run): agent-service :8000 DEFAULT (canary off, capture off),
+platform-api :5007, devcore-sql up. No DAI_MLB_* env in the running process. No capture/soak artifacts committed (scratch/out-of-repo).
+
+**Discipline.** No allowlist widening; no broad routing; no prompt wording/recipe/template/manifest change; no model/temperature/
+confidence/artifact-copy change; 0 paid model calls; no second call/artifact; no .NET change; no DB schema; did not fabricate any
+regime. Attribution clean (huffm, no co-authored-by, no AI attribution, no emojis). Push: NOT performed. Pre-existing untracked
+`06 Execution/system-state-synopsis-v1.md` left untracked by design. Doc:
+`04 Products/sports-v1/prompting/multi-slate-regime-coverage-v1.md`. Next: Starter-Missing Regime Capture v1 (operator-approved
+paid -- target one-announced games to capture starter_missing_market_* real inputs, soak, record real-soak-clean status). Only a
+clean real soak earns a regime a later allowlist-widening slice; named + single-book regimes may remain representative-only.
