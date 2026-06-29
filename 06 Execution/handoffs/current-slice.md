@@ -9798,3 +9798,73 @@ regime. Attribution clean (huffm, no co-authored-by, no AI attribution, no emoji
 `04 Products/sports-v1/prompting/multi-slate-regime-coverage-v1.md`. Next: Starter-Missing Regime Capture v1 (operator-approved
 paid -- target one-announced games to capture starter_missing_market_* real inputs, soak, record real-soak-clean status). Only a
 clean real soak earns a regime a later allowlist-widening slice; named + single-book regimes may remain representative-only.
+
+## Starter-Missing Regime Capture v1 -- complete 2026-06-28 (2 starter_missing regimes real-soak-clean; allowlist NOT widened)
+
+**What.** Operator-approved 4-game paid cohort capturing real starter_missing MLB inputs, then shadow soak. Canary OFF (live
+prompt authoritative); capture-only. NO code changed. Two target regimes are now real-soak-clean; allowlist UNCHANGED.
+
+**Candidate discovery.** statsapi probablePitcher hydrate (free) -> games with a TBD probable starter (MlbStarterContext needs
+both names -> no context -> starter_missing). 4 identified + operator-approved.
+
+**Paid call approval.** Operator approved all 4 games (number=4).
+
+**Code changed?** NO. **sports_analyzer.py changed?** NO. **.NET changed?** NO. (git-confirmed clean.)
+
+**Paid call count.** 4 (one normal live analyze call per game; no second call/retry).
+
+**Candidate games targeted (all HTTP 200, input-only captures).**
+- San Diego Padres @ Chicago Cubs (6/29, away TBD) -> starter_missing_market_backed_depth.
+- Miami Marlins @ Colorado Rockies (6/29, home TBD) -> starter_missing_market_backed_depth.
+- San Francisco Giants @ Arizona Diamondbacks (6/30, home TBD) -> starter_missing_market_missing.
+- Chicago White Sox @ Baltimore Orioles (7/1, both TBD) -> starter_missing_market_missing.
+
+**Captured request count.** 4 input-only records (verified: no model output/artifact/confidence/buyer keys; starter_ctx=False).
+Scratch/out-of-repo; NOT committed.
+
+**Regime distribution.** starter_missing_market_backed_depth 2; starter_missing_market_missing 2. (Third target,
+starter_missing_market_backed single-book, NOT naturally available -- markets were multi-book or absent.)
+
+**Shadow soak summary counts.** cohort_size 4, attempted 4, matched 4, captured 4, mismatched 0, assembly_failed 0,
+sink_failed 0, errored 0, partial_evidence_unrepresentable 0, persisted_provenance_lines 4, clean true, GO. Provenance: 4 lines,
+all mode=shadow/lifecycle=shadow_only, 4 distinct assembledHash, both regimes.
+
+**Which starter_missing regimes are now real-soak-clean.** starter_missing_market_missing (2 inputs) AND
+starter_missing_market_backed_depth (2 inputs) -- both meet the acceptance bar. starter_missing_market_backed (single-book)
+remains representative-only.
+
+**Any mismatch/failure/partial-evidence.** NONE. 4/4 matched byte-for-byte.
+
+**Updated coverage:** 4/9 regimes have real evidence (2 canary-confirmed allowlisted + 2 new real-soak-clean, NOT allowlisted);
+5 remain representative-only (3 named + 2 single-book backed; not observed in real data).
+
+**Why allowlist NOT widened.** Slice forbids it; and allowlist-widening is a separate explicit decision. Real-soak-clean is
+necessary, not sufficient.
+
+**Manifest integrity.** OK (8 templates, 9 recipes), exit 0.
+
+**Tests (exact, venv python, from services/agent-service).**
+- `pytest -q` (full suite) -> **330 passed, 0 failed**.
+- `pytest <7 named suites> -q` -> 98 passed.
+- `python scripts/check_prompt_manifest.py` -> OK, exit 0.
+- live: 4 real paid agent-runs (HTTP 200) + 1 shadow soak (GO).
+
+**Review.** Skills Gate (dai-skill-router): all prompt-required skills loadable. Used: dai-skill-router, dai-test-discipline,
+superpowers:verification-before-completion, superpowers:systematic-debugging (ready; not needed -- clean), dai-docs-architect,
+dai-agent-handoff. dai-code-reviewer NOT required (no code change). None missing.
+
+**Repo before/after.** dai `f3e431e` -> `f3e431e` (UNCHANGED -- no code). dai-vault `caa32ab` -> this commit (docs:
+starter-missing regime capture evidence + this handoff entry). dai-vault now 3 commits ahead of origin/main (this + 2 prior
+unpushed docs); dai synced. NOT pushed this slice.
+
+**Services/env posture.** agent-service :8000 restarted to DEFAULT (canary OFF, capture OFF -- no DAI_MLB_* env), platform-api
+:5007, devcore-sql up. No capture/soak artifacts committed.
+
+**Discipline.** No allowlist widening; no registry-authoritative routing for starter_missing (canary off, live authoritative);
+no broad routing; no prompt wording/recipe/template/manifest change; no model/temperature/confidence/artifact-copy change; 4
+approved paid model calls (one per run; no second call); no .NET change; no DB schema; did not fabricate any regime (single-book
+correctly marked unavailable). Attribution clean (huffm, no co-authored-by, no AI attribution, no emojis). Push: NOT performed.
+Pre-existing untracked `06 Execution/system-state-synopsis-v1.md` left untracked by design. Doc:
+`04 Products/sports-v1/prompting/starter-missing-regime-capture-v1.md`. Next: Starter-Missing Canary Confirmation + Allowlist
+Widening v1 (operator-approved -- runtime canary confirmation per new regime, then explicit allowlist widening to the 4
+runtime-confirmed regimes). Named + single-book regimes remain representative-only pending real evidence.
