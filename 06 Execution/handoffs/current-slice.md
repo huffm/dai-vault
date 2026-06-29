@@ -10186,3 +10186,60 @@ performed.
 change; no model/network/db/migration; no chain-of-thought exposed (route metadata + bounded decision/outcome
 only); 0 paid calls. Next: .NET AgentRun Prompt Provenance Persistence v1, or Broad Cohort Rerun Grouped by
 Prompt Recipe v1, or Live-Scheduled Starter-Missing Soak v1.
+
+## .NET AgentRun Prompt Provenance Persistence v1 -- complete 2026-06-29 (analyzer header captured, persisted on AgentRun, exposed read-only)
+
+**What.** .NET platform now captures the FastAPI X-Prompt-Route-Provenance response header, persists it on the
+AgentRun row (new nullable column), and exposes it read-only on the artifact inspection DTO. Turns route
+provenance from a transient header / analyzer JSONL aid into durable platform metadata. Cross-layer .NET slice.
+
+**Start state.** dai 34541d4 (synced), dai-vault 8f14c13 (synced) + pre-existing untracked synopsis. Verified.
+
+**Capture.** DevCore.AiClient/FastApiClient.cs AnalyzeSportsMatchupWithProvenanceAsync parses the header into a
+typed DevCore.AiClient.PromptRouteProvenance (TryParseHeader: missing/blank/malformed -> null, never throws). The
+analyze tool output became SportsAnalysisResult(Response, RouteProvenance?) -- provenance beside the response,
+never inside SportsAnalysisResponse. AnalyzeSportsMatchupAsync kept as back-compat wrapper.
+
+**Thread.** handler (SportsAnalysisResult) -> SportsAnalyzer records analysis.Response + RouteProvenance on the
+artifact -> AgentRunService carries it on AgentRunExecution.RouteProvenance -> controller persists. Mirrors the
+GameIdentity/MarketSnapshot run-row-adjacent pattern (never in OutputJson).
+
+**Persistence.** New nullable AgentRun.PromptRouteProvenanceJson (nvarchar(max)); migration
+20260629174632_AddAgentRunPromptRouteProvenance (AddColumn/Down DropColumn, nullable, no backfill); written in
+AgentRunsController.Create success path via SerializeRouteProvenance (null in -> null column).
+
+**Read model.** GET /api/agent-runs/{id}/artifact -> AgentRunArtifactDto.PromptRouteProvenance (new trailing
+optional; DeserializeRouteProvenance defensive). Internal diagnostic surface, NOT buyer-facing. Tenant scoping
+unchanged (TenantKey + RequestedByUserKey).
+
+**Provenance fields.** promptSource, registryAuthoritativeEnabled, legacyFallbackUsed, regimeAllowlisted,
+routingReason, fallbackReason, selectedDataRegime, selectedPromptRecipeId, selectedPromptVersion, assembledHash +
+agentRunId, competition, createdUtc. Selection metadata only -- no prompt text/bytes/chain-of-thought.
+
+**Missing/malformed.** missing header -> null column, run completes. malformed -> swallowed JsonException -> null,
+analysis never fails. Historical/null rows read cleanly via /artifact (no NRE). No backfill.
+
+**Tests.** `dotnet test DevCore.Api.Tests` -> 952 passed, 0 failed. New/updated: PromptRouteProvenanceTests
+(defensive parse incl. malformed/blank/null -> null), SportsAnalyzerTests (header captured onto artifact; no
+header -> null), ToolGatewayAnalyzeTests (updated to SportsAnalysisResult output), AgentRunsControllerTests
+(create persists + /artifact surfaces; absent -> null; never in OutputJson). Build 0 warnings/0 errors. Python
+boundary untouched (header shipped earlier); not re-run.
+
+**Buyer-facing impact.** None. SportsAnalysisResponse unchanged; provenance on run-row column + internal DTO only.
+DEFAULT_ALLOWLIST unchanged (4). No model call added. No chain-of-thought.
+
+**Rollback.** ef migrations remove (or apply Down DropColumn); revert tool output type to SportsAnalysisResponse;
+remove the column + DTO/controller wiring; delete PromptRouteProvenance.cs. Additive + nullable -> safe.
+
+**Repo before/after.** dai 34541d4 -> uncommitted (14 mod + 4 new incl. migration + snapshot). dai-vault 8f14c13
+-> uncommitted (1 new doc + this entry). Pre-existing untracked synopsis untouched. Commit: pending verification.
+Push: NOT performed.
+
+**Risks/deferred.** Migration generated but NOT applied to live SQL (dev container down) -- apply on next deploy;
+in-memory tests build schema from the model and pass. Header-size growth deferred (small now). Calibration export
+still reads analyzer JSONL -- a follow-up can re-point it at the durable column. Next: Platform-Side Prompt
+Provenance Calibration Export v1, or Live-Scheduled Starter-Missing Soak v1.
+
+**Discipline.** .NET only persists+exposes; never selects prompts (boundary held). No buyer UX/copy/body; no
+prompt template/recipe; no allowlist change; no confidence/model change; tenant scoping preserved; no
+chain-of-thought; no paid calls.
