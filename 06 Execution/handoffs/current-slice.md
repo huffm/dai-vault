@@ -10300,3 +10300,58 @@ new doc + this entry). Pre-existing untracked synopsis untouched. Commit: pendin
 template/recipe; no allowlist change; no confidence/model change; tenant scoping enforced; no chain-of-thought;
 no paid calls; JSONL path preserved. Next: Calibration Outcome Metrics by Prompt Route v1, or a thin export
 endpoint/job, or Live-Scheduled Starter-Missing Soak v1.
+
+## Calibration Outcome Metrics by Prompt Route v1 -- complete 2026-06-29 (pure metrics calculator over platform-side rows; no endpoint)
+
+**What.** Added the first calibration metrics layer: a PURE aggregation of PromptRouteCalibrationRow records into
+route-level outcome metrics grouped by promptRouteKey. Componentized (exporter owns rows + tenant scoping;
+calculator only aggregates). No DB/endpoint/model call/buyer change. Metrics/read-model slice.
+
+**Start state.** dai bda6c4d (synced, prior commits on origin), dai-vault 53bfd5e (synced) + pre-existing
+untracked synopsis. Verified.
+
+**Metrics component.** DevCore.Api/AgentRuns/PromptRouteCalibrationMetrics.cs:
+PromptRouteCalibrationMetricsCalculator.Calculate(IEnumerable<PromptRouteCalibrationRow>) ->
+PromptRouteCalibrationMetricSummary; per-route PromptRouteCalibrationMetricRow. Static, pure.
+
+**Grouping.** primary promptRouteKey (null/blank -> "unknown"); each route row reports recipe/version/regime/
+promptSource/fallbackReason/legacyFallbackUsed as the uniform-across-group value, else null.
+
+**Definitions.** reconciled = directional outcome (resultSide in home/away/draw) AND directional lean (leanSide).
+matched = leanSide==resultSide; unmatched = reconciled & !matched (matched+unmatched==reconciled). noDecision =
+outcome but no lean (excluded, not a miss). unreconciled = no directional outcome (no outcome or
+cancelled/postponed; never a miss). total == reconciled + noDecision + unreconciled. matchRate =
+matched/reconciled, NULL when reconciled==0. fallbackRows=legacyFallbackUsed; registryRows/liveRows by
+promptSource. averageConfidence over numeric confidence only (null when none), matched/unmatched subset averages.
+
+**Output schema.** per route: route key + composition + counts (total/reconciled/unreconciled/noDecision/
+fallback/registry/live) + matched/unmatched + matchRate + avgConfidence(+matched/unmatched). summary: grand
+totals + unknownRouteRows + routes list (ordered by descending totalRows then key).
+
+**Tenant scope.** calculator is pure (no filtering); tenant scoping lives upstream in
+PromptRouteCalibrationExporter.ExportAsync(tenantKey). A future endpoint composes exporter (tenant-scoped) ->
+calculator, inheriting isolation.
+
+**Tests.** dotnet build 0/0. `dotnet test DevCore.Api.Tests --filter PromptRouteCalibrationMetricsTests` -> 11
+passed (grouping; reconciled/matched/unmatched+matchRate; unreconciled-not-miss; no-decision excluded; matchRate
+null when no reconciled; unknown normalization; fallback/registry/live counts; confidence avg + null; empty
+input; no-CoT). `dotnet test DevCore.Api.Tests` (full) -> 969 passed, 0 failed (+11). `pytest
+test_route_calibration_export.py` -> 12 passed. check_prompt_manifest -> OK. No paid calls.
+
+**Code changes.** NEW DevCore.Api/AgentRuns/PromptRouteCalibrationMetrics.cs (calculator + 2 DTOs). No
+modifications to existing files. **Test changes.** NEW DevCore.Api.Tests/AgentRuns/
+PromptRouteCalibrationMetricsTests.cs (11). **Doc changes.** NEW 06 Execution/
+calibration-outcome-metrics-by-prompt-route-v1.md + this entry.
+
+**Buyer-facing impact.** None. Pure internal calculator; no endpoint/UX/body/copy. DEFAULT_ALLOWLIST unchanged
+(4). No model call. No chain-of-thought (route metadata + outcome counts only).
+
+**Rollback.** Delete the calculator + test. Purely additive; no DI/schema/contract/data change.
+
+**Repo before/after.** dai bda6c4d -> uncommitted (2 new). dai-vault 53bfd5e -> uncommitted (1 new doc + this
+entry). Pre-existing untracked synopsis untouched. Commit: pending verification. Push: NOT performed.
+
+**Discipline.** Metrics aggregation only; no dashboard/endpoint; no buyer UX/copy/body; no prompt template/recipe;
+no allowlist change; no reconciliation-rule change; no confidence/model change; no cross-tenant; conservative (no
+ROI/CLV/edge claims); no chain-of-thought; no paid calls. Next: Thin Tenant-Scoped Calibration Metrics Endpoint
+or Job v1, or Live-Scheduled Starter-Missing Soak v1, or Broad Cohort Rerun Grouped by Prompt Recipe v1.
