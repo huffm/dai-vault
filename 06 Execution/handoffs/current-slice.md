@@ -10355,3 +10355,55 @@ entry). Pre-existing untracked synopsis untouched. Commit: pending verification.
 no allowlist change; no reconciliation-rule change; no confidence/model change; no cross-tenant; conservative (no
 ROI/CLV/edge claims); no chain-of-thought; no paid calls. Next: Thin Tenant-Scoped Calibration Metrics Endpoint
 or Job v1, or Live-Scheduled Starter-Missing Soak v1, or Broad Cohort Rerun Grouped by Prompt Recipe v1.
+
+## Thin Tenant-Scoped Calibration Metrics Endpoint v1 -- complete 2026-06-29 (internal GET composes exporter + calculator; tenant-scoped)
+
+**What.** Added a thin internal read-only GET endpoint exposing prompt-route calibration metrics for the calling
+tenant. Composes the tenant-scoped exporter with the pure metrics calculator; returns the metric summary. No
+dashboard, no buyer surface, no new aggregation logic. Internal read-endpoint slice.
+
+**Start state.** dai dfa4032 (synced, prior commits on origin), dai-vault b7470fb (synced) + pre-existing
+untracked synopsis. Verified.
+
+**Endpoint.** GET /api/agent-runs/prompt-route-calibration/metrics (read-only, no body) on AgentRunsController.
+Literal segment; no collision with {agentRunId:guid}.
+
+**Tenant scoping.** tenantKey from identity.ResolveAsync (authenticated context; never caller-supplied);
+401 on resolution failure. Passed to PromptRouteCalibrationExporter.ExportAsync(tenantKey) which filters
+AgentRun rows by TenantKey before returning. No cross-tenant/global view. Scoped by tenant (calibration is a
+tenant concern), matching the exporter.
+
+**Composition.** identity -> exporter.ExportAsync(tenantKey) -> PromptRouteCalibrationMetricsCalculator.Calculate
+(rows) -> PromptRouteCalibrationMetricSummary (returned as-is, API-safe). Controller is thin; aggregation stays
+in the calculator, query/filter in the exporter.
+
+**Response.** PromptRouteCalibrationMetricSummary (summary counts + matchRate + averageConfidence + routes[]).
+Per-route: route key + composition + counts + matched/unmatched + matchRate + confidence averages. No prompt
+text/bytes/chain-of-thought/protocol prose; no per-row tenant/user identifiers surfaced.
+
+**Empty dataset.** totalRows=0, routes=[], HTTP 200 (tested).
+
+**No-CoT.** test seeds OutputJson with SECRET_SUMMARY/SECRET_FACTOR and asserts neither appears in the raw
+endpoint body.
+
+**Code changes.** AgentRunsController.cs (new GetPromptRouteCalibrationMetrics endpoint + IPromptRouteCalibration
+Exporter ctor param). No other production files. **Test changes.** AgentRunsControllerTests.cs (2 endpoint tests
++ SeedCalibrationRunAsync helper). **Doc changes.** NEW 06 Execution/
+thin-tenant-scoped-calibration-metrics-endpoint-v1.md + this entry.
+
+**Tests.** dotnet build 0/0. `dotnet test DevCore.Api.Tests --filter calibration_metrics_endpoint` -> 2 passed.
+`dotnet test DevCore.Api.Tests` (full) -> 971 passed, 0 failed (+2). check_prompt_manifest -> OK. No paid calls.
+
+**Buyer-facing impact.** None. Internal read endpoint; no UX/body/copy. DEFAULT_ALLOWLIST unchanged (4). No model
+call. No new metric definitions.
+
+**Rollback.** Remove the endpoint method + the ctor param + the 2 tests. Additive; no schema/contract/data change.
+
+**Repo before/after.** dai dfa4032 -> uncommitted (2 mod). dai-vault b7470fb -> uncommitted (1 new doc + this
+entry). Pre-existing untracked synopsis untouched. Commit: pending verification. Push: NOT performed.
+
+**Discipline.** Thin internal access surface only; no dashboard/frontend; tenant identity from context (never
+caller-supplied); no cross-tenant/admin view; no buyer UX/copy/body; no prompt template/recipe; no allowlist/
+metric-definition/reconciliation change; no chain-of-thought; no paid calls; no broad auth refactor. Next: Apply
+AgentRun Provenance Migration to Dev SQL v1, or Calibration Metrics Export Download v1, or Live-Scheduled
+Starter-Missing Soak v1.
