@@ -9868,3 +9868,56 @@ Pre-existing untracked `06 Execution/system-state-synopsis-v1.md` left untracked
 `04 Products/sports-v1/prompting/starter-missing-regime-capture-v1.md`. Next: Starter-Missing Canary Confirmation + Allowlist
 Widening v1 (operator-approved -- runtime canary confirmation per new regime, then explicit allowlist widening to the 4
 runtime-confirmed regimes). Named + single-book regimes remain representative-only pending real evidence.
+
+## Nightly Prompt Migration Closeout v1 -- complete 2026-06-28 (docs-only reconciliation)
+
+**What.** End-of-day reconciliation of the 2026-06-28 prompt-registry migration. Docs only -- no code, no model/paid calls, no
+allowlist change. New doc `06 Execution/prompt-migration-closeout-2026-06-28.md` + this handoff entry.
+
+**Repo before/after.** dai `f3e431e` -> `f3e431e` (UNCHANGED). dai-vault `6f48ee7` -> this commit (closeout + handoff). NOTE:
+the three docs commits the prior handoff called "3 ahead / unpushed" were PUSHED at the operator's "Push"; at this slice start
+both repos were SYNCED with origin/main (0 ahead). This closeout commit is the only new one and is NOT pushed.
+
+**Code changed?** NO. **Paid calls?** 0.
+
+**Prompt migration state summary.** 4 of 9 regimes have real evidence: 2 canary-authoritative + allowlisted
+(starter_enriched_market_{missing,backed_depth}); 2 real-soak-clean but NOT allowlisted
+(starter_missing_market_{missing,backed_depth}). 5 representative-only (3 named + 2 single-book backed; not observed in real
+data). Registry prompt can become model input ONLY when proven byte-identical to live, for allowlisted regimes only; live
+builder remains authority.
+
+**Current allowlist.** 2 regimes (the two enriched). UNCHANGED.
+
+**Real-soak-clean regimes.** starter_enriched_market_missing, starter_enriched_market_backed_depth,
+starter_missing_market_missing, starter_missing_market_backed_depth (4).
+
+**Runtime canary-confirmed regimes.** starter_enriched_market_missing, starter_enriched_market_backed_depth (2).
+
+**Paid-call summary for the day.** 21 total (1 first capture + 14 cohort + 1 + 1 confirmations + 4 starter-missing); all
+operator-approved or single-controlled; one live call per run, no second calls.
+
+**Remaining gaps.** 5 regimes representative-only; modest samples for non-enriched regimes; allowlist (2) < real-soak-clean (4)
+by design; named + single-book regimes unsourced.
+
+**Services/env posture.** agent-service :8000 DEFAULT (canary off, capture off), platform-api :5007, devcore-sql up. Scratch
+artifacts out-of-repo, NONE committed.
+
+**Docs updated.** Created the closeout doc with a full prompting doc-set map (state pointers, not rewrites -- no index file
+exists; deliberately avoided churning 19 docs). No source/architecture doc rewritten.
+
+**Review.** Skills Gate (dai-skill-router): all selected skills loadable. Used: dai-skill-router, dai-docs-architect,
+dai-slice-prompt-architect (tomorrow's first-slice prep), superpowers:verification-before-completion (state reconciled against
+git), dai-agent-handoff. None missing. dai-code-reviewer not required (no code).
+
+**Attribution.** Clean (huffm, no co-authored-by, no AI attribution, no emojis). All unpushed/recent vault commits grep-clean.
+
+**Recommended first slice tomorrow.** Starter-Missing Canary Confirmation v1 (operator-approved, paid): runtime canary
+confirmation for starter_missing_market_missing + starter_missing_market_backed_depth via the
+DAI_MLB_REGISTRY_PROMPT_CANARY_REGIMES env override for the run ONLY (do NOT change DEFAULT_ALLOWLIST in code in that slice
+unless explicitly instructed); a SEPARATE later slice may widen the code allowlist to the 4 runtime-confirmed regimes. No broad
+routing; no allowlist widening in the confirmation slice.
+
+**Discipline.** Docs only; no code/model/paid calls; no allowlist change; no registry-authoritative expansion; no prompt/
+template/manifest change; no DB schema; no .NET change; no Drive/FIFA. Push: NOT performed. Pre-existing untracked
+`06 Execution/system-state-synopsis-v1.md` left untracked by design. Doc:
+`06 Execution/prompt-migration-closeout-2026-06-28.md`.
