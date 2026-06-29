@@ -10131,3 +10131,58 @@ Push: NOT performed.
 confidence change; no new frontend/dashboard; no cross-tenant; no chain-of-thought exposed (route metadata only);
 single model call; 0 paid calls. Next: Live-Scheduled Starter-Missing Soak v1, or Prompt Provenance Calibration
 Export v1.
+
+## Prompt Provenance Calibration Export v1 -- complete 2026-06-29 (route provenance -> grouping-ready export; additive only)
+
+**What.** Smallest durable calibration export: join the live route-provenance JSONL (primary source) with an
+OPTIONAL out-of-band artifact/outcome dump keyed by agentRunId, emit grouping-ready JSON/CSV rows. Pure shaping,
+no model/network/db. Export/read-model slice; purely additive (no edits to existing code).
+
+**Start state.** dai 181ef59 (synced), dai-vault 6b372e3 (synced) + pre-existing untracked synopsis. Verified.
+
+**Export surface.** app/services/route_calibration_export.py (build_calibration_row, join_calibration_records
+[outer join on agentRunId], prompt_route_key, rows_to_json, rows_to_csv, read_provenance_records,
+read_artifact_records, CALIBRATION_FIELDS) + scripts/export_route_calibration.py CLI (mirrors
+export_mlb_soak_requests.py). Run: `python scripts/export_route_calibration.py --provenance <jsonl>
+[--artifacts <json|jsonl>] [--format csv] --out <scratch>`.
+
+**Sources.** Primary = route-provenance JSONL from the analyzer sink (DAI_MLB_ROUTE_PROVENANCE_PATH). Optional
+secondary = operator-supplied artifact/outcome dump (agent-service has no artifact/outcome store; .NET owns it ->
+deferred). JSONL stays append-only audit aid, not system of record.
+
+**Schema.** identity (agentRunId, createdUtc, competition, sport, externalGameId, homeTeam, awayTeam,
+commenceTime) + 10 provenance fields + derived promptRouteKey (recipe@version::regime) + decision (leanSide,
+confidence, advertisedStrength, evidenceSufficiency, sourceDepthBand, posture) + outcome (outcomeStatus,
+actualWinner, resultSide, matchedOutcome, reconciledAtUtc). Decision/outcome from the artifact allowlist only;
+no chain-of-thought / summary / protocol / factors copied.
+
+**Grouping.** by selectedPromptRecipeId / selectedPromptVersion / selectedDataRegime / promptSource /
+fallbackReason / legacyFallbackUsed / combined promptRouteKey.
+
+**Historical/missing.** provenance w/o artifact -> null decision/outcome; artifact w/o provenance -> null route +
+promptRouteKey="unknown" (still exported); missing files -> empty sets, no crash; nothing fabricated.
+
+**Code changes.** NEW app/services/route_calibration_export.py, scripts/export_route_calibration.py. No edits to
+existing code. **Test changes.** NEW tests/test_route_calibration_export.py (10). **Doc changes.** NEW
+06 Execution/prompt-provenance-calibration-export-v1.md + this handoff entry.
+
+**Tests run (venv, services/agent-service).**
+- `pytest tests/test_route_calibration_export.py -q` -> 10 passed.
+- `pytest <calibration+route_provenance+exposure+route_decision+canary+provenance+registry_contract+soak_export> -q` -> 122 passed.
+- `python scripts/check_prompt_manifest.py` -> OK (8 templates, 9 recipes), exit 0.
+- CLI smoke (2 provenance + 1 artifact): json + csv emitted, exit 0, unknown_route_rows=1.
+- `pytest -q` (full suite) -> 382 passed (was 372; +10 new), 0 failed.
+- No paid model calls.
+
+**Buyer-facing impact.** None. DEFAULT_ALLOWLIST unchanged (4). No route/analyzer/endpoint change.
+
+**Rollback.** Delete the 3 new files; purely additive, nothing else changed.
+
+**Repo before/after.** dai 181ef59 -> uncommitted (3 new files). dai-vault 6b372e3 -> uncommitted (1 new doc +
+this entry). Pre-existing untracked synopsis untouched. Commit: pending verification (commit-on-pass). Push: NOT
+performed.
+
+**Discipline.** No dashboard; no buyer UX/copy/body; no prompt/template/recipe/manifest change; no allowlist
+change; no model/network/db/migration; no chain-of-thought exposed (route metadata + bounded decision/outcome
+only); 0 paid calls. Next: .NET AgentRun Prompt Provenance Persistence v1, or Broad Cohort Rerun Grouped by
+Prompt Recipe v1, or Live-Scheduled Starter-Missing Soak v1.
