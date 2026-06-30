@@ -10750,3 +10750,62 @@ assembly_error detail still not persisted (frozen contract) -- separate future e
 **Discipline.** Narrow route-attribution change; TDD; no prompt/recipe/regime/allowlist change; no metric
 definition change (only key derivation); no reconciliation/confidence change; no buyer surface; no DB migration;
 no paid calls; no cohort rerun; no OKF.
+
+---
+
+# Controlled Live Batch Capture v2
+
+**slice:** approved 8-game live MLB paid batch through real .NET->FastAPI with durable provenance + metrics verify
+**status:** complete 2026-06-30 (8/8 registry-authoritative; all pending reconciliation)
+**repos touched:** `dai-vault` only (new doc + this entry). `dai` UNCHANGED (no code).
+
+**Start state.** dai clean/synced 0f563d6 (0/0). dai-vault clean/synced d1ced0f (0/0). Synopsis excluded.
+DEFAULT_ALLOWLIST unchanged (4). Route fix v1 present (regime::fallback).
+
+**Services.** devcore-sql up. FastAPI uvicorn :8000 (canary=1, prov sink to scratch jsonl) /api/ping ok. .NET
+:5215 (dev bypass, tenant 1) /health ok.
+
+**Schedule probe (free).** statsapi schedule 2026-06-30: 15 games, all Scheduled, 14 enriched + 1 TBD (825066).
+Dedupe: 824338 + 825066 already captured (soak) -> excluded; only starter_missing game was already captured, so
+no fresh starter_missing diversity (not fabricated). 13 new enriched remain.
+
+**Approval gate.** Presented candidate table, regimes, dupe check, 1 call/run, <$0.02, env vars, POST flow,
+verification plan. OPERATOR APPROVED 8. No paid call before approval.
+
+**Batch (8 completed).** keys 270013-270020: Cardinals@Braves 824907 (home), Rays@Royals 824096 (away),
+Twins@Astros 824175 (away), Dodgers@Athletics 824984 (away), Angels@Mariners 823122 (home), Padres@Cubs 824661
+(home), Tigers@Yankees 823528 (home), Mets@BlueJays 822793 (home). All POST /api/agent-runs, status=completed.
+
+**Provenance.** 8/8 non-null PromptRouteProvenanceJson, ALL registry-authoritative: promptSource=registry,
+regime=starter_enriched_market_backed_depth, recipe ...backed_depth.v1@v1, fallbackReason=null. NO fallback this
+batch. /artifact verified exposes promptRouteProvenance (c240433e: registry, recipe, ver v1, hash 107c1b9d...).
+Regime diversity: none -- enriched-heavy slate, liquid markets -> all backed_depth (honest, not forced).
+
+**Metrics before->after.** total 246->254 (+8). unreconciled 162->170 (+8, all pending). registry 10->18 (+8).
+reconciled 76, matched 47, unmatched 29, matchRate 0.618, live 1, fallback 1, unknownRoute 235 -- all UNCHANGED.
+Route starter_enriched_market_backed_depth 7->15. Fallback key starter_enriched_market_backed_depth::
+assembly_error still present + correct (total 1, src=live) -- v1 fix holds.
+
+**Paid calls.** 8 gpt-4o-mini, 1 completed analysis per run (log: 8 analysis responses + 8 routing decisions).
+1 OpenAI SDK transient auto-retry (Retrying /chat/completions in 0.43s; no 429, no dup run/artifact -> still 8
+completed). Est <$0.02. Documented per no-blind-retry rule.
+
+**Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4). **Code changes.** NONE. **Doc changes.** NEW
+06 Execution/controlled-live-batch-capture-v2.md + this entry.
+
+**Pending reconciliation.** All 8 games Scheduled (not Final), 0 outcomes, ExclusionReason null -> PENDING. No
+fabricated outcomes. Match rate later via reconciliation follow-up.
+
+**Repo before/after.** dai 0f563d6 -> 0f563d6 (UNCHANGED). dai-vault d1ced0f -> uncommitted (1 new doc + this
+entry). Commit: docs only, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** Evidence concentrated in enriched_market_backed_depth (n=15); starter_missing/enriched_
+market_missing still thin (2/1/0). No assembly_error this batch (fallback key not freshly exercised). 8 new + 3
+soak games awaiting settlement -> reconciliation backlog growing.
+
+**Next slice.** Outcome Reconciliation Follow-up v1 (non-paid, time-gated) once games go Final -- clears backlog,
+populates route match rates.
+
+**Discipline.** Paid only after explicit approval; no reconcile of non-final games; no fabricated outcomes; no
+prompt/recipe/template change; no allowlist change; no route-key change; no buyer surface; no DB migration; no
+OKF; no broad cohort.
