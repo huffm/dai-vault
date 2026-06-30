@@ -10809,3 +10809,60 @@ populates route match rates.
 **Discipline.** Paid only after explicit approval; no reconcile of non-final games; no fabricated outcomes; no
 prompt/recipe/template change; no allowlist change; no route-key change; no buyer surface; no DB migration; no
 OKF; no broad cohort.
+
+---
+
+# Prompt Routing Coverage Matrix v1
+
+**slice:** coverage matrix for the Regime-Aware Prompt Routing Layer; recommend next routing improvement
+**status:** complete 2026-06-30 (analysis only; NO code, NO paid calls)
+**repos touched:** `dai-vault` only (new doc + this entry). `dai` UNCHANGED.
+
+**Start state.** dai clean/synced 0f563d6 (0/0). dai-vault clean/synced 2996c55 (0/0). Synopsis excluded.
+DEFAULT_ALLOWLIST unchanged (4). Route fix v1 present (regime::fallback line 147).
+
+**Manifest inventory (source of truth).** manifest.json v2, check_prompt_manifest.py OK: 8 templates, 9 recipes
+= full 3x3 regime matrix (starter enriched/named/missing x market backed/missing/backed_depth). All shadow_only.
+Expected 9-regime set matches manifest exactly.
+
+**Allowlist (4 of 9).** ON: starter_enriched_market_backed_depth, starter_enriched_market_missing,
+starter_missing_market_missing, starter_missing_market_backed_depth. OFF (5): the two run-line (*_market_backed)
++ all three named-tier regimes -- intentionally off pending real evidence.
+
+**Metrics snapshot (DB, tenant 1).** 254 runs = 19 provenance-bearing + 235 legacy/unknown (pre-provenance, no
+regime, 68 reconciled). Per-regime of the 19: enriched_market_backed_depth registry 15 (7 reconciled, 6/1) +
+live assembly_error 1 (1 reconciled, 0/1); starter_missing_market_missing registry 2 (0 reconciled);
+starter_missing_market_backed_depth registry 1 (0 reconciled).
+
+**Coverage matrix (9 regimes, evidence status).** 1) enriched_market_backed_depth = proven_live_reconciled
+(16 live, 8 reconciled 6/2, 0.75; only regime with outcomes) + fallback_observed. 2) enriched_market_missing =
+unexercised + blocked_by_availability (announced starters almost always have a market). 3)
+starter_missing_market_missing = live_unreconciled + live_thin (2 soak). 4) starter_missing_market_backed_depth =
+live_unreconciled + live_thin (1 soak). 5-9 (run-line x2 + named x3) = fixture_only + not_allowlisted.
+
+**Key findings.** (a) Taxonomy complete at 9, allowlist covers 4. (b) Evidence SEVERELY concentrated: 16/19
+(84%) in one regime; only that regime has reconciled outcomes -> allowlist validated on one regime. (c) Other 3
+allowlisted regimes thin/unexercised; enriched_market_missing NEVER live. (d) Reconciliation is the binding
+constraint: 11 pending live runs (3 soak + 8 v2). (e) Fallback attribution healthy (1 assembly_error, correctly
+keyed). (f) 5 non-allowlisted regimes fixture-proven only.
+
+**Next slice.** PRIMARY: Regime Discovery + Candidate Selection v1 (non-paid design+dry-run -- deliberately
+target thin/unexercised allowlisted regimes instead of re-capturing enriched_backed_depth). COMPANION
+(run first/alongside, non-paid, time-gated): Outcome Reconciliation Follow-up v1 -- settle the 11 pending runs to
+turn live_unreconciled into proven_live_reconciled; prerequisite for any allowlist-promotion decision.
+
+**Tests/verification.** check_prompt_manifest.py -> OK (8 templates, 9 recipes). DB regime aggregation query.
+Source-verified DEFAULT_ALLOWLIST + RouteKey. No code changed -> no suite needed.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **Code changes.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4).
+**Doc changes.** NEW 06 Execution/prompt-routing-coverage-matrix-v1.md + this entry.
+
+**Repo before/after.** dai 0f563d6 -> 0f563d6 (UNCHANGED). dai-vault 2996c55 -> uncommitted (1 new doc + this
+entry). Commit: docs only, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** Concentration risk (allowlist confidence on 1 regime, 8 reconciled rows -- no overclaiming).
+enriched_market_missing may be unreachable from natural slates. 11+3 pending settlement. Point-in-time snapshot.
+
+**Discipline.** Analysis only; no prompt/recipe/template change; no allowlist change; no route-key change; no
+buyer surface; no DB migration; no paid calls; no reconciliation of non-final games; no OKF; no cohort rerun; no
+fabricated diversity.
