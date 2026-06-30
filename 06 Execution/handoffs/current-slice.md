@@ -11104,3 +11104,63 @@ split justified by deterministic assembly_error independent of the backlog).
 **Discipline.** Reconcile only Final; none were Final -> took no action; no fabricated outcomes; no non-final
 reconcile; no prompt/recipe/template change; no taxonomy impl; no allowlist change; no route-key change; no buyer
 surface; no DB migration; no paid calls; no OKF; no cohort.
+
+---
+
+# Asymmetric-Enriched Recipe + Regime Split v1
+
+**slice:** split overloaded enriched into complete/symmetric vs asymmetric; add shadow-only asymmetric recipe
+**status:** complete 2026-06-30 (code+tests shipped, full suite green; shadow_only, NOT allowlisted; not pushed)
+**repos touched:** `dai` (FastAPI prompt routing layer + tests). `dai-vault` (new doc + this entry).
+
+**Start state.** dai clean/synced 0f563d6 (0/0). dai-vault clean/synced 44c0373 (0/0). Synopsis excluded.
+DEFAULT_ALLOWLIST unchanged (4). Manifest 8 templates/9 recipes at start.
+
+**Root evidence.** _starter_state returned enriched if EITHER side had quality, conflating complete (symmetric ->
+recipe assembles) with asymmetric (one side -> enriched recipe's both-sided form slots un-representable ->
+assembly_error, run 260018).
+
+**Split.** New "asymmetric" starter state = both announced, quality for exactly one side. enriched now =
+symmetric (forward). named/missing unchanged. New mlb_starter_state_split(present, home_q, away_q): both->enriched,
+one->asymmetric, neither->named, absent->missing. _starter_state uses it.
+
+**Recipe/template (additive).** NEW template mlb.overlay.starter.asymmetric.v1 (slots: both names+hands +
+enriched_side + enriched_starter_form -- single side-agnostic form, assembles for one-sided shape). NEW recipe
+mlb.pregame.analysis.starter_asymmetric_market_backed_depth.v1 (base + asymmetric overlay + market backed_depth,
+shadow_only). _starter_slots asymmetric branch emits enriched_side + form. Manifest now 9 templates/10 recipes.
+
+**Allowlist.** UNCHANGED (4); asymmetric NOT included (test asserts exact 4-tuple + no "asymmetric"). Effect:
+asymmetric game -> starter_asymmetric_* -> regime_not_allowlisted fallback (policy) instead of assembly_error
+(recipe failure). assembly_error class resolved. Model still gets live bytes (safe, unchanged).
+
+**Tests (TDD).** NEW tests/test_asymmetric_regime_split.py (12: split classification, route+slots, asymmetric
+backed_depth ASSEMBLES cleanly, symmetric/missing unchanged, allowlist unchanged+asymmetric excluded, shadow_only).
+Updated: test_prompt_route_decision (replaced obsolete assembly-failure test with asymmetric->regime_not_allowlisted
++ a genuine assembly_error via partial market depth); test_shadow_validation (asymmetric now assembles->MISMATCH,
+safe, log assertion MISMATCH); test_shadow_cohort_soak (partial still autodetected, reason now "no recipe");
+test_manifest_integrity (8/9->9/10).
+
+**Verification.** pytest full agent-service suite -> 397 passed. check_prompt_manifest -> OK (9 templates, 10
+recipes). No .NET change, no buyer surface, no DB migration, no paid calls.
+
+**Migration.** Forward-only/additive: persisted starter_enriched_* rows keep their string (no rewrite, no DB
+migration); selectedDataRegime free-text + RouteKey derives from any string -> NO contract/route-key change. New
+regime is its own metrics group going forward; legacy enriched bucket = pre-split mixed. STARTER_STATES now 4-tuple.
+
+**Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4). **Code changes.** dai FastAPI only (4 source + 1
+new template; 4 tests updated + 1 new test). **Doc changes.** NEW asymmetric-enriched-recipe-regime-split-v1.md +
+this entry.
+
+**Repo before/after.** dai 0f563d6 -> uncommitted (8 modified + 2 new). dai-vault 44c0373 -> uncommitted (1 new
+doc + this entry). Commit: code + docs, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** Only asymmetric_market_backed_depth has a recipe; asymmetric+missing/backed classify but have
+no recipe (fall back regime_not_allowlisted / fail closed on direct assembly) -- add only if those recur.
+Asymmetric recipe not byte-equal to live -> cannot be allowlisted until a shadow/canary equivalence target is
+defined (deferred). Legacy/new metrics boundary at 2026-06-30. Justification n=1 but deterministic.
+
+**Next slice.** Asymmetric Registry Canary v1 (define shadow/canary equivalence target so the asymmetric recipe
+can be promoted under explicit override). Or Outcome Reconciliation Follow-up v1 once the 20-run backlog settles.
+
+**Discipline.** Additive/forward-only; TDD; shadow_only; no allowlist widening; no route-key change; no buyer
+surface; no .NET change; no DB migration; no rename of persisted regimes; no paid calls; no OKF; no cohort rerun.
