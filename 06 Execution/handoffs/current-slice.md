@@ -11050,3 +11050,57 @@ boundary needs a documented date. missing_market_backed_depth still thin. Point-
 **Discipline.** Design only; no recipe add; no template change; no allowlist widening; no route-key change; no
 paid calls; no reconcile of non-final; no DB migration; no OKF; no cohort; no speculative regimes (rejected
 market_stale/unstable + decision-readiness axis on evidence grounds).
+
+---
+
+# Outcome Reconciliation Follow-up v1 (20-run backlog)
+
+**slice:** check the 20-run live backlog, reconcile only Final games, refresh metrics
+**status:** complete 2026-06-30 (0 Final; 0 reconciled; 20 PENDING -- time-gated; NO code, NO paid calls)
+**repos touched:** `dai-vault` only (new doc + this entry). `dai` UNCHANGED.
+
+**Start state.** dai clean/synced 0f563d6 (0/0). dai-vault clean/synced 2719a45 (0/0). Synopsis excluded.
+DEFAULT_ALLOWLIST unchanged (4). Route fix present. Taxonomy split NOT implemented. devcore-sql up.
+
+**Target runs (20, all provenance-bearing, 0 outcomes at start).** soak keys 260013-260015 (824338, 825066,
+824818). v2 keys 270013-270020 (824907, 824096, 824175, 824984, 823122, 824661, 823528, 822793; all
+enriched_market_backed_depth, directional). targeted keys 270021-270029 (824335, 824416, 824906, 824093, 822884,
+823935 = starter_missing_market_missing null-lean; 823442, 823765, 823119 = enriched_market_missing home-lean).
+
+**Settlement (free StatsAPI gamePk + linescore).** ALL 20 = Scheduled / Preview. NONE Final. 06-30 slate not yet
+started (first pitch 22:36 UTC onward); 824818 = 07-01 future; 07-02 slate future.
+
+**Reconciliation actions.** NONE -- 0 of 20 Final -> 0 eligible. No /reconcile, no per-run /outcome, no fabricated
+outcomes, no future-game reconcile. DB confirms backlog-reconciled = 0; outcomes total still 84.
+
+**Metrics before=after (nothing reconciled).** total 263, reconciled 76, unreconciled 179, matched 47, unmatched
+29, noDecision 8, matchRate 0.618, registry 27, live 1, fallback 1, unknown 235 -- ALL unchanged. Route state
+identical: enriched_backed_depth registry 15/7 + assembly_error 1/1; enriched_market_missing 3/0;
+missing_market_missing 8/0; missing_backed_depth 1/0.
+
+**No-decision.** 9 of 20 are null-lean (3 soak + 6 targeted starter_missing); on settlement they become
+noDecisionRows, not matched/unmatched. 11 directional (8 enriched_backed_depth + 3 enriched_market_missing) will
+yield match rate once Final. This slice changed nothing.
+
+**Fallback route-key.** starter_enriched_market_backed_depth::assembly_error intact (1, src=live), not unknown.
+v1 fix holds.
+
+**Tests/verification.** Free StatsAPI status probe (20 gamePks); DB target-run + route + backlog-reconciled
+queries. No API restart needed (nothing to reconcile). No code -> no suite.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **Code changes.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4).
+**Doc changes.** NEW 06 Execution/outcome-reconciliation-follow-up-v1.md + this entry.
+
+**Repo before/after.** dai 0f563d6 -> 0f563d6 (UNCHANGED). dai-vault 2719a45 -> uncommitted (1 new doc + this
+entry). Commit: docs only, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** Entire 20-run backlog blocked until games played (06-30 settle late 06-30/early 07-01; 824818
+07-01; 07-02 slate 07-02/03). Re-running before settlement again finds 0 Final -- gate on StatsAPI status=Final.
+
+**Next slice.** Continue Outcome Reconciliation Follow-up v1 once games reach Final (primary). Non-blocked
+alternative: Asymmetric-Enriched Recipe + Regime Split v1 (enriched_backed_depth already has 8 reconciled rows;
+split justified by deterministic assembly_error independent of the backlog).
+
+**Discipline.** Reconcile only Final; none were Final -> took no action; no fabricated outcomes; no non-final
+reconcile; no prompt/recipe/template change; no taxonomy impl; no allowlist change; no route-key change; no buyer
+surface; no DB migration; no paid calls; no OKF; no cohort.
