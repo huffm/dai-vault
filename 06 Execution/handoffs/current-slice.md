@@ -11284,3 +11284,56 @@ the final promotion gate before any allowlist change). Alt: Outcome Reconciliati
 
 **Discipline.** TDD; byte-alignment only (no semantic/buyer change); no allowlist widening; no promotion; no
 route-key change; no .NET change; no DB migration; shadow_only preserved; no paid calls; no OKF; no cohort.
+
+---
+
+# Paid Asymmetric Canary v1 (BLOCKED -- no candidate; no paid call)
+
+**slice:** paid live canary for starter_asymmetric_market_backed_depth under override
+**status:** BLOCKED on candidate availability 2026-06-30 (operator-approved HOLD; verification-only; no paid call)
+**repos touched:** `dai-vault` only (new doc + this entry). `dai` UNCHANGED (no code).
+
+**Start state.** dai clean/synced d1fbb33 (0/0). dai-vault clean/synced 34fc2bd (0/0). Synopsis excluded.
+DEFAULT_ALLOWLIST unchanged (4, excl asymmetric). Byte-alignment present. devcore-sql up.
+
+**Blocker.** Paid proof needs a real game classifying starter_asymmetric_market_backed_depth (both starters
+announced, exactly one with 2026 season stats, + backed_depth market). Free StatsAPI scan of 06-30/07-01/07-02/
+07-03 announced slates: ALL announced starters have 2026 stats -> ALL route symmetric enriched; ZERO asymmetric
+pairings. Asymmetric needs an announced no-stats debut starter (rare mid-season, absent here). Conjunction problem:
+backed_depth needs odds posted (~1-day horizon, near slate) but debut starters are likelier on far slates (no odds
+-> market_missing). A paid call now would route enriched/regime_not_allowlisted (invalid proof). Operator chose
+HOLD; no paid call run.
+
+**Route readiness (verified non-paid).** Threshold 1 manifest valid MET, 2 fixture canary MET, 3 byte-equivalence
+MET, 4 override registry-authoritative MET (fixture: promptSource=registry, fallbackReason=null, assembledHash
+64-hex), 5 paid live canary BLOCKED (no candidate), 6 metrics route pending paid run, 7 DEFAULT_ALLOWLIST unchanged
+HELD. Route is code-complete; only the live candidate is missing.
+
+**Exact paid command (identified, NOT executed).** FastAPI with DAI_MLB_REGISTRY_PROMPT_CANARY=1 +
+DAI_MLB_REGISTRY_PROMPT_CANARY_REGIMES=starter_asymmetric_market_backed_depth (override allowlists ONLY asymmetric)
++ prov sink; POST /api/agent-runs one asymmetric game (1 gpt-4o-mini call ~$0.003, no retries); verify registry
+provenance + /artifact schema + no leak + default-still-live + allowlist unchanged.
+
+**Candidate signal.** Both starters announced on a near (odds-posted) slate but exactly one has zero 2026 season
+stats (debut/call-up/spot start). Detect: probablePitcher present both + people/{id}/stats splits for one side only.
+
+**Tests/checks.** check_prompt_manifest OK (9/10). pytest asymmetric+canary+route-decision+registry-contract+
+provenance -> 99 passed. No code changed -> no full suite needed.
+
+**Paid calls.** NONE (none approved/run). **Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4). **Code
+changes.** NONE. **Doc changes.** NEW 06 Execution/paid-asymmetric-canary-v1.md + this entry.
+
+**Repo before/after.** dai d1fbb33 -> d1fbb33 (UNCHANGED). dai-vault 34fc2bd -> uncommitted (1 doc + this entry).
+Commit: docs only, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** Proof gated on a real-world event (debut/no-stats starter on an odds-posted slate) outside our
+control -> event-driven timeline. Alternative (deferred, operator decision): accept the fixture proof (402 tests)
+for gate 5 and promote on fixture+shadow evidence. Route is byte-equal + override-verified -> no code pending.
+
+**Next slice.** Outcome Reconciliation Follow-up v1 (non-blocked standing work -- reconcile the 20-run backlog once
+Final). Re-attempt Paid Asymmetric Canary v1 when a real asymmetric candidate appears (monitor the candidate
+signal). If the wait is unacceptable, operator decision on fixture-based promotion.
+
+**Discipline.** No paid call without a valid candidate (didn't force an invalid one); no allowlist widening; no
+promotion; no code/template/recipe change; no .NET/DB/billing/auth/tenant change; no broadening; surfaced the
+blocker honestly and paused for approval.
