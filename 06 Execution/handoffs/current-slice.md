@@ -11435,3 +11435,60 @@ Return to Outcome Reconciliation Follow-up v4 only once a probe shows >=1 backlo
 
 **Discipline.** Reconcile only Final; none were -> took no action; no fabricated outcomes; no non-final reconcile;
 no prompt/registry change; no allowlist change; no buyer surface; no schema migration; no paid calls; no OKF.
+
+---
+
+# Calibration Metrics Export Download v1
+
+**slice:** read-only export/report of current calibration + per-route metrics (non-time-gated)
+**status:** complete 2026-06-30 (read-only; NO code, NO paid calls, NO reconciliation writes)
+**repos touched:** `dai-vault` only (new export doc + this entry). `dai` UNCHANGED.
+
+**Start state.** dai clean/synced d1fbb33 (0/0). dai-vault clean/synced 635bbef (0/0). Synopsis excluded.
+DEFAULT_ALLOWLIST unchanged (4). devcore-sql up.
+
+**Source.** Authoritative metrics from existing endpoint GET /api/agent-runs/prompt-route-calibration/metrics
+(no separate CSV/rows download endpoint exists) + read-only DB queries for the directional/no-decision split.
+API brought up read-only to call the endpoint, then stopped; no model call.
+
+**Export (summary).** total 263, reconciled 76, unreconciled 179, noDecision 8, unknownRoute 235, matched 47,
+unmatched 29, matchRate 0.6184, registry 27, live 1, fallback 1, avgConfidence 0.6782.
+
+**Routes (6).** unknown 235 (legacy, 41/27, 0.603, conf 0.684); enriched_market_backed_depth registry 15 (7
+recon, 6/1, 0.857, conf 0.750); starter_missing_market_missing 8 (0 recon, conf 0.375); enriched_market_missing
+3 (0 recon, conf 0.675); starter_missing_market_backed_depth 1 (0 recon, conf 0.585); assembly_error fallback 1
+(1 recon, 0/1, src=live, conf 0.750).
+
+**Findings.** Confidence tracks evidence richness (enriched_backed_depth 0.75 > enriched_missing 0.675 >
+missing_backed_depth 0.585 > missing_missing 0.375) -- desired direction, no overconfidence on no-data regimes.
+Only enriched_market_backed_depth has reconciled outcomes (6/1=0.857 + 1 incorrect fallback). Directional split:
+starter present->always directional, starter missing->always no-decision (28/28 provenance runs, 0 exceptions).
+Fallback correctly keyed (not unknown).
+
+**Backlog (20, unchanged).** 11 directional (8 enriched_backed_depth v2 + 3 enriched_missing targeted) + 9
+no-decision (1 missing_backed_depth + 8 missing_missing). 0 Final as of v3.
+
+**Honest limitation.** Confidence-BAND / advised-strength / evidence-sufficiency distributions NOT exposed: the
+endpoint only aggregates per-route averages, and raw artifact OutputJson is nested/versioned (raw JSON_VALUE
+returns null for ~261/263). A small read-only rows-export endpoint (GET .../rows CSV/JSON) would unlock bands;
+deferred (kept slice read-only/lowest-risk).
+
+**Tests/checks.** Endpoint metrics capture (totals cross-checked 27+1+235=263); read-only DB directional split +
+totals (263/84/0). No writes, no code -> no suite.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4). **Code changes.** NONE.
+**Schema/prompts/registry/reconciliation state.** Untouched. **Doc changes.** NEW
+06 Execution/calibration-metrics-export-2026-06-30.md + this entry.
+
+**Repo before/after.** dai d1fbb33 -> d1fbb33 (UNCHANGED). dai-vault 635bbef -> uncommitted (1 doc + this entry).
+Commit: docs only, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** Point-in-time snapshot. Confidence bands need a rows-export endpoint (deferred). Calibration
+rests on one reconciled provenance regime (n=7) until the backlog settles.
+
+**Next slice.** Outcome Reconciliation Follow-up v4 once a probe shows >=1 backlog game Final (06-30 slate soon).
+Else Calibration Rows Export Endpoint v1 (read-only GET .../rows CSV/JSON -> unlocks band/advised-strength
+breakdowns this snapshot couldn't produce).
+
+**Discipline.** Read-only; no reconciliation writes; no prompt/registry change; no allowlist change; no buyer
+surface; no schema migration; no paid calls; no runtime behavior change; no OKF; honest limitation documented.
