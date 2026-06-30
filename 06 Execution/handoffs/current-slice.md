@@ -11337,3 +11337,54 @@ signal). If the wait is unacceptable, operator decision on fixture-based promoti
 **Discipline.** No paid call without a valid candidate (didn't force an invalid one); no allowlist widening; no
 promotion; no code/template/recipe change; no .NET/DB/billing/auth/tenant change; no broadening; surfaced the
 blocker honestly and paused for approval.
+
+---
+
+# Outcome Reconciliation Follow-up v2 (still time-gated)
+
+**slice:** re-attempt reconciliation of the 20-run backlog; reconcile only Final
+**status:** complete 2026-06-30 (0 Final; 0 reconciled; 20 deferred; NO code, NO paid calls)
+**repos touched:** `dai-vault` only (new doc + this entry). `dai` UNCHANGED.
+
+**Start state.** dai clean/synced d1fbb33 (0/0). dai-vault clean/synced f4aba65 (0/0). Synopsis excluded.
+DEFAULT_ALLOWLIST unchanged (4). devcore-sql up.
+
+**Backlog (20, all unreconciled).** DB BacklogReconciled=0; total runs 263, outcomes 84 (unchanged). soak
+260013-260015 (3, starter_missing, null lean); v2 270013-270020 (8, enriched_market_backed_depth, directional);
+targeted 270021-270026 (6, starter_missing_market_missing, null lean) + 270027-270029 (3, enriched_market_missing,
+home lean).
+
+**Settlement (free StatsAPI re-probe).** 0 FINAL. 5 of the 06-30 slate now Pre-Game (824907/824096/824175/823528/
+822793, first pitch imminent, 0-0); 15 Scheduled. Clock advanced slightly vs v1 but nothing reached Final.
+
+**Reconciliation.** NONE -- 0 Final -> 0 eligible. No /reconcile or /outcome; no fabricated outcomes.
+
+**Reviewed 20 / Reconciled 0 / Deferred 20** (reason: not Final). Deferred shape on settlement: 11 directional
+(8 enriched_backed_depth + 3 enriched_market_missing) -> matched/unmatched; 9 no-decision (starter_missing) ->
+noDecisionRows.
+
+**Metrics (unchanged).** total 263, reconciled 76, unreconciled 179, matched 47, unmatched 29, noDecision 8,
+matchRate 0.618, registry 27, live 1, fallback 1. Backlog contributes nothing until it settles.
+
+**Calibration signals.** None assessable -- needs reconciled directional outcomes; backlog produced 0. Deferred.
+
+**Tests/checks.** DB backlog-reconciled + regime/lean + totals queries; free StatsAPI settlement probe (20
+gamePks). No API restart, no code -> no suite.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4). **Code changes.** NONE.
+**Schema.** Untouched. **Prompts/registry.** Untouched. **Doc changes.** NEW
+06 Execution/outcome-reconciliation-follow-up-v2.md + this entry.
+
+**Repo before/after.** dai d1fbb33 -> d1fbb33 (UNCHANGED). dai-vault f4aba65 -> uncommitted (1 doc + this entry).
+Commit: docs only, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** Entire backlog blocked until games played; 06-30 slate at first pitch (Pre-Game), should
+settle within hours; 07-01/07-02 later. Second consecutive time-gated no-op; event-driven. Gate next attempt on
+StatsAPI status=Final.
+
+**Next slice.** Outcome Reconciliation Follow-up v3 (re-run within hours once 06-30 slate Final -> first
+directional calibration read on the v2 runs). Non-time-gated alt: Calibration Metrics Export Download v1
+(pure read/report export of current per-route metrics).
+
+**Discipline.** Reconcile only Final; none were -> took no action; no fabricated outcomes; no non-final reconcile;
+no prompt/registry change; no allowlist change; no buyer surface; no schema migration; no paid calls; no OKF.
