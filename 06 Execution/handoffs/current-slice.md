@@ -10571,3 +10571,63 @@ the batch).
 paid calls only, one model call each; no prompt template/recipe change; no allowlist change; no buyer UX/body/copy;
 no chain-of-thought/prompt-text; no data backfill/reset. Next: Outcome Reconciliation Pass for Live Batch v1 (once
 games settle), or Broad Cohort Rerun Grouped by Prompt Recipe v1, or Calibration Metrics Export Download v1.
+
+---
+
+# Outcome Reconciliation Readiness + Next Slice Recommendation v1
+
+**slice:** outcome reconciliation readiness (reconcile finalized live MLB runs, refresh calibration, recommend next)
+**status:** complete 2026-06-30
+**repos touched:** `dai-vault` only (new readiness doc + this entry). `dai` UNCHANGED.
+
+**Repo/push state.** dai clean `289777f` (0/0). dai-vault clean, prior live-batch commit `4f90861` already pushed
+(0/0) -- no push needed at start. Pre-existing untracked `06 Execution/system-state-synopsis-v1.md` left excluded.
+
+**Services/DB.** devcore-sql was Exited(255) post Docker restart -> `docker start` -> healthy :1433. .NET API built
+(0/0) + run :5215 (Development, dev bypass, tenant 1), /health ok. FastAPI NOT started (platform-only path).
+Migration `20260629174632` present; `PromptRouteProvenanceJson` nullable; 246 runs. DEFAULT_ALLOWLIST unchanged (4).
+
+**Runs checked (11).** Game status verified live vs statsapi schedule (free, non-paid). 8-game 2026-06-29 batch
+(keys 260016-260023) all **Final**. 3 starter-missing soak (260013 Marlins@Rockies 06-30, 260014 Giants@Dbacks
+06-30, 260015 White Sox@Orioles 07-01) all **Scheduled/Preview -> PENDING**.
+
+**Reconciliation.** All via real API guards (direction-integrity + RunEvaluator), no direct-SQL, no fabricated
+scores (scores verbatim from StatsAPI finals). 7 clean games via `/reconcile` -> SingleMatch each. gamePk 824662
+returned **MultipleMatches** (live 260023 + cohort 250030, both non-excluded) -> wrote nothing (matcher refused to
+guess); 260023 then written via explicit per-run `/{id}/outcome`. 3 soak runs untouched.
+
+**Outcomes.** AgentRunOutcomes 76->84 (+8), each with paired evaluation. Batch directional record **6 correct /
+2 incorrect** (incorrect: 260018 Tigers@Yankees, 260022 Reds@Brewers). Soak runs 0 outcomes (pending).
+
+**Metrics.** totalRows=246 (unch). reconciled 68->76, unreconciled 170->162, matched 41->47, unmatched 27->29,
+matchRate 0.6029->0.6184. registry=10/live=1 unchanged. Route enriched_market_backed_depth: 7/7 reconciled,
+matched 6/unmatched 1, matchRate 0.857. unknown route +1 reconciled (260018 live fallback, incorrect). Both
+starter_missing routes still 0 reconciled (soak pending).
+
+**assembly_error follow-up.** 260018 fallbackReason=assembly_error, promptSource=live; ran + reconciled fine
+(incorrect). Attribution leak: no recipe id -> bucketed to `unknown` not its intended
+starter_enriched_market_backed_depth regime, so enriched shows n=7 not 8. Recommend small non-paid Registry
+Assembly Error Diagnostic.
+
+**OKF eval.** D -- defer OKF (calibration thread higher leverage). If a docs slice is wanted, prefer E (tiny
+docs-only front-matter pilot on 5-10 recent execution docs). No full-vault revamp.
+
+**Next slice.** PRIMARY: Registry Assembly Error Diagnostic v1 (non-paid -- why enriched assembly failed for
+260018 + fix the unknown-bucket attribution leak). BACKUP: Outcome Reconciliation Follow-up v1 (non-paid,
+time-gated -- reconcile the 3 soak games once Final).
+
+**Tests/verification.** dotnet build 0/0. End-to-end verified via real endpoints + DB reads (reconcile results,
+84 outcomes, paired evaluations, before/after metrics). No code changed -> no unit suite required.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **Code changes.** NONE. **Doc changes.** NEW
+06 Execution/outcome-reconciliation-readiness-next-slice-2026-06-30.md + this entry.
+
+**Repo before/after.** dai 289777f -> 289777f (UNCHANGED). dai-vault 4f90861 -> uncommitted (1 new doc + this
+entry). Commit: docs only, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** 3 soak runs pending by design. gamePk 824662 cohort run 250030 stays unreconciled and will keep
+yielding MultipleMatches on identity reconcile until excluded/reconciled (out of scope). assembly_error attribution
+leak deferred to diagnostic. API + devcore-sql left up for follow-up.
+
+**Discipline.** Reconciled only Final games; no future-game reconcile; no fabricated outcomes; no prompt/recipe
+change; no allowlist change; no buyer UX/copy/body; no paid calls; no broad rerun; no OKF rewrite.
