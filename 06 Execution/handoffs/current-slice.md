@@ -10693,3 +10693,60 @@ mirror + tests, no contract/DB change). BACKUP: Outcome Reconciliation Follow-up
 **Discipline.** Diagnostic + containment only; no prompt template/recipe change; no allowlist change; no metric
 definition change; no reconciliation rule change; no paid calls; no cohort rerun; no fabricated evidence; no
 chain-of-thought/prompt-text exposure.
+
+---
+
+# Calibration Route Attribution Fix v1
+
+**slice:** fix calibration route key so safe live fallbacks with a known regime get regime::fallbackReason, not unknown
+**status:** complete 2026-06-30 (code + tests shipped, verified on dev data; NOT pushed)
+**repos touched:** `dai` (C# + python route-key impls + tests). `dai-vault` (new doc + this entry).
+
+**Start state.** dai clean/synced 289777f (0/0). dai-vault clean/synced 896b96e (0/0, pushed prior slice).
+Untracked synopsis excluded. DEFAULT_ALLOWLIST unchanged (4). No paid calls.
+
+**Problem.** Route key was recipeId@version::regime, else unknown. A safe live fallback (assembly_error) has null
+recipe/version but a KNOWN selectedDataRegime + fallbackReason, so run 260018 bucketed to unknown, losing its
+intended-regime signal (enriched showed n=7 not 8; fallback's incorrect outcome sat in unknown).
+
+**Route key rule (3-tier).** 1) recipeId+version+regime all present -> recipeId@version::regime (unchanged).
+2) else regime+fallbackReason present -> regime::fallbackReason. 3) else unknown. Trim; null/empty/whitespace =
+missing; promptSource not in key; fallback never treated as registry.
+
+**Code (minimal, no contract/schema change).** PromptRouteCalibrationExport.cs RouteKey() rewritten + Trimmed()
+helper; route_calibration_export.py prompt_route_key() rewritten + _trimmed() helper (python mirror 1:1). Metrics
+aggregator untouched -- it derives registry/live/fallback rows from promptSource/legacyFallbackUsed, not the key,
+so only grouping shifts. No buyer surface, no DB, no provenance contract change.
+
+**Tests (TDD red->green).** NEW PromptRouteKeyFallbackTests.cs (8: registry unchanged, assembly_error->fallback
+key, missing regime->unknown, missing reason->unknown, whitespace->unknown, trimmed, null->unknown, metrics
+groups fallback separately as live not registry). +1 exporter integration test, +1 python mirror test. Existing
+test_live_fallback_row (disabled fallback, regime=None) stays unknown -> still green.
+
+**Tests run.** dotnet test filter PromptRouteCalibration|PromptRouteProvenance|PromptRouteKeyFallback|
+AgentRunsController -> 99 passed (was 90 +9 new). pytest test_route_calibration_export + test_registry_prompt_
+canary + test_prompt_provenance + test_prompt_route_decision -> 78 passed. check_prompt_manifest.py -> OK
+(8 templates, 9 recipes). Had to stop a lingering DevCore.Api (pid 4136, prior slice) that locked the build exe.
+
+**Verification (live dev metrics, tenant 1).** NEW route starter_enriched_market_backed_depth::assembly_error =
+total 1, reconciled 1, matched 0, unmatched 1, src=live, reg=0, live=1, fb=1. UNCHANGED: total 246, reconciled
+76, matched 47, unmatched 29, matchRate 0.618, registry 10, live 1, fallback 1. unknownRouteRows 236->235 (the
+one fallback row left unknown). Only grouping changed.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4). **Code changes.** 5 files
+(C#+python impl, 2 test files, 1 new test file; +88/-11). **Doc changes.** NEW
+06 Execution/calibration-route-attribution-fix-v1.md + this entry.
+
+**Repo before/after.** dai 289777f -> uncommitted (4 modified + 1 new test). dai-vault 896b96e -> uncommitted
+(1 new doc + this entry). Commit: code + docs, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** Fallback keys now appear in routes[]; downstream consumers must read promptSource/
+fallbackReason (already per-row) -- summary counters unchanged so dashboards unaffected. Other fallback reasons
+(mismatch, regime_not_allowlisted) with a known regime now also get a fallback key (intended, widens route list).
+assembly_error detail still not persisted (frozen contract) -- separate future enhancement.
+
+**Next slice.** Outcome Reconciliation Follow-up v1 (non-paid, time-gated -- reconcile 3 soak games once Final).
+
+**Discipline.** Narrow route-attribution change; TDD; no prompt/recipe/regime/allowlist change; no metric
+definition change (only key derivation); no reconciliation/confidence change; no buyer surface; no DB migration;
+no paid calls; no cohort rerun; no OKF.
