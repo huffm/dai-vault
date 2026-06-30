@@ -11388,3 +11388,50 @@ directional calibration read on the v2 runs). Non-time-gated alt: Calibration Me
 
 **Discipline.** Reconcile only Final; none were -> took no action; no fabricated outcomes; no non-final reconcile;
 no prompt/registry change; no allowlist change; no buyer surface; no schema migration; no paid calls; no OKF.
+
+---
+
+# Outcome Reconciliation Follow-up v3 (no-op, still time-gated)
+
+**slice:** re-attempt reconciliation; reconcile only Final
+**status:** complete 2026-06-30 (0 Final; 0 reconciled; 20 deferred; NO code, NO paid calls)
+**repos touched:** `dai-vault` only (new doc + this entry). `dai` UNCHANGED.
+
+**Start state.** dai clean/synced d1fbb33 (0/0). dai-vault clean/synced b6506b8 (0/0). Synopsis excluded.
+DEFAULT_ALLOWLIST unchanged (4). devcore-sql up.
+
+**Settlement (free StatsAPI).** 0 FINAL, 20 pending -- UNCHANGED vs v2: 5 of 06-30 Pre-Game (824907/824096/824175/
+823528/822793), 15 Scheduled (incl 824818 07-01 + nine 07-02). No scores. Clock has not advanced past 06-30
+completion since v2.
+
+**Partition.** Final/eligible 0; non-Final/deferred 20; ambiguous 0.
+
+**Reconciliation.** NONE -- 0 Final. No /reconcile or /outcome; no fabricated outcomes.
+
+**DB before==after.** TotalRuns 263, TotalOutcomes 84, BacklogReconciled 0 (unchanged). Metrics unchanged: recon
+76, unrecon 179, matched 47, unmatched 29, noDecision 8, matchRate 0.618, registry 27, live 1, fallback 1.
+
+**Aggregate.** Reviewed 20 / Final 0 / reconciled 0 / deferred 20 (not Final). Directional matched/unmatched n/a;
+no-decision coverage n/a; accuracy not meaningful. Pending shape: 11 directional (8 enriched_backed_depth + 3
+enriched_market_missing) + 9 no-decision (starter_missing).
+
+**Calibration.** None -- no directional outcome settled. Deferred.
+
+**Tests/checks.** Free StatsAPI probe (20 gamePks); DB before-state (BacklogReconciled=0, totals). No code -> no
+suite.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4). **Code changes.** NONE.
+**Schema/prompts/registry.** Untouched. **Doc changes.** NEW
+06 Execution/outcome-reconciliation-follow-up-v3.md + this entry.
+
+**Repo before/after.** dai d1fbb33 -> d1fbb33 (UNCHANGED). dai-vault b6506b8 -> uncommitted (1 doc + this entry).
+Commit: docs only, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** Third consecutive time-gated no-op; backlog blocked until games complete. Gate next attempt
+strictly on StatsAPI status=Final to avoid another no-op.
+
+**Next slice.** Calibration Metrics Export Download v1 (non-time-gated read/report -- avoids a fourth no-op).
+Return to Outcome Reconciliation Follow-up v4 only once a probe shows >=1 backlog game Final (06-30 slate first).
+
+**Discipline.** Reconcile only Final; none were -> took no action; no fabricated outcomes; no non-final reconcile;
+no prompt/registry change; no allowlist change; no buyer surface; no schema migration; no paid calls; no OKF.
