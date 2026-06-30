@@ -10926,3 +10926,64 @@ Companion: Outcome Reconciliation Follow-up v1 once pending games settle.
 **Discipline.** Discovery only; no paid calls; no POST runs; no reconcile of non-final; no prompt/recipe/template
 change; no allowlist change; no route-key change; no buyer surface; no DB migration; no OKF; no fabricated
 diversity.
+
+---
+
+# Targeted Live Batch Capture v1
+
+**slice:** targeted 9-game paid batch on the L+2 slate to fill thin allowlisted regimes
+**status:** complete 2026-06-30 (9/9 registry-authoritative, both target regimes hit; pending reconciliation)
+**repos touched:** `dai-vault` only (new doc + this entry). `dai` UNCHANGED (no code).
+
+**Start state.** dai clean/synced 0f563d6 (0/0). dai-vault clean/synced 77f8f05 (0/0). Synopsis excluded.
+DEFAULT_ALLOWLIST unchanged (4). Route fix v1 present.
+
+**Services.** devcore-sql up. FastAPI uvicorn :8000 (canary=1, prov sink) ok. .NET :5215 (dev bypass, tenant 1) ok.
+
+**Re-probe (signals unchanged).** statsapi 07-02: 6 candidates still >=1 TBD (starter_missing), 3 still announced.
+Odds horizon still ~1 day (only 06-30 has odds; 0 events for 07-02/03) -> all 9 market_missing. Season-quality
+confirmed: all 6 starters in the 3 announced games have 2026 pitching stats -> enriched (symmetric -> no
+assembly_error). Re-dedupe: all 9 gamePks still new.
+
+**Approval gate.** Presented re-probed table + size + calls + cost (<$0.025) + env + POST flow + verification.
+OPERATOR APPROVED all 9. No paid call before approval.
+
+**Batch (9 completed).** keys 270021-270029. 6 starter_missing_market_missing (824335 Marlins@Rockies, 824416
+WhiteSox@Guardians, 824906 Cardinals@Braves, 824093 Rays@Royals, 822884 Tigers@Rangers, 823935 Padres@Dodgers --
+all null lean / no-decision). 3 starter_enriched_market_missing (823442 Pirates@Phillies, 823765 Reds@Brewers,
+823119 Angels@Mariners -- home leans). gameDate=2026-07-02.
+
+**Expected vs actual.** 9/9 matched predicted regime. Lead-time reachability theory CONFIRMED end-to-end: L+2
+TBD games -> starter_missing_market_missing; L+2 announced games -> starter_enriched_market_missing.
+
+**Provenance.** 9/9 non-null, ALL registry-authoritative (promptSource=registry, recipe ...<regime>.v1@v1,
+fallbackReason null). NO fallback. /artifact verified (e440433e starter_missing_market_missing.v1; f940433e
+starter_enriched_market_missing.v1).
+
+**Metrics before->after.** total 254->263 (+9). unreconciled 170->179 (+9). registry 18->27 (+9). reconciled 76,
+matched 47, unmatched 29, matchRate 0.618, live 1, fallback 1, noDecision 8, unknownRoute 235 -- UNCHANGED.
+TARGET ROUTES: starter_missing_market_missing 2->8 (+6); starter_enriched_market_missing 0->3 (NEW route, first
+rows). Fallback key starter_enriched_market_backed_depth::assembly_error still 1 (correct, unchanged).
+
+**Paid calls.** 9 gpt-4o-mini, 1 completed analysis per run (log: 9 analysis responses + 9 routing decisions,
+0 retries). Est <$0.025.
+
+**Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4). **Code changes.** NONE. **Doc changes.** NEW
+06 Execution/targeted-live-batch-capture-v1.md + this entry.
+
+**Pending reconciliation.** All 9 on 07-02 slate (not Final), 0 outcomes, ExclusionReason null -> PENDING. 6 are
+no-decision (null lean) -> route coverage but no directional match rate; 3 have leans. 20 live runs now pending
+(3 soak + 8 v2 + 9 targeted).
+
+**Repo before/after.** dai 0f563d6 -> 0f563d6 (UNCHANGED). dai-vault 77f8f05 -> uncommitted (1 new doc + this
+entry). Commit: docs only, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** 6/9 no-decision (coverage, not win-rate). Future-dated artifacts unusual but valid, reconcile
+by gamePk. Reconciliation backlog now 20. starter_missing_market_backed_depth still thin (1).
+
+**Next slice.** Outcome Reconciliation Follow-up v1 (non-paid, time-gated) -- settle the 20 pending runs; convert
+coverage into performance evidence; prerequisite for allowlist-promotion.
+
+**Discipline.** Paid only after explicit approval; signals re-probed before paid; no forcing a candidate into a
+regime after signals changed; no reconcile of non-final; no prompt/recipe/template change; no allowlist change;
+no route-key change; no buyer surface; no DB migration; no OKF; no cohort rerun; no fabricated diversity.
