@@ -11164,3 +11164,65 @@ can be promoted under explicit override). Or Outcome Reconciliation Follow-up v1
 
 **Discipline.** Additive/forward-only; TDD; shadow_only; no allowlist widening; no route-key change; no buyer
 surface; no .NET change; no DB migration; no rename of persisted regimes; no paid calls; no OKF; no cohort rerun.
+
+---
+
+# Asymmetric Registry Canary v1
+
+**slice:** non-paid canary/shadow validation of starter_asymmetric_market_backed_depth; define promotion threshold
+**status:** complete 2026-06-30 (tests-only verification; promotion blocker identified; not pushed)
+**repos touched:** `dai` (1 test file). `dai-vault` (new doc + this entry). No production code change.
+
+**Start state.** dai clean/synced a65fa19 (0/0). dai-vault clean/synced cf56dd2 (0/0). Synopsis excluded.
+Manifest 9/10. asymmetric recipe/template/regime/state present. DEFAULT_ALLOWLIST unchanged (4, excl asymmetric).
+
+**Override mechanism.** RegistryPromptCanaryConfig(regimes=...) or env DAI_MLB_REGISTRY_PROMPT_CANARY_REGIMES
+overrides the allowlist without touching DEFAULT_ALLOWLIST -- a non-default regime can be canaried deliberately.
+
+**Default route (verified).** asymmetric backed_depth, canary on, default allowlist -> promptSource=live,
+regime=starter_asymmetric_market_backed_depth, regimeAllowlisted=false, fallbackReason=regime_not_allowlisted,
+recipe null. Fails closed BY POLICY (assembles, but not allowlisted) -- better than the old assembly_error.
+
+**Override route (verified, KEY FINDING).** override allowlists asymmetric -> recipe assembles + compared to
+live, but shadow render is NOT byte-identical to the live asymmetric rendering -> fallbackReason=mismatch,
+promptSource=live, regimeAllowlisted=true, recipe+version populated, assembledHash NULL. NOT registry-
+authoritative. Cause: live renders one-sided form inline between starter lines; registry overlay renders it after
+both lines with different wording -> same evidence, different bytes.
+
+**Assembly (verified).** assemble_recipe_for_migration -> asymmetric recipe, no PromptAssemblyError. Symmetric
+enriched still registry-authoritative under default (unchanged).
+
+**Canary Q&A.** 1 classifier selects it: yes. 2 assembles: yes. 3 default fails closed by policy: yes. 4 override
+registry-authoritative: NO (mismatch, byte-equivalence fails). 5 provenance under override: recipe+version yes,
+hash no. 6 byte vs schema equiv: canary requires BYTE-equivalence (cardinal invariant); asymmetric overlay not
+byte-equal -> the blocker; recommend aligning overlay to live bytes, NOT relaxing to schema-equiv. 8 first paid
+proof: live-scheduled. 9 candidate signal: both starters announced but exactly one has 2026 season stats.
+
+**Promotion threshold.** (1) manifest valid -- met. (2) non-paid fixture canary passes -- met. (3) byte-
+equivalence resolved (overlay bytes == live asymmetric bytes) -- NOT met, the gating blocker. (4) override
+registry-authoritative run -- blocked on 3. (5) >=1 paid live canary on a real asymmetric game (schema unchanged,
+buyer-safe, provenance correct, no assembly_error). (6) metrics route appears separately. (7) allowlist unchanged
+until all met. Position: 1-2 done, 3 blocks.
+
+**Paid asymmetric canary ready?** NO -- byte-equivalence unresolved means an override paid run routes mismatch
+(proves nothing about registry-authoritative). Align overlay first, then paid-canary.
+
+**Tests.** 3 new canary tests in test_asymmetric_regime_split.py (default->regime_not_allowlisted; override->
+mismatch not registry-authoritative; symmetric->registry-authoritative). Full suite 400 passed. Manifest OK (9/10).
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4). **Code changes.** dai: 1 test
+file only (no production code). **Doc changes.** NEW asymmetric-registry-canary-v1.md + this entry.
+
+**Repo before/after.** dai a65fa19 -> uncommitted (1 test file). dai-vault cf56dd2 -> uncommitted (1 doc + this
+entry). Commit: test + docs, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** Byte-equivalence is the promotion blocker (needs an overlay byte-alignment prompt slice).
+Relaxing to schema-equivalence would weaken the cardinal byte invariant (not recommended). asymmetric+missing/
+backed remain recipe-less. n=1 justification (deterministic).
+
+**Next slice.** Asymmetric Overlay Byte-Alignment v1 (non-paid -- align overlay bytes to live so override routes
+registry-authoritative; unblocks promotion). Paid Asymmetric Canary v1 is PREMATURE until then. Non-blocked
+standing alt: Outcome Reconciliation Follow-up v1 once the 20-run backlog settles.
+
+**Discipline.** Verification only; no allowlist widening; no prompt/recipe/template/classifier change; no route-key
+change; no buyer surface; no .NET change; no DB migration; no paid calls; no OKF; no cohort.
