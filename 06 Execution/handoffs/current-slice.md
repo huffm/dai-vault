@@ -10987,3 +10987,66 @@ coverage into performance evidence; prerequisite for allowlist-promotion.
 **Discipline.** Paid only after explicit approval; signals re-probed before paid; no forcing a candidate into a
 regime after signals changed; no reconcile of non-final; no prompt/recipe/template change; no allowlist change;
 no route-key change; no buyer surface; no DB migration; no OKF; no cohort rerun; no fabricated diversity.
+
+---
+
+# Evidence Regime Taxonomy + Recipe Expansion Plan v1
+
+**slice:** assess/refine the 9-regime taxonomy + define recipe expansion plan from live evidence
+**status:** complete 2026-06-30 (design/planning only; NO code, NO paid calls)
+**repos touched:** `dai-vault` only (new doc + this entry). `dai` UNCHANGED.
+
+**Start state.** dai clean/synced 0f563d6 (0/0). dai-vault clean/synced 3808505 (0/0). Synopsis excluded.
+DEFAULT_ALLOWLIST unchanged (4). Manifest 8 templates / 9 recipes (check OK).
+
+**Evidence (28 provenance rows).** enriched_market_backed_depth registry 15 (0 null-lean, 7 reconciled) + live
+assembly_error 1; enriched_market_missing registry 3 (0 null-lean); missing_market_backed_depth 1 (1 null-lean);
+missing_market_missing 8 (8 null-lean).
+
+**Key findings.** (1) NO-DECISION SPLIT: starter_enriched_* 0/19 null-lean (always a lean); starter_missing_*
+9/9 null-lean (always abstain). Starter presence drives the decision, market doesn't. starter_missing =
+abstention-expected class (coverage/abstention value, not win rate). (2) ENRICHED OVERLOADED: classifier returns
+enriched if EITHER side has quality, conflating complete (both, symmetric -> recipe assembles) vs asymmetric
+(one side -> enriched recipe's both-sided slots un-representable -> assembly_error, run 260018).
+
+**Decisions vs proposals.** A starter-quality split: ACCEPT partial -> split enriched into starter_complete (=
+current recipe) + starter_asymmetric (NEW, needs partial-enriched recipe); keep named+missing. B market_stale/
+unstable: REJECT (no evidence). C decision-readiness axis: REJECT as routes (starter_missing already predicts
+no-decision) -> ACCEPT as an abstention_expected label only. D fallback refinement: ALREADY DONE
+(regime::fallbackReason live). Recipes: ADD partial/asymmetric-enriched (deferred to impl, start backed_depth);
+keep complete-enriched + enriched_market_missing; defer named-tier + missing_market_backed; missing_market_missing
+abstention recipe already correct (optional prompt-policy review).
+
+**Q&A highlights.** Too coarse? only enriched. Overloaded? starter_enriched_*. Expand before/after backlog?
+AFTER (20 unreconciled, 8 reconciled). Min threshold? new recipe needs >=1 real failure OR materially different
+evidence (asymmetric clears it); allowlist promotion needs ~10-15 reconciled directional rows (abstention regimes
+gated on coverage). No-decision = normal artifact + insufficiency signal via existing noDecisionRows, not a new
+route.
+
+**Migration.** Forward-only/additive: classifier gains asymmetric branch -> new regime string; legacy
+enriched_* rows keep their string (no DB migration, no rewrite); selectedDataRegime is free-text + RouteKey
+derives from any string -> NO contract/route-key change. Document the split boundary date.
+
+**Impact.** registry +1 template +1-3 recipes (manifest bump); DEFAULT_ALLOWLIST unchanged now (add asymmetric
+only after shadow proof + threshold); provenance/metrics/exports unchanged mechanism (new route appears, fallback
+route shrinks as asymmetric routes clean); add abstention_expected label for starter_missing.
+
+**Next slice.** Outcome Reconciliation Follow-up v1 FIRST (settle 20-run backlog), THEN Asymmetric-Enriched
+Recipe + Regime Split v1 (code: asymmetric overlay+recipe+classifier branch+shadow/canary+tests; verify
+assembly_error becomes a clean registry route). No allowlist widening until shadow-proven.
+
+**Tests/verification.** check_prompt_manifest.py OK; source-verified classifier + RouteKey; DB per-regime +
+no-decision query; docs cross-check. No code -> no suite.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **Code changes.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4).
+**Doc changes.** NEW 06 Execution/evidence-regime-taxonomy-recipe-expansion-plan-v1.md + this entry.
+
+**Repo before/after.** dai 0f563d6 -> 0f563d6 (UNCHANGED). dai-vault 3808505 -> uncommitted (1 new doc + this
+entry). Commit: docs only, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** Asymmetric split rests on n=1 fallback (but deterministic from recipe). Legacy/new enriched
+boundary needs a documented date. missing_market_backed_depth still thin. Point-in-time (28 rows, 8 reconciled).
+
+**Discipline.** Design only; no recipe add; no template change; no allowlist widening; no route-key change; no
+paid calls; no reconcile of non-final; no DB migration; no OKF; no cohort; no speculative regimes (rejected
+market_stale/unstable + decision-readiness axis on evidence grounds).
