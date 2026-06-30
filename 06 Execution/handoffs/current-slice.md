@@ -10631,3 +10631,65 @@ leak deferred to diagnostic. API + devcore-sql left up for follow-up.
 
 **Discipline.** Reconciled only Final games; no future-game reconcile; no fabricated outcomes; no prompt/recipe
 change; no allowlist change; no buyer UX/copy/body; no paid calls; no broad rerun; no OKF rewrite.
+
+---
+
+# Registry Assembly Error Diagnostic v1
+
+**slice:** root-cause the assembly_error fail-closed on live batch run 260018 (Tigers@Yankees)
+**status:** complete 2026-06-30 (diagnostic only; NO code change)
+**repos touched:** `dai-vault` only (new diagnostic doc + this entry). `dai` UNCHANGED.
+
+**Start state.** dai clean/synced 289777f (0/0). dai-vault clean/synced d6b475c (0/0, pushed prior slice).
+Untracked synopsis excluded. DEFAULT_ALLOWLIST unchanged (4). No paid calls.
+
+**260018 evidence.** RunId 36bd433e, Tigers@Yankees gamePk 823529, completed, lean=home, reconciled away_win 7-3
+-> incorrect. InputJson only teams+date (103 chars); ErrorMessage NULL; OutputJson 6722 (normal live artifact).
+Provenance: promptSource=live, legacyFallbackUsed=true, regimeAllowlisted=true, fallbackReason=assembly_error,
+selectedDataRegime=starter_enriched_market_backed_depth (RETAINED), recipeId/version/assembledHash all null.
+
+**Root cause.** Partial-evidence / overlay-coverage edge at the regime-classification vs recipe-slot boundary.
+Classifier labels the game starter_enriched (both starters announced), but the enriched registry recipe needs
+complete SYMMETRIC starter-quality slots; one-sided/partial starter quality -> slots un-representable ->
+_render_template raises PromptAssemblyError (builder.py:62-90) -> canary catches (builder.py:108) -> fail closed
+to live (registry_prompt_canary.py:112). Live is free-form so it tolerates the asymmetry. Deterministic, not a
+registry defect, not byte-equiv strictness (that's the separate `mismatch` reason), not transient. Exactly the
+shape encoded by existing test test_select_assembly_failure_falls_back ("one-sided starter quality ... assembly
+fails").
+
+**Reproducible?** Category YES (already covered by that test). Exact 260018 instance NO -- starter/market context
+not persisted, ErrorMessage null, request-capture was off, no batch logs; the PromptAssemblyError detail was
+logged at runtime only and is gone.
+
+**Code changed?** NO. Fail-closed is correct + tested; buyer run completed + reconciled. No defect to fix.
+
+**Attribution leak decision.** Recommend Option C, DEFER implementation. The attribution data already exists
+(selectedDataRegime + fallbackReason persisted); the loss is purely in metrics RouteKey
+(PromptRouteCalibrationExport.RouteKey returns recipe@version::regime only when ALL THREE present, else unknown).
+Option C = emit {selectedDataRegime}::{fallbackReason} (e.g. starter_enriched_market_backed_depth::assembly_error)
+for fallback runs with a known regime -> keeps promptSource=live honest, recovers calibration attribution, NO
+contract/DB change. Rejected A (keep unknown -> loses recoverable signal) and B (add attempted recipe/version --
+those genuinely don't exist pre-assembly; regime alone suffices). Deferred to its own scoped slice because it
+changes live-endpoint grouping semantics. Secondary (also deferred): persist the assembly_error detail (today
+PromptRouteDecision is frozen/forbid, so the failing slot is logged but never stored).
+
+**Tests run.** pytest test_registry_prompt_canary + test_migration_readiness -> 28 passed. dotnet test filter
+PromptRouteProvenance|PromptRouteCalibration|AgentRunsController -> 90 passed. No code changed.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **Code changes.** NONE. **Doc changes.** NEW
+06 Execution/registry-assembly-error-diagnostic-v1.md + this entry.
+
+**Repo before/after.** dai 289777f -> 289777f (UNCHANGED). dai-vault d6b475c -> uncommitted (1 new doc + this
+entry). Commit: docs only, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** Exact 260018 slot unrecoverable (input not persisted) -> future cases opaque until detail is
+persisted. Attribution leak persists until Option C lands. Partial/asymmetric enriched evidence keeps failing
+closed to live -> such games never exercise the registry path; a partial-evidence-heavy live cohort will
+under-represent registry-authoritative coverage -- note before scaling cohorts.
+
+**Next slice.** PRIMARY: Calibration Route Attribution Fix v1 (Option C -- minimal RouteKey change C#+python
+mirror + tests, no contract/DB change). BACKUP: Outcome Reconciliation Follow-up v1 (non-paid, time-gated).
+
+**Discipline.** Diagnostic + containment only; no prompt template/recipe change; no allowlist change; no metric
+definition change; no reconciliation rule change; no paid calls; no cohort rerun; no fabricated evidence; no
+chain-of-thought/prompt-text exposure.
