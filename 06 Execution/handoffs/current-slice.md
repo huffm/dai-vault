@@ -11226,3 +11226,61 @@ standing alt: Outcome Reconciliation Follow-up v1 once the 20-run backlog settle
 
 **Discipline.** Verification only; no allowlist widening; no prompt/recipe/template/classifier change; no route-key
 change; no buyer surface; no .NET change; no DB migration; no paid calls; no OKF; no cohort.
+
+---
+
+# Asymmetric Overlay Byte-Alignment v1
+
+**slice:** align registry asymmetric overlay bytes to live so override routes registry-authoritative (not mismatch)
+**status:** complete 2026-06-30 (byte-equivalence achieved; full suite green; not pushed)
+**repos touched:** `dai` (FastAPI overlay+slots+tests). `dai-vault` (new doc + this entry).
+
+**Start state.** dai clean/synced 2614f08 (0/0). dai-vault clean/synced 8b5b50d (0/0). Synopsis excluded.
+Manifest 9/10. DEFAULT_ALLOWLIST unchanged (4, excl asymmetric).
+
+**Root cause (byte diff).** asymmetric render diverged from live in the starter block: live renders the form line
+inline after the relevant starter ("home starter season form: X") with the live instruction; the old overlay put
+it after both starters with different wording + a different instruction. 1122 vs 1058 chars.
+
+**Change.** Restructured the asymmetric overlay to mirror live exactly via per-side inline form BLOCKS:
+home/away_form_block = "\n{side} starter season form: <q>" (grounded side) or "" (other), filled by _starter_slots
+using the SAME format_pitcher_quality formatter; trailing instruction = the live enriched instruction. Slots
+changed enriched_side/enriched_starter_form -> home_form_block/away_form_block; sha256 recomputed in manifest.
+Template count unchanged (9/10). No semantic/buyer change (it IS the live wording).
+
+**Before/after.** registry render == live: no(1122/1058) -> YES (byte-identical, both home-only and away-only).
+default canary: regime_not_allowlisted (unchanged). override: mismatch -> REGISTRY-AUTHORITATIVE
+(promptSource=registry, legacyFallbackUsed=false, fallbackReason=null, assembledHash 64-hex). shadow validation:
+mismatch/not-captured -> matched + captured.
+
+**Tests.** test_asymmetric_regime_split: slot assertions -> form_block; replaced override-mismatch test with
+test_canary_override_asymmetric_is_registry_authoritative; added parametrized byte-equivalence test (home-only +
+away-only); assembly-text assertion -> live wording. test_shadow_validation: one-sided case now matches+captures
+(was mismatch) -> renamed test_enabled_asymmetric_one_sided_quality_matches_and_captures. Default/symmetric/
+allowlist/shadow_only tests retained.
+
+**Verification.** dry-run render_recipe==build_mlb_user_message TRUE (both orientations). pytest full suite 402
+passed. manifest OK (9/10, new sha256). recipe still shadow_only. DEFAULT_ALLOWLIST unchanged. symmetric enriched
+unchanged. No .NET/buyer change. No paid calls.
+
+**Promotion status.** Threshold: (1) manifest valid MET. (2) fixture canary MET. (3) byte-equivalence NOW MET.
+(4) override registry-authoritative NOW MET. (5) >=1 paid live canary -- remaining gate. (6) metrics route --
+pending paid run. (7) allowlist unchanged until all met -- HELD. Route now promotable; only paid live proof left.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4). **Code changes.** dai FastAPI:
+overlay template + manifest + migration_readiness slot derivation + 2 test files. **Doc changes.** NEW
+asymmetric-overlay-byte-alignment-v1.md + this entry.
+
+**Repo before/after.** dai 2614f08 -> uncommitted (5 files). dai-vault 8b5b50d -> uncommitted (1 doc + this
+entry). Commit: code + docs, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** Byte-equivalence now coupled to the live renderer's exact wording (migration-readiness equiv
+tests guard drift). Only backed_depth asymmetric is aligned; missing/backed remain recipe-less. Route is byte-
+equal but still not allowlisted -> default unchanged; promotion needs paid proof + explicit allowlist change.
+
+**Next slice.** Paid Asymmetric Canary v1 (NOW READY -- override routes registry-authoritative; run one controlled
+paid analysis on a real asymmetric game under override, prove registry provenance + buyer-safe + metrics route,
+the final promotion gate before any allowlist change). Alt: Outcome Reconciliation Follow-up v1 once backlog Final.
+
+**Discipline.** TDD; byte-alignment only (no semantic/buyer change); no allowlist widening; no promotion; no
+route-key change; no .NET change; no DB migration; shadow_only preserved; no paid calls; no OKF; no cohort.
