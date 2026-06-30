@@ -10515,3 +10515,59 @@ migration still pending on deploy. Canary stays DEFAULT OFF normally (was env-en
 calls only, one model call each; no prompt template/recipe change; no allowlist change; no buyer UX/body/copy; no
 chain-of-thought/prompt-text exposed; no data backfill/reset. Next: Broad Cohort Rerun Grouped by Prompt Recipe
 v1, or Calibration Metrics Export Download v1, or outcome reconciliation for these routes once games settle.
+
+## Live Batch + Settlement Reconciliation Gate v1 -- complete 2026-06-29 (prior soak PENDING reconcile; 8-game live batch run + verified)
+
+**What.** (1) Reconciliation gate on the 3 prior live-soak runs -> all games still Scheduled/Preview (future),
+0 outcomes -> PENDING, not reconciled (no fabrication). (2) Operator-approved 8-game live MLB batch through the
+real .NET -> FastAPI path; provenance persisted + verified. No code change; docs-only commit.
+
+**Push closeout.** Prior live-soak doc commit (dai-vault ba22e71) already pushed last turn; confirmed on origin,
+clean/synced. No push needed this slice start.
+
+**Services.** devcore-sql up; brought up FastAPI (uvicorn :8000, canary on) + .NET API (:5007); health ok;
+stopped both after batch (canary env dropped); devcore-sql left up.
+
+**Reconciliation gate.** RUN1/2/3 (gamePks 824338/825066/824818) all status=Scheduled/Preview, 0 AgentRunOutcome,
+exclusion=null -> NOT eligible (future). Documented PENDING; no reconcile, no fabricated outcomes.
+
+**Live schedule probe.** 2026-06-29: 13 games, all both-announced (0 TBD) -> batch exercises enriched regimes.
+
+**Paid batch.** Approved 8 runs. 8 paid gpt-4o-mini calls (one per run, no retries -- agent log: 8 analysis
+responses + 8 routing decisions). Approx <$0.02. All status=completed.
+
+**Run evidence.** All 8 derived starter_enriched_market_backed_depth. 7/8 registry-authoritative
+(promptSource=registry, regAuth=true, legacyFB=false, fallback=null, recipe ...backed_depth.v1@v1). 1 (RUN3
+36bd433e Tigers@Yankees) hit the SAFE FAIL-CLOSED fallback: promptSource=live, legacyFB=true,
+fallbackReason=assembly_error (registry recipe couldn't assemble byte-identically for that game's partial
+evidence -> fell back to live prompt; run completed normally). Working as designed.
+
+**Persistence.** dev-SQL: 8/8 prov_not_null (registry x7, live x1). /artifact returns promptRouteProvenance for
+each.
+
+**Metrics.** totalRows=246 (238+8), registryRows=10 (3 prior soak + 7 new), liveRows=1. Route
+starter_enriched_market_backed_depth: total=7/registry=7. Live-fallback run -> promptRouteKey "unknown" (null
+recipe), correct.
+
+**Tests.** Pre-paid: build 0 errors; targeted PromptRouteProvenance|PromptRouteCalibration|AgentRunsController ->
+90 passed; manifest OK. Post-paid: DB + /artifact + metrics verification. No code changed.
+
+**Buyer-facing impact.** None. SportsAnalysisResponse unchanged. DEFAULT_ALLOWLIST unchanged (4). No
+chain-of-thought exposed.
+
+**Code changes.** NONE. **Doc changes.** NEW 06 Execution/live-batch-and-settlement-reconciliation-gate-v1.md +
+this entry.
+
+**Repo before/after.** dai 289777f -> 289777f (UNCHANGED). dai-vault ba22e71 -> uncommitted (1 new doc + this
+entry). Pre-existing untracked synopsis untouched. Commit: docs only, pending. Push: NOT performed (awaiting
+instruction).
+
+**Risks/deferred.** 3 prior soak runs + the 8 batch runs all unreconciled (future/in-progress games) -> match-rate
+later. RUN3 assembly_error worth an overlay-coverage diagnostic (not a defect). enriched_market_missing not
+exercised this batch. Staging/prod migration pending on deploy. Canary DEFAULT OFF normally (env-enabled only for
+the batch).
+
+**Discipline.** Reconciliation gated on settlement (no future-game reconcile, no fabricated outcomes); 8 approved
+paid calls only, one model call each; no prompt template/recipe change; no allowlist change; no buyer UX/body/copy;
+no chain-of-thought/prompt-text; no data backfill/reset. Next: Outcome Reconciliation Pass for Live Batch v1 (once
+games settle), or Broad Cohort Rerun Grouped by Prompt Recipe v1, or Calibration Metrics Export Download v1.
