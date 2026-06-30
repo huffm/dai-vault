@@ -10866,3 +10866,63 @@ enriched_market_missing may be unreachable from natural slates. 11+3 pending set
 **Discipline.** Analysis only; no prompt/recipe/template change; no allowlist change; no route-key change; no
 buyer surface; no DB migration; no paid calls; no reconciliation of non-final games; no OKF; no cohort rerun; no
 fabricated diversity.
+
+---
+
+# Regime Discovery + Candidate Selection v1
+
+**slice:** design+dry-run candidate discovery to target thin/unexercised allowlisted regimes
+**status:** complete 2026-06-30 (discovery only; NO code, NO paid calls, NO runs)
+**repos touched:** `dai-vault` only (new doc + this entry). `dai` UNCHANGED.
+
+**Start state.** dai clean/synced 0f563d6 (0/0). dai-vault clean/synced 2c133e8 (0/0). Synopsis excluded.
+DEFAULT_ALLOWLIST unchanged (4). Coverage matrix v1 present.
+
+**Pre-run signals (source-verified).** starter_missing = >=1 TBD probablePitcher (MlbStarterClient.cs:216 returns
+null context if home OR away pitcher null). enriched = both announced + >=1 has season-form quality; named = both
+announced, no stats; asymmetric quality = enriched-but-breaks-recipe = assembly_error predictor. market_missing =
+no odds event; backed_depth = bookCount>=2 AND consensusSide; backed = market, no depth (NOT allowlisted).
+
+**Probe findings (free).** Starter TBD density by lead: 06-30 (L0) 15 games/1 TBD; 07-01 (L1) 14/1; 07-02 (L2)
+9/6. Odds horizon (the-odds-api events, free) = ~1 day: only 06-30 slate has odds; NO 07-02 odds posted. KEY
+INSIGHT: the two horizons differ, so thin regimes are reachable by probing the FUTURE slate before odds post --
+L2 announced game -> enriched_market_missing; L2 TBD game -> starter_missing_market_missing. Same-day never sees
+these. enriched_market_missing IS reachable (3 announced 07-02 games, no odds now), not purely artificial.
+
+**Dedupe.** All 9 of 07-02 candidates new (0 runs). Today/tomorrow only TBD games (825066, 824818) already
+captured. gamePk is dedupe key.
+
+**Candidate table (NEXT batch, NOT run).** P1 starter_missing_market_missing: 824335 Marlins@Rockies, 824416
+WhiteSox@Guardians, 824906 Cardinals@Braves, 824093 Rays@Royals, 822884 Tigers@Rangers, 823935 Padres@Dodgers
+(all 07-02, >=1 TBD, odds unposted). P1 enriched_market_missing*: 823442 Pirates@Phillies, 823765 Reds@Brewers,
+823119 Angels@Mariners (07-02 announced, no odds) -- *needs season-quality confirm else named_market_missing
+(not allowlisted). starter_missing_market_backed_depth = watch-later (narrow L1 window, none clean now). Run on
+06-30 while 07-02 odds unposted.
+
+**Discovery Qs.** 1 TBD pitcher. 2 no odds event. 3 bookCount>=2+consensus. 4 same-day enriched always has odds.
+5 reachable via L2 future slate. 6 too same-day not too-late-in-day. 7 two+ days ahead. 8 dedupe ok by gamePk,
+flag re-capture. 9 yes reserve thin-regime slots + control filler. 10 v2 gate format + WAIT.
+
+**Script.** NONE added. Manual method documented (schedule probe L2-L3 -> TBD; odds-events probe -> coverage;
+dedupe gamePk). Tiny read-only discover_regime_candidates.py JUSTIFIED but DEFERRED to the capture slice (build
+where it runs; avoid overbuild before method proven).
+
+**Tests/verification.** check_prompt_manifest.py prior OK; free StatsAPI 3-day probe; odds events probe; DB
+dedupe query; source-verified MlbStarterClient + classifier. No code -> no suite.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **Code changes.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4).
+**Doc changes.** NEW 06 Execution/regime-discovery-candidate-selection-v1.md + this entry.
+
+**Repo before/after.** dai 0f563d6 -> 0f563d6 (UNCHANGED). dai-vault 2c133e8 -> uncommitted (1 new doc + this
+entry). Commit: docs only, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** enriched-vs-named for the 3 announced unconfirmed (needs stats probe). Market state
+timing-sensitive (run before odds post). Future-dated capture = ~2-day-out artifact, valid, reconciles by gamePk.
+starter_missing_market_backed_depth hard to target now. Point-in-time snapshot.
+
+**Next slice.** Targeted Live Batch Capture v1 (paid, gated -- run the candidate table to fill thin regimes).
+Companion: Outcome Reconciliation Follow-up v1 once pending games settle.
+
+**Discipline.** Discovery only; no paid calls; no POST runs; no reconcile of non-final; no prompt/recipe/template
+change; no allowlist change; no route-key change; no buyer surface; no DB migration; no OKF; no fabricated
+diversity.
