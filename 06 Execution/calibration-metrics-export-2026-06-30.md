@@ -1,3 +1,24 @@
+---
+title: "Calibration Metrics Export -- 2026-06-30 (snapshot)"
+type: "export"
+date: "2026-06-30"
+status: "complete"
+project: "DAI"
+slice: "Calibration Metrics Export Download v1"
+repos:
+  dai: "unchanged"
+  dai-vault: "docs-only"
+tags:
+  - calibration
+  - metrics
+  - export
+  - vault
+related:
+  - "06 Execution/prompt-routing-coverage-matrix-v1.md"
+  - "06 Execution/outcome-reconciliation-follow-up-v3.md"
+  - "06 Execution/okf-yaml-front-matter-pattern-v1.md"
+---
+
 # Calibration Metrics Export -- 2026-06-30 (snapshot)
 
 **status:** complete (read-only export/report; no code, no paid calls, no reconciliation writes)

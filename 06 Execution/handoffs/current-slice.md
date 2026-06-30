@@ -11492,3 +11492,53 @@ breakdowns this snapshot couldn't produce).
 
 **Discipline.** Read-only; no reconciliation writes; no prompt/registry change; no allowlist change; no buyer
 surface; no schema migration; no paid calls; no runtime behavior change; no OKF; honest limitation documented.
+
+---
+
+# OKF YAML Front Matter Pattern v1
+
+**slice:** define + apply a minimal YAML front matter pattern for DAI execution docs
+**status:** complete 2026-06-30 (docs-only; NO code, NO paid calls)
+**repos touched:** `dai-vault` only (new pattern doc + 1 sample front-mattered + this entry). `dai` UNCHANGED.
+
+**Start state.** dai clean/synced d1fbb33 (0/0). dai-vault clean/synced 57db94e (0/0). Synopsis excluded. Vault
+had NO existing YAML front matter (the `---` matches are mid-doc horizontal rules; execution docs use
+`# Title` + bold **status:**/**date:**). Obsidian parses YAML front matter natively -> no new tooling.
+
+**Schema (9 fields).** title, type, date, status, project, slice, repos{dai,dai-vault}, tags[], related[].
+Small advisory allowed-value sets: type (evidence-report / execution-pattern / diagnostic / export / plan /
+reconciliation); status (complete / in-progress / blocked / no-op / superseded); repos.* (unchanged / docs-only /
+code / code+docs / tests-only). tags free-form lowercase; related = vault-relative paths; dates absolute.
+
+**Field rationale.** title+slice+status = handoff retrieval; status+date = status tracking; type+repos+tags =
+slice comparison; related+tags = prompt/context assembly; whole block machine-readable -> future automated
+exports/index.
+
+**Sample applied (small).** 2 docs: NEW okf-yaml-front-matter-pattern-v1.md (type=execution-pattern, front matter
+on itself) + calibration-metrics-export-2026-06-30.md (type=export, prepended, body preserved). current-slice.md
+intentionally NOT front-mattered (it is a 11k-line rolling append-log, not one doc -> a single top block would
+mislead). No older docs retrofitted (33 execution docs left as-is).
+
+**Adoption rule.** New execution docs SHOULD include the block; existing docs updated opportunistically only when
+already edited -- never a mass retrofit. Keep to the 9 fields.
+
+**Validation.** Both front matter blocks parse as valid YAML (python yaml.safe_load) with all 9 fields present ->
+ALL OK.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4). **Code/prompts/registry/DB
+schema/reconciliation state.** Untouched (dai HEAD unchanged d1fbb33). **Doc changes.** NEW pattern doc + 1 sample
+front-mattered + this entry.
+
+**Repo before/after.** dai d1fbb33 -> d1fbb33 (UNCHANGED). dai-vault 57db94e -> uncommitted (1 new doc + 1 edited
+sample + this entry). Commit: docs only, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** Front matter advisory, not enforced (no linter) -> can drift; acceptable at this scale, a
+tiny read-only validator could be added later. A future vault index/export tool could read these blocks (slice
+catalog / status board / dependency graph) -- deferred.
+
+**Next slice.** If >=1 backlog game Final: Outcome Reconciliation Follow-up v4 + Calibration Delta v1. Else
+Calibration Rows Export Endpoint v1 (read-only GET .../rows -> row-level confidence/advised-strength/evidence-
+sufficiency).
+
+**Discipline.** Docs-only; small sample (no mass retrofit, no large taxonomy); preserved doc bodies; no code/
+prompt/allowlist/buyer/schema/runtime change; no paid calls; synopsis left excluded.
