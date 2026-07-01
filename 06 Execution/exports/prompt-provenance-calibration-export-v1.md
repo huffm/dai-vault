@@ -1,3 +1,22 @@
+---
+title: "Prompt Provenance Calibration Export v1"
+type: "export"
+date: "2026-06-29"
+status: "complete"
+project: "DAI"
+slice: "Prompt Provenance Calibration Export v1"
+repos:
+  dai: "code+docs"
+  dai-vault: "docs-only"
+tags:
+  - provenance
+  - calibration
+  - metrics
+related:
+  - "06 Execution/exports/platform-side-prompt-provenance-calibration-export-v1.md"
+  - "06 Execution/prompt-provenance-read-model-exposure-v1.md"
+---
+
 # Prompt Provenance Calibration Export v1
 
 **status:** active doctrine (calibration export joins route provenance + optional artifact dump; JSON/CSV)

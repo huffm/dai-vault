@@ -11915,3 +11915,57 @@ exports -> exports/; or reports batch).
 **Discipline.** grep-first before+after; only approved 5-file series moved; git mv preserves history; 9-field
 front matter with type==folder; status reflects each doc's real outcome (no-op vs complete); tags normalized to
 controlled vocab; minimal 1-line link updates; rolling log untouched; YAML validated; docs-only; no paid calls.
+
+# OKF Backfill Batch v3
+
+**slice:** migrate the calibration export-machinery docs into 06 Execution/exports/
+**status:** complete 2026-07-01 (docs-only; 3 files moved via git mv; 0 external link edits; not pushed at write time)
+**repos touched:** `dai` unchanged (`b2f9771`). `dai-vault` (3 renames + this entry).
+
+**Gate probe (free StatsAPI, no paid call).** 824818 White Sox @ Orioles (07-01): detailed=In Progress,
+abstract=Live, score away 1 / home 0 -- **NOT Final** (game started but unfinished) -> per the gate, continued
+with Batch v3. Follow-up v6 becomes viable once it reaches Final (likely soon).
+
+**Start state.** dai clean/synced b2f9771 (0/0). dai-vault clean/synced b8f0b1e (0/0, v1+v2 pushed). Synopsis
+excluded. DEFAULT_ALLOWLIST unchanged (4). No paid calls.
+
+**Batch selection (2-5).** 3 genuine export-family docs (all "active doctrine", 2026-06-29, all shipped dai code):
+calibration-outcome-metrics-by-prompt-route-v1 (metrics calculator), platform-side-prompt-provenance-calibration-
+export-v1 (C# exporter), prompt-provenance-calibration-export-v1 (python exporter). EXCLUDED
+thin-tenant-scoped-calibration-metrics-endpoint-v1 -- it is an endpoint-building slice (report-type, matching the
+calibration-rows-export-endpoint precedent), not an export.
+
+**Grep-first (before + after).** Inbound refs are Obsidian wikilinks `[[basename]]` (in apply-agentrun-migration,
+thin-tenant-endpoint, dotnet-agentrun-persistence, and the moved docs' own Related lines). Wikilinks resolve by
+basename regardless of folder, so they SURVIVE the move -> 0 link edits needed. NO vault-relative `related:` YAML
+paths pointed to these 3 files. Left (history/descriptive): okf-vault-taxonomy-plan table, current-slice.md history.
+
+**Moves (git mv).** the 3 docs -> 06 Execution/exports/.
+
+**Front matter.** all 3 got NEW 9-field OKF blocks: type: export; status: complete (active-doctrine slices, work
+shipped); repos.dai: code+docs (each shipped C#/python code) + dai-vault docs-only; tags from controlled vocab
+(calibration/metrics/provenance/outcome as appropriate); related: to sibling exports (new exports/ paths) +
+adjacent provenance docs. Existing prose "Related: [[...]]" wikilink lines preserved in body. All 3 validated with
+pyyaml (9 fields, type==folder).
+
+**Link/reference updates.** NONE required (wikilinks basename-resolved). Historical references intentionally left:
+okf-vault-taxonomy-plan inventory table + current-slice.md rolling history.
+
+**Validation.** pyyaml OK for all 3 (9 fields, type export). grep-after: no stale vault-relative related: paths;
+wikilinks intact. git status: exactly 3 renames (RM) + untracked synopsis; NO other files. dai HEAD unchanged.
+
+**Paid calls.** NONE (StatsAPI probe is free). **Buyer-facing.** NONE. **Files moved.** 3 (approved batch only).
+**Code/prompts/DEFAULT_ALLOWLIST/buyer copy/routes/DB schema/reconciliation.** Untouched (docs-only).
+
+**Repo before/after.** dai b2f9771 -> unchanged. dai-vault b8f0b1e -> uncommitted (3 renames + this entry) then
+committed. Push: per instruction.
+
+**Risks/deferred.** ~22 top-level exec docs still unmigrated. Export bucket now: calibration-metrics-export +
+these 3 = 4 in exports/; thin-tenant-endpoint stays a report candidate. 824818 now Live -> v6 imminent.
+
+**Next slice.** If 824818 Final -> Outcome Reconciliation Follow-up v6 (per-run 28bd433e, NOT identity reconcile).
+Else -> OKF Backfill Batch v4 (reports batch, e.g. asymmetric-*/capture/persistence slices -> reports/).
+
+**Discipline.** gate-probe first; grep-first before+after; only approved 3 export docs moved; endpoint slice
+excluded (honest type); git mv preserves history; 9-field front matter type==folder, repos accurate (code+docs);
+wikilinks need no edits; rolling log untouched; YAML validated; docs-only; no paid calls.

@@ -1,3 +1,22 @@
+---
+title: "Platform-Side Prompt Provenance Calibration Export v1"
+type: "export"
+date: "2026-06-29"
+status: "complete"
+project: "DAI"
+slice: "Platform-Side Prompt Provenance Calibration Export v1"
+repos:
+  dai: "code+docs"
+  dai-vault: "docs-only"
+tags:
+  - provenance
+  - calibration
+  - metrics
+related:
+  - "06 Execution/exports/prompt-provenance-calibration-export-v1.md"
+  - "06 Execution/dotnet-agentrun-prompt-provenance-persistence-v1.md"
+---
+
 # Platform-Side Prompt Provenance Calibration Export v1
 
 **status:** active doctrine (calibration export can now read durable AgentRun provenance; JSONL path retained)

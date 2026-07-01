@@ -1,3 +1,23 @@
+---
+title: "Calibration Outcome Metrics by Prompt Route v1"
+type: "export"
+date: "2026-06-29"
+status: "complete"
+project: "DAI"
+slice: "Calibration Outcome Metrics by Prompt Route v1"
+repos:
+  dai: "code+docs"
+  dai-vault: "docs-only"
+tags:
+  - calibration
+  - metrics
+  - provenance
+  - outcome
+related:
+  - "06 Execution/exports/platform-side-prompt-provenance-calibration-export-v1.md"
+  - "06 Execution/exports/prompt-provenance-calibration-export-v1.md"
+---
+
 # Calibration Outcome Metrics by Prompt Route v1
 
 **status:** active doctrine (pure metrics calculator over platform-side calibration rows; no endpoint yet)
