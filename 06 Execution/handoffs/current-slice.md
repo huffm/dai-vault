@@ -11760,3 +11760,59 @@ fallbackDetail value appears on the next live registry assembly_error.
 **Discipline.** brainstorming+spec+plan gates honored; TDD red/green per task; additive nullable field; no
 migration; no paid calls; no prompt/allowlist/buyer/reconciliation change; metrics byte-identical proof; grounded
 plan deviation recorded; OKF front matter on new docs; ADR for the platform decision.
+
+# OKF Vault Taxonomy Plan v1
+
+**slice:** design a small OKF folder/type/tag taxonomy for the vault; plan-only, no migration
+**status:** complete 2026-07-01 (docs-only; 1 new plan doc + this entry; no files moved; not pushed at write time)
+**repos touched:** `dai` unchanged (`b2f9771`). `dai-vault` (1 new doc + this entry).
+
+**Start state.** dai clean/synced b2f9771 (0/0). dai-vault clean/synced a132264 (0/0). Synopsis excluded.
+DEFAULT_ALLOWLIST unchanged (4). No paid calls.
+
+**Inventory (read-only).** 06 Execution: 38 top-level docs (6 front-mattered) + 7 existing subfolders
+(backlog, handoffs, launch-checklists, prompting, roadmap, skills, weekly-plans). 02 Platform/decisions: 5 ADRs
+(0001-0005). Shapes: ~15 reports, ~7 reconciliations, ~5 exports, ~3 plans, ~3 patterns/doctrine, ~2 diagnostics,
+1 state synopsis, 1 rolling handoff log.
+
+**Taxonomy.** front matter `type` is the authoritative classifier, mapping 1:1 to a folder under 06 Execution/:
+reports (evidence-report), exports (export), reconciliations (reconciliation), diagnostics (diagnostic), plans
+(plan), patterns (execution-pattern), handoffs (rolling log). ADRs stay in 02 Platform/decisions with 000N
+numbering. Because type is authoritative, tooling keys on the field not the path -> docs are classified before any
+move (resolves "give folders" vs "don't move files").
+
+**Folder-vs-tag rule.** Folder = exactly one = primary TYPE/lifecycle ("what kind?"). Tags = zero+ = cross-cutting
+TOPIC ("what about?"). One type/folder, 2-5 tags typical; never a topic-as-folder or type-as-tag.
+
+**Tag vocab (controlled ~12).** calibration, reconciliation, prompt-registry, provenance, metrics, outcome,
+source-depth, buyer-safety, observability, provisioning, okf, diagnostic. New tags added to the plan doc's table
+before use.
+
+**Adoption rules.** new docs born in the right type-folder w/ full 9-field front matter; old docs moved/updated
+ONLY when already touched (no mass retrofit); large moves = separate OKF Backfill Batch v* slice in 2-5 file
+batches with grep-first inbound-link updates; rolling current-slice.md never front-mattered/reorganized; ADRs keep
+000N + may add OKF-compatible metadata.
+
+**Recommended first migration batch (NOT executed).** 3 files, 3 folders: registry-assembly-error-diagnostic-v1
+-> diagnostics/; calibration-metrics-export-2026-06-30 -> exports/; evidence-regime-taxonomy-recipe-expansion-plan-v1
+-> plans/. Each with enumerated inbound-link updates. Batch 2: outcome-reconciliation-follow-up-v1..v5 ->
+reconciliations/.
+
+**Validation.** Front matter YAML parsed with pyyaml (this doc type=plan + 3 existing docs) -> valid. git status
+shows only the new plan doc + this handoff append; NO renames/deletes/moves.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **Files moved.** NONE. **Code/prompts/DEFAULT_ALLOWLIST/buyer
+copy/routes/DB schema/reconciliation.** Untouched (docs-only; dai HEAD unchanged b2f9771).
+
+**Repo before/after.** dai b2f9771 -> unchanged. dai-vault a132264 -> uncommitted (1 doc + this entry). Commit:
+docs-only, pending. Push: per instruction.
+
+**Risks/deferred.** Advisory (no linter); physical migration deferred to OKF Backfill Batch v*; moves will break
+related:/wikilinks unless grep-first rule followed.
+
+**Next slice.** If 824818 (07-01) Final -> Outcome Reconciliation Follow-up v6 (per-run 28bd433e, NOT identity
+reconcile). Else -> OKF Backfill Batch v1 on the 3-file first batch.
+
+**Discipline.** audit-before-acting (read pattern + inventory before proposing); plan-only (no migration); small
+obvious taxonomy; type-as-authoritative resolves folder-vs-move tension; rolling log untouched; YAML validated;
+docs-only; OKF front matter on the new doc.
