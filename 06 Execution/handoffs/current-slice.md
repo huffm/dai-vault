@@ -11655,3 +11655,56 @@ Assembly Error Diagnostic v1.
 **Discipline.** Read-only probe; reconcile only Final; scores verbatim; collision pre-check before writes; per-run
 fallback for MultipleMatches; no paid calls; no prompt/schema/allowlist/buyer change; gate-honest calibration read;
 OKF front matter on new docs.
+
+# Outcome Reconciliation Follow-up v5 (no-op, still time-gated)
+
+**slice:** probe the 10 remaining backlog games; reconcile only Final
+**status:** complete no-op 2026-07-01 (0 Final; 0 reconciled; 10 deferred; docs-only; not pushed at write time)
+**repos touched:** `dai` unchanged (`1a2ddf2`, no code). `dai-vault` (1 new doc + this entry).
+
+**Start state.** dai clean/synced 1a2ddf2 (0/0). dai-vault clean/synced 34e79e3 (0/0), v4 commit present+pushed.
+Synopsis excluded. DEFAULT_ALLOWLIST unchanged (4). API up :5007 (/health ok) + devcore-sql :1433 (left from v4).
+
+**Probe.** Free StatsAPI schedule (10 remaining gamePks): 0 Final, 10 non-Final. 824818 (07-01) Scheduled/Preview
+(first pitch not reached); nine 07-02 games (824335,824416,824906,824093,822884,823935,823442,823765,823119) all
+Scheduled/Preview future. No scores posted. No paid call.
+
+**Partition.** Final/eligible 0. Non-Final/deferred 10. Ambiguous 0 (all resolved to known gamePk + clear
+non-Final status).
+
+**Reconcile.** NONE (0 Final -> 0 eligible). No /reconcile, no per-run /outcome. No outcome inferred from score
+(no game Final). Non-Final left untouched.
+
+**824818 collision (pre-checked, not acted on).** /rows confirms 2 active runs: non-backlog 3ade423e + backlog
+28bd433e, both lean-null. When Final -> per-run /{28bd433e}/outcome (NOT identity /reconcile), mirrors 825066 v4.
+
+**Metrics before==after (no writes).** totalRows 263, reconciledRows 84, unreconciled 169, noDecisionRows 10,
+matched 51, unmatched 33, matchRate 0.6071, total outcomes 94, registry 27, live 1, fallback 1. /rows returned
+263; 10 remaining gamePks = 11 active rows (824818 x2), all outcomeStatus null. Both endpoints functional.
+
+**Delta.** All zero (no settlement). No per-route/regime movement. No calibration read (nothing settled).
+
+**Pending shape on settle (unchanged from v4).** 3 targeted enriched_market_missing (823442,823765,823119, all
+lean home) = first directional read on that route when Final; 824818 + six starter_missing_market_missing settle
+as noDecisionRows.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4). **Schema/prompts/registry/
+model prompts.** Untouched. **Doc changes.** NEW (OKF front-mattered) outcome-reconciliation-follow-up-v5.md +
+this entry.
+
+**Repo before/after.** dai 1a2ddf2 -> unchanged. dai-vault 34e79e3 -> uncommitted (1 doc + this entry). Commit:
+docs-only, pending. Push: per instruction.
+
+**Tests/checks.** Free StatsAPI probe (10 gamePks); read-only /metrics + /rows before/after (identical); 824818
+collision re-check. No code changed -> no test suite required.
+
+**Risks/deferred.** Time-gated no-op; backlog blocked until games complete (824818 in Preview; 07-02 future).
+824818 needs per-run 28bd433e (do NOT identity-reconcile). Gate next attempt on StatsAPI Final. API + devcore-sql
+left running.
+
+**Next slice.** Outcome Reconciliation Follow-up v6 once 824818 (07-01) Final (per-run 28bd433e), then 07-02
+games as they finalize (first enriched_market_missing directional read). Non-time-gated alt: Registry Assembly
+Error Diagnostic v1.
+
+**Discipline.** Read-only probe; reconcile only Final; no score-inference on non-Final; collision pre-check; no
+paid calls; no prompt/schema/allowlist/buyer change; before==after proof; OKF front matter on new doc.
