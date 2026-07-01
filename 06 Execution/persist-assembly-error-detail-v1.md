@@ -16,7 +16,7 @@ tags:
   - tdd
 related:
   - "06 Execution/diagnostics/registry-assembly-error-diagnostic-v1.md"
-  - "06 Execution/calibration-route-attribution-fix-v1.md"
+  - "06 Execution/reports/calibration-route-attribution-fix-v1.md"
   - "02 Platform/decisions/0005-persist-assembly-error-detail.md"
 ---
 

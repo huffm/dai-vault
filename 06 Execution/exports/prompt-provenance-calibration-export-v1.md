@@ -14,7 +14,7 @@ tags:
   - metrics
 related:
   - "06 Execution/exports/platform-side-prompt-provenance-calibration-export-v1.md"
-  - "06 Execution/prompt-provenance-read-model-exposure-v1.md"
+  - "06 Execution/reports/prompt-provenance-read-model-exposure-v1.md"
 ---
 
 # Prompt Provenance Calibration Export v1

@@ -1,3 +1,22 @@
+---
+title: "Phase 3.2 Global Prompt Routing Hardening v1"
+type: "evidence-report"
+date: "2026-06-29"
+status: "complete"
+project: "DAI"
+slice: "Phase 3.2 Global Prompt Routing Hardening v1"
+repos:
+  dai: "code+docs"
+  dai-vault: "docs-only"
+tags:
+  - provenance
+  - prompt-registry
+  - observability
+related:
+  - "06 Execution/reports/prompt-provenance-read-model-exposure-v1.md"
+  - "06 Execution/reports/dotnet-agentrun-prompt-provenance-persistence-v1.md"
+---
+
 # Phase 3.2 Global Prompt Routing Hardening v1
 
 **status:** active doctrine (shipped + verified; DEFAULT OFF; no real canary execution this slice)

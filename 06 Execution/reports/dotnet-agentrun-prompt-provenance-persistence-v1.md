@@ -1,3 +1,22 @@
+---
+title: ".NET AgentRun Prompt Provenance Persistence v1"
+type: "evidence-report"
+date: "2026-06-29"
+status: "complete"
+project: "DAI"
+slice: ".NET AgentRun Prompt Provenance Persistence v1"
+repos:
+  dai: "code+docs"
+  dai-vault: "docs-only"
+tags:
+  - provenance
+  - metrics
+  - observability
+related:
+  - "06 Execution/reports/prompt-provenance-read-model-exposure-v1.md"
+  - "06 Execution/reports/phase-3-2-global-prompt-routing-hardening-v1.md"
+---
+
 # .NET AgentRun Prompt Provenance Persistence v1
 
 **status:** active doctrine (route provenance captured from the analyzer header, persisted on the AgentRun row, exposed read-only)

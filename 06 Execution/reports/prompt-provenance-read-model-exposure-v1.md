@@ -1,3 +1,22 @@
+---
+title: "Prompt Provenance Read-Model Exposure v1"
+type: "evidence-report"
+date: "2026-06-29"
+status: "complete"
+project: "DAI"
+slice: "Prompt Provenance Read-Model Exposure v1"
+repos:
+  dai: "code+docs"
+  dai-vault: "docs-only"
+tags:
+  - provenance
+  - observability
+  - metrics
+related:
+  - "06 Execution/reports/phase-3-2-global-prompt-routing-hardening-v1.md"
+  - "06 Execution/reports/dotnet-agentrun-prompt-provenance-persistence-v1.md"
+---
+
 # Prompt Provenance Read-Model Exposure v1
 
 **status:** active doctrine (live-path route provenance projected, exposed via response header, env-gated persist)

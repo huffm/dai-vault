@@ -11969,3 +11969,57 @@ Else -> OKF Backfill Batch v4 (reports batch, e.g. asymmetric-*/capture/persiste
 **Discipline.** gate-probe first; grep-first before+after; only approved 3 export docs moved; endpoint slice
 excluded (honest type); git mv preserves history; 9-field front matter type==folder, repos accurate (code+docs);
 wikilinks need no edits; rolling log untouched; YAML validated; docs-only; no paid calls.
+
+# OKF Backfill Batch v4
+
+**slice:** migrate the prompt-routing/provenance evidence-report cluster into 06 Execution/reports/
+**status:** complete 2026-07-01 (docs-only; 4 files moved via git mv; 5 inbound ref updates; not pushed at write time)
+**repos touched:** `dai` unchanged (`b2f9771`). `dai-vault` (4 renames + 5 one-line ref edits + this entry).
+
+**Start state.** dai clean/synced b2f9771 (0/0). dai-vault clean/synced c1c1362 (0/0, v1/v2/v3 pushed). Synopsis
+excluded. DEFAULT_ALLOWLIST unchanged (4). No paid calls. Reconciliation NOT run (event-gated; 824818 not Final).
+
+**Batch selection (2-5).** 4 high-value provenance/routing evidence-reports, all shipped-code slices (2026-06-29/30):
+phase-3-2-global-prompt-routing-hardening-v1 (origin of PromptRouteDecision), prompt-provenance-read-model-exposure-v1
+(header read-model), dotnet-agentrun-prompt-provenance-persistence-v1 (.NET persistence), calibration-route-attribution-fix-v1
+(RouteKey 3-tier fix). Excluded: plans/exports/reconciliations/diagnostics/patterns/rolling-log/state and the
+endpoint-slice reports (thin-tenant-endpoint, calibration-rows-export-endpoint) -- deferred to a later reports batch.
+
+**Grep-first (before+after).** Vault-relative related:/pointer paths to update (5): calibration-route-attribution-fix
+<- diagnostics/registry-assembly-error-diagnostic-v1 (related:), persist-assembly-error-detail-v1 (related:), ADR
+0005 (references pointer); dotnet-...-persistence <- exports/platform-side-prompt-provenance-calibration-export-v1
+(related:); read-model-exposure <- exports/prompt-provenance-calibration-export-v1 (related:). All updated to
+reports/ paths. Wikilinks [[basename]] (default-allowlist-widening, starter-missing-confirmation, apply-migration,
+thin-endpoint, moved docs' own Related lines, etc.) resolve by basename -> untouched.
+
+**Moves (git mv).** the 4 docs -> 06 Execution/reports/.
+
+**Front matter.** all 4 got NEW 9-field OKF blocks: type: evidence-report; status: complete; repos.dai: code+docs
+(each shipped C#/python code); tags controlled vocab (provenance + prompt-registry/observability/calibration/metrics
+as appropriate); related: intra-cluster using new reports/ paths + adjacent diagnostics/persist docs. Existing prose
+"Related: [[...]]" wikilink lines preserved. All 4 validated with pyyaml (9 fields, type==folder).
+
+**Link/reference updates (5, one line each).** diagnostics/registry-assembly related:, persist-assembly related:,
+ADR 0005 references, exports/platform-side related:, exports/prompt-provenance related: -> reports/ paths.
+
+**Historical references intentionally left.** okf-vault-taxonomy-plan-v1 batch table; plans/evidence-regime prose
+list; all current-slice.md handoff history (rolling log).
+
+**Validation.** pyyaml OK for all 4. grep-after: no stale vault-relative related: paths; wikilinks intact. git
+status: exactly 4 renames (RM) + 5 M (1 line each) + untracked synopsis; NO other files. dai HEAD unchanged.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **Files moved.** 4 (approved batch only). **Code/prompts/
+DEFAULT_ALLOWLIST/buyer copy/routes/DB schema/reconciliation.** Untouched (docs-only).
+
+**Repo before/after.** dai b2f9771 -> unchanged. dai-vault c1c1362 -> uncommitted (4 renames + 5 edits + this entry)
+then committed. Push: per instruction.
+
+**Risks/deferred.** ~18 top-level exec docs still unmigrated (asymmetric-*/capture/allowlist/canary reports; the two
+endpoint-slice reports; patterns; readiness/gate reconciliation docs). reports/ now holds 4.
+
+**Next slice.** If 824818 Final -> Outcome Reconciliation Follow-up v6 (per-run 28bd433e, NOT identity reconcile).
+Else -> OKF Backfill Batch v5 (next reports batch: asymmetric-*/live-batch-capture/default-allowlist-widening -> reports/).
+
+**Discipline.** grep-first before+after; only approved 4-file batch moved; endpoint/plan/pattern docs excluded
+(honest type); git mv preserves history; 9-field front matter type==folder, repos accurate (code+docs); wikilinks
+need no edits; related: paths updated; rolling log untouched; YAML validated; docs-only; no paid calls; no reconciliation.

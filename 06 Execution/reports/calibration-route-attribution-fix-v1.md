@@ -1,3 +1,22 @@
+---
+title: "Calibration Route Attribution Fix v1"
+type: "evidence-report"
+date: "2026-06-30"
+status: "complete"
+project: "DAI"
+slice: "Calibration Route Attribution Fix v1"
+repos:
+  dai: "code+docs"
+  dai-vault: "docs-only"
+tags:
+  - provenance
+  - calibration
+  - metrics
+related:
+  - "06 Execution/diagnostics/registry-assembly-error-diagnostic-v1.md"
+  - "06 Execution/persist-assembly-error-detail-v1.md"
+---
+
 # Calibration Route Attribution Fix v1 -- Evidence Report
 
 **status:** complete (code + tests shipped; verified on dev data; not pushed)

@@ -14,7 +14,7 @@ tags:
   - metrics
 related:
   - "06 Execution/exports/prompt-provenance-calibration-export-v1.md"
-  - "06 Execution/dotnet-agentrun-prompt-provenance-persistence-v1.md"
+  - "06 Execution/reports/dotnet-agentrun-prompt-provenance-persistence-v1.md"
 ---
 
 # Platform-Side Prompt Provenance Calibration Export v1
