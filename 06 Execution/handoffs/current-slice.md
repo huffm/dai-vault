@@ -12120,3 +12120,46 @@ Else -> OKF Backfill Batch v7 (remaining reports + the patterns/ + endpoint repo
 **Discipline.** grep-first before+after; only approved 5-file batch moved; git mv preserves history; 9-field front
 matter type==folder, status + repos accurate per doc; justified free tag (capture) only where warranted;
 wikilinks/rolling-log untouched; YAML validated; docs-only; no paid calls; no reconciliation.
+
+# Outcome Reconciliation Follow-up v6
+
+**slice:** reconcile the now-Final 824818 backlog run via per-run /outcome (collision-safe)
+**status:** complete 2026-07-01 (docs-only vault; 1 backlog run reconciled via DB/API; not pushed at write time)
+**repos touched:** `dai` unchanged (`b2f9771`). `dai-vault` (1 new reconciliation doc + this entry).
+
+**Gate probe (free StatsAPI).** 824818 White Sox @ Orioles (07-01): Game Over / Final, away 1 / home 6 ->
+home_win. >=1 backlog Final -> proceed.
+
+**Collision handling.** 824818 has 2 active runs (3ade423e non-backlog + 28bd433e backlog soak, both lean-null)
+-> identity /reconcile would MultipleMatches. Reconciled ONLY 28bd433e via per-run POST /{id}/outcome (home_win
+6-1, source statsapi_final). Identity /reconcile NOT used. 0 integrity 422s.
+
+**Non-backlog untouched (verified).** /rows after: 3ade423e outcome=null (UNTOUCHED); 28bd433e outcome=home_win,
+resultSide=home. no-decision (starter_missing, lean null) -> noDecisionRow.
+
+**Metrics delta.** total outcomes 94->95 (+1). noDecisionRows 10->11 (+1). reconciledRows(dir) 84 (0), matched 51
+(0), unmatched 33 (0), matchRate 0.6071 (unchanged -- no-decision = no directional movement). registry/live/fb
+27/1/1. Route starter_missing_market_missing noDecision 1->2.
+
+**Backlog.** 11 of 20 reconciled (10 v4 + 1 v6); 9 pending (nine 07-02 targeted; 3 of them enriched_market_missing
+directional = first directional read on that route once Final).
+
+**Calibration.** None new (no-decision run = abstention coverage only). Calibration Delta v1 unchanged.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4). **Prompts/registry/DB schema/
+model prompts.** Untouched. **Doc changes.** NEW (OKF front-mattered, born in reconciliations/)
+outcome-reconciliation-follow-up-v6.md + this entry.
+
+**Repo before/after.** dai b2f9771 -> unchanged. dai-vault (OKF v6 aeacc98) -> uncommitted (1 doc + this entry)
+then committed. Push: per instruction.
+
+**Risks/deferred.** 9 backlog runs pending (07-02); re-check collisions before each settle. 3ade423e stays
+MultipleMatches for 824818 until excluded. API + devcore-sql left running.
+
+**Next slice.** Outcome Reconciliation Follow-up v7 once any 07-02 game Final (identity /reconcile for
+SingleMatch, per-run for collisions; the 3 enriched_market_missing runs are highest-value). Non-time-gated alt:
+OKF Backfill Batch v7.
+
+**Discipline.** free probe; per-run for MultipleMatches (NOT identity); scores verbatim; non-backlog left
+untouched (verified); before/after metrics; no paid calls; no prompt/schema/allowlist/buyer change; new doc born
+in the correct OKF type-folder.
