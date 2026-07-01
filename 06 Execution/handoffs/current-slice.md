@@ -12222,3 +12222,56 @@ are paid, PAUSE for explicit approval. Reconciliation Follow-up v7 stays event-g
 **Discipline.** grep-first before+after; only clearly-classifiable docs moved (ambiguous not forced); synopsis
 untouched; git mv preserves history; 9-field front matter type==folder; controlled tags + justified free tags;
 rolling log untouched; YAML validated; docs-only; no paid calls/game runs/reconciliation writes.
+
+# Calibration Result Review v1
+
+**slice:** principal-engineer review of the reconciled calibration evidence before any paid capture
+**status:** complete 2026-07-01 (analysis-only, docs-only; no writes; not pushed at write time)
+**repos touched:** `dai` unchanged (`b2f9771`). `dai-vault` (1 new calibration review doc + this entry).
+
+**Data sources.** Read-only /metrics + /rows (:5007) -- cross-check matched known values EXACTLY (total outcomes
+95, noDecisionRows 11, directional reconciledRows 84, matched/unmatched 51/33, matchRate 0.6071; enriched route
+15/15, 10/5, 0.667, confM 0.745 < confU 0.760). Committed calibration/reconciliation docs. No data written.
+
+**Sample analyzed.** 95 reconciled = 84 directional + 11 no-decision. Provenance-bearing directional = 16
+(enriched_market_backed_depth: 15 registry + 1 assembly_error), 2 slates (06-29 6/2=0.75; v4 06-30 4/4=0.50;
+combined 10/6=0.625, registry 0.667). enriched_market_missing directional = 0 (pending 07-02). 68 legacy
+unknown-route directional dominate the aggregate matchRate (backdrop only). No-decision 11 (3 provenance
+starter_missing lean-null + 8 legacy) all excluded from matchRate.
+
+**Key findings.** Confidence NON-predictive/non-monotonic in-sample (0.70->1.00, 0.75->0.375, 0.80->0.75; confU>confM).
+analyzerConfidence==confidence on ALL 16 registry rows (no shrink) vs ~0.9x shrink on legacy rows (asymmetry).
+evidenceRichness constant=2 (no variance to test). advertisedStrength uniform High. home-lean 0.556 < away-lean
+0.714; 4/6 misses leaned-home-away-won. starter_missing no-decision caution working as intended.
+
+**Hypotheses.** SUPPORTED: confidence not-yet-predictive; starter_missing caution as-intended; aConf==conf
+registry observation. PLAUSIBLE-UNPROVEN: home-lean bias, enriched overconfidence, prompt/source-depth needs,
+aConf==conf being a defect. IMPOSSIBLE-TO-ASSESS: market-following (no market field), evidenceRichness
+insufficiency (no variance). None refuted -- sample too small.
+
+**Primary recommendation.** Decision Option 1 -- NO system change yet; gather more settled data. n=16 on one route,
+n<=8/confidence-bucket, n=0 enriched_market_missing -> any change tunes noise. Free highest-value step: settle the
+9 pending 07-02 games (Follow-up v7), esp. the 3 enriched_market_missing directional. Adopt docs-only stance:
+confidence = coherence score, not empirical win probability, until discrimination shown. Min threshold before any
+confidence/strength/prompt change: >=3 pooled settled slates + >=1 enriched_market_missing directional + usable
+per-bucket n + market-disagreement n>1.
+
+**Explicit non-actions.** REJECTED: model swap, DEFAULT_ALLOWLIST change, buyer claim. DEFERRED: prompt change,
+advertised-strength change, confidence tuning, source strategy change, paid cohort capture.
+
+**Paid calls.** 0. **Game runs.** 0. **Reconciliation writes.** 0. **Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.**
+Unchanged (4). **Code/prompts/DB schema/model.** Untouched.
+
+**Repo before/after.** dai b2f9771 -> unchanged. dai-vault a826a7f -> uncommitted (1 doc + this entry) then
+committed. Push: per instruction. **Doc:** NEW 04 Products/sports-v1/calibration/calibration-result-review-v1.md
+(OKF front matter, type evidence-report).
+
+**Verification.** /metrics+/rows cross-check == known values (no discrepancy); pyyaml valid; dai unchanged.
+
+**Next slice.** Outcome Reconciliation Follow-up v7 when 07-02 Final (free enriched_market_missing read); and/or
+Live Calibration Cohort Planning v1 (planning only, unpaid) to design an information-maximizing next paid cohort
+-- surface candidates/regimes/paid-calls + pause for approval before any spend.
+
+**Discipline.** analysis + recommendation only; sample-size-honest (no overclaim from n=8/n=16); exactly one
+primary action; explicit non-actions; endpoint cross-check; docs-only; no paid calls/game runs/reconciliation
+writes; new doc OKF-front-mattered.
