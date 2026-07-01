@@ -11542,3 +11542,60 @@ sufficiency).
 
 **Discipline.** Docs-only; small sample (no mass retrofit, no large taxonomy); preserved doc bodies; no code/
 prompt/allowlist/buyer/schema/runtime change; no paid calls; synopsis left excluded.
+
+---
+
+# Calibration Rows Export Endpoint v1
+
+**slice:** add read-only row-level calibration export endpoint (companion to metrics)
+**status:** complete 2026-06-30 (code+tests shipped, 103 targeted tests green; not pushed)
+**repos touched:** `dai` (FastAPI... no -- .NET: exporter row + endpoint + tests). `dai-vault` (new doc + entry).
+
+**Start state.** dai clean/synced d1fbb33 (0/0). dai-vault clean/synced aa32def (0/0). Synopsis excluded.
+DEFAULT_ALLOWLIST unchanged (4).
+
+**Endpoint.** NEW GET /api/agent-runs/prompt-route-calibration/rows -- reuses the SAME tenant-scoped
+PromptRouteCalibrationExporter.ExportAsync the metrics endpoint calls, returns PromptRouteCalibrationRow[] WITHOUT
+aggregating. Read-only, tenant-scoped (resolved identity), no buyer surface, empty->[]. Exporter already strips
+prose (test-asserted).
+
+**Fields.** Existing row already has agentRunId/createdUtc/sport/gamePk/promptSource/regime/fallbackReason/recipe/
+version/assembledHash/leanSide/confidence/advertisedStrength/posture/outcomeStatus/resultSide/matchedOutcome.
+ADDED 3 trailing nullable fields (additive; named-arg construction -> no breakage): artifactVersion,
+evidenceRichness (evidence-sufficiency proxy), analyzerConfidence (pre-calibration, for overconfidence). directional
+vs no-decision derivable (leanSide null = no-decision).
+
+**Unavailable.** No distinct evidenceSufficiency enum (evidenceRichness int is the proxy; a real enum needs
+artifact-contract change -- deferred). assembledHash/recipe/version/artifactVersion null for legacy/older-artifact
+rows -- honest, returned as-is, never inferred (test-asserted).
+
+**Code.** PromptRouteCalibrationExport.cs (3 row fields + Shape population from AgentRunExecutionResult);
+AgentRunsController.cs (new GetPromptRouteCalibrationRows action). No metrics-calculator/provenance/schema/prompt/
+allowlist/buyer change.
+
+**Tests.** +2 exporter unit tests (rich artifact->fields; absent->null); +2 integration tests (rows tenant-scoped,
+no prose leak, confidence/regime/directional/no-decision/outcome present; empty->[]). dotnet build 0/0. dotnet
+test filter PromptRouteCalibration|PromptRouteProvenance|PromptRouteKeyFallback|AgentRunsControllerTests -> 103
+passed (99 prior + 4). Metrics endpoint tests still pass unchanged.
+
+**Cross-check (dev data).** rows 263 = metrics.totalRows 263; registry 27=27; live 1=1; rows-with-outcome 84 =
+reconciled 76 + noDecision 8. New fields populated where present (artifactVersion 185, evidenceRichness 203,
+analyzerConfidence 205 non-null); row-level directional 171 / no-decision 92.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4). **Schema.** Untouched (fields
+read from existing OutputJson, no migration). **Reconciliation state.** Untouched (endpoint writes nothing). **Doc
+changes.** NEW (front-mattered) calibration-rows-export-endpoint-v1.md + this entry.
+
+**Repo before/after.** dai d1fbb33 -> uncommitted (2 src + 2 test files). dai-vault aa32def -> uncommitted (1 doc +
+this entry). Commit: code + docs, pending. Push: NOT performed (awaiting instruction).
+
+**Risks/deferred.** No paging on /rows (fine at 263; add take/cursor if large). evidenceRichness is a proxy not a
+first-class sufficiency enum (deferred). Rows still reflect the 20-run pending backlog until it settles.
+
+**Next slice.** Outcome Reconciliation Follow-up v4 + Calibration Delta v1 once >=1 backlog game Final (06-30 slate
+was In Progress -> Finals imminent) -- reconcile + compute a before/after calibration delta via the new /rows
+endpoint.
+
+**Discipline.** Smallest endpoint (reused existing exporter); read-only; additive nullable fields; no metrics/
+provenance/schema/prompt/allowlist/buyer change; no reconciliation writes; no paid calls; no dashboards/UI; new doc
+uses OKF front matter.
