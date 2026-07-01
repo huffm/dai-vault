@@ -12,7 +12,7 @@ tags:
   - reconciliation
   - outcome
 related:
-  - "06 Execution/outcome-reconciliation-readiness-next-slice-2026-06-30.md"
+  - "06 Execution/reconciliations/outcome-reconciliation-readiness-next-slice-2026-06-30.md"
 ---
 
 # Outcome Reconciliation Follow-up v1 -- Evidence Report

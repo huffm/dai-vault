@@ -1,3 +1,20 @@
+---
+title: "Outcome Reconciliation Readiness + Next Slice Recommendation v1"
+type: "reconciliation"
+date: "2026-06-30"
+status: "complete"
+project: "DAI"
+slice: "Outcome Reconciliation Readiness + Next Slice Recommendation v1"
+repos:
+  dai: "unchanged"
+  dai-vault: "docs-only"
+tags:
+  - reconciliation
+  - outcome
+related:
+  - "06 Execution/reconciliations/outcome-reconciliation-follow-up-v1.md"
+---
+
 # Outcome Reconciliation Readiness + Next Slice Recommendation v1 -- Evidence Report
 
 **status:** complete (8-game live batch reconciled; 3 starter-missing soak runs still PENDING)

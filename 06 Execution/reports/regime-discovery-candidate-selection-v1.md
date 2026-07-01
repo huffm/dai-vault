@@ -1,3 +1,20 @@
+---
+title: "Regime Discovery + Candidate Selection v1"
+type: "evidence-report"
+date: "2026-06-30"
+status: "complete"
+project: "DAI"
+slice: "Regime Discovery + Candidate Selection v1"
+repos:
+  dai: "unchanged"
+  dai-vault: "docs-only"
+tags:
+  - prompt-registry
+  - source-depth
+related:
+  - "06 Execution/reports/prompt-routing-coverage-matrix-v1.md"
+---
+
 # Regime Discovery + Candidate Selection v1 -- Evidence Report
 
 **status:** complete (discovery + dry-run; no code, no paid calls, no runs)

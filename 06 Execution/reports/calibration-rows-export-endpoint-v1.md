@@ -15,7 +15,7 @@ tags:
   - read-only
 related:
   - "06 Execution/exports/calibration-metrics-export-2026-06-30.md"
-  - "06 Execution/okf-yaml-front-matter-pattern-v1.md"
+  - "06 Execution/patterns/okf-yaml-front-matter-pattern-v1.md"
 ---
 
 # Calibration Rows Export Endpoint v1 -- Evidence Report

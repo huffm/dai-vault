@@ -1,3 +1,20 @@
+---
+title: "Apply AgentRun Provenance Migration to Dev SQL v1"
+type: "evidence-report"
+date: "2026-06-29"
+status: "complete"
+project: "DAI"
+slice: "Apply AgentRun Provenance Migration to Dev SQL v1"
+repos:
+  dai: "unchanged"
+  dai-vault: "docs-only"
+tags:
+  - provisioning
+  - provenance
+related:
+  - "06 Execution/reports/dotnet-agentrun-prompt-provenance-persistence-v1.md"
+---
+
 # Apply AgentRun Provenance Migration to Dev SQL v1
 
 **status:** complete (migration applied + verified against dev SQL; docs-only commit)

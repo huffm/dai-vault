@@ -1,3 +1,21 @@
+---
+title: "Prompt Routing Coverage Matrix v1"
+type: "evidence-report"
+date: "2026-06-30"
+status: "complete"
+project: "DAI"
+slice: "Prompt Routing Coverage Matrix v1"
+repos:
+  dai: "unchanged"
+  dai-vault: "docs-only"
+tags:
+  - prompt-registry
+  - provenance
+  - metrics
+related:
+  - "06 Execution/plans/evidence-regime-taxonomy-recipe-expansion-plan-v1.md"
+---
+
 # Prompt Routing Coverage Matrix v1 -- Evidence Report
 
 **status:** complete (analysis only; no code, no paid calls)

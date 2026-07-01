@@ -1,3 +1,20 @@
+---
+title: "Agent Slice Workflow Doctrine v1"
+type: "execution-pattern"
+date: "2026-06-23"
+status: "complete"
+project: "DAI"
+slice: "Agent Slice Workflow Doctrine v1"
+repos:
+  dai: "unchanged"
+  dai-vault: "docs-only"
+tags:
+  - workflow
+  - okf
+related:
+  - "06 Execution/patterns/okf-yaml-front-matter-pattern-v1.md"
+---
+
 # agent slice workflow doctrine v1
 
 **status:** active doctrine -- canonical lifecycle for a DAI slice

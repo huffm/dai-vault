@@ -1,3 +1,22 @@
+---
+title: "Thin Tenant-Scoped Calibration Metrics Endpoint v1"
+type: "evidence-report"
+date: "2026-06-29"
+status: "complete"
+project: "DAI"
+slice: "Thin Tenant-Scoped Calibration Metrics Endpoint v1"
+repos:
+  dai: "code+docs"
+  dai-vault: "docs-only"
+tags:
+  - metrics
+  - calibration
+  - provenance
+related:
+  - "06 Execution/exports/calibration-outcome-metrics-by-prompt-route-v1.md"
+  - "06 Execution/reports/calibration-rows-export-endpoint-v1.md"
+---
+
 # Thin Tenant-Scoped Calibration Metrics Endpoint v1
 
 **status:** active doctrine (thin internal GET endpoint composing exporter + metrics calculator; tenant-scoped)

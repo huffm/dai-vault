@@ -1,3 +1,20 @@
+---
+title: "Prompt Ledger Hook v1"
+type: "execution-pattern"
+date: "2026-06-25"
+status: "complete"
+project: "DAI"
+slice: "Prompt Ledger Hook v1"
+repos:
+  dai: "unchanged"
+  dai-vault: "docs-only"
+tags:
+  - okf
+  - observability
+related:
+  - "06 Execution/diagnostics/prompt-ledger-hook-state-audit-v1.md"
+---
+
 # prompt ledger hook v1
 
 **status:** active doctrine -- canonical cross-cutting process hook for capturing finalized slice prompts.

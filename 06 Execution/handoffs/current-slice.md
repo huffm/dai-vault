@@ -12163,3 +12163,62 @@ OKF Backfill Batch v7.
 **Discipline.** free probe; per-run for MultipleMatches (NOT identity); scores verbatim; non-backlog left
 untouched (verified); before/after metrics; no paid calls; no prompt/schema/allowlist/buyer change; new doc born
 in the correct OKF type-folder.
+
+# OKF Backfill Batch v7 + OKF Migration Closeout v1
+
+**slice:** finish the OKF migration (14 remaining classifiable docs) + write the closeout note
+**status:** complete 2026-07-01 (docs-only; 14 files moved via git mv; patterns/ created; 9 link updates; closeout doc; not pushed at write time)
+**repos touched:** `dai` unchanged (`b2f9771`). `dai-vault` (14 renames + 9 related edits + closeout doc + this entry).
+
+**Start state.** dai clean/synced b2f9771 (0/0). dai-vault clean/synced 59c88da (0/0, v6 + backfill v1-v6 pushed).
+Synopsis untracked/excluded. DEFAULT_ALLOWLIST unchanged (4). No paid calls, no game runs, no reconciliation writes.
+
+**Moves (git mv; 14).** patterns/(NEW): agent-slice-workflow-doctrine-v1, okf-yaml-front-matter-pattern-v1,
+prompt-ledger-hook-v1. plans/: okf-vault-taxonomy-plan-v1. diagnostics/: prompt-ledger-hook-state-audit-v1.
+reports/: calibration-rows-export-endpoint-v1, persist-assembly-error-detail-v1, apply-agentrun-provenance-
+migration-to-dev-sql-v1, prompt-migration-closeout-2026-06-28, prompt-routing-coverage-matrix-v1, regime-discovery-
+candidate-selection-v1, thin-tenant-scoped-calibration-metrics-endpoint-v1. reconciliations/:
+live-batch-and-settlement-reconciliation-gate-v1, outcome-reconciliation-readiness-next-slice-2026-06-30.
+
+**Folder created.** 06 Execution/patterns/.
+
+**Left flat (intentional).** system-state-synopsis-v1.md -- untracked/excluded by durable rule (point-in-time
+state snapshot). NOT touched/staged. Only remaining flat doc.
+
+**Front matter.** 10 docs got NEW 9-field blocks; 4 already had them (calibration-rows-export, persist-assembly,
+okf-vault-taxonomy-plan, okf-yaml-front-matter-pattern). All 14 validated with pyyaml: 9 fields, type==folder
+(execution-pattern/plan/diagnostic/evidence-report/reconciliation). status per doc (all complete); repos accurate
+(thin-tenant-endpoint code+docs; rest unchanged).
+
+**Tags.** controlled vocab + justified free tags (workflow for the slice-doctrine, capture for live-batch-gate,
+provisioning for the migration-apply report).
+
+**Link updates (grep-first; 9 related: paths).** okf-yaml-front-matter-pattern refs (3: reports/calibration-rows-
+export, plans/okf-vault-taxonomy, exports/calibration-metrics) -> patterns/; prompt-routing-coverage-matrix refs
+(2: exports/calibration-metrics, plans/evidence-regime) -> reports/; persist-assembly refs (2: diagnostics/registry-
+assembly, reports/calibration-route-attribution) -> reports/; readiness refs (2: reconciliations/follow-up-v1,
+follow-up-v4) -> reconciliations/. Wikilinks basename-resolved (untouched).
+
+**Closeout doc.** NEW 06 Execution/reports/okf-migration-closeout-v1.md -- final taxonomy (reports 20 /
+reconciliations 8 / exports 4 / patterns 3 / diagnostics 2 / plans 2), 38 docs moved across v1-v7, the one
+intentionally-flat doc, and the go-forward rule: new docs born in-folder; old docs opportunistic-only; STOP active
+backfill unless a concrete retrieval problem appears.
+
+**Validation.** pyyaml OK (14 moves + closeout). grep-after: no stale vault-relative related: paths. git status:
+only approved renames + related edits + closeout + this handoff. dai HEAD unchanged.
+
+**Paid calls.** NONE. **Game/reconciliation activity.** NONE. **Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.**
+Unchanged (4). **Code/prompts/DB schema/model prompts.** Untouched (docs-only).
+
+**Repo before/after.** dai b2f9771 -> unchanged. dai-vault 59c88da -> committed. Push: per instruction.
+
+**Risks/deferred.** OKF now opportunistic-maintenance (no more backfill slices unless a real retrieval problem).
+system-state-synopsis stays flat/untracked by rule. 9 backlog runs (07-02) remain reconciliation-pending.
+
+**Next slice.** Live Calibration Cohort Capture vNext (grow calibration sample, esp. enriched_market_backed_depth /
+enriched_market_missing) -- BEFORE any paid analysis: identify candidates, show expected regimes, show which calls
+are paid, PAUSE for explicit approval. Reconciliation Follow-up v7 stays event-gated on the 07-02 games.
+
+**Discipline.** grep-first before+after; only clearly-classifiable docs moved (ambiguous not forced); synopsis
+untouched; git mv preserves history; 9-field front matter type==folder; controlled tags + justified free tags;
+rolling log untouched; YAML validated; docs-only; no paid calls/game runs/reconciliation writes.

@@ -1,3 +1,20 @@
+---
+title: "Prompt-Registry Migration -- Nightly Closeout 2026-06-28"
+type: "evidence-report"
+date: "2026-06-28"
+status: "complete"
+project: "DAI"
+slice: "Prompt-Registry Migration Nightly Closeout 2026-06-28"
+repos:
+  dai: "unchanged"
+  dai-vault: "docs-only"
+tags:
+  - prompt-registry
+  - provenance
+related:
+  - "06 Execution/reports/phase-3-2-global-prompt-routing-hardening-v1.md"
+---
+
 # Prompt-Registry Migration -- Nightly Closeout 2026-06-28
 
 **status:** state reconciliation (docs only; no code/model/paid calls this slice)

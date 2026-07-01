@@ -15,7 +15,7 @@ tags:
   - observability
 related:
   - "06 Execution/reports/calibration-route-attribution-fix-v1.md"
-  - "06 Execution/persist-assembly-error-detail-v1.md"
+  - "06 Execution/reports/persist-assembly-error-detail-v1.md"
 ---
 
 # Registry Assembly Error Diagnostic v1 -- Evidence Report

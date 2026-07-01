@@ -14,9 +14,9 @@ tags:
   - export
   - vault
 related:
-  - "06 Execution/prompt-routing-coverage-matrix-v1.md"
+  - "06 Execution/reports/prompt-routing-coverage-matrix-v1.md"
   - "06 Execution/reconciliations/outcome-reconciliation-follow-up-v3.md"
-  - "06 Execution/okf-yaml-front-matter-pattern-v1.md"
+  - "06 Execution/patterns/okf-yaml-front-matter-pattern-v1.md"
 ---
 
 # Calibration Metrics Export -- 2026-06-30 (snapshot)

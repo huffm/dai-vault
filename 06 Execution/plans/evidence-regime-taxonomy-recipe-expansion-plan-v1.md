@@ -13,7 +13,7 @@ tags:
   - source-depth
   - calibration
 related:
-  - "06 Execution/prompt-routing-coverage-matrix-v1.md"
+  - "06 Execution/reports/prompt-routing-coverage-matrix-v1.md"
   - "06 Execution/diagnostics/registry-assembly-error-diagnostic-v1.md"
 ---
 

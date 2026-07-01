@@ -14,7 +14,7 @@ tags:
   - metadata
   - taxonomy
 related:
-  - "06 Execution/okf-yaml-front-matter-pattern-v1.md"
+  - "06 Execution/patterns/okf-yaml-front-matter-pattern-v1.md"
   - "02 Platform/decisions/0005-persist-assembly-error-detail.md"
 ---
 

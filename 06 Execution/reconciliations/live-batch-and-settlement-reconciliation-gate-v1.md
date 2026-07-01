@@ -1,3 +1,21 @@
+---
+title: "Live Batch + Settlement Reconciliation Gate v1"
+type: "reconciliation"
+date: "2026-06-29"
+status: "complete"
+project: "DAI"
+slice: "Live Batch + Settlement Reconciliation Gate v1"
+repos:
+  dai: "unchanged"
+  dai-vault: "docs-only"
+tags:
+  - reconciliation
+  - calibration
+  - capture
+related:
+  - "06 Execution/reconciliations/outcome-reconciliation-readiness-next-slice-2026-06-30.md"
+---
+
 # Live Batch + Settlement Reconciliation Gate v1 -- Evidence Report
 
 **status:** complete (prior soak runs PENDING reconciliation; 8-game live batch run + verified)

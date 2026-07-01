@@ -14,7 +14,7 @@ tags:
   - metrics
 related:
   - "06 Execution/diagnostics/registry-assembly-error-diagnostic-v1.md"
-  - "06 Execution/persist-assembly-error-detail-v1.md"
+  - "06 Execution/reports/persist-assembly-error-detail-v1.md"
 ---
 
 # Calibration Route Attribution Fix v1 -- Evidence Report
