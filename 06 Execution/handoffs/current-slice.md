@@ -11708,3 +11708,55 @@ Error Diagnostic v1.
 
 **Discipline.** Read-only probe; reconcile only Final; no score-inference on non-Final; collision pre-check; no
 paid calls; no prompt/schema/allowlist/buyer change; before==after proof; OKF front matter on new doc.
+
+# Persist Assembly Error Detail v1
+
+**slice:** persist the PromptAssemblyError message as optional fallbackDetail on prompt-route provenance
+**status:** complete 2026-07-01 (code+tests shipped both stacks; docs-only in vault; not pushed at write time)
+**repos touched:** `dai` (python agent-service + C# platform + spec/plan). `dai-vault` (evidence + ADR 0005 + this entry).
+
+**Origin.** Pivot from the v6 reconciliation no-op (824818 still Preview). Confirmed Registry Assembly Error
+Diagnostic v1 + Attribution Fix v1 already complete; picked their deferred enhancement: persist the failing-slot
+detail so future assembly_errors are diagnosable without logs.
+
+**Process.** brainstorming -> spec (dai c5269a3) -> writing-plans (dai f77e3b1) -> executing-plans TDD red/green.
+
+**Field.** fallbackDetail: string|null = str(PromptAssemblyError) truncated to 500; populated ONLY on
+fallbackReason=='assembly_error'; null elsewhere + legacy. Not a route-key/metrics input; registry decisions
+forbidden from carrying it (coherence validator).
+
+**6 code touchpoints (additive).** python: contracts.py (PromptRouteDecision + _coherent), registry_prompt_canary.py
+(_MAX_FALLBACK_DETAIL_LEN + _truncate + _live(detail) + assembly_error catch), route_provenance.py (projection +
+build), route_calibration_export.py (CALIBRATION_FIELDS + _PROVENANCE_FIELDS). C#: PromptRouteProvenance.cs
+(FallbackDetail; controller SerializeRouteProvenance persists it, TryParseHeader reads it), PromptRouteCalibrationExport.cs
+(row FallbackDetail + Shape populate; surfaced on /rows). No DB migration (PromptRouteProvenanceJson is nvarchar).
+
+**Plan deviation (grounded).** The real one-sided-quality fixture classifies as starter_asymmetric_market_missing
+-> regime_not_allowlisted, never reaching assembly (old test only checked source==live, hiding this). Forced the
+PromptAssemblyError via monkeypatch on assemble_recipe_for_migration (same technique as the mismatch test) to pin
+the capture deterministically. Recorded in evidence doc.
+
+**Tests (TDD).** python +10 across 3 files; C# +4. Results: python 60 passed (3 files); C# build 0/0; C# targeted
+filter (PromptRouteProvenance|PromptRouteCalibration|PromptRouteKeyFallback|AgentRunsController) 107 passed.
+
+**Live no-write cross-check (:5007).** /metrics byte-identical (263/84/10, matched 51, unmatched 33, matchRate
+0.6071, reg/live/fb 27/1/1) -> no grouping change. /rows 263 rows, all now carry fallbackDetail key, 0 non-null
+(run 260018 predates slice; no new assembly_error -- no paid calls).
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4). **Prompts/templates/recipes,
+DB schema, reconciliation, route-key, metrics aggregator.** Untouched (metrics byte-identical proves it).
+
+**Repo before/after.** dai 1a2ddf2 -> b2f9771 (8 commits: c5269a3 spec, f77e3b1 plan, d03af41, 4c64fa0, aba1173,
+67974fd, 1fa0a92, b2f9771). dai-vault 668e7ff -> uncommitted (evidence + ADR 0005 + this entry). Commit: pending.
+Push: BOTH repos NOT pushed -- awaiting final handoff review.
+
+**Risks/deferred.** Run 260018 stays null (input not persisted; not back-fillable). Row shape widened by one
+trailing nullable field (additive; consumers must tolerate). Structured slot data deferred (YAGNI). API +
+devcore-sql left running on :5007/:1433.
+
+**Next slice.** Outcome Reconciliation Follow-up v6 when 824818 (07-01) Final (per-run 28bd433e). First real
+fallbackDetail value appears on the next live registry assembly_error.
+
+**Discipline.** brainstorming+spec+plan gates honored; TDD red/green per task; additive nullable field; no
+migration; no paid calls; no prompt/allowlist/buyer/reconciliation change; metrics byte-identical proof; grounded
+plan deviation recorded; OKF front matter on new docs; ADR for the platform decision.
