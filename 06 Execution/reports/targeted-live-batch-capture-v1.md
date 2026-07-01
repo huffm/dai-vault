@@ -1,3 +1,21 @@
+---
+title: "Targeted Live Batch Capture v1"
+type: "evidence-report"
+date: "2026-06-30"
+status: "complete"
+project: "DAI"
+slice: "Targeted Live Batch Capture v1"
+repos:
+  dai: "unchanged"
+  dai-vault: "docs-only"
+tags:
+  - prompt-registry
+  - source-depth
+  - capture
+related:
+  - "06 Execution/reports/controlled-live-batch-capture-v2.md"
+---
+
 # Targeted Live Batch Capture v1 -- Evidence Report
 
 **status:** complete (9-run approved paid batch; both thin regimes hit; pending reconciliation)

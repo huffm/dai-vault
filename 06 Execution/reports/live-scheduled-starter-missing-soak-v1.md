@@ -1,3 +1,21 @@
+---
+title: "Live-Scheduled Starter-Missing Soak v1"
+type: "evidence-report"
+date: "2026-06-29"
+status: "complete"
+project: "DAI"
+slice: "Live-Scheduled Starter-Missing Soak v1"
+repos:
+  dai: "unchanged"
+  dai-vault: "docs-only"
+tags:
+  - prompt-registry
+  - source-depth
+  - capture
+related:
+  - "06 Execution/reports/starter-missing-registry-canary-confirmation-v1.md"
+---
+
 # Live-Scheduled Starter-Missing Soak v1 -- Evidence Report
 
 **status:** complete (both target regimes confirmed registry-authoritative on genuine live-scheduled games)

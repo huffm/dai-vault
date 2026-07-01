@@ -12069,3 +12069,54 @@ Else -> OKF Backfill Batch v6 (remaining capture/allowlist/canary reports -> rep
 **Discipline.** grep-first before+after; only approved 4-file asymmetric batch moved; git mv preserves history;
 9-field front matter type==folder, status + repos accurate per doc; wikilinks/rolling-log untouched; YAML
 validated; docs-only; no paid calls; no reconciliation.
+
+# OKF Backfill Batch v6
+
+**slice:** migrate the remaining capture/allowlist/canary evidence-reports into 06 Execution/reports/
+**status:** complete 2026-07-01 (docs-only; 5 files moved via git mv; 0 external link edits; not pushed at write time)
+**repos touched:** `dai` unchanged (`b2f9771`). `dai-vault` (5 renames + this entry).
+
+**Start state.** dai clean/synced b2f9771 (0/0). dai-vault clean/synced d6419a9 (0/0, v1-v5 pushed). Synopsis
+excluded. DEFAULT_ALLOWLIST unchanged (4). No paid calls. Reconciliation NOT run (event-gated; 824818 not Final).
+
+**Batch (2-5).** 5 live-evidence reports: default-allowlist-widening-v1 (allowlist; complete; code+docs),
+starter-missing-registry-canary-confirmation-v1 (canary; complete; unchanged), controlled-live-batch-capture-v2
+(capture; complete; unchanged), targeted-live-batch-capture-v1 (capture; complete; unchanged),
+live-scheduled-starter-missing-soak-v1 (capture/soak; complete; unchanged). (The historical paid captures ran
+paid calls in their original slices; THIS slice runs none.)
+
+**Grep-first (before+after).** NO vault-relative related: YAML paths pointed to any of the 5 filenames. Inbound
+refs are Obsidian wikilinks [[basename]] (among these docs + to provenance docs) -> basename-resolved -> survive
+the move -> 0 link edits. Left: current-slice.md rolling history.
+
+**Moves (git mv).** the 5 docs -> 06 Execution/reports/.
+
+**Front matter.** all 5 got NEW 9-field OKF blocks: type: evidence-report; status: complete; repos.dai accurate
+(default-allowlist-widening = code+docs [allowlist constant change]; the 4 capture/confirmation = unchanged,
+"no code changed"); tags controlled vocab (prompt-registry/provenance/source-depth/calibration) + the justified
+free tag `capture` on the 3 capture docs. related: intra-family using reports/ paths (incl. phase-3-2 already in
+reports/). Existing prose "Related: [[...]]" wikilink lines preserved. All 5 validated with pyyaml.
+
+**Link/reference updates.** NONE (wikilinks basename-resolved; no related: paths inbound). Historical references
+intentionally left: current-slice.md handoff history.
+
+**Validation.** pyyaml OK for all 5 (9 fields, type evidence-report). grep-after: no stale related: paths. git
+status: exactly 5 renames (RM) + untracked synopsis; NO other files. dai HEAD unchanged b2f9771.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **Files moved.** 5 (approved batch only). **Code/prompts/
+DEFAULT_ALLOWLIST/buyer copy/routes/DB schema/reconciliation.** Untouched (docs-only).
+
+**Repo before/after.** dai b2f9771 -> unchanged. dai-vault d6419a9 -> uncommitted (5 renames + this entry) then
+committed. Push: per instruction.
+
+**Risks/deferred.** ~9 top-level exec docs still unmigrated (prompt-routing-coverage-matrix, apply-agentrun-
+migration, prompt-migration-closeout, regime-discovery-candidate-selection, the 2 endpoint reports, patterns
+[agent-slice-workflow-doctrine, okf-yaml-front-matter-pattern, prompt-ledger-hook], prompt-ledger-hook-state-audit,
+readiness/gate reconciliation, state synopsis). reports/ now 13.
+
+**Next slice.** If 824818 Final -> Outcome Reconciliation Follow-up v6 (per-run 28bd433e, NOT identity reconcile).
+Else -> OKF Backfill Batch v7 (remaining reports + the patterns/ + endpoint reports; or wind down migration).
+
+**Discipline.** grep-first before+after; only approved 5-file batch moved; git mv preserves history; 9-field front
+matter type==folder, status + repos accurate per doc; justified free tag (capture) only where warranted;
+wikilinks/rolling-log untouched; YAML validated; docs-only; no paid calls; no reconciliation.

@@ -1,3 +1,21 @@
+---
+title: "Default Allowlist Widening v1"
+type: "evidence-report"
+date: "2026-06-29"
+status: "complete"
+project: "DAI"
+slice: "Default Allowlist Widening v1"
+repos:
+  dai: "code+docs"
+  dai-vault: "docs-only"
+tags:
+  - prompt-registry
+  - provenance
+related:
+  - "06 Execution/reports/starter-missing-registry-canary-confirmation-v1.md"
+  - "06 Execution/reports/phase-3-2-global-prompt-routing-hardening-v1.md"
+---
+
 # Default Allowlist Widening v1
 
 **status:** active doctrine (4 regimes now default registry-authoritative-eligible; narrow promotion)

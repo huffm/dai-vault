@@ -1,3 +1,22 @@
+---
+title: "Starter-Missing Registry Canary Confirmation v1"
+type: "evidence-report"
+date: "2026-06-29"
+status: "complete"
+project: "DAI"
+slice: "Starter-Missing Registry Canary Confirmation v1"
+repos:
+  dai: "unchanged"
+  dai-vault: "docs-only"
+tags:
+  - prompt-registry
+  - provenance
+  - source-depth
+related:
+  - "06 Execution/reports/default-allowlist-widening-v1.md"
+  - "06 Execution/reports/live-scheduled-starter-missing-soak-v1.md"
+---
+
 # Starter-Missing Registry Canary Confirmation v1 -- Evidence Report
 
 **status:** active doctrine (both starter_missing regimes runtime-confirmed registry-authoritative; allowlist NOT widened)

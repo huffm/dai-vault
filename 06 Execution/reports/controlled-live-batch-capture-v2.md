@@ -1,3 +1,21 @@
+---
+title: "Controlled Live Batch Capture v2"
+type: "evidence-report"
+date: "2026-06-30"
+status: "complete"
+project: "DAI"
+slice: "Controlled Live Batch Capture v2"
+repos:
+  dai: "unchanged"
+  dai-vault: "docs-only"
+tags:
+  - prompt-registry
+  - calibration
+  - capture
+related:
+  - "06 Execution/reports/targeted-live-batch-capture-v1.md"
+---
+
 # Controlled Live Batch Capture v2 -- Evidence Report
 
 **status:** complete (8-run approved paid batch; all registry-authoritative; pending reconciliation)
