@@ -1,3 +1,23 @@
+---
+title: "Registry Assembly Error Diagnostic v1"
+type: "diagnostic"
+date: "2026-06-30"
+status: "complete"
+project: "DAI"
+slice: "Registry Assembly Error Diagnostic v1"
+repos:
+  dai: "unchanged"
+  dai-vault: "docs-only"
+tags:
+  - prompt-registry
+  - provenance
+  - diagnostic
+  - observability
+related:
+  - "06 Execution/calibration-route-attribution-fix-v1.md"
+  - "06 Execution/persist-assembly-error-detail-v1.md"
+---
+
 # Registry Assembly Error Diagnostic v1 -- Evidence Report
 
 **status:** complete (root-caused; no code change; attribution + diagnosability recommendations deferred)

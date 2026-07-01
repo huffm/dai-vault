@@ -11816,3 +11816,51 @@ reconcile). Else -> OKF Backfill Batch v1 on the 3-file first batch.
 **Discipline.** audit-before-acting (read pattern + inventory before proposing); plan-only (no migration); small
 obvious taxonomy; type-as-authoritative resolves folder-vs-move tension; rolling log untouched; YAML validated;
 docs-only; OKF front matter on the new doc.
+
+# OKF Backfill Batch v1
+
+**slice:** execute the approved 3-file OKF migration (move into type-folders, front matter, link updates)
+**status:** complete 2026-07-01 (docs-only; 3 files moved via git mv; 4 inbound refs updated; not pushed at write time)
+**repos touched:** `dai` unchanged (`b2f9771`). `dai-vault` (3 renames + 4 one-line ref edits + this entry).
+
+**Start state.** dai clean/synced b2f9771 (0/0). dai-vault clean/synced 4c4b59d (0/0). Synopsis excluded.
+DEFAULT_ALLOWLIST unchanged (4). No paid calls.
+
+**Grep-first (before move).** Enumerated inbound refs to the 3 filenames. Real navigation links to update: 2 for
+the diagnostic (persist-assembly related: + ADR 0005 references pointer), 2 for the export (okf-pattern related: +
+calibration-rows-export related:), 0 for the plan. Deliberately LEFT: current-slice.md rolling history,
+taxonomy-plan descriptive tables, okf-pattern line-90 narrative sample. Note: calibration-route-attribution-fix
+references the diagnostic by prose NAME only (no path) -> no update (grep-first superseded the plan's prediction).
+
+**Moves (git mv, renames preserved).**
+- 06 Execution/registry-assembly-error-diagnostic-v1.md -> 06 Execution/diagnostics/ (type: diagnostic; front matter ADDED)
+- 06 Execution/calibration-metrics-export-2026-06-30.md -> 06 Execution/exports/ (type: export; front matter already present)
+- 06 Execution/evidence-regime-taxonomy-recipe-expansion-plan-v1.md -> 06 Execution/plans/ (type: plan; front matter ADDED)
+
+**Front matter.** 2 files got new 9-field OKF blocks (diagnostic, plan) matching their folder type; export already
+had a complete block. All 3 validated with pyyaml (9 fields, type matches folder).
+
+**Inbound link updates (4, one line each).** persist-assembly-error-detail-v1.md related: -> diagnostics/ path;
+02 Platform/decisions/0005 references -> diagnostics/ path; okf-yaml-front-matter-pattern-v1.md related: ->
+exports/ path; calibration-rows-export-endpoint-v1.md related: -> exports/ path.
+
+**Validation.** pyyaml parse OK for all 3 moved docs (9 fields each). grep confirms NO remaining quoted related:
+refs to old paths. git status: exactly 3 renames (R/RM) + 4 M (1 line each) + untracked synopsis; NO other files.
+dai HEAD unchanged b2f9771.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **Files moved.** 3 (approved batch only). **Code/prompts/
+DEFAULT_ALLOWLIST/buyer copy/routes/DB schema/reconciliation.** Untouched (docs-only).
+
+**Repo before/after.** dai b2f9771 -> unchanged. dai-vault 4c4b59d -> uncommitted (3 renames + 4 edits + this
+entry). Commit: docs-only, pending. Push: per instruction.
+
+**Risks/deferred.** Remaining ~30 top-level execution docs unmigrated (by design; opportunistic/next batches).
+Batch 2 candidate: outcome-reconciliation-follow-up-v1..v5 -> reconciliations/. Historical prose path mentions in
+current-slice.md + taxonomy-plan + okf-pattern narrative intentionally left (not navigation links).
+
+**Next slice.** If 824818 (07-01) Final -> Outcome Reconciliation Follow-up v6 (per-run 28bd433e, NOT identity
+reconcile). Else -> OKF Backfill Batch v2 (reconciliation series -> reconciliations/).
+
+**Discipline.** grep-first before + after; only approved 3-file batch moved; git mv preserves history; 9-field
+front matter with type==folder; minimal 1-line link updates; rolling log not reorganized; YAML validated;
+docs-only; no paid calls.

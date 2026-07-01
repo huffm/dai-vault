@@ -1,3 +1,22 @@
+---
+title: "Evidence Regime Taxonomy + Recipe Expansion Plan v1"
+type: "plan"
+date: "2026-06-30"
+status: "complete"
+project: "DAI"
+slice: "Evidence Regime Taxonomy + Recipe Expansion Plan v1"
+repos:
+  dai: "unchanged"
+  dai-vault: "docs-only"
+tags:
+  - prompt-registry
+  - source-depth
+  - calibration
+related:
+  - "06 Execution/prompt-routing-coverage-matrix-v1.md"
+  - "06 Execution/diagnostics/registry-assembly-error-diagnostic-v1.md"
+---
+
 # Evidence Regime Taxonomy + Recipe Expansion Plan v1
 
 **status:** complete (design/planning only; no code, no paid calls, no recipe changes)

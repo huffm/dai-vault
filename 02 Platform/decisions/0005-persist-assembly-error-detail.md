@@ -37,5 +37,5 @@ Persist a bounded diagnostic string on prompt-route provenance:
 - Full technical plan: `dai/docs/superpowers/specs/2026-07-01-persist-assembly-error-detail-design.md` and
   `dai/docs/superpowers/plans/2026-07-01-persist-assembly-error-detail.md`.
 - Evidence report: `06 Execution/persist-assembly-error-detail-v1.md`.
-- Origin: `06 Execution/registry-assembly-error-diagnostic-v1.md` (deferred item) +
+- Origin: `06 Execution/diagnostics/registry-assembly-error-diagnostic-v1.md` (deferred item) +
   `06 Execution/calibration-route-attribution-fix-v1.md`.

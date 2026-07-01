@@ -14,7 +14,7 @@ tags:
   - metadata
   - handoff
 related:
-  - "06 Execution/calibration-metrics-export-2026-06-30.md"
+  - "06 Execution/exports/calibration-metrics-export-2026-06-30.md"
 ---
 
 # OKF YAML Front Matter Pattern v1
