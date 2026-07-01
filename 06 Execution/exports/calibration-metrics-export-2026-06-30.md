@@ -15,7 +15,7 @@ tags:
   - vault
 related:
   - "06 Execution/prompt-routing-coverage-matrix-v1.md"
-  - "06 Execution/outcome-reconciliation-follow-up-v3.md"
+  - "06 Execution/reconciliations/outcome-reconciliation-follow-up-v3.md"
   - "06 Execution/okf-yaml-front-matter-pattern-v1.md"
 ---
 

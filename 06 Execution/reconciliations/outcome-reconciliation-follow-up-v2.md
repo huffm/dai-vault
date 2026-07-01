@@ -1,3 +1,20 @@
+---
+title: "Outcome Reconciliation Follow-up v2"
+type: "reconciliation"
+date: "2026-06-30"
+status: "no-op"
+project: "DAI"
+slice: "Outcome Reconciliation Follow-up v2"
+repos:
+  dai: "unchanged"
+  dai-vault: "docs-only"
+tags:
+  - reconciliation
+  - outcome
+related:
+  - "06 Execution/reconciliations/outcome-reconciliation-follow-up-v1.md"
+---
+
 # Outcome Reconciliation Follow-up v2 -- Evidence Report
 
 **status:** complete (20-run backlog re-checked; 0 Final; 0 reconciled; 20 deferred -- still time-gated)

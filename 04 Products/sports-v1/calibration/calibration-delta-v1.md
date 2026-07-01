@@ -15,7 +15,7 @@ tags:
   - home-bias
   - gate-4
 related:
-  - "06 Execution/outcome-reconciliation-follow-up-v4.md"
+  - "06 Execution/reconciliations/outcome-reconciliation-follow-up-v4.md"
   - "04 Products/sports-v1/calibration/calibration-assessment-v3.md"
   - "04 Products/sports-v1/confidence-calibration-rules-v1.md"
 ---

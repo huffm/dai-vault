@@ -11864,3 +11864,54 @@ reconcile). Else -> OKF Backfill Batch v2 (reconciliation series -> reconciliati
 **Discipline.** grep-first before + after; only approved 3-file batch moved; git mv preserves history; 9-field
 front matter with type==folder; minimal 1-line link updates; rolling log not reorganized; YAML validated;
 docs-only; no paid calls.
+
+# OKF Backfill Batch v2
+
+**slice:** migrate the outcome-reconciliation-follow-up v1-v5 series into 06 Execution/reconciliations/
+**status:** complete 2026-07-01 (docs-only; 5 files moved via git mv; 4 related-link updates; not pushed at write time)
+**repos touched:** `dai` unchanged (`b2f9771`). `dai-vault` (5 renames + 2 external ref edits + this entry).
+
+**Start state.** dai clean/synced b2f9771 (0/0). dai-vault at 434c333, **ahead 1** -- OKF Backfill Batch v1 was
+committed but NOT pushed; this v2 commit stacks on it, so both push together on approval. Synopsis excluded.
+DEFAULT_ALLOWLIST unchanged (4). No paid calls.
+
+**Grep-first (before move).** Real navigation `related:` links to the 5 filenames: v3 <- exports/calibration-metrics-export
++ v4 (intra); v4 <- v5 (intra) + 04 Products/.../calibration-delta-v1. Left (history/descriptive): taxonomy-plan
+tables, all current-slice.md rolling history.
+
+**Moves (git mv, renames preserved).** outcome-reconciliation-follow-up-v1..v5.md -> 06 Execution/reconciliations/.
+
+**Front matter.** v1/v2/v3 got NEW 9-field OKF blocks (type: reconciliation; status: no-op -- each was 0 Final /
+0 reconciled / time-gated; tags [reconciliation, outcome]; backward-chained related: to the prior version's new
+reconciliations/ path, v1 -> readiness doc). v4/v5 already had blocks (type reconciliation; status complete /
+no-op); their tags normalized to the controlled vocab (v4 [reconciliation, outcome, calibration, metrics];
+v5 [reconciliation, outcome]) and intra-batch related: repointed to reconciliations/ paths. All 5 validated with
+pyyaml (9 fields, type==folder).
+
+**Inbound link updates (4 total: 2 intra-batch in v4/v5 related: + 2 external, 1 line each).**
+exports/calibration-metrics-export-2026-06-30.md related: v3 -> reconciliations/ path;
+04 Products/sports-v1/calibration/calibration-delta-v1.md related: v4 -> reconciliations/ path.
+
+**Validation.** pyyaml OK for all 5 (9 fields; type reconciliation; statuses v1-v3+v5 no-op, v4 complete).
+grep: NO remaining quoted related: refs to old paths. git status: exactly 5 renames (RM) + 2 M (1 line each) +
+untracked synopsis; NO other files. dai HEAD unchanged b2f9771.
+
+**Historical references intentionally left.** okf-vault-taxonomy-plan-v1 inventory/batch tables (bare-name
+descriptions) and all current-slice.md handoff history (rolling log -- not reorganized).
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **Files moved.** 5 (approved batch only). **Code/prompts/
+DEFAULT_ALLOWLIST/buyer copy/routes/DB schema/reconciliation.** Untouched (docs-only).
+
+**Repo before/after.** dai b2f9771 -> unchanged. dai-vault 434c333 -> uncommitted (5 renames + 2 edits + this
+entry) then committed; now ahead 2 of origin (v1 434c333 + this v2). Push: per instruction (both together).
+
+**Risks/deferred.** ~25 top-level execution docs still unmigrated (by design; opportunistic/next batches).
+v1 backfill (434c333) still unpushed -- will push with v2.
+
+**Next slice.** If 824818 (07-01) Final -> Outcome Reconciliation Follow-up v6 (per-run 28bd433e, NOT identity
+reconcile). Else -> OKF Backfill Batch v3 (e.g. remaining exports: platform-side/prompt-provenance calibration
+exports -> exports/; or reports batch).
+
+**Discipline.** grep-first before+after; only approved 5-file series moved; git mv preserves history; 9-field
+front matter with type==folder; status reflects each doc's real outcome (no-op vs complete); tags normalized to
+controlled vocab; minimal 1-line link updates; rolling log untouched; YAML validated; docs-only; no paid calls.

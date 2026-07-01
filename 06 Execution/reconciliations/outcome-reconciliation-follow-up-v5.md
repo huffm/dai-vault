@@ -10,12 +10,9 @@ repos:
   dai-vault: "docs-only"
 tags:
   - reconciliation
-  - settlement
-  - statsapi
-  - no-op
-  - time-gated
+  - outcome
 related:
-  - "06 Execution/outcome-reconciliation-follow-up-v4.md"
+  - "06 Execution/reconciliations/outcome-reconciliation-follow-up-v4.md"
   - "04 Products/sports-v1/calibration/calibration-delta-v1.md"
 ---
 

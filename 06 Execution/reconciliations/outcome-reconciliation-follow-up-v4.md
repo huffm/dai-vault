@@ -10,11 +10,11 @@ repos:
   dai-vault: "docs-only"
 tags:
   - reconciliation
-  - settlement
+  - outcome
   - calibration
-  - statsapi
+  - metrics
 related:
-  - "06 Execution/outcome-reconciliation-follow-up-v3.md"
+  - "06 Execution/reconciliations/outcome-reconciliation-follow-up-v3.md"
   - "06 Execution/outcome-reconciliation-readiness-next-slice-2026-06-30.md"
   - "04 Products/sports-v1/calibration/calibration-delta-v1.md"
 ---
