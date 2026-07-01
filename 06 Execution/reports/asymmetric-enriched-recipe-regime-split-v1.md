@@ -1,3 +1,22 @@
+---
+title: "Asymmetric-Enriched Recipe + Regime Split v1"
+type: "evidence-report"
+date: "2026-06-30"
+status: "complete"
+project: "DAI"
+slice: "Asymmetric-Enriched Recipe + Regime Split v1"
+repos:
+  dai: "code+docs"
+  dai-vault: "docs-only"
+tags:
+  - prompt-registry
+  - source-depth
+  - asymmetric
+related:
+  - "06 Execution/reports/asymmetric-overlay-byte-alignment-v1.md"
+  - "06 Execution/reports/asymmetric-registry-canary-v1.md"
+---
+
 # Asymmetric-Enriched Recipe + Regime Split v1 -- Evidence Report
 
 **status:** complete (code + tests shipped; full suite green; shadow_only, not allowlisted; not pushed)

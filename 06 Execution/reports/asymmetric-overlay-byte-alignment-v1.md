@@ -1,3 +1,22 @@
+---
+title: "Asymmetric Overlay Byte-Alignment v1"
+type: "evidence-report"
+date: "2026-06-30"
+status: "complete"
+project: "DAI"
+slice: "Asymmetric Overlay Byte-Alignment v1"
+repos:
+  dai: "code+docs"
+  dai-vault: "docs-only"
+tags:
+  - prompt-registry
+  - provenance
+  - asymmetric
+related:
+  - "06 Execution/reports/asymmetric-enriched-recipe-regime-split-v1.md"
+  - "06 Execution/reports/asymmetric-registry-canary-v1.md"
+---
+
 # Asymmetric Overlay Byte-Alignment v1 -- Evidence Report
 
 **status:** complete (byte-equivalence achieved; override now registry-authoritative; full suite green; not pushed)

@@ -1,3 +1,20 @@
+---
+title: "Paid Asymmetric Canary v1"
+type: "evidence-report"
+date: "2026-06-30"
+status: "blocked"
+project: "DAI"
+slice: "Paid Asymmetric Canary v1"
+repos:
+  dai: "unchanged"
+  dai-vault: "docs-only"
+tags:
+  - prompt-registry
+  - asymmetric
+related:
+  - "06 Execution/reports/asymmetric-registry-canary-v1.md"
+---
+
 # Paid Asymmetric Canary v1 -- Evidence Report
 
 **status:** BLOCKED on candidate availability (no paid call run; verification-only; route confirmed ready)

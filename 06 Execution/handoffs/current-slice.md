@@ -12023,3 +12023,49 @@ Else -> OKF Backfill Batch v5 (next reports batch: asymmetric-*/live-batch-captu
 **Discipline.** grep-first before+after; only approved 4-file batch moved; endpoint/plan/pattern docs excluded
 (honest type); git mv preserves history; 9-field front matter type==folder, repos accurate (code+docs); wikilinks
 need no edits; related: paths updated; rolling log untouched; YAML validated; docs-only; no paid calls; no reconciliation.
+
+# OKF Backfill Batch v5
+
+**slice:** migrate the asymmetric-cluster evidence-reports into 06 Execution/reports/
+**status:** complete 2026-07-01 (docs-only; 4 files moved via git mv; 0 external link edits; not pushed at write time)
+**repos touched:** `dai` unchanged (`b2f9771`). `dai-vault` (4 renames + this entry).
+
+**Start state.** dai clean/synced b2f9771 (0/0). dai-vault clean/synced 179666f (0/0, v1-v4 pushed). Synopsis
+excluded. DEFAULT_ALLOWLIST unchanged (4). No paid calls. Reconciliation NOT run (event-gated; 824818 not Final).
+
+**Batch (2-5).** 4 asymmetric-cluster evidence-reports (2026-06-30): asymmetric-enriched-recipe-regime-split-v1
+(complete, code+docs), asymmetric-overlay-byte-alignment-v1 (complete, code+docs), asymmetric-registry-canary-v1
+(complete, tests-only), paid-asymmetric-canary-v1 (BLOCKED, unchanged -- no paid call, verification-only).
+
+**Grep-first (before+after).** Inbound refs to the 4 filenames exist ONLY in current-slice.md (rolling handoff
+history). NO vault-relative related: paths, NO wikilinks from other docs -> 0 external link edits required.
+
+**Moves (git mv).** the 4 docs -> 06 Execution/reports/.
+
+**Front matter.** all 4 got NEW 9-field OKF blocks: type: evidence-report; status per actual outcome (3 complete,
+1 blocked); repos.dai accurate (code+docs x2, tests-only, unchanged) + dai-vault docs-only; tags controlled vocab
++ the allowed free tag `asymmetric` (prompt-registry/provenance/source-depth as appropriate); related: intra-cluster
+using new reports/ paths. Existing prose "Related: [[...]]" wikilink lines preserved. All 4 validated with pyyaml.
+
+**Link/reference updates.** NONE (only rolling-log refs, intentionally left). Historical references intentionally
+left: current-slice.md handoff history.
+
+**Validation.** pyyaml OK for all 4 (9 fields, type evidence-report). grep-after: no stale related: paths. git
+status: exactly 4 renames (RM) + untracked synopsis; NO other files. dai HEAD unchanged b2f9771.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **Files moved.** 4 (approved batch only). **Code/prompts/
+DEFAULT_ALLOWLIST/buyer copy/routes/DB schema/reconciliation.** Untouched (docs-only).
+
+**Repo before/after.** dai b2f9771 -> unchanged. dai-vault 179666f -> uncommitted (4 renames + this entry) then
+committed. Push: per instruction.
+
+**Risks/deferred.** ~14 top-level exec docs still unmigrated (default-allowlist-widening, starter-missing-canary-
+confirmation, live/targeted/controlled capture, prompt-routing-coverage-matrix, apply-agentrun-migration, prompt-
+migration-closeout, the 2 endpoint reports, patterns, readiness/gate reconciliation, state synopsis). reports/ now 8.
+
+**Next slice.** If 824818 Final -> Outcome Reconciliation Follow-up v6 (per-run 28bd433e, NOT identity reconcile).
+Else -> OKF Backfill Batch v6 (remaining capture/allowlist/canary reports -> reports/).
+
+**Discipline.** grep-first before+after; only approved 4-file asymmetric batch moved; git mv preserves history;
+9-field front matter type==folder, status + repos accurate per doc; wikilinks/rolling-log untouched; YAML
+validated; docs-only; no paid calls; no reconciliation.

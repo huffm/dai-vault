@@ -1,3 +1,22 @@
+---
+title: "Asymmetric Registry Canary v1"
+type: "evidence-report"
+date: "2026-06-30"
+status: "complete"
+project: "DAI"
+slice: "Asymmetric Registry Canary v1"
+repos:
+  dai: "tests-only"
+  dai-vault: "docs-only"
+tags:
+  - prompt-registry
+  - provenance
+  - asymmetric
+related:
+  - "06 Execution/reports/asymmetric-overlay-byte-alignment-v1.md"
+  - "06 Execution/reports/paid-asymmetric-canary-v1.md"
+---
+
 # Asymmetric Registry Canary v1 -- Evidence Report
 
 **status:** complete (non-paid canary verified; promotion blocker identified; tests-only, not pushed)
