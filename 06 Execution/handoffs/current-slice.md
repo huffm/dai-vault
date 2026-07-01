@@ -12318,3 +12318,58 @@ reassessment -> paid cohort ONLY behind the approval gate.
 
 **Discipline.** planning only; free path prioritized over spend; free StatsAPI probe only; cohort options with cost/
 evidence tradeoffs + hard approval gate; new doc born in plans/ per OKF; docs-only; no paid calls/game runs/writes.
+
+# Pre-Settlement Hardening v1
+
+**slice:** measurement infrastructure to make Follow-up v7 safer + the pooled reassessment more informative
+**status:** complete 2026-07-01 (code+tests in dai; docs in dai-vault; NO decision-behavior change; not pushed at write time)
+**repos touched:** `dai` (code+tests). `dai-vault` (plan + diagnostic + this entry).
+
+**Posture.** No paid calls, no game runs, no reconciliation writes, no prompt/allowlist/confidence/advertised-
+strength/source/buyer/model changes, no DB migration. Read-only tooling + additive read-only export + tests + docs.
+
+**1. Plan doc.** NEW 06 Execution/plans/pre-settlement-hardening-plan-v1.md (options, order, approval boundaries,
+non-actions, acceptance).
+
+**2. Collision pre-check (read-only).** NEW ReconcilePrecheck.cs (pure classifier: NoActiveRun / IdentitySafe /
+PerRunRequired + likely-backlog = unreconciled active runs). NEW GET /api/agent-runs/reconcile-precheck?
+sourceProvider&externalGameId (read-only; writes nothing; active = ExclusionReason==null). +4 unit tests. Live: 824818
+-> PerRunRequired, 2 active, 1 unreconciled (3ade423e; 28bd433e already settled in v6). De-risks v7.
+
+**3. Pooled reassessment tool (read-only).** NEW app/services/pooled_calibration.py (pure summary by route/
+confidence-bucket/lean/slate/market-agreement; reports per-bucket n; conclusionsAllowed gated on >=3 slates +
+enriched_market_missing>=1 + bucket n>=15 + market-disagreement>=2). NEW scripts/pooled_calibration_report.py CLI.
++5 tests. Live end-to-end: enriched_backed_depth 16 = 10/6 = 0.625; conclusionsAllowed FALSE (correct: enriched_
+market_missing=0, buckets<15).
+
+**4. Market signal in calibration export (additive, read-only).** MarketSnapshotBatch already PERSISTS the
+consensus -> exporter left-joins by LinkedAgentRunId (latest by FetchedAtUtc). Added to PromptRouteCalibrationRow:
+marketConsensusSide, marketMedianHome/AwayImpliedProb, marketBookCount, marketAgreement (LeanSide vs ConsensusSide;
+null unless both present). No migration. +3 exporter tests. Live: all 263 rows carry the keys; 72 populated;
+UNLOCKED the DAI-vs-market read NOW -> disagreement n=4 (2/2 = 0.50), previously impossible to assess.
+
+**5. Confidence diagnostic (read-only, tests-only).** NEW 06 Execution/diagnostics/confidence-calibration-registry-
+path-diagnostic-v1.md. Finding: NOT a defect, NOT a registry bypass. Calibration is a single uniform grounding-
+ratio dampening in SportsEvaluator (calibrated = Clamp(analyzer * Dampening, Min, Max); fully-grounded Dampening
+1.00 -> aConf==conf; partial 0.90 -> 0.75->0.675 / 0.80->0.72, matching the observed legacy shrink exactly). Driver
+= grounding completeness (evidenceRichness vs competition max), not the prompt path. +2 characterization tests.
+
+**Verification.** dai build 0/0. C# targeted 123 passed (ReconcilePrecheck|PromptRouteCalibration|SportsEvaluator|
+PromptRouteProvenance|AgentRunsController). python 20 passed (pooled 5 + export 15). Live: /metrics BYTE-IDENTICAL
+(95/84/11, matched 51, unmatched 33, matchRate 0.6071) -> no decision-behavior change; /rows gains market fields;
+reconcile-precheck works. 0 reconciliation writes (outcomes still 95).
+
+**Non-actions (confirmed).** no paid calls; no game runs; no reconciliation writes; no prompt/allowlist/confidence-
+tuning/advertised-strength/source/buyer/model changes; no DB migration/schema mutation. No decision behavior changed.
+
+**Repo before/after.** dai b2f9771 -> uncommitted (6 src/test + 3 new files) then committed. dai-vault dcf2dfb ->
+uncommitted (2 docs + this entry) then committed. Push: per instruction.
+
+**Findings.** collision pre-check READY (v7-safe). pooled reassessment READY (one-command). market export AVAILABLE
+NOW (disagreement n=4). confidence diagnostic RESOLVED (uniform grounding dampening; not a defect; no fix).
+
+**Next slice.** Outcome Reconciliation Follow-up v7 once 07-02 games Final (use reconcile-precheck per gamePk) ->
+pooled reassessment (new tool + market field) across >=3 slates -> paid cohort only behind the approval gate.
+
+**Discipline.** measurement infra not tuning; read-only helpers + additive read-only export; grounded diagnosis
+(no fix); TDD (11 new tests); /metrics byte-identical proof; no writes; new docs born in plans/ + diagnostics/.
