@@ -11599,3 +11599,59 @@ endpoint.
 **Discipline.** Smallest endpoint (reused existing exporter); read-only; additive nullable fields; no metrics/
 provenance/schema/prompt/allowlist/buyer change; no reconciliation writes; no paid calls; no dashboards/UI; new doc
 uses OKF front matter.
+
+# Outcome Reconciliation Follow-up v4 + Calibration Delta v1
+
+**slice:** settle the now-Final 06-30 backlog slate; compute the before/after calibration delta
+**status:** complete 2026-07-01 (10 of 20 backlog reconciled via API guards; docs-only; not pushed at write time)
+**repos touched:** `dai` unchanged (`1a2ddf2`, no code). `dai-vault` (2 new docs + this entry).
+
+**Start state.** dai clean/synced 1a2ddf2 (0/0). dai-vault clean/synced 26469bc (0/0). Synopsis excluded.
+DEFAULT_ALLOWLIST unchanged (4). devcore-sql was Exited(255) after Docker stop -> `docker start` healthy on :1433.
+API built 0/0, ran on :5007 (launchSettings forced 5007 over ASPNETCORE_URLS; /health ok). FastAPI NOT started.
+
+**Probe.** Free StatsAPI schedule (all 20 gamePks): 10 Final (entire 06-30 slate), 10 non-Final (824818 07-01 +
+nine 07-02). Gate: >=1 Final -> proceed. Scores verbatim from StatsAPI. No paid call.
+
+**Collision pre-check (/rows, active only).** 9 Final gamePks -> single active run (SingleMatch). 825066 -> 2
+active runs (backlog 25bd433e + non-backlog 37de423e) -> would be MultipleMatches; reconciled ONLY 25bd433e via
+per-run /outcome, left 37de423e untouched.
+
+**Reconcile.** 9x identity /reconcile (all SingleMatch, wrote outcome+eval): 822793, 823122, 823528, 824096,
+824175, 824338, 824661, 824907, 824984. 1x per-run /{25bd433e}/outcome for 825066 (home_win 8-2). 0 integrity
+422s. 10 non-Final left untouched.
+
+**Directional record.** 8 directional (all enriched_market_backed_depth) = 4 correct / 4 incorrect = 0.500.
+2 no-decision (824338 starter_missing_backed_depth, 825066 starter_missing_missing) = inconclusive.
+
+**Metrics delta.** totalRows 263 (flat). reconciledRows 76->84 (+8 directional). noDecisionRows 8->10 (+2).
+total outcomes 84->94 (+10 = exactly the 10 settled). unreconciled 179->169. matched 47->51. unmatched 29->33.
+matchRate 0.6184->0.6071 (0.50 batch dilutes). enriched_market_backed_depth route: 15/15 reconciled, matched 10 /
+unmatched 5 / matchRate 0.667; confUnmatched 0.760 > confMatched 0.745 (confidence still non-predictive).
+
+**Calibration Delta v1 (gate-honest, Frame 2 not Frame 1).** conf 0.75 -> 0.50, conf 0.80 -> 0.50 (non-predictive).
+home-lean 2/5=0.40 vs away-lean 2/3=0.667; 3 of 4 misses = leaned-home-away-won (home bias persists, matches v3).
+Gate 4 NOT met (n=8 fresh / n=15 route). NO tuning, NO model swap, NO buyer claim. This is a delta, not
+Calibration Assessment v4.
+
+**Backlog verification.** /rows after: 10 backlog reconciled, 10 pending (824818 + nine 07-02). 824818 also shares
+its gamePk with non-backlog 3ade423e (+ backlog 28bd433e) -> MultipleMatches on settle; use per-run /{28bd433e}.
+
+**Paid calls.** NONE. **Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.** Unchanged (4). **Schema/prompts/registry.**
+Untouched. **Doc changes.** NEW (OKF front-mattered) outcome-reconciliation-follow-up-v4.md +
+04 Products/sports-v1/calibration/calibration-delta-v1.md + this entry.
+
+**Repo before/after.** dai 1a2ddf2 -> unchanged. dai-vault 26469bc -> uncommitted (2 docs + this entry).
+Commit: docs-only, pending. Push: per instruction.
+
+**Risks/deferred.** 10 backlog runs pending (gate on StatsAPI Final; 824818 next, needs per-run 28bd433e).
+37de423e (825066) stays MultipleMatches until excluded/reconciled. Route read still under Gate 4. API +
+devcore-sql left running; stop when done.
+
+**Next slice.** Outcome Reconciliation Follow-up v5 once 824818 (07-01) is Final (per-run 28bd433e), then the
+nine 07-02 games as they finalize (first enriched_market_missing directional read). Non-time-gated alt: Registry
+Assembly Error Diagnostic v1.
+
+**Discipline.** Read-only probe; reconcile only Final; scores verbatim; collision pre-check before writes; per-run
+fallback for MultipleMatches; no paid calls; no prompt/schema/allowlist/buyer change; gate-honest calibration read;
+OKF front matter on new docs.
