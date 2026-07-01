@@ -12275,3 +12275,46 @@ Live Calibration Cohort Planning v1 (planning only, unpaid) to design an informa
 **Discipline.** analysis + recommendation only; sample-size-honest (no overclaim from n=8/n=16); exactly one
 primary action; explicit non-actions; endpoint cross-check; docs-only; no paid calls/game runs/reconciliation
 writes; new doc OKF-front-mattered.
+
+# Live Calibration Cohort Planning v1
+
+**slice:** unpaid planning for the next calibration sample-acquisition; NO paid capture authorized
+**status:** complete 2026-07-01 (docs-only, planning only; no writes; not pushed at write time)
+**repos touched:** `dai` unchanged (`b2f9771`). `dai-vault` (1 new plan doc + this entry).
+
+**Posture.** Operationalizes calibration-result-review-v1 Decision Option 1 (no system change yet). Free path first:
+the single most informative missing datum -- the enriched_market_missing directional read (n=0) -- is already
+captured & pending in the 07-02 backlog (823442/823765/823119, lean home) and settles for $0 via Follow-up v7. So
+NO paid cohort until v7 + a pooled reassessment (>=3 slates).
+
+**Free candidate probe (StatsAPI schedule, no paid call).** 07-03: 13 games, 2 both-probables (enriched-starter
+cand.), 6 one, 5 none. 07-04: 15 games, 3 both-probables. Insight: enriched-starter pool fills ~24h out -> a real
+enriched cohort is selected the day before, not days ahead. Market dimension (backed_depth vs missing) not knowable
+from schedule (needs odds depth at capture).
+
+**Paid-call model.** ~1 paid model call per game analyzed; cohort of N games ~= N paid calls.
+
+**Cohort options (illustrative, NONE authorized).** A: enriched_market_missing top-up, 5-6 games/~5-6 calls (thin
+market). B: third enriched_backed_depth slate, 8-10 games/~8-10 calls (deep market, balanced leans). C: combined
+discrimination slate, 10-12 games/~10-12 calls (both market depths + balanced). If a paid cohort is later justified,
+prefer B or C (attacks per-bucket n + home/away split). A is a narrow fallback if enriched_market_missing still
+empty after v7.
+
+**Sequencing.** (1) 07-02 Final -> Follow-up v7 (free). (2) pooled reassessment docs-only. (3) go/no-go on paid
+capture only if a named gap remains; bring concrete candidates + regimes + exact paid-call count; PAUSE for
+explicit approval before any paid call.
+
+**Explicit non-actions.** No paid calls, game runs, reconciliation writes, prompt/allowlist/confidence/advertised-
+strength/source/schema/buyer/model changes. No slate committed. Approval gate is hard.
+
+**Paid calls.** 0. **Game runs.** 0. **Reconciliation writes.** 0. **Buyer-facing.** NONE. **DEFAULT_ALLOWLIST.**
+Unchanged (4). **Code/prompts/schema/model.** Untouched.
+
+**Repo before/after.** dai b2f9771 -> unchanged. dai-vault 7607c89 -> committed (this plan). Push: per instruction.
+**Doc:** NEW 06 Execution/plans/live-calibration-cohort-planning-v1.md (OKF front matter, type plan; born in-folder).
+
+**Next slice.** Outcome Reconciliation Follow-up v7 when 07-02 Final (free enriched_market_missing read) -> pooled
+reassessment -> paid cohort ONLY behind the approval gate.
+
+**Discipline.** planning only; free path prioritized over spend; free StatsAPI probe only; cohort options with cost/
+evidence tradeoffs + hard approval gate; new doc born in plans/ per OKF; docs-only; no paid calls/game runs/writes.
