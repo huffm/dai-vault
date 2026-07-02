@@ -12373,3 +12373,31 @@ pooled reassessment (new tool + market field) across >=3 slates -> paid cohort o
 
 **Discipline.** measurement infra not tuning; read-only helpers + additive read-only export; grounded diagnosis
 (no fix); TDD (11 new tests); /metrics byte-identical proof; no writes; new docs born in plans/ + diagnostics/.
+
+# Outcome Reconciliation Follow-up v7 (partial: 1 of 9 settled, 8 time-deferred)
+
+**slice:** settle the nine 07-02 backlog games when Final; pooled reassessment
+**status:** partial complete 2026-07-02 ~16:40 ET (1 settled, 2 live + 6 pre-game deferred to v7b)
+**repos touched:** `dai` unchanged (`6c13b1d`, post boundary-hardening arc: exclusion visibility f7be54e,
+exposure hardening 1cc67c4, auth boundary 9520f8e, msal login 2679eaf, market tenant scoping 6c13b1d --
+all pushed). `dai-vault` docs-only (reconciliations/outcome-reconciliation-follow-up-v7.md + this entry).
+
+**Probe (statsapi, ~20:33Z).** 1 Final: 823442 PIT@PHI 6-1 away. 2 Live (823765 CIN@MIL, 824335 MIA@COL),
+6 pre-game/scheduled. Services cold-started from HEAD (docker devcore-sql + api 6c13b1d, dev bypass --
+first settlement pass through the new auth boundary, worked as designed).
+
+**Reconcile.** precheck 823442 SingleMatch -> identity /reconcile away_win 1-6 statsapi_final ->
+evaluatedRunId f940433e evalStatus INCORRECT (lean home conf 0.675, route starter_enriched_market_missing).
+FIRST directional settlement on enriched_market_missing: 0/1, another leaned-home-away-won miss.
+Metrics: reconciled 84->85, unmatched 33->34, matchRate 0.6071->0.6000 (51/85), outcomes 95->96.
+
+**Pooled reassessment (read-only).** 96 reconciled / 85 directional / 10 slates. Gates: slates MET,
+enriched_market_missing n=1 MET (barely), market-disagreement 4/2 MET, confidence buckets n>=15 NOT MET
+(only 0.75 bucket qualifies, n=61) -> conclusionsAllowed FALSE. Descriptive: overall 0.600; 0.80 bucket
+0.500 (top band still coin flip); home leans 0.574 vs away 0.667 (bias persists); market-agree 0.634
+(n=41) vs disagree 0.500 (n=4). VERDICT: no tuning, continue measurement.
+
+**Next.** v7b after ~2026-07-03T05:00Z: settle remaining finals (re-precheck each; expected +2 directional
+823765/823119 home-leans + 6 no-decision), re-run pooled report. No paid calls, no denominator changes.
+
+**Safety.** paid 0; new runs 0; writes 1 (final+identity-safe); migrations 0; prompt/decision/buyer none.
