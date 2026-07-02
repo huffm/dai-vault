@@ -12401,3 +12401,25 @@ enriched_market_missing n=1 MET (barely), market-disagreement 4/2 MET, confidenc
 823765/823119 home-leans + 6 no-decision), re-run pooled report. No paid calls, no denominator changes.
 
 **Safety.** paid 0; new runs 0; writes 1 (final+identity-safe); migrations 0; prompt/decision/buyer none.
+
+# Outcome Reconciliation Follow-up v7b (partial: 1 more settled, 7 time-deferred)
+
+**slice:** settle remaining eight 07-02 games when Final; rerun pooled reassessment
+**status:** partial complete 2026-07-02 ~17:35 ET (closed on operator instruction; poller stopped)
+**repos touched:** `dai` unchanged (`6c13b1d`). `dai-vault` docs-only (reconciliations/v7b + this entry).
+
+**Probe (~21:31Z).** Final: 823765 CIN@MIL 7-2 away. Live: 824335 (COL 12-4). 6 pre-game. A background
+all-final poller (deadline 06:30Z) was armed then stopped when the operator closed the slice.
+
+**Reconcile.** precheck 823765 SingleMatch -> identity /reconcile away_win 2-7 statsapi_final ->
+fc40433e evalStatus INCORRECT (lean home 0.675, enriched_market_missing). **Route now 0/2, both
+leaned-home-away-won.** Metrics: reconciled 85->86, unmatched 34->35, matchRate 0.6000->0.5930 (51/86).
+
+**Pooled rerun.** 97 reconciled / 86 directional / 10 slates. conclusionsAllowed FALSE (same gate:
+confidence buckets <15 except 0.75 n=61). Descriptive: overall 0.593; 0.80 bucket 0.500; home 0.5645
+(n=62) vs away 0.6667 (n=24); market-agree 0.634 / disagree 0.500 (n=4). VERDICT: no tuning.
+
+**Next.** v7c after ~2026-07-03T05:30Z: settle remaining 7 (823119 = third enriched_market_missing
+home-lean -> route n=3; six no-decision), re-precheck each, rerun pooled report.
+
+**Safety.** paid 0; new runs 0; writes 1 (final+identity-safe); migrations 0; prompt/decision/buyer none.
