@@ -12501,3 +12501,39 @@ buyer / denominator; do NOT backfill the 7 rows.
 
 **Safety.** paid 0; new runs 0; writes 0; migrations 0; prompt/prompt-selection/decision/buyer none;
 denominator byte-identical; historical rows not backfilled.
+
+# v8 Targeted Measurement Cohort Plan (approval-gated; no spend)
+
+**slice:** design the next paid measurement cohort; do NOT execute. planning + approval packet only.
+**status:** complete 2026-07-03. `dai` unchanged (beed3fc, residue contract already committed last slice);
+`dai-vault` docs-only.
+
+**Phase 1 (commit) already done.** residue contract was committed the prior turn: dai `beed3fc`, dai-vault
+`fbec358` (both main, unpushed). this slice adds only the v8 plan doc + this entry.
+
+**Need.** pooled after v7c: 104/87/17/10, conclusionsAllowed FALSE. blocking gate = a confidence bucket
+beyond 0.75 reaching n>=15; only 0.75 (n=61) qualifies, next-closest 0.80 (n=12, +3 needed). thin:
+enriched_market_missing n=3, market-disagree n=4, away-lean n=24. calibration NOT justified (buckets thin/
+non-monotonic); prompt-selection hardening NOT justified (no defect).
+
+**Discovery (free StatsAPI).** today 07-03; 07-04 slate = 15 games / 14 both-probable (~24h window).
+starter dim schedule-predictable; MARKET dim (backed_depth vs missing) NOT -- depends on odds captured at
+generation (07-02 came out market_missing). paid unit = gpt-4o-mini ($0.15/$0.60 per 1M) ~= $0.002/call;
+dollar cost negligible, real limit = OpenAI quota + discipline.
+
+**Options.** A: 5 games enriched_market_missing (~$0.01, does NOT move 0.80 gate). B [RECOMMENDED]: 10
+games backed_depth w/ market capture (~$0.02; 0.80 12->~14-16, backed_depth route 16->~26, away/market
+samples). C: parallel candidate arm NOT useful (nothing behavioral is changing).
+
+**Recommended packet.** Option B, 10 named 07-04 gamePks (823526 822882 823118 824171 824903 824092 825063
+823932 824415 824012), max 10 paid calls, ~$0.02. canary-first stop-condition: generate 1-2, check
+selectedDataRegime; if market_missing not backed_depth -> STOP (capture broken), fall back to A. settle via
+canonical residue contract (precheck -> /reconcile, source=statsapi_final + sourceRef + notes); verify /rows
+shows 0 new thin rows.
+
+**Next.** v8 EXECUTION slice (paid) -- only after operator "approved" with final gamePks; runs the cohort,
+settles via residue contract, reruns pooled reassessment + artifact residue analysis. do NOT tune / change
+prompt-selection / decision / buyer / denominator / schema; do NOT backfill; do NOT add CaptureMode.
+
+**Safety.** paid 0; new runs 0; writes 0; migrations 0; prompt/prompt-selection/decision/buyer none;
+denominator unchanged; no backfill. no code changed -> tests unchanged (1043/1043 stands).
