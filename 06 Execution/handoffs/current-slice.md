@@ -12423,3 +12423,42 @@ confidence buckets <15 except 0.75 n=61). Descriptive: overall 0.593; 0.80 bucke
 home-lean -> route n=3; six no-decision), re-precheck each, rerun pooled report.
 
 **Safety.** paid 0; new runs 0; writes 1 (final+identity-safe); migrations 0; prompt/decision/buyer none.
+
+# Outcome Reconciliation Follow-up v7c (no new writes: backlog was already auto-settled; verified + reassessed)
+
+**slice:** settle remaining seven 07-02 games when Final; rerun pooled reassessment
+**status:** complete 2026-07-03 ~16:04Z. **zero reconciliation writes by this pass.**
+**repos touched:** `dai` unchanged (`6c13b1d`). `dai-vault` docs-only (reconciliations/v7c + this entry).
+
+**Corrected identity.** the *corrected* v7b handoff was itself partially stale: it framed 7 games as
+unreconciled, but all 7 were already settled by an out-of-process poller burst at
+**2026-07-03T15:39:13-16Z** (Source=statsapi_final, but SourceRef/Notes NULL -- provenance-thin). the
+stack was down at session start; the burst predates this session. nothing to write.
+
+**Services.** brought up Docker (server 29.1.3), devcore-sql (SQL ready), DevCore.Api from HEAD
+(Development, /health 200 :5007). API has no IHostedService -> cannot auto-settle; burst was external.
+
+**Verify (no writes).** per-game precheck: each activeRunCount 1 / unreconciledActiveCount 0 /
+hasOutcome true -> a /reconcile would 409. StatsAPI: all 7 Final, every score matches the settled
+outcome. **823119 LAA@SEA 0-1 SEA home win, artifact lean home (Mariners, SP edge), eval CORRECT ->
+enriched_market_missing route 0/2 -> 1/3** (first correct directional; v7b "another miss" was wrong).
+six lean-null inconclusives, all starter_missing_market_missing (clean abstention).
+
+**Pooled rerun.** 104 reconciled / 87 directional / 17 no-decision / 10 slates. matched 51->52,
+matchRate 0.5930->0.5977. gates: slates MET, enriched_market_missing n=3 MET, market-disagree 4/2 MET,
+confidence buckets <15 except 0.75 (n=61) NOT MET. **conclusionsAllowed FALSE** (unchanged). home
+0.5714 (n=63) vs away 0.6667 (n=24); 0.80 bucket 0.500 (n=12). VERDICT: no tuning.
+
+**Residue.** 6/6 no-decisions = healthy abstention; 1/1 directional = verified hit; sole defect =
+provenance-thinness on the 7 poller writes (settlement-writer path, non-semantic, NOT prompt-selection).
+no refusals/collisions/dupes.
+
+**Decisions.** calibration NOT justified (gate closed, buckets thin). prompt-selection hardening NOT
+justified (no prompt-selection defect proven; provenance gap is writer-path, deferred). no changes made.
+
+**Next.** v8: keep re-running pooled report until a bucket beyond 0.75 reaches n>=15; separately give
+the all-final poller SourceRef/Notes parity (provenance-only). do not tune, no prompt/decision/buyer/
+denominator changes while conclusionsAllowed FALSE.
+
+**Safety.** paid 0; new runs 0; writes **0** (backlog already settled; precheck gated to no-write);
+migrations 0; prompt/decision/buyer none; denominator untouched.
