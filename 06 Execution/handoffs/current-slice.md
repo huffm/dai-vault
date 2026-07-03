@@ -12660,3 +12660,35 @@ game, confirm registry provenance on /rows, THEN decide whether to route the res
 
 **Safety.** paid model calls 0; new runs 0; writes 0; migrations 0; prompt text 0; live-path bytes 0; default
 selection behavior 0; registry default off; decision 0; buyer 0; denominator 0; backfill 0; v8 calls spent 0 (8 left).
+
+# Paid Registry Routing Canary v1 -- PASS (1 paid call; registry routing validated end-to-end)
+
+**slice:** run exactly 1 paid registry canary on a source-readiness-eligible backed_depth game. `dai`
+unchanged (a923db4); `dai-vault` docs-only.
+
+**Setup.** operator-approved 1 run. agent-service restarted with DAI_MLB_REGISTRY_PROMPT_CANARY=1 process-scoped
+(NEVER written to .env), then restarted DEFAULT-OFF after the run. v8 untouched (8 calls).
+
+**Screen (23:31Z).** markets posted since 21:00Z -> 9/10 approved games now eligible for
+starter_enriched_market_backed_depth (4-6 book depth). selected 822882 DET@TEX (6 books, pre-game 07-04T20:05Z).
+
+**Run.** c849433e (DET@TEX 822882), 1 paid gpt-4o-mini call, confidence 0.75. AgentRuns 265->266.
+
+**Provenance = ALL PASS.** promptSource=registry, selectedDataRegime=observedDataRegime=starter_enriched_market_backed_depth,
+selectedPromptPath=registry, recipeId=mlb.pregame.analysis.starter_enriched_market_backed_depth.v1 @ v1,
+assembledHash=267ca800...e327 (sha256), registryAuthoritativeEnabled+regimeAllowlisted=true, fallbackReason/Detail
+null, attributionStatus=complete, livePromptTemplateKey null. log: source=registry fallback=None. /rows shows a real
+registry ROUTE row (promptRouteKey ...@v1::starter_enriched_market_backed_depth, NOT unknown). registry used only
+after byte-equality with live -> model input byte-identical. (structured leanSide null on this run -> would settle
+inconclusive; orthogonal to the routing validation.)
+
+**Settlement.** not final (07-04 pre-game) -> watch plan; settle 822882 via residue contract when Final.
+
+**Decision = PASS.** registry-authoritative routing works end-to-end on a real run; SAFE to route more
+source-readiness-eligible backed_depth games (identical bytes; only provenance/route-label differ). NOT a
+promotion to default/other regimes. v8 rec: resume remaining v8 as REGISTRY-ROUTED backed_depth cohort (real
+route rows + 0.80 bucket) with a separate go; env scoped per run; do NOT default-enable. 8 v8 calls remain.
+
+**Safety.** paid model calls 1 (approved canary); new runs 1; writes 0; migrations 0; prompt text 0; live default
+0 (reverted default-off); registry default 0 (.env untouched); decision 0; buyer 0; denominator 0; backfill 0;
+v8 remaining calls spent 0.
