@@ -12462,3 +12462,42 @@ denominator changes while conclusionsAllowed FALSE.
 
 **Safety.** paid 0; new runs 0; writes **0** (backlog already settled; precheck gated to no-write);
 migrations 0; prompt/decision/buyer none; denominator untouched.
+
+# Canonical Reconciliation Residue Contract v1 (settlement-writer hardening)
+
+**slice:** make it impossible / test-failing for any settlement writer to persist an outcome without
+complete provenance (source + sourceRef + notes). non-semantic hardening.
+**status:** complete 2026-07-03. `dai` code+tests (UNCOMMITTED, not pushed); `dai-vault` docs-only.
+
+**Writer inventory.** exactly ONE production write path: `AddOutcomeAndEvaluation` in AgentRunsController,
+via `POST /{id}/outcome` and `POST /reconcile`. NO poller/auto-settle/IHostedService anywhere. dev
+harness `reconcile-calibration-outcomes.ps1` POSTs via the API with sourceRef=$null (the defect
+example). raw-SQL `purge-dev-agent-runs.ps1` is delete-only/localhost-guarded (not a settler).
+
+**Burst origin.** the 15:39Z burst = incomplete canonical-route usage, NOT a bypass. evidence: Source=
+statsapi_final w/ null sourceRef/notes; RunEvaluator-exact eval; universal API ms-gap resolved<evaluated
+signature on all 104 rows. unknown: no request-audit/writer-path column, so exact process unprovable.
+
+**Contract.** required residue = source+sourceRef+notes (non-blank), enforced by SettlementProvenance +
+SettlementProvenanceRefusalOrNull (422) placed before the write, after idempotency + direction-integrity.
+non-writing paths unaffected. no-decision (inconclusive) settlements ARE writes -> require residue.
+writer-path/capture-mode carried in Notes (no migration). idempotent retry keeps residue stable.
+
+**Changes.** new SettlementProvenance.cs; controller guard on both endpoints; additive
+settlementSource/SourceRef/Notes on /rows export (metrics-neutral); PS1 harness parity (populates
+SourceRef+Notes via $PassLabel). 7 new tests + existing writing tests updated. ADR 0006 + slice doc.
+
+**Verify.** DevCore.Api.Tests 1035->1043 all green; /metrics BYTE-IDENTICAL (263/87/52/0.5977); /rows
+now surfaces residue and shows the 7 burst rows as source=statsapi_final ref=null notes=null (auditable).
+0 reconciliation writes. no python/angular touched.
+
+**Decisions.** calibration NOT justified (gate still closed). prompt-selection hardening NOT justified
+(no prompt-selection defect; provenance gap was settlement-writer-path, now fixed non-semantically).
+
+**Next.** v8 measurement-only batch: top up enriched_market_missing (n=3->) + 2nd backed_depth slate
+with market odds captured; gate to calibrate = a confidence bucket beyond 0.75 reaching n>=15 +
+conclusionsAllowed true; hard paid-call approval gate. do NOT tune / change prompt-selection / decision /
+buyer / denominator; do NOT backfill the 7 rows.
+
+**Safety.** paid 0; new runs 0; writes 0; migrations 0; prompt/prompt-selection/decision/buyer none;
+denominator byte-identical; historical rows not backfilled.
