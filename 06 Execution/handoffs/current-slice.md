@@ -12624,3 +12624,39 @@ future: MlbStarterClient schedule->feed/live starter fallback (data-robustness, 
 
 **Safety.** paid model calls 0; paid odds calls ~10 (read-only screen); new runs 0; writes 0; migrations 0;
 prompt/selection/decision/buyer/denominator NONE; registry routing NO; backfill NO.
+
+# Registry-Authoritative Routing Canary v2 (validation; dry-run only; routing stays DEFAULT-OFF)
+
+**slice:** validate source ingredients -> observedDataRegime -> selectedDataRegime -> registry recipe ->
+assembled prompt -> provenance, without weakening the live path. `dai` test-only (+2 dry-run tests);
+`dai-vault` docs-only.
+
+**Inventory.** manifest v2: 10 shadow recipes (base + starter overlay + market overlay), sha256 hash-verified
+on load. DEFAULT_ALLOWLIST = 4 regimes incl. the v8 target starter_enriched_market_backed_depth. cardinal
+invariant: the model NEVER receives bytes different from the live prompt (registry used ONLY when byte-identical,
+else fail-closed).
+
+**Dry-run (no model).** decide_model_prompt(enabled=True) on real fixtures for backed_depth -> promptSource=
+registry, selectedDataRegime + recipeId (...backed_depth.v1) + version + 64-char assembledHash + selectedPromptPath=
+registry + attributionStatus=complete, and msg==live (BYTE-IDENTICAL). added 2 tests asserting the FULL
+PromptRouteDecision provenance (prior tests only checked the to_info dict). fail-closed proven for
+disabled/non-allowlisted/mismatch/assembly_error with specific reasons.
+
+**Live vs registry.** bytes IDENTICAL for backed_depth (registry recipe reproduces build_mlb_user_message
+byte-for-byte). NOT a prompt-behavior change -- only which builder + provenance. /rows already distinguishes
+registry runs (promptSource, selectedDataRegime, recipeId/version, selectedPromptPath) -- no read-model change.
+
+**Verify.** pytest 427/427 (registry canary 21/21). 0 model calls, 0 writes, routing DEFAULT-OFF, no live-path
+byte change, /metrics untouched. ADR 0009.
+
+**Readiness = OPTION C paid-canary-ready (backed_depth).** approval packet: 1 v8-eligible backed_depth game
+(source-readiness eligible), env DAI_MLB_REGISTRY_PROMPT_CANARY=1 for the run only, expect promptSource=registry
++ selectedDataRegime populated; stop if it falls back to live. dovetails with v8 (gives a real backed_depth
+ROUTE row). NOT run -- needs explicit operator approval.
+
+**v8 recommendation = split, evidence-first.** when markets post: run 1 paid registry canary on a backed_depth
+game, confirm registry provenance on /rows, THEN decide whether to route the rest of eligible v8 via registry
+(route-labeled) or keep live-path (unknown route, still moves 0.80 bucket). do NOT enable routing in default config.
+
+**Safety.** paid model calls 0; new runs 0; writes 0; migrations 0; prompt text 0; live-path bytes 0; default
+selection behavior 0; registry default off; decision 0; buyer 0; denominator 0; backfill 0; v8 calls spent 0 (8 left).
