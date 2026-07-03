@@ -12537,3 +12537,31 @@ prompt-selection / decision / buyer / denominator / schema; do NOT backfill; do 
 
 **Safety.** paid 0; new runs 0; writes 0; migrations 0; prompt/prompt-selection/decision/buyer none;
 denominator unchanged; no backfill. no code changed -> tests unchanged (1043/1043 stands).
+
+# Prompt Route Attribution Contract v1 (attribution + observability; NOT prompt selection)
+
+**slice:** make every artifact record analyzable regime/prompt-path attribution even when registry routing
+is off -- so v8's backed-depth cohort is measurement-grade without a prompt-selection change.
+**status:** complete 2026-07-03. `dai` code+tests committed local (unpushed); `dai-vault` docs-only.
+
+**Root cause.** decide_model_prompt short-circuits when the canary is DEFAULT-OFF -> no regime stamped ->
+selectedDataRegime null, pooled buckets it "unknown". expected config behavior, not a defect. a deterministic
+regime classifier already existed (dataregime.py) but ran only when routing was on.
+
+**Fix (non-semantic).** stamp observedDataRegime (regime the INPUTS support) on EVERY run incl. the live
+path, reusing the existing classifier; keep selectedDataRegime as SELECTION-only (null on live, not
+overloaded). add selectedPromptPath / livePromptTemplateKey (truthful live marker, never a fabricated recipe)
+/ attributionStatus / attributionReason. flows decision -> provenance header -> C# -> /rows (additive). pooled
+tool gains additive byObservedRoute beside unchanged byRoute. registry routing stays DEFAULT-OFF.
+
+**Verify.** pytest 425/425; DevCore.Api.Tests 1044/1044. proven: prompt bytes unchanged (prompt==live), no
+selection/model-call/decision/buyer change; /metrics untouched; no migration/backfill.
+
+**v8 resume = SAFE.** the remaining 9 games, generated as-is, will carry observedDataRegime=
+starter_enriched_market_backed_depth (via byObservedRoute) + land in the 0.80 bucket -- WITHOUT enabling
+routing. still a PAID operator action (10-call cap stands, 1 spent, 9 left); re-run canary and confirm
+observedDataRegime on /rows before generating the rest. enabling registry routing is a SEPARATE slice, not
+required. ADR 0007 + slice doc.
+
+**Safety.** paid 0; new runs 0; writes 0; migrations 0; prompt/prompt-selection/model-input/decision/buyer/
+denominator changes NONE; registry routing enabled NO; backfill NO.
