@@ -12595,3 +12595,32 @@ cohort now = not recommended (mostly abstentions, 0.80 bucket won't move).
 **Safety.** paid model calls 1 (cum 2, cap 10, 8 unspent); paid odds-api 1; new runs 1; writes 0; migrations
 0; prompt/selection/decision/buyer/denominator NONE; registry routing NO; backfill NO; unapproved/in-progress/
 final games generated NONE.
+
+# Source Readiness Preflight Gate v1 (read-only, pre-model spend protection)
+
+**slice:** predict observedDataRegime BEFORE a paid model call, reusing the SAME retrieval as generation,
+so v8 resumes only on eligible candidates. `dai` code+tests committed local (unpushed); `dai-vault` docs.
+
+**Root cause of canary v2 (confirmed).** generation's MlbStarterClient uses schedule?hydrate=probablePitcher
+(requires BOTH probables; Yankees home TBD -> missing); the v8 free preflight used feed/live (showed Rodon)
+-- a DIFFERENT endpoint that disagreed. OddsMarketClient matches by exact team name in an ET-date window;
+odds post at different times. => the gate must reuse generation retrieval, not a parallel free endpoint.
+
+**Fix.** GET /api/agent-runs/source-readiness runs SportsRetriever.RetrieveAsync (step-2 of generation:
+write-free, pre-model) on an ephemeral throwaway artifact, then SourceReadinessClassifier predicts the regime
+(mirrors python _starter_state/_market_state/mlb_regime). eligible = identity matched + starter enriched +
+market backed_depth. NO model call, NO AgentRun row, NO snapshot.
+
+**Live screening (~21:00Z, ~20-29h pre-game).** all 10 approved games INELIGIBLE: 9 starter=enriched but
+market=missing (odds not posted yet), 1 (MIN@NYY) starter+market missing. AgentRuns 265->265 (read-only
+proven). blocker = market TIMING, not code. the gate would have saved all 8 remaining calls.
+
+**Verify.** DevCore.Api.Tests 1052/1052 (1044+8: classifier + endpoint read-only/no-writes/no-model). no
+retrieval/prompt/decision/buyer/denominator change; no migration; registry routing still off. ADR 0008.
+
+**v8 resume = WAIT then screen-then-generate.** on 07-04, a few hours before first pitch: GET /source-readiness
+per candidate, generate ONLY eligible ones, re-canary, settle via residue contract. 8 calls remain. optional
+future: MlbStarterClient schedule->feed/live starter fallback (data-robustness, deferred).
+
+**Safety.** paid model calls 0; paid odds calls ~10 (read-only screen); new runs 0; writes 0; migrations 0;
+prompt/selection/decision/buyer/denominator NONE; registry routing NO; backfill NO.
