@@ -12565,3 +12565,33 @@ required. ADR 0007 + slice doc.
 
 **Safety.** paid 0; new runs 0; writes 0; migrations 0; prompt/prompt-selection/model-input/decision/buyer/
 denominator changes NONE; registry routing enabled NO; backfill NO.
+
+# v8 Cohort Execution -- Canary Halt v2 (attribution validated live; retrieval-timing gate fail)
+
+**slice:** resume v8 under the 9-call cap, attributed canary first. **HALTED at canary again.** `dai`
+unchanged (96e1799); `dai-vault` docs-only.
+
+**Services.** restarted DevCore.Api (rebuilt, attribution /rows) + agent-service (CRITICAL: prior instance
+held pre-attribution code) on HEAD. pre-game recheck 2026-07-03T20:36Z: all 9 remaining games Scheduled.
+
+**Canary (call 2/10, 1 this session).** MIN@NYY 823526 -> c149433e. **Attribution WORKS end-to-end** (/rows:
+observedDataRegime=starter_missing_market_missing, selectedDataRegime=null, selectedPromptPath=live,
+attributionStatus=partial, livePromptTemplateKey set) -- the prior slice validated live. BUT regime =
+missing/missing, NOT backed_depth -> operator gate FAILED. conf 0.375, no lean, 2648-token prompt (empty data).
+
+**Root cause (data/timing, not code).** DevCore.Api log: home Yankees starter reads TBD in the retrieval
+endpoint (schedule feed shows Rodon); odds "no event matched" for a game ~21h out. retrieval is .NET-side,
+untouched by this slice. canary #1 (SD@LAD) got backed_depth last session -> retrieval works when data is
+available; this is availability/timing. (note: each generation also burns a the-odds-api PaidExternal call.)
+
+**Verdict = STOP.** 8 model calls unspent; did not generate the other 8; no improvising. cumulative v8 = 2
+model calls (be49433e backed_depth 0.80; c149433e missing 0.375), both unsettled (07-04, not final).
+
+**Go/no-go.** (A recommended) resume ON GAME DAY 07-04, a few hours before first pitch when starters
+confirmed + odds posted; re-canary, generate only games whose /rows shows backed_depth. (B) retrieval-
+robustness diagnostic (MlbStarterClient tbd-fallback) as a separate slice if the pattern recurs. (C) mixed
+cohort now = not recommended (mostly abstentions, 0.80 bucket won't move).
+
+**Safety.** paid model calls 1 (cum 2, cap 10, 8 unspent); paid odds-api 1; new runs 1; writes 0; migrations
+0; prompt/selection/decision/buyer/denominator NONE; registry routing NO; backfill NO; unapproved/in-progress/
+final games generated NONE.
