@@ -12692,3 +12692,31 @@ route rows + 0.80 bucket) with a separate go; env scoped per run; do NOT default
 **Safety.** paid model calls 1 (approved canary); new runs 1; writes 0; migrations 0; prompt text 0; live default
 0 (reverted default-off); registry default 0 (.env untouched); decision 0; buyer 0; denominator 0; backfill 0;
 v8 remaining calls spent 0.
+
+# Registry-Routed v8 Backed-Depth Cohort Resume v1 -- PASS 7/7 (settlement pending)
+
+**slice:** resume remaining v8 via registry routing for source-readiness-eligible backed_depth games. `dai`
+unchanged (a923db4); `dai-vault` docs-only.
+
+**Approval.** 7 gamePks (823118, 824415, 824171, 824903, 824092, 824012, 825063), max 7 calls, 8th unspent,
+env process-scoped only, default-off after, stop on any provenance failure, no replacements.
+
+**Setup.** agent-service restarted with DAI_MLB_REGISTRY_PROMPT_CANARY=1 process-scoped, then restarted
+DEFAULT-OFF immediately after generation. .env flag absent throughout. all 7 screened eligible + pre-game (00:24Z).
+
+**Generation = 7/7 PASS registry.** runs cb49433e(823118) cd49433e(824415) d049433e(824171) d649433e(824903)
+d949433e(824092) dc49433e(824012) dd49433e(825063). every run: promptSource=registry, selectedDataRegime==
+observedDataRegime==starter_enriched_market_backed_depth, recipe ...backed_depth.v1@v1, 64-hex hash,
+attributionStatus=complete, no fallback, identity matched. per-run gate would have aborted on any failure.
+/rows shows all 7 as registry ROUTE rows. AgentRuns 266->273. ALL 7 DIRECTIONAL (lean home x4 / away x3;
+conf 0.80 x3, 0.75 x4; books 5-7) -- unlike the earlier live-path canaries.
+
+**Cohort.** 7 paid calls this slice; cumulative v8 = 10 (full budget); remaining 0 (8th unspent, no replacement).
+
+**Settlement = WATCH (not final).** games 07-04T20:10Z .. 07-05T01:40Z. 0 reconcile writes. settle each via
+residue contract when Final; expect +7 directional backed_depth ROUTE rows + confidence-bucket movement.
+
+**Pooled = PENDING FINALITY** (no fabricated conclusions).
+
+**Safety.** paid 7 (cap 7); new runs 7; writes 0; migrations 0; prompt 0; default routing 0; registry default 0
+(.env untouched, reverted off); decision 0; buyer 0; denominator 0; backfill 0; unapproved 0; 8th call unspent.
