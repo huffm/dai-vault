@@ -61,7 +61,7 @@ they are informational and never a verdict input.
 
 - final = outcomeStatus (resultSide derived); evaluation from GET /api/agent-runs/{id}/evaluation.
 - divergence = marketAgreement false at decision time; flag these rows -- they are the only
-  edge-over-market signal.
+  candidate edge-over-market signal and do not imply demonstrated edge by themselves.
 - provenance = settlementSource / settlementSourceRef / settlementNotes; all three must be
   non-null on every settled row (reconciliation residue contract). a null here is a defect,
   not a formatting gap.
