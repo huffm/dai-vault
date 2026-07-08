@@ -12794,3 +12794,42 @@ preflight gotcha recorded: -GamePks must be a real array when invoked in-process
 **Next.** (1) Run Identity Hygiene v1 (824662 + 823281 duplicate-active pairs; paste-ready prompt in handoff sec 13);
 (2) Prompt Market Context Hardening v1 (approval-gated; guard baseline Pass 72 / FAIL 10 / Unclear 203);
 (3) capture cadence resumption decision after hygiene + re-approval.
+
+---
+
+## 2026-07-08 -- Run Identity Hygiene v1 (read-only audit COMPLETE; exclusions pending approval)
+
+**slice:** audit the 824662 + 823281 duplicate-active pairs per the 07-08 settlement handoff sec 13.
+closeout report: `06 Execution/reports/run-identity-hygiene-2026-07-08-v1.md`. dai unchanged `a0db824`;
+dai-vault docs-only. devcore-sql found up; DevCore.Api :5007 found DOWN, started this slice, left RUNNING;
+agent-service never started. paid model calls 0; db writes 0 (GETs + read-only SELECTs only).
+
+**Finding: a triple and a pair, not two pairs (5 rows).** 823281 (LAD@SD 06-28) has THREE active unsettled
+runs: 6a37433e (pregame, directional-contrast cohort v4 -- authoritative; guard DeliberateDivergence),
+1ede423e (real-cohort live soak, ran IN-GAME ~2h45m after first pitch, degenerate market medians
+0.091/0.971; guard DeliberateDivergence), 21de423e (registry canary confirmation run, post/late-game, no
+market; UnclearDivergence). 824662 (SD@CHC 06-29) has TWO active: 2cde423e (starter-missing regime capture,
+unsettled) + 4cbd433e (registry-routed live batch, SETTLED home_win 06-30 via explicit per-run path;
+settlementNotes already document the 250030 collision). classification: DATA HYGIENE -- evidence/capture/
+canary batches re-ran real games without post-hoc exclusion; matcher behavior is correct (MultipleMatches,
+writes nothing; demonstrated live 06-30).
+
+**Proposal (approval-gated, NOT applied):** exclude 1ede423e diagnostic; exclude 21de423e diagnostic;
+exclude 2cde423e superseded -> 4cbd433e; keep 6a37433e + 4cbd433e active. FLAG per sec 13: after exclusion,
+823281 is single-active on a DeliberateDivergence row -- a FUTURE settlement of it would create the first
+deliberate CountsAsCandidateEdge ledger entry and fire the n=7 disagreement re-projection checkpoint;
+that settlement needs its own approval and is not proposed here.
+
+**Out-of-scope discovery (documented, untouched):** duplicate-active is systemic -- 19 gamePks have >1
+active run (823281/824744 x3). worst: 823613 CHC@NYM has TWO ACTIVE SETTLED runs with OPPOSITE leans
+(200018 away / 220014 home, 1 outcome + 1 eval each) -- one game, two contradictory rows in the valid
+calibration denominator. 824818/825066 mirror the 824662 shape (1 settled + 1 unsettled active).
+recommend Run Identity Hygiene v2 for the remainder, 823613 first.
+
+**Safety.** paid 0; new runs 0; reconcile/exclude/outcome writes 0; migrations 0; prompt/gate/threshold/
+buyer/registry/capture-cadence 0; settled rows untouched (outcomes/evals 1/1 on 260023 only, unchanged).
+
+status: Run Identity Hygiene v1 read-only audit complete 2026-07-08 -- both pairs classified, exclusion
+proposal + sec-13 deliberate-ledger flag presented, awaiting operator approval; systemic duplicate surface
+documented for v2. Next: (1) operator decision on the 3 exclusions; (2) separate decision on settling
+823281/6a37433e; (3) Run Identity Hygiene v2 scope; (4) Prompt Market Context Hardening v1.
