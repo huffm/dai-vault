@@ -12762,3 +12762,35 @@ for the 7 pending 07-04/07-05 games; settle each via the residue contract when F
 **Live state:** dai `a0db824` pushed 0/0 (phantom csproj only); dai-vault at this commit (push pending approval). 07-07 cohort (823687, 824820, 822956, 822713, 823280, 824579) unreconciled -- settle when `check-settlement-finals.ps1` returns READY (~00:50 ET 07-08); readout must quote guard fields for 824820 (expect FAIL/AccidentalDivergence). Capture cadence PAUSED (resume per market-attribution-fidelity-guard-v1.md sec 10). Gate 4 FALSE (discrimination_inverted, insufficient_market_disagreement, insufficient_market_coverage).
 
 **Next:** (1) settle 07-07 cohort when READY; (2) Prompt Market Context Hardening v1 (approval-gated; baseline FAIL 10/285); (3) Run Identity Hygiene v1 (824662 + 823281 duplicate-active pairs).
+
+---
+
+## 2026-07-08 -- 07-07 capture cohort SETTLED 6/6 (coverage sub-gate now MET)
+
+**slice:** RESUME: 2026-07-07 Capture Cohort Settlement v1 (third attempt; prior two blocked at finals gate,
+timing-only). continuation-grade handoff: `06 Execution/reports/backed-depth-capture-settlement-handoff-2026-07-08-v1.md`.
+
+**Outcome.** finals gate READY 6/6 (check-settlement-finals.ps1 exit 0) -> strict preflight exit 0 (6/6 ready,
+0 warnings/blockers) -> identity /reconcile x6, SingleMatch each, full residue: **4 correct / 2 incorrect (0.6667)**.
+market-opposed row 824820 CHC@BAL settled INCORRECT (dai home Orioles 0.75 vs staged market away Cubs; final
+CHC 5 - BAL 2); live guard fields quoted in readout: FailMarketAttributionMismatch /
+prose_claims_home_but_staged_consensus_is_away / AccidentalDivergence -- accidental divergence / market-attribution
+failure, NOT a candidate edge signal (deliberate ledger still EMPTY). the lone 0.80-conf run 822713 HOU@WSH settled
+incorrect. second filled gate-4 readout: `06 Execution/reports/gate4-evidence-readout-backed-depth-capture-2026-07-07-v1.md`.
+
+**Gate-4 movement (binding, /rows, valid = settled AND ExclusionReason IS NULL).** valid-settled 116 -> 122;
+directional 98 -> 104; **market coverage 0.5918 -> 0.6154, MEETS >= 0.60 -- insufficient_market_coverage RESOLVED**;
+marketDisagreementN 5 -> 6 (ledger 2c/4i, 0.3333; needs 10; n=7 re-projection checkpoint fires on the NEXT settled
+market-opposed row); discrimination still inverted and DEEPER (delta -0.0882 -> -0.1321; gte_0.80 n=17 0.4706 vs
+0.75_0.79 n=73 0.6027). failingReasons now 2: discrimination_inverted, insufficient_market_disagreement.
+conclusionsAllowed FALSE.
+
+**Safety.** paid model calls 0 ($0.00); agent-service never started; db writes = 6 outcomes + 6 evaluations only
+(rows 285, settled 118 -> 124); no prompt/routing/confidence/gate/threshold/buyer/registry changes; capture cadence
+still PAUSED (resume needs operator re-approval per market-attribution-fidelity-guard-v1.md sec 10). services
+(docker/devcore-sql/DevCore.Api :5007) were found DOWN, started this session, left RUNNING. dai unchanged `a0db824`.
+preflight gotcha recorded: -GamePks must be a real array when invoked in-process (comma-joined string is not split).
+
+**Next.** (1) Run Identity Hygiene v1 (824662 + 823281 duplicate-active pairs; paste-ready prompt in handoff sec 13);
+(2) Prompt Market Context Hardening v1 (approval-gated; guard baseline Pass 72 / FAIL 10 / Unclear 203);
+(3) capture cadence resumption decision after hygiene + re-approval.
