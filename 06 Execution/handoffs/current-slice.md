@@ -13036,3 +13036,59 @@ status: day 1 COMPLETE 2026-07-09 ~10:30 ET. NEXT (07-10 ~10:20 ET): settle day-
 finals READY (finals gate -> preflight -> identity /reconcile, full residue), then day-2 capture
 (same runbook + no-backfill directive). 07-11: settle day-2 + gate-4 readouts + Hardened-Regime
 Baseline Measurement v1 + wrap (authorization ENDS).
+
+---
+
+## 2026-07-09 pm -- Settled Readout Phase 1 (PRE-SETTLEMENT: blocked on finals) + Prompt Observability Plan v1
+
+**settlement correctly NOT run:** finals gate BLOCKED 8/8 at 15:50Z (all day-1 games still
+Preview/Pre-Game; next check 2026-07-10T04:50Z); all 8 cohort rows unsettled (outcomeStatus null)
+and ACTIVE; dup-active sweep 0 (294/255). NO /reconcile, NO 823281, no writes of any kind. settled
+readout report deferred to the 07-10 morning pass (report will be
+`06 Execution/reports/v2-day1-settled-readout-2026-07-10-v1.md`).
+
+**822877 Unclear ROOT CAUSE CONFIRMED (corrects day-1 note):** the guard's claim source is the
+SUMMARY sentence "The consensus favors the Rangers, indicating confidence in their performance
+against the Angels." -- ONE market clause naming BOTH teams; DetectClaimedSides returns
+{home,away} -> both_market_directions_asserted. classification = **attribution CLASSIFIER
+AMBIGUITY (opponent-as-object mention)**, NOT model contradiction: every actual market claim is
+Rangers-favoring and matches staged consensus home == lean home. the day-1 "run-line Angels +1.5"
+hypothesis was WRONG -- sourceEnvelopes are never claim sources (guard reads only lean/summary/
+discern contrast+weigh; MarketAttributionFidelity.cs). candidate fix (NOT approved, backlog):
+suppress opponent-as-object tokens after "against/vs/over <team>" in DetectClaimedSides.
+
+**gate-4 pre-settlement baseline (pooled_calibration_report.py on live /rows):** valid-settled 122,
+directional 104, regions 0.75_0.79 n73 acc .589 / gte_0.80 n17 acc .4706 -> discrimination INVERTED
+delta -0.1184; marketDisagreementN 7 (needs 10); coverage 0.625 MET; conclusionsAllowed FALSE
+[discrimination_inverted, insufficient_market_disagreement]. all 8 day-1 rows are market-ALIGNED ->
+tomorrow's settlement CANNOT fire the n=10 checkpoint (agreement bucket grows to ~66, disagreement
+stays 7).
+
+**prompt observability (phase 2) PLANNED, not implemented:** plan doc
+`06 Execution/plans/prompt-observability-dashboard-v1.md`. key findings from full-stack inspection:
+(1) /artifact ALREADY returns the full 19-field PromptRouteProvenance -- frontend just never renders
+it (zero provenance/guard/settlement fields exist in apps/sports-app); (2) rendered prompt bytes are
+NOT persisted anywhere (live user message discarded post-call; assembledHash only on registry rows;
+slot values unpersisted) -- UI must say "not persisted", optional slot-values persistence contract
+deferred/approval-gated; (3) guard Evidence clause computed but DROPPED at the /rows projection
+(prose-free row doctrine) -- plan = new additive dev read GET /{id}/prompt-trace exposing evidence
+per-run while /rows stays prose-free; (4) de-vig probs recomputable derive-on-read from persisted
+MarketSnapshotBatch raw medians; (5) per-book MarketBookLine persisted but unexposed; (6) probe/
+interrogate staged facts derivable via pure BuildProbeRequest over persisted SignalFollowUps.
+dashboard attach point: dev-only /dev/artifacts page (fail-closed devToolsGuard), new Run Anatomy
+section, existing Tailwind token/badge/details patterns. NO code changed this slice.
+
+**investigation backlog (ranked, from phase-1+2 evidence):** 1. attribution-classifier
+opponent-as-object ambiguity (822877 class; cheap deterministic fix candidate, needs approval +
+TDD vs frozen baseline replay); 2. guard evidence not surfaced on any read (fixed by prompt-trace
+endpoint); 3. rendered-prompt/slot-values persistence gap (approval-gated write-path change);
+4. de-vig/book-lines observability gap (read-only, covered by plan); 5. dashboard provenance blind
+spot (frontend renders none of it; covered by plan); 6. gate interpretation: v2 cohort is 100%
+market-aligned -- disagreement growth needs future capture days; inversion not volume-purchasable.
+
+safety: 0 model calls, 0 odds-api calls, 0 db writes; dai untouched ce8f21f; registry default OFF;
+services: devcore-sql + DevCore.Api :5007 RUNNING, agent-service DOWN. vault-only changes.
+
+status: phase 1 pre-settlement analysis + phase 2 plan COMPLETE 2026-07-09 pm. NEXT: 07-10 ~10:14 ET
+session cron = settle day-1 cohort -> settled readout report -> day-2 capture (no-backfill directive
+verbatim); prompt-trace implementation awaits operator approval of the plan.
