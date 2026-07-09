@@ -190,3 +190,29 @@ Prompt Ledger Hook v1 added a cross-cutting prompt-capture hook (`06 Execution/p
 ## Skill-layer update (2026-07-05, continuation-grade handoff standard)
 
 Continuation-Grade Handoff Brief v1 made the richer, self-contained handoff format canonical and wired it by composition into three skills (no new skill; count stays 14): `dai-agent-handoff` gained a "Continuation-grade handoff brief" section that defines the concept and holds the **canonical 13-section template** (objective, outcome, repo state before/after, services, work performed, files changed, DB writes/side effects, paid calls/cost, validation proof, what did not change, open issues, recommended next slice, suggested next prompt) plus the rule "do not bury critical state in prose -- use bullets, paths, IDs, counts, commit hashes, service names, validation evidence"; `dai-slice-prompt-architect` sec 9 now requires every produced execution prompt to include a `HANDOFF BRIEF REQUIREMENT` section by default (referencing the canonical template, not restating it), and MODE 1's output structure names it; `dai-docs-architect` step I now requires a continuation-grade brief on any closeout/report/execution slice. Applies whenever an execution prompt is architected or a closeout/report is written. Template lives in `dai-agent-handoff`. Standard applied to the DAI-workspace pack (`dai/.claude/skills/`) only -- the generic `jera-workspace-skills` copy of `dai-agent-handoff` (already diverged into the light general-purpose dev-pack form) is intentionally NOT given the DAI-operational fields. Report: `06 Execution/reports/continuation-grade-handoff-skill-augment-2026-07-05-v1.md`. Docs/skills only; no runtime code or behavior changed.
+
+## Skill-layer update (2026-07-09, system-development router)
+
+DAI System Development v1 added `dai-system-development` (skill count 14 -> 15): the workflow
+router for the development operating model under `02 Platform/system-development/`. Every
+meaningful change (behavior/contract/UI/schema/doctrine-adjacent, or multi-session) starts
+from a work item (`WI-####`, local-spine mode until Azure DevOps is wired), gets an OKF spec
+with tests defined before code, executes through the unchanged slice stack
+(`dai-skill-router` gate -> `dai-slice-runner` -> TDD -> `dai-test-discipline` ->
+`dai-code-reviewer`), and closes with 8 required traceability links plus recorded lessons.
+
+- **Purpose:** intake/spec seam before the first slice, traceability closeout after the last;
+  routes six lenses (frontend-implementation, backend-implementation, architecture-contracts,
+  testing-quality, ui-system-design, okf-curation) to the existing domain skills.
+- **Use when:** starting/resuming/closing a `WI-####`; any change above the meaningful-change
+  threshold in `02 Platform/system-development/operating-model.md`.
+- **Not when:** typos/comments/doc hygiene/dep bumps; vault strategy or calibration work;
+  mid-slice execution mechanics (slice doctrine owns those; never nested inside a running slice).
+- **Kind:** DAI-specific. **Provenance:** DAI-native (this slice). Single-file SKILL.md;
+  canonical docs live in the vault, the skill is the router.
+- **Companion vault area:** `02 Platform/system-development/` (MOC, operating-model,
+  work-item-traceability, implementation-lifecycle, frontend/backend/architecture/testing
+  docs, design-system/{component-rules, interaction-states, visual-qa-checklist},
+  work-items/{_template, WI-0001}). The 9-field OKF front matter is deliberately extended to
+  this subtree (placement extension recorded in the MOC; one new type value `moc`).
+  No runtime code or behavior changed.

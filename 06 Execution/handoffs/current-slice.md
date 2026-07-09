@@ -13135,3 +13135,29 @@ status: Prompt Trace / Run Anatomy v1 COMPLETE 2026-07-09 pm. posture: devcore-s
 readout (use Run Anatomy on settled 822877) -> day-2 capture (no-backfill directive verbatim).
 deferred approval-gated follow-ups: classifier opponent-as-object suppression; slot-values
 persistence; MarketBookLine read surface.
+
+---
+
+## 2026-07-09 — DAI System Development v1 (docs + skill)
+
+**Slice:** DAI System Development v1 — traceable development operating model.
+**Repos:** dai-vault docs-only; dai docs-only (skill file). No runtime code or behavior changed.
+
+**What shipped:**
+- `02 Platform/system-development/` — MOC (records the 9-field OKF front-matter placement
+  extension + new type `moc`), operating-model (spine, meaningful-change threshold, work-item
+  ⊃ slice layering, six lenses, learning loop), work-item-traceability (WI-#### local-spine
+  mode — verified: both repos GitHub-hosted, zero ADO footprint; AB# adoption path deferred),
+  implementation-lifecycle (8 stages + definition of done), frontend-implementation /
+  backend-implementation / architecture-contracts / testing-strategy (seeded from verified
+  shipped code with paths), design-system/{component-rules R1-R3, interaction-states
+  (documents the 2026-07-09 StatusDescriptor/queue system), visual-qa-checklist},
+  work-items/{_template (tiered: lite core + feature-class), WI-0001}.
+- `dai/.claude/skills/dai-system-development/SKILL.md` — workflow router (coordinates
+  dai-skill-router/dai-slice-runner/domain skills; never replaces them). Skills inventory
+  updated (14 -> 15).
+- WI-0001 (chip primitive + long-token treatment + status tokens) drafted as the proving
+  spec — status DRAFT, awaiting user review; no app changes made.
+
+**Next:** review/approve WI-0001, then execute it through all 8 lifecycle stages as the
+proving run of the model.
