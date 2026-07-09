@@ -13092,3 +13092,46 @@ services: devcore-sql + DevCore.Api :5007 RUNNING, agent-service DOWN. vault-onl
 status: phase 1 pre-settlement analysis + phase 2 plan COMPLETE 2026-07-09 pm. NEXT: 07-10 ~10:14 ET
 session cron = settle day-1 cohort -> settled readout report -> day-2 capture (no-backfill directive
 verbatim); prompt-trace implementation awaits operator approval of the plan.
+
+---
+
+## 2026-07-09 pm -- Prompt Trace / Run Anatomy v1 SHIPPED (dev-only observability, TDD + review)
+
+**slice:** implemented the approved plan `06 Execution/plans/prompt-observability-dashboard-v1.md`.
+dai `ce8f21f` -> **`8438cbe` PUSHED 0/0** (12 files +1601/-4). closeout report:
+`06 Execution/reports/prompt-trace-run-anatomy-v1.md`.
+
+**what shipped:** (1) GET /api/agent-runs/{id}/prompt-trace -- tenant-scoped read-only per-run
+aggregation: full route provenance + regimeEra (canonical selectedPromptVersion), staged market
+facts (snapshot + computed de-vig pair), attribution guard verdict WITH evidence clause (per-run
+dev read only; /rows prose-free doctrine untouched), interrogate staged facts + wire-safe probe
+projection, reconciliation + activeRunCountForGame, renderedPrompt status=not_persisted (honest --
+prompt bytes are not persisted; nothing invented). exporter helpers (DeserializeDecision,
+MarketAgreementFor) widened internal + shared so trace and /rows can never drift. (2) dev
+/dev/artifacts page (fail-closed devToolsGuard) gained a Run Anatomy section: outcome summary,
+prompt route, ingredients (+envelope staged-fact table), interrogate context, rendered-prompt
+state, guard badge with staged-consensus-vs-prose-clause side-by-side, reconciliation, and a
+deterministic investigation-notes checklist. pure helpers in run-anatomy.ts (tested), no new deps,
+buyer routes untouched (grep-verified).
+
+**tdd + review:** red observed before every impl step. DevCore.Api.Tests 1069 -> **1080/1080**;
+sports-app vitest **90/90**; ng build clean. multi-angle code review found + fixed pre-commit:
+probe enums would have serialized as INTS over mvc (mapped to strings + tests), @if falsy-zero hid
+activeRunCount=0, one-sided-median note missed away-only, stale-trace race on rapid run switch,
+era-by-recipe-suffix replaced with canonical version, helper duplication, inline new -> DI,
+comment case. refuted: latest-snapshot selection == calibration exporter rule (comment added).
+
+**live verification (rebuilt api):** aa00433e/822877 -- the Unclear now self-explains in the UI
+(staged consensus texas-rangers vs evidence clause "...against the Angels", classifier-ambiguity
+note); b32c433e/824579 settled Pass v1-era with residue; 396f433e legacy renders honest
+"not recorded" states. probe strings verified live (requested/high/reduces).
+
+**safety:** 0 model calls, 0 capture, 0 /reconcile, 823281 untouched, 0 db writes, no schema, no
+prompt/scoring/buyer/calibration change, .env untouched, registry default OFF, agent-service DOWN
+throughout. day-2 cadence flow NOT touched (crons intact).
+
+status: Prompt Trace / Run Anatomy v1 COMPLETE 2026-07-09 pm. posture: devcore-sql + DevCore.Api
+:5007 RUNNING (new binary), agent-service DOWN. NEXT: 07-10 ~10:14 ET settle day-1 -> settled
+readout (use Run Anatomy on settled 822877) -> day-2 capture (no-backfill directive verbatim).
+deferred approval-gated follow-ups: classifier opponent-as-object suppression; slot-values
+persistence; MarketBookLine read surface.
