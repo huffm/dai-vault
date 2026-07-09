@@ -12851,3 +12851,35 @@ status: Run Identity Hygiene v1 COMPLETE 2026-07-08 -- both flagged gamePks sing
 SingleMatch-safe; 3 soft exclusions, zero settlement writes. Next: (1) Run Identity Hygiene v2 (17
 remaining duplicate-active gamePks, 823613 double-settled opposite-leans first); (2) decision on settling
 823281/6a37433e; (3) Prompt Market Context Hardening v1 (approval-gated).
+
+---
+
+## 2026-07-08 -- Run Identity Hygiene v2 COMPLETE (17 duplicate-active gamePks -> 0)
+
+**slice:** remediate the 17 remaining duplicate-active gamePks, 823613 first. report:
+`06 Execution/reports/run-identity-hygiene-v2-2026-07-08-v1.md`. dai unchanged `a0db824`; dai-vault
+docs-only. v1's two commits pushed to origin at slice start (a941c2f). 0 paid calls; 0 settlement writes.
+
+**823613 root cause = postponement double-settlement:** 06-22 instance POSTPONED (rain, DR), made up
+06-24 (CHC 10-3 away_win); the 06-25 settlement pass wrote outcomes to BOTH runs; 06-22 run beb5433e
+(lean away) got a lucky "correct" against a game it never predicted. fixed: beb5433e superseded ->
+d879433e (the 06-24 run, incorrect, stays). **valid-settled 122 -> 121; correct 61 -> 60; directional
+acc 0.5865 -> 0.5825 -- honest direction, contamination removed, nothing flattered.**
+
+**19 operator-approved exclusions applied** (named run-by-run in-session after the permission layer
+correctly refused the unnamed batch): 16 diagnostic (12 real-cohort-live-soak dupes of the morning v4
+cohort; ecdd423e first-capture + 27de423e canary on 824744; both 824990 QA runs 09aa433e/0daa433e ->
+gamePk legitimately zero-active) + 3 superseded (beb5433e->d879433e 823613; 3ade423e->28bd433e 824818;
+37de423e->25bd433e 825066). all echoed back; verified fresh: dup-active sweep 17 -> **0**; excluded
+19 -> 38 (+19 exact); outcomes/evals 124/124 UNCHANGED; market-opposed ledger 6 (n=7 checkpoint NOT
+fired); no unrelated run touched; 823281/6a37433e untouched (settlement still deferred by operator).
+
+**Safety.** no /reconcile; no ledger entries; no prompt/confidence/threshold/buyer/calibration/capture
+change; registry default off; runs/artifacts/traces preserved (soft flags). recurrence risk documented:
+auto-supersession-at-generation still deferred -- recommend marking evidence runs diagnostic at creation
+(capture-closeout rule) to prevent hygiene v3.
+
+status: Run Identity Hygiene v2 COMPLETE 2026-07-08 -- duplicate-active surface eliminated (17 -> 0),
+denominator decontaminated (121 valid, honest -0.004 acc), identity surface clean for future readouts.
+Next: (1) capture-closeout exclusion rule (docs pattern); (2) 823281 settlement decision (deferred);
+(3) Prompt Market Context Hardening v1 (approval-gated).
