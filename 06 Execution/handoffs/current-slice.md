@@ -12972,3 +12972,27 @@ status: Prompt Market Context Hardening v1 COMPLETE 2026-07-08 -- prevention hal
 end-to-end on the v2 registry route. Next: (1) capture-cadence resumption decision (operator) toward
 disagreement n=10 on hardened v2 routes; (2) Hardened-Regime Baseline Measurement v1 after that cohort
 settles; (3) settle canary game 823928 is NOT needed (run excluded diagnostic).
+
+---
+
+## 2026-07-08 -- V2 Accelerated Capture Cadence AUTHORIZED + scheduled (2 slate days)
+
+**operator directive (2026-07-09T01:40Z):** capture resumes on v2 routes -- next 2 MLB slate days
+(07-09, 07-10), up to 8 eligible runs/day, selection = enriched starter + backed_depth + clear
+de-vigged consensus + bookCount>=5 + zero duplicate-active risk + clean identity. hard stops:
+dup-active>0 / unexpected guard FAIL / unexplained v2 fallback / missed closeout diagnostics /
+daily spend cap ($0.05 model). goal: v2-era settled rows toward disagreement n=10 + hardening
+attribution test vs frozen baseline FAIL 10/285. runbook (authority):
+`06 Execution/plans/v2-accelerated-capture-cadence-2026-07-09-v1.md`.
+
+**execution setup:** tonight's slate skipped deliberately (only 1 non-canary pre-game game left;
+morning window is the proven capture time). three session-scoped one-shot crons scheduled in the
+remote session: 07-09 ~10:20 ET day-1 capture; 07-10 ~10:20 ET settle-day-1-then-day-2 capture;
+07-11 ~10:20 ET settle-day-2 + gate-4 readouts + Hardened-Regime Baseline Measurement v1 + wrap
+(authorization ENDS). crons are session-only -- if the session dies, run the runbook manually per
+day (it is self-contained). settlement pairing + capture-closeout rule + residue contract binding
+throughout; capture runs stay ACTIVE (they are the intended prediction rows); any extra
+diagnostic/retry run excluded immediately.
+
+status: cadence authorized and scheduled 2026-07-08; nothing captured yet this authorization;
+capture PAUSE formally lifted for exactly these 2 slate days, ends after the 07-11 wrap.
