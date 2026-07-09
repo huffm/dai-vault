@@ -12883,3 +12883,23 @@ status: Run Identity Hygiene v2 COMPLETE 2026-07-08 -- duplicate-active surface 
 denominator decontaminated (121 valid, honest -0.004 acc), identity surface clean for future readouts.
 Next: (1) capture-closeout exclusion rule (docs pattern); (2) 823281 settlement decision (deferred);
 (3) Prompt Market Context Hardening v1 (approval-gated).
+
+---
+
+## 2026-07-08 -- Capture-Closeout Rule v1 (docs-only; rule ACTIVE)
+
+**slice:** codify the hygiene-v2 recurrence lesson as a binding closeout rule. new pattern:
+`06 Execution/patterns/capture-closeout-run-eligibility-rule-v1.md`; closeout report:
+`06 Execution/reports/capture-closeout-rule-closeout-2026-07-08-v1.md`. dai unchanged `a0db824`.
+
+**Rule:** every evidence/QA/soak/canary/diagnostic run of a real game must be excluded (diagnostic;
+superseded when replacing; invalid for integrity defects) at creation, or at slice closeout at the
+latest; postponed-game runs are superseded -> the remake run BEFORE any settlement pass (823613 lesson);
+every generating slice's closeout must show per-run eligibility states + a ZERO-row duplicate-active
+sweep (non-zero = closeout blocker, same class as a failing test). protects SingleMatch safety and the
+valid-settled denominator by construction. no runtime code/schema/prompt/model/reconcile/capture change;
+auto-supersession-at-generation remains the deferred escalation path.
+
+status: Capture-Closeout Rule v1 COMPLETE 2026-07-08 -- rule active from a clean baseline (dup-active 0,
+excluded 38, valid-settled 121). Next: settle 823281 (operator-ordered; first deliberate ledger entry),
+then re-read the n=7 disagreement checkpoint, then decide Prompt Market Context Hardening v1.
