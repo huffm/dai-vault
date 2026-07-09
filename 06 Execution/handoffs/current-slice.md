@@ -12996,3 +12996,43 @@ diagnostic/retry run excluded immediately.
 
 status: cadence authorized and scheduled 2026-07-08; nothing captured yet this authorization;
 capture PAUSE formally lifted for exactly these 2 slate days, ends after the 07-11 wrap.
+
+---
+
+## 2026-07-09 -- V2 Accelerated Capture DAY 1 -- COMPLETE (8/8, 0 hard stops)
+
+**slice:** day 1 of the authorized 2-day cadence, executed from runbook
+`06 Execution/plans/v2-accelerated-capture-cadence-2026-07-09-v1.md` (session cron fired 10:12 ET as
+manual fallback for the dead 07-08 remote session). full report:
+`06 Execution/reports/v2-accelerated-capture-day1-2026-07-09-v1.md`.
+
+**operator directive (morning, binding both days):** if <8 eligible, capture ONLY the eligible set --
+no volume backfill. day 1: 10 eligible of 13 screened, cap bound at 8, dropped rows = widest gaps
+(823606 0.1407, 824494 0.1921); 3 starter-gate ineligible (822954 missing, 824577 asymmetric, 823201
+missing).
+
+**captured (ranked by devig gap; all 9 books, all conf 0.75, all marketAgreement TRUE):**
+9700433e/823359 ATL@PIT away 0.0262 Pass; 9800433e/823277 AZ@SD home 0.0663 Pass; 9d00433e/824816
+CHC@BAL home 0.0789 Pass; 9e00433e/823683 CLE@MIN away 0.0840 Pass; a100433e/824251 ATH@DET home
+0.0876 Pass; a200433e/823846 SEA@MIA away 0.1031 Pass; a900433e/823034 MIL@STL away 0.1038 Pass;
+aa00433e/822877 LAA@TEX home 0.1184 **UnclearMarketAttribution (both_market_directions_asserted;
+prose all Rangers-favoring; likely tripped by run-line "Angels +1.5"; NOT the FAIL hard-stop; row
+stays ACTIVE; flag for baseline measurement note)**. per-run /rows verification before each next
+run: 8/8 registry ...backed_depth.v2@v2, attributionStatus complete, no fallback, rows ACTIVE.
+guard tally 7 Pass / 1 Unclear / 0 FAIL.
+
+**honest yield note:** 0/8 market-opposed (all agree) despite narrowest-gap selection -- disagreement
+ledger unchanged n=7/10; nothing readable; no claims from unsettled v2 rows; v2 stays a separate
+regime era.
+
+**safety/closeout:** spend $0.00571 (8 gpt-4o-mini calls, cap $0.05); odds-api 22 calls (13 screens +
+1 h2h slate read + 8 generations); dup-active sweep 0 at pre-flight, window-open, AND closeout (rows
+286->294, active 247->255); 0 diagnostic/retry/QA runs created -> 0 exclusions; **no /reconcile; 823281
+NOT settled (deliberate ledger stays 0/1)**; no prompt/scoring/schema/buyer/calibration change; .env
+untouched; registry default OFF (canary env process-scoped, process stopped). dai untouched `ce8f21f`.
+posture: agent-service DOWN; DevCore.Api :5007 + devcore-sql RUNNING for day-2 settlement.
+
+status: day 1 COMPLETE 2026-07-09 ~10:30 ET. NEXT (07-10 ~10:20 ET): settle day-1 cohort first if
+finals READY (finals gate -> preflight -> identity /reconcile, full residue), then day-2 capture
+(same runbook + no-backfill directive). 07-11: settle day-2 + gate-4 readouts + Hardened-Regime
+Baseline Measurement v1 + wrap (authorization ENDS).
