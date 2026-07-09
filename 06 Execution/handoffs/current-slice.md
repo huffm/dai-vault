@@ -12903,3 +12903,31 @@ auto-supersession-at-generation remains the deferred escalation path.
 status: Capture-Closeout Rule v1 COMPLETE 2026-07-08 -- rule active from a clean baseline (dup-active 0,
 excluded 38, valid-settled 121). Next: settle 823281 (operator-ordered; first deliberate ledger entry),
 then re-read the n=7 disagreement checkpoint, then decide Prompt Market Context Hardening v1.
+
+---
+
+## 2026-07-08 -- 823281 SETTLED (first deliberate ledger entry, INCORRECT) + n=7 checkpoint re-projected
+
+**slice:** operator-ordered settlement of 823281 on 6a37433e + the n=7 disagreement re-projection.
+report: `06 Execution/reports/deliberate-divergence-settlement-and-n7-checkpoint-2026-07-08-v1.md`.
+dai unchanged `a0db824`; 0 paid calls; db writes = 1 outcome + 1 evaluation.
+
+**Settlement.** finals gate READY (LAD 4 - SD 2 Final) -> preflight exit 0 (SingleMatch, 0 blockers;
+3 expected legacy-provenance warnings) -> identity /reconcile SingleMatch, full residue. 6a37433e
+(v4 cohort, lean home Padres 0.75, market away) settled away_win -> **INCORRECT**. guard fields live:
+Pass / prose_acknowledges_market_opposition / **DeliberateDivergence** -> FIRST CountsAsCandidateEdge
+ledger entry, and it is a miss: **deliberate ledger 0/1**. outcomes/evals 124 -> 125; valid-settled 122;
+dup-active sweep still 0 (capture-closeout rule baseline holds).
+
+**n=7 checkpoint (FIRED, binding numbers).** marketDisagreementN=7 (2c/5i, 0.2857; readable needs 10);
+market-agree 36/58 0.6207; discrimination still INVERTED delta -0.1184 (gte_0.80 n=17 0.4706 vs
+0.75_0.79 n=73 0.5890); coverage 0.625 MET; conclusionsAllowed FALSE; failingReasons =
+[discrimination_inverted, insufficient_market_disagreement]. **Re-projection: +3 market-opposed rows to
+n=10 ~= 3 cohorts / ~18 runs / ~$0.013 at observed 1-per-6 yield; free legacy divergence rows EXHAUSTED;
+n=10 satisfies the disagreement sub-gate but CANNOT fix the inversion (not volume-purchasable).**
+edge narrative at n=7 = NEGATIVE (2/7 opposing market; the one deliberate divergence lost).
+
+status: 823281 settlement + n=7 checkpoint COMPLETE 2026-07-08 -- deliberate ledger opened 0/1, ledger
+still unreadable (7<10), gate unchanged FALSE on two reasons. Next: operator decision on Prompt Market
+Context Hardening v1 (precondition MET; recommended BEFORE capture resumption so paid divergence rows
+are attribution-trustworthy), then capture cadence toward n=10.
