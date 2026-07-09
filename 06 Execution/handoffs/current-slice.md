@@ -12833,3 +12833,21 @@ status: Run Identity Hygiene v1 read-only audit complete 2026-07-08 -- both pair
 proposal + sec-13 deliberate-ledger flag presented, awaiting operator approval; systemic duplicate surface
 documented for v2. Next: (1) operator decision on the 3 exclusions; (2) separate decision on settling
 823281/6a37433e; (3) Run Identity Hygiene v2 scope; (4) Prompt Market Context Hardening v1.
+
+---
+
+## 2026-07-08 -- Run Identity Hygiene v1 EXCLUSIONS APPLIED (operator-approved same session)
+
+operator approved the audit's 3-exclusion proposal ("Approve all 3"). applied via POST /{id}/exclude:
+1ede423e diagnostic; 21de423e diagnostic; 2cde423e superseded -> 4cbd433e. verified fresh: 823281 and
+824662 each now exactly ONE active run (6a37433e pregame v4; 4cbd433e settled registry); outcomes/evals
+124/124 UNCHANGED (no settlement writes, no settled row touched); excluded total 16 -> 19 (+3 exactly);
+valid-settled stays 122. report sec 9 addendum records the calls + verification
+(`06 Execution/reports/run-identity-hygiene-2026-07-08-v1.md`, status COMPLETE). standing flag: 823281 is
+single-active on a DeliberateDivergence row -- settling it = first deliberate ledger entry + n=7
+checkpoint, own approval required. dai unchanged `a0db824`.
+
+status: Run Identity Hygiene v1 COMPLETE 2026-07-08 -- both flagged gamePks single-active and
+SingleMatch-safe; 3 soft exclusions, zero settlement writes. Next: (1) Run Identity Hygiene v2 (17
+remaining duplicate-active gamePks, 823613 double-settled opposite-leans first); (2) decision on settling
+823281/6a37433e; (3) Prompt Market Context Hardening v1 (approval-gated).

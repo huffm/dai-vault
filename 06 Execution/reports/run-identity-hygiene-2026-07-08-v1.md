@@ -2,7 +2,7 @@
 title: "Run Identity Hygiene v1: 824662 + 823281 duplicate-active audit (read-only)"
 type: "evidence-report"
 date: "2026-07-08"
-status: "AUDIT COMPLETE -- exclusion proposal pending operator approval; zero writes performed"
+status: "COMPLETE -- audit + operator-approved exclusions applied; both gamePks single-active"
 project: "DAI"
 slice: "Run Identity Hygiene v1"
 repos:
@@ -182,3 +182,31 @@ proposal and needs its own approval.
    823613's double-settled contradiction first.
 4. then Prompt Market Context Hardening v1 (approval-gated), per the standing
    sequence.
+
+## 9. remediation applied (post-approval addendum, 2026-07-08)
+
+operator approved the section-5 proposal in-session ("Approve all 3") the same day.
+applied via POST /api/agent-runs/{id}/exclude (three calls, each echoed the stored
+state):
+
+```text
+1ede423e-f36b-1410-816d-00373db4b724 -> exclusionReason=diagnostic
+21de423e-f36b-1410-816d-00373db4b724 -> exclusionReason=diagnostic
+2cde423e-f36b-1410-816d-00373db4b724 -> exclusionReason=superseded,
+    supersededByAgentRunId=4cbd433e-f36b-1410-816e-00373db4b724
+```
+
+post-write verification (fresh db reads):
+
+- 823281 active runs: 1 (6a37433e only). 824662 active runs: 1 (4cbd433e only).
+  both gamePks now SingleMatch-safe on the identity path.
+- AgentRunOutcomes 124 / AgentRunEvaluations 124 -- UNCHANGED (exclusion is a soft
+  eligibility flag; no settlement rows written, no settled row touched, no
+  re-reconciliation).
+- total excluded runs 16 -> 19 (+3, exactly the approved set); runs/artifacts/traces
+  preserved (soft flag, never a delete).
+- valid calibration denominator unaffected: none of the three excluded runs was
+  settled, so valid-settled stays 122.
+
+the section-5 sec-13 flag stands: 823281 is now single-active on a guard-classified
+DeliberateDivergence row; settling it is a separate, approval-gated decision.
