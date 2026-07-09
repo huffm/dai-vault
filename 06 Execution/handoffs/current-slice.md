@@ -12931,3 +12931,44 @@ status: 823281 settlement + n=7 checkpoint COMPLETE 2026-07-08 -- deliberate led
 still unreadable (7<10), gate unchanged FALSE on two reasons. Next: operator decision on Prompt Market
 Context Hardening v1 (precondition MET; recommended BEFORE capture resumption so paid divergence rows
 are attribution-trustworthy), then capture cadence toward n=10.
+
+---
+
+## 2026-07-08 -- Prompt Market Context Hardening v1 SHIPPED (TDD; live v2 registry canary PASS)
+
+**slice:** operator-approved GO. first authorized prompt-behavior change since the attribution failure
+chain. dai `a0db824` -> `ce8f21f` (agent-service only; phantom csproj untouched). doc:
+`04 Products/sports-v1/prompting/prompt-market-context-hardening-v1.md`.
+
+**Change (backed_depth depth block only):** consensus names the TEAM beside the side label; raw
+home-only median replaced by de-vigged BOTH-side probabilities (new pure devig_pair; labeled raw
+fallback if away median absent, which still fails closed in registry assembly); required market-vs-lean
+acknowledgment instruction (must name the market-favored team when opposing). single-book/no-market
+branches, confidence, thresholds, posture, buyer, schema, .NET: all untouched.
+
+**Registry reversioning:** overlay v2 (sha 727ab756...) + 4 recipes -> .v2 (named/enriched/missing/
+asymmetric backed_depth); v1 overlay+recipes deprecated (selection unambiguous, fail-closed). slot
+oracle: +consensus_team +devig_home/away_prob -median_home_prob. manifest 10 templates / 14 recipes,
+integrity OK.
+
+**Verification:** TDD red->green; new test_market_context_hardening.py (12 tests); stale v1
+expectations updated in 8 test files; **full suite 448/448**; 9-regime byte-equality lattice re-proves
+registry==live. **live paid canary (1 gpt-4o-mini call): COL@LAD 823928 -> run aa46433e:
+promptSource=registry, ...backed_depth.v2@v2, attributionStatus=complete, conf 0.80, marketAgreement
+true; guard Pass / prose_matches_staged_consensus / MarketAligned; prose names the market side.**
+canary run excluded diagnostic per capture-closeout rule (first live application); dup-active sweep 0.
+agent-service started canary-env PROCESS-SCOPED for the run and STOPPED after; .env untouched; registry
+default OFF. dai-code-reviewer: approve with notes (no required fixes).
+
+**Measurement discipline:** v2 routes = new regime era; never pool with v1 attribution rates; frozen
+baseline Pass 72 / FAIL 10 / Unclear 203 (285 rows); improvement claimable only from settled hardened
+cohorts.
+
+**Safety.** paid model calls 1 (approved canary); odds-api: 2 readiness screens + 1 generation; db
+writes: 1 run row + 1 diagnostic exclusion (no settlement writes); no gate/threshold/buyer/capture
+change; capture cadence still PAUSED.
+
+status: Prompt Market Context Hardening v1 COMPLETE 2026-07-08 -- prevention half live, canary-proven
+end-to-end on the v2 registry route. Next: (1) capture-cadence resumption decision (operator) toward
+disagreement n=10 on hardened v2 routes; (2) Hardened-Regime Baseline Measurement v1 after that cohort
+settles; (3) settle canary game 823928 is NOT needed (run excluded diagnostic).
