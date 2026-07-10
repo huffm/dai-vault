@@ -13161,3 +13161,44 @@ persistence; MarketBookLine read surface.
 
 **Next:** review/approve WI-0001, then execute it through all 8 lifecycle stages as the
 proving run of the model.
+
+---
+
+## 2026-07-09 — WI-0001 chip primitive + long-token treatment (proving run)
+
+**Work item:** WI-0001, status complete. **Branch:** `wi/0001-chip-primitive` (unmerged, no PR).
+**Repos:** dai code+docs (branch only); dai-vault docs-only. Backend, contracts, DTOs,
+decision/prompt/calibration/reconciliation doctrine and buyer semantics: untouched.
+
+**Baseline:** pushed DAI System Development v1 to origin/main first — dai `8438cbe..c9b9ffe`,
+dai-vault `e9d4017..d9ef837` (authorized in the slice prompt).
+
+**Shipped (3 commits):**
+- `255e4ae` — `.chip` primitive (badge/status sizes; muted/info/success/warning/error tones;
+  ghost/quiet modifiers) replacing four chip dialects; trailing letter-space compensation
+  fixes the "v2 era" misalignment at the primitive level. `app-long-token` component with
+  TDD `splitToken()` (<wbr> separator segmentation) replaces `break-all` at 5 sites; run id
+  and assembled hash gain copy affordances. Four `--status-*` token pairs in `styles.css`
+  consumed by chips, status banner, queue-row, signal tags.
+- `d20279b` — `overflow-wrap: anywhere` fallback: a separator-less sha256 forced 539px
+  scrollWidth at 390px viewport. Found by visual QA, not by tests.
+- `49dbea3` — code-review fixes: `chip--quiet` modifier (Tailwind utilities are layered and
+  lost to unlayered chip color rules — regime/divergence chips had silently brightened);
+  snake_case statuses routed through `formatLabel` (were rendering `NOT_IMPLEMENTED`);
+  `recipeLabel` no longer drops a persisted version when the recipe id is absent (+test);
+  corrected an SCSS comment that overclaimed `.artifact-chip` migration.
+
+**Verification:** 139 tests green (was 130); `ng build` clean; all four WI-0001 grep proofs
+pass; visual QA at 390/768/1440 + 200% zoom, console 0 errors/0 warnings; `chip--quiet`
+confirmed by computed style (`#92a6c1`), not by inspection.
+
+**Honest gap:** 3 review lenses dispatched, 2 died on an API session limit (line-by-line
+scan; visual/a11y regression). The one that reported found 5 issues, 4 real, all fixed.
+A full `/code-review` before merge is advisable.
+
+**Docs:** component-rules R1/R2/R3 marked resolved with commits + two new sub-rules
+(layering, emergency-fallback); frontend-implementation gained patterns 7-8; MOC updated.
+
+**Next:** user decides merge of `wi/0001-chip-primitive`; then WI-0002 (fold `.artifact-chip`
+into the primitive) or WI-0003 (promote chip/long-token to a shared module) when a second
+surface needs them.

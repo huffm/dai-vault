@@ -2,11 +2,11 @@
 title: "WI-0001 Chip primitive and long-token treatment"
 type: "plan"
 date: "2026-07-09"
-status: "in-progress"
+status: "complete"
 project: "DAI"
 slice: "WI-0001 chip primitive and long-token treatment"
 repos:
-  dai: "unchanged"
+  dai: "code+docs"
   dai-vault: "docs-only"
 tags:
   - system-development
@@ -20,8 +20,8 @@ related:
 
 # WI-0001 chip primitive and long-token treatment
 
-**DRAFT — awaiting review before any app change. This spec is the proving run of the
-system-development model.**
+**COMPLETE — approved 2026-07-09, executed through all 8 lifecycle stages on branch
+`wi/0001-chip-primitive`. First proving run of the system-development model.**
 
 ## problem
 
@@ -103,18 +103,112 @@ No backend or contract changes.
 - Token extraction could shift perceived colors if any of the three copies had drifted —
   diff the three value sets first; if they differ, that drift is itself evidence for R3.
 
+## implementation summary
+
+One `.chip` primitive in `styles.css` (sizes `--badge`/`--status`; tones
+`--muted/--info/--success/--warning/--error`; modifiers `--ghost`/`--quiet`) replaced four
+chip dialects. Uppercase status chips carry trailing letter-space compensation
+(`padding-right: calc(0.6rem - 0.08em)`), which is what fixed the "v2 era" optical
+misalignment — a primitive property, not a per-chip patch. Long identifiers render through
+a new `app-long-token` component: `splitToken()` (pure, TDD) cuts after each separator and
+the template joins segments with `<wbr>`, so wrapping happens only at boundaries;
+`overflow-wrap: anywhere` is the emergency fallback for separator-less segments such as a
+bare sha256. Run id and assembled hash gained copy affordances. Four status tones are now
+`--status-*` custom properties consumed by chips, the status banner, queue-row selection,
+and the signal-coverage tags.
+
+## files changed
+
+- `apps/sports-app/src/styles.css` — status tokens + chip primitive (+89)
+- `apps/sports-app/src/app/dev-artifact-review/long-token.ts` — new component + `splitToken`
+- `apps/sports-app/src/app/dev-artifact-review/long-token.spec.ts` — new, 5 tests
+- `apps/sports-app/src/app/dev-artifact-review/dev-artifact-review.component.html` — all chips migrated; 5 long-token sites
+- `apps/sports-app/src/app/dev-artifact-review/dev-artifact-review.component.{ts,scss}` — chip tone maps; local chip styles removed; tokens consumed
+- `apps/sports-app/src/app/dev-artifact-review/status-banner.ts` — tones from tokens
+- `apps/sports-app/src/app/dev-artifact-review/run-anatomy.{ts,spec.ts}` — `chip--*` vocabulary; new `recipeLabel()`
+
+9 files, +344/-146. No backend, contract, DTO, doctrine, or buyer-surface change.
+
+## tests run
+
+`npx ng test --watch=false` → **139 passed** (was 130; +5 `splitToken`, +4 `recipeLabel`;
+`guardBadgeClass` specs updated to the chip tone vocabulary). `npx ng build` → clean.
+
+## verification results
+
+- `grep -rn "break-all" app/dev-artifact-review/` → 1 hit, the rule comment in `long-token.ts`. PASS
+- `grep -rn "artifact-status" app/` → 0 hits. PASS
+- status rgba literals (`133,191,160` / `251,191,36` / `248,113,113` / `77,141,255`) → one
+  definition site each, in `styles.css`. PASS
+- Computed-style proof of the review fix: `.chip--quiet` resolves to `#92a6c1`
+  (`--app-text-muted`), plain `.chip--badge` to `#b8c5d8`. PASS
+- Table status chips contain no underscores (snake_case routed through `formatLabel`). PASS
+
+## visual QA result
+
+Per [[visual-qa-checklist]], real rendered app against the live API:
+
+- **1440 px** — no overflow; "v2 era" chip optically centered; guard chip aligned; route key
+  and observed regime wrap at separators. PASS
+- **200 % zoom** — chip centering holds. PASS (acceptance criterion 2)
+- **768 px** — no overflow. PASS
+- **390 px** — no overflow. Initially FAILED (`scrollWidth` 539 > 375, caused by the bare
+  sha256 having no separators); fixed by the `overflow-wrap: anywhere` fallback and
+  re-verified. This is exactly the defect class the checklist exists to catch.
+- Console: 0 errors, 0 warnings. Copy affordances present on run id + hash.
+
+## docs updated
+
+- [[component-rules]] — R1/R2/R3 known violations marked resolved with commit `255e4ae`;
+  R1 gained the layered-utility rule learned during review.
+- [[frontend-implementation]] — promoted patterns 7 (chip primitive / token location) and
+  8 (unlayered component classes vs Tailwind utilities).
+
 ## links
 
-- work item: WI-0001 (ADO: not wired yet — local-spine mode)
-- branch: — (proposed: `wi/0001-chip-primitive`)
-- pr: —
-- commits: —
-- tests: —
-- verification notes: —
-- docs updated: —
-- lessons: —
+- work item: WI-0001 (ADO: not wired — local-spine mode, per user decision)
+- branch: `wi/0001-chip-primitive`
+- pr: none — branch retained locally, awaiting user decision on merge
+- commits: `255e4ae` (primitive + tokens + long-token), `d20279b` (390 px overflow fix),
+  `49dbea3` (code-review fixes)
+- tests: `long-token.spec.ts` (new), `run-anatomy.spec.ts` (updated) — 139 green
+- verification notes: this section + slice handoff in `06 Execution/handoffs/current-slice.md`
+- docs updated: `component-rules.md`, `frontend-implementation.md` (above)
+- lessons: 3 promoted (below); 1 deferred
+
+## remaining risks
+
+- **Partial review coverage.** Three review lenses were dispatched; two (line-by-line scan,
+  visual/a11y regression) died on an API session limit and did **not** report. The
+  rename-completeness lens returned 5 findings, 4 real, all fixed. Un-run angles could still
+  hold a defect — a full `/code-review` pass before merge is advisable.
+- `.chip--badge` sets `color`, so any Tailwind `text-*` utility on a chip is silently
+  defeated. Mitigated by `chip--quiet` and documented in R1, but the trap remains for the
+  next author who reaches for a utility.
+
+## follow-up items
+
+1. **WI-0002 (candidate):** fold `.artifact-chip` (squared signal-coverage tags) into the
+   chip primitive as a size variant. It survived this item as a genuinely distinct shape;
+   the SCSS comment now says so honestly rather than overclaiming.
+2. **WI-0003 (candidate):** promote `.chip` and `app-long-token` out of the dev page into a
+   shared UI module once a second surface needs them (currently one consumer — not yet
+   doctrine).
+3. Run a full `/code-review` on the branch to cover the two lenses that died.
+
+## reusable lessons (promoted)
+
+1. A misaligned pill is a missing primitive, not a CSS bug. The fix that mattered was the
+   trailing letter-space compensation on the *primitive*, which corrected every uppercase
+   chip at once.
+2. Tailwind v4 utilities live in `@layer utilities`; unlayered component classes beat them
+   regardless of source order or specificity. Component classes that set `color` must expose
+   modifiers rather than expecting utilities to override.
+3. Separator-aware wrapping needs an emergency fallback: a token with no separators (a bare
+   hash) will otherwise force page-level horizontal overflow at narrow widths — invisible at
+   1440 px, fatal at 390 px.
 
 ## final handoff requirements
 
-Per [[implementation-lifecycle]] definition of done; slice handoff appended to
-`06 Execution/handoffs/current-slice.md`.
+Met: definition of done in [[implementation-lifecycle]] checked (8/8 links, docs actioned,
+lessons recorded); slice handoff appended to `06 Execution/handoffs/current-slice.md`.

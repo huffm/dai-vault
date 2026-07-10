@@ -54,7 +54,9 @@ extension, not a second dialect. A future hygiene audit should read this as inte
 ## work items
 
 - [[_template]] — tiered work-item spec template (lite core + feature-class sections)
-- [[WI-0001-chip-primitive-and-long-token-treatment]] — first spec (draft, awaiting review)
+- [[WI-0001-chip-primitive-and-long-token-treatment]] — chip primitive, long-token treatment,
+  status tokens (**complete** 2026-07-09; first proving run of the model, branch
+  `wi/0001-chip-primitive`, unmerged)
 
 ## skill layer
 

@@ -40,10 +40,10 @@ repo's structural patterns.
    `run-anatomy.ts` (each with a sibling `.spec.ts`).
 
 3. **Tokens live in one file.** Color/spacing/effect tokens are CSS custom properties in
-   `apps/sports-app/src/styles.css` (`--app-*`), exposed to Tailwind via `@theme inline`.
-   New visual values start as tokens there, not as literals in component styles. Known
-   violation: status-tone rgba values duplicated across `status-banner.ts`, component SCSS,
-   and queue-row styles — see [[component-rules]] R3.
+   `apps/sports-app/src/styles.css` (`--app-*` surfaces/text, `--status-*` semantic tones),
+   exposed to Tailwind via `@theme inline`. New visual values start as tokens there, not as
+   literals in component styles. Status tones are consumed as `rgba(var(--status-X-rgb), a)`.
+   (WI-0001 resolved the prior three-way duplication; see [[component-rules]] R3.)
 
 4. **Utility classes for layout, component SCSS for primitives.** Tailwind utilities handle
    layout/spacing in templates; reusable visual primitives (`.artifact-status`,
@@ -58,6 +58,18 @@ repo's structural patterns.
    (`getBuyerAgentRunArtifact`); internal fields are dropped by the API, never hidden
    client-side. See [[architecture-contracts]].
 
+7. **Shared visual primitives live in `styles.css`, not in components.** The `.chip`
+   primitive (sizes, tones, modifiers) is global because chips appear across sections and
+   pages; a component that needs a chip composes classes rather than restyling one. Promoted
+   from WI-0001.
+
+8. **Unlayered component classes beat Tailwind utilities.** Tailwind v4 emits utilities into
+   `@layer utilities`; plain CSS in `styles.css` is unlayered and therefore wins regardless
+   of specificity or order. A component class that sets `color` (e.g. `.chip--badge`)
+   silently ignores `text-*` utilities on the same element — expose a modifier instead
+   (`.chip--quiet`). Verified by computed style, not by reading the CSS. Promoted from
+   WI-0001 code review.
+
 ## what it is not
 
 Not a style guide for visuals ([[component-rules]] and [[interaction-states]] own that), and
@@ -66,10 +78,12 @@ must cite a dai file.
 
 ## deferred decisions
 
-- Shared spinner/chip components extraction (candidate from WI-0001).
+- Shared spinner component extraction (still one consumer).
+- Moving `.chip` / `app-long-token` into a shared UI module once a second surface uses them
+  (candidate WI-0003).
+- Folding `.artifact-chip` (squared tags) into the chip primitive (candidate WI-0002).
 - Component-test strategy if a future surface can't extract its logic into pure modules.
 
 ## recommended next slice
 
-Promote lessons from WI-0001 execution into this doc (expected: chip primitive location and
-status-token pattern).
+WI-0002 or WI-0003 above, when a second surface creates real demand.
