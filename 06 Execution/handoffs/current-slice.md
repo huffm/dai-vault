@@ -13238,3 +13238,37 @@ identically (`285dd5e`) — a stat-only entry with zero content delta. Untouched
 Two unrelated untracked vault files untouched.
 
 **Disposition:** MERGE READY WITH MINOR NOTES. Merge and push remain the owner's call.
+
+---
+
+## 2026-07-09 — nightly closeout (zero-write ops night; WI-0002/WI-0003 registered; runtime stopped)
+
+**Ops:** 0 reconciliations, 0 captures, 0 paid calls, 0 db writes.
+- Settlement of the day-1 v2 cohort BLOCKED correctly: finals guard PARTIAL 5/3 at 01:58Z
+  (823277/823034/822877 live; partial cohorts never settlement-ready). All 8 day-1 rows
+  remain active/unreconciled — settle tomorrow ~10:20 ET per runbook, THEN day-2 capture.
+- No capture: 07-09 already at cap (8/8), remaining games in-progress
+  (selection-before-outcomes), day-2 capture ordered after settlement.
+- Persisted state verified read-only: 294 total / 255 active / 122 settled rows,
+  0 duplicate-active gamePks, market-opposed n=7; binding gate numbers unchanged from the
+  07-08 n=7 checkpoint (2/7 opposed, delta -0.1184, conclusions blocked:
+  discrimination_inverted + insufficient_market_disagreement).
+
+**Work items:** WI-0002 (artifact-chip alignment) and WI-0003 (shared chip/long-token
+module) registered as BACKLOG / NOT AUTHORIZED with activation gates; MOC updated; neither
+implemented. WI-0001 remains closed (dai main bb10c3c, pushed).
+
+**Runtime:** fully stopped and verified — no listeners on 5007/8000/4200/4201/1433,
+devcore-sql exited, 0 containers. Notes: DevCore.Api runs as DevCore.Api.exe and escaped
+stop-platform-api.ps1's CommandLine match (follow-up filed); the agent-service uvicorn
+worker was elevated and survived taskkill, stopped via unsandboxed Stop-Process; two
+orphaned vite servers from WI-0001 visual QA also stopped.
+
+**Untracked files:** 07-06 preflight manifest + system-state synopsis inspected, both
+remain intentionally untracked (historical evidence / standing precedent).
+
+**Next session:** day-2 runbook — finals guard, preflight, settle all 8 (full residue),
+readout, then day-2 capture in the 10:00-13:00 ET window. 07-11 = day-3, gate-4 readouts,
+baseline measurement, cadence wrap (authorization ends).
+
+Report: 06 Execution/reports/nightly-closeout-2026-07-09-v1.md

@@ -55,8 +55,14 @@ extension, not a second dialect. A future hygiene audit should read this as inte
 
 - [[_template]] — tiered work-item spec template (lite core + feature-class sections)
 - [[WI-0001-chip-primitive-and-long-token-treatment]] — chip primitive, long-token treatment,
-  status tokens (**complete** 2026-07-09; first proving run of the model, branch
-  `wi/0001-chip-primitive`, unmerged)
+  status tokens (**complete** 2026-07-09; first proving run; integrated to dai main
+  `bb10c3c` and pushed, branch deleted)
+- [[WI-0002-artifact-chip-primitive-alignment]] — evaluate aligning the squared
+  `.artifact-chip` tags with the chip system (**BACKLOG, not authorized**; disposition
+  open, activation gate in spec)
+- [[WI-0003-shared-chip-and-long-token-module-promotion]] — promote `.chip` +
+  `app-long-token` to a shared boundary (**BACKLOG, not authorized**; gated on a concrete
+  second consumer)
 
 ## skill layer
 
