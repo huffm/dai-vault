@@ -63,6 +63,24 @@ extension, not a second dialect. A future hygiene audit should read this as inte
 - [[WI-0003-shared-chip-and-long-token-module-promotion]] — promote `.chip` +
   `app-long-token` to a shared boundary (**BACKLOG, not authorized**; gated on a concrete
   second consumer)
+- [[WI-0004-platform-api-shutdown-process-match]] — `stop-platform-api.ps1` matches only the
+  `dotnet.exe` host and exits 0 while `DevCore.Api.exe` keeps port 5007 bound, a false
+  success (**BACKLOG, not authorized**; reproduced live 2026-07-10, fix deferred to its own
+  slice)
+- [[WI-0005-starter-retrieval-caches-transport-failures]] — `MlbStarterClient` fails soft and
+  caches transport failures for 30 min as "no starters announced", false-negating 6 of 15
+  capture candidates (**BACKLOG, not authorized**; reproduced live 2026-07-10, worked around
+  by an API restart + paced re-screen)
+
+## scope boundary of this registry
+
+`WI-####` items cover changes to behavior, contracts, UI, schema, or doctrine — code work.
+Operational cadence work (capture, settlement, calibration readouts) is explicitly outside
+this taxonomy per [[operating-model]] ("not applicable to dai-vault strategy/calibration
+work") and is governed by OKF records under `06 Execution/`. Precedent:
+`06 Execution/plans/v2-day1-settlement-day2-capture-slice-2026-07-10-v1.md` is a governed
+operational slice that deliberately did **not** mint a WI, while the code defect it
+discovered did (WI-0004).
 
 ## skill layer
 

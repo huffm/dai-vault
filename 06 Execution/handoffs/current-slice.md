@@ -13272,3 +13272,76 @@ readout, then day-2 capture in the 10:00-13:00 ET window. 07-11 = day-3, gate-4 
 baseline measurement, cadence wrap (authorization ends).
 
 Report: 06 Execution/reports/nightly-closeout-2026-07-09-v1.md
+
+---
+
+## 2026-07-10 — v2 day-1 settlement + day-2 capture (governed operational slice)
+
+**Disposition:** SLICE COMPLETE. 8 settlement writes, 8 paid captures, $0.00568, 0 hard stops.
+
+**Governance:** this slice deliberately did NOT mint a `WI-####`. `operating-model.md` and the
+`dai-system-development` skill both exclude vault calibration/operational work from that
+taxonomy, and the slice changed no behavior/contract/UI/schema/doctrine. It is governed by
+`06 Execution/plans/v2-day1-settlement-day2-capture-slice-2026-07-10-v1.md`. Two code defects
+found here DID earn work items: **WI-0004** (shutdown script) and **WI-0005** (starter cache).
+
+**Day-1 settlement (8/8):** finals guard READY 8/8 exit 0 → strict preflight exit 0 (8 ready,
+0 warn, 0 block) → scores + identity re-verified per game from statsapi `feed/live` immediately
+before each write → 8 identity `/reconcile`, all SingleMatch, all landing on the intended run,
+full residue. **6 correct / 2 incorrect (0.750)**; misses 823277 AZ@SD, 823846 SEA@MIA — both
+market-aligned, so the market missed them too. Verified: rows 294→294 (0 new), outcomes
+125→133, exactly 8 rows changed, 0 duplicate outcomes, dup-active 0.
+
+**Gate 4 after settlement:** `conclusionsAllowed=false`,
+`failingReasons=[discrimination_inverted, insufficient_market_disagreement]`. coverage
+0.6518 (MET). **Inversion DEEPENED −0.1184 → −0.1343**: the 8 rows all sat at conf 0.75, lifting
+`0.75_0.79` (0.5890→0.6049) while `gte_0.80` gained nothing. Arithmetic, not regression.
+Market-opposed ledger unchanged at **n=7** (day-1 yield 0/8, verified from persisted rows).
+
+**Day-2 capture (8/8, in-window 10:25–11:0x ET):** full 15-game slate, all pre-game, all both
+probables, all 15 free of pre-existing active runs. **Screen defect caught before spend:**
+`MlbStarterClient` fails soft and caches transport failures for 30 min as "no starters
+announced" — 6 of 15 candidates were false-negative, including the rank-1 narrowest-gap game
+(824493, gap 0.0209). Retries only re-read the poisoned cache. Restarted `DevCore.Api` to clear
+`IMemoryCache`, re-screened serially with pacing → 15/15 eligible. Original screen discarded;
+no spend against it. → **WI-0005**.
+
+Captured top-8 by narrowest de-vigged gap, canary-first (rank 1 fully verified before 2–8):
+824493/549d433e, 822955/599d433e, 823278/5d9d433e, 823845/609d433e, 824252/659d433e,
+823357/6c9d433e, 823685/709d433e, 823604/729d433e. All: registry, v2,
+recipe `...backed_depth.v2`, attribution complete, no fallback, 64-hex hash, 9 books, active.
+conf 0.75×6 / **0.80×1** / **0.70×1**; lean home 6 / away 2. Guard **Pass 8 / 0 FAIL**.
+7 dropped by rank, not relaxation. Registry canary was process-scoped on the agent-service
+child only (operator-approved); `.env` never written, flag died with the process.
+
+**THE FINDING — first deliberate divergence produced by a capture:** 823845 CLE@MIA, DAI away
+(Guardians, 0.70) vs 9-book home consensus. Persisted:
+`attributionFidelityStatus=Pass`, `attributionFidelityReason=prose_acknowledges_market_opposition`,
+`divergenceInterpretation=DeliberateDivergence`. Every prior market-opposed row in the corpus
+(all 6 taxonomy accidentals + legacy 823281) was an `AccidentalDivergence`. This is Prompt
+Market Context Hardening v1 doing exactly what it was built for. **Not a candidate edge signal
+yet** — `CountsAsCandidateEdge` is settlement-time, and one row proves nothing.
+
+**Corpus guard:** Pass 88 / **FAIL 10 (unchanged)** / Unclear 204. No v2-era run has produced an
+attribution mismatch across either cadence day, vs the frozen v1 baseline Pass 72 / FAIL 10 /
+Unclear 203.
+
+**db:** rows 294→302; outcomes 125→133; dup-active 0 at every sweep; 0 diagnostic runs created
+(the canary was slate rank 1, not a throwaway), so no closeout exclusion was owed.
+
+**Repos:** dai untouched (`bb10c3c`, csproj phantom only). dai-vault: settlement report,
+gate-4 readout, capture report, frozen-slate manifest, slice record, WI-0004, WI-0005, MOC.
+
+**Runtime:** fully stopped. Note `stop-platform-api.ps1` was NOT used — it matches only the
+`dotnet.exe` host and would have exited 0 while `DevCore.Api.exe` kept 5007 bound (WI-0004).
+
+**NEXT (2026-07-11, wrap — authorization ENDS):** cold start → finals guard on the 8 day-2
+gamePks → strict preflight → identity `/reconcile` ×8 full residue → final gate-4 readout →
+**Hardened-Regime Baseline Measurement v1** (v2 guard outcomes vs frozen FAIL 10/285; never pool
+v1 and v2 attribution rates) → include the 822877 classifier note (opponent-as-object Unclear,
+not a model contradiction) → cadence closeout. Watch 823845: settling it makes the second
+deliberate ledger entry (after 823281, 0/1) and moves market-opposed n=7→8 (readable at 10).
+
+Reports: `06 Execution/reconciliations/v2-day1-cohort-settlement-2026-07-10-v1.md`,
+`06 Execution/reports/gate4-evidence-readout-v2-day1-2026-07-10-v1.md`,
+`06 Execution/reports/v2-accelerated-capture-day2-2026-07-10-v1.md`
