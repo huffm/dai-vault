@@ -13202,3 +13202,39 @@ A full `/code-review` before merge is advisable.
 **Next:** user decides merge of `wi/0001-chip-primitive`; then WI-0002 (fold `.artifact-chip`
 into the primitive) or WI-0003 (promote chip/long-token to a shared module) when a second
 surface needs them.
+
+---
+
+## 2026-07-09 — WI-0001 independent code review + merge-readiness
+
+**Scope:** review only. No merge, push, PR, rebase, or amend. Branch `wi/0001-chip-primitive`.
+
+**Coverage:** the two lenses that died on a session limit were re-run to completion
+(line-by-line correctness/regression; accessibility/responsive/visual), plus abstraction-and-
+maintainability, test-quality, and documentation audit.
+
+**Findings:** 0 blocker, 0 significant, 1 minor, 3 informational, 1 false positive.
+- MINOR (fixed, dai `bb10c3c`): `.chip--ghost` / `.chip--quiet` were declared before the tone
+  classes. All chip rules are single-class, so tones silently overrode the modifiers
+  (`ghost+info` rendered the info background; `quiet+warning` the warning color). No live
+  combination hit it. Proved and reverified by computed style.
+- DOC (fixed, this commit): the "each status rgba literal appears exactly once" proof had
+  been run with a grep scoped to exclude `styles.css`; the info triplet also appears in 7
+  pre-existing accent uses because `--app-accent` is the same rgb. Not a code defect.
+- DOC (fixed): frontend-implementation pattern 7 said chips appear "across sections and
+  pages" — one page consumes them; corrected to a one-consumer pattern, not doctrine.
+- FALSE POSITIVE: regex lookbehind in `splitToken` — resolved browser targets are
+  Safari 26.x / iOS 18.5+, which support it. No change made.
+
+**Verification (this session):** 139/139 tests; focused long-token+run-anatomy 24/24; build
+clean; baseline 130 at `main` confirmed by counting specs at that commit. Grep proofs re-run.
+Browser: 390/768/1440 + 200% zoom, zero page overflow, console 0 errors/0 warnings; chip
+glyph centering measured (10.59px vs 10.60px after letter-space compensation); all six chip
+tones 5.46–8.84 contrast (AA); copy button matches `:focus-visible`; all 5 long-token sites
+reconstruct their source string exactly.
+
+**Repo hygiene:** `DevCore.Data.csproj` shows ` M` but index and worktree blobs hash
+identically (`285dd5e`) — a stat-only entry with zero content delta. Untouched, unstaged.
+Two unrelated untracked vault files untouched.
+
+**Disposition:** MERGE READY WITH MINOR NOTES. Merge and push remain the owner's call.

@@ -138,8 +138,12 @@ and the signal-coverage tags.
 
 - `grep -rn "break-all" app/dev-artifact-review/` → 1 hit, the rule comment in `long-token.ts`. PASS
 - `grep -rn "artifact-status" app/` → 0 hits. PASS
-- status rgba literals (`133,191,160` / `251,191,36` / `248,113,113` / `77,141,255`) → one
-  definition site each, in `styles.css`. PASS
+- status rgba literals → success/warning/error: one definition site each, in `styles.css`.
+  PASS. **info (`77,141,255`): PARTIAL** — one status-token definition, plus 7 pre-existing
+  accent uses, because `--app-accent: #4d8dff` is the same rgb. The original acceptance
+  criterion ("appear exactly once") was met for three of four tones; the fourth was verified
+  in the final review with a grep that had been wrongly scoped to exclude `styles.css`. Not a
+  defect (accent ≠ status), but the earlier PASS was overstated. See [[component-rules]] R3.
 - Computed-style proof of the review fix: `.chip--quiet` resolves to `#92a6c1`
   (`--app-text-muted`), plain `.chip--badge` to `#b8c5d8`. PASS
 - Table status chips contain no underscores (snake_case routed through `formatLabel`). PASS
@@ -170,7 +174,7 @@ Per [[visual-qa-checklist]], real rendered app against the live API:
 - branch: `wi/0001-chip-primitive`
 - pr: none — branch retained locally, awaiting user decision on merge
 - commits: `255e4ae` (primitive + tokens + long-token), `d20279b` (390 px overflow fix),
-  `49dbea3` (code-review fixes)
+  `49dbea3` (code-review fixes), `bb10c3c` (final review: chip modifier/tone cascade order)
 - tests: `long-token.spec.ts` (new), `run-anatomy.spec.ts` (updated) — 139 green
 - verification notes: this section + slice handoff in `06 Execution/handoffs/current-slice.md`
 - docs updated: `component-rules.md`, `frontend-implementation.md` (above)
@@ -178,13 +182,18 @@ Per [[visual-qa-checklist]], real rendered app against the live API:
 
 ## remaining risks
 
-- **Partial review coverage.** Three review lenses were dispatched; two (line-by-line scan,
-  visual/a11y regression) died on an API session limit and did **not** report. The
-  rename-completeness lens returned 5 findings, 4 real, all fixed. Un-run angles could still
-  hold a defect — a full `/code-review` pass before merge is advisable.
+- ~~**Partial review coverage.**~~ **Closed 2026-07-09.** The two lenses that died on an API
+  session limit (line-by-line scan; visual/a11y + responsive) were re-run to completion in a
+  dedicated review pass. Findings: 1 minor cascade-order defect (fixed, `bb10c3c`), 2
+  documentation inaccuracies (fixed), 1 false positive (regex lookbehind — the project's
+  resolved browser targets are Safari 26.x / iOS 18.5+, which support it). No blocker or
+  significant defect found.
 - `.chip--badge` sets `color`, so any Tailwind `text-*` utility on a chip is silently
   defeated. Mitigated by `chip--quiet` and documented in R1, but the trap remains for the
   next author who reaches for a utility.
+- Chip geometry is verified by computed style and manual measurement, not by an automated
+  test. A future CSS change could regress optical centering without failing the suite. The
+  project deliberately avoids TestBed/DOM tests; visual QA is the standing control.
 
 ## follow-up items
 
@@ -194,7 +203,10 @@ Per [[visual-qa-checklist]], real rendered app against the live API:
 2. **WI-0003 (candidate):** promote `.chip` and `app-long-token` out of the dev page into a
    shared UI module once a second surface needs them (currently one consumer — not yet
    doctrine).
-3. Run a full `/code-review` on the branch to cover the two lenses that died.
+3. ~~Run a full `/code-review` on the branch to cover the two lenses that died.~~ Done
+   2026-07-09; see remaining risks. Branch is merge-ready with minor notes.
+4. **Candidate cleanup (not a defect):** `--status-info-rgb` restates the rgb of
+   `--app-accent`. A future item could derive one from the other.
 
 ## reusable lessons (promoted)
 
@@ -207,6 +219,12 @@ Per [[visual-qa-checklist]], real rendered app against the live API:
 3. Separator-aware wrapping needs an emergency fallback: a token with no separators (a bare
    hash) will otherwise force page-level horizontal overflow at narrow widths — invisible at
    1440 px, fatal at 390 px.
+4. A grep proof is only as good as its scope. The "each status literal appears once" claim
+   passed because the grep excluded the file that holds the counter-examples. Scope every
+   verification grep to the whole search space, or state the scope in the claim.
+5. In a flat single-class system (BEM-ish modifiers), source order *is* the API. Modifiers
+   must be declared after the classes they are meant to override, and combinations must be
+   checked by computed style — reading the stylesheet top-to-bottom hides the bug.
 
 ## final handoff requirements
 

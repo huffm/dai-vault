@@ -44,6 +44,13 @@ unlayered component classes beat them regardless of specificity or source order.
 `.chip--badge` sets `color`, a `text-*` utility on a chip is silently ignored. Tone and text
 color are chip modifiers (`.chip--quiet`, `.chip--muted`, tone classes) — never utilities.
 
+**Cascade-order rule (learned in WI-0001 final review, commit `bb10c3c`).** Every chip rule
+is a single class, so they all share one specificity and source order alone decides. Declare
+**modifiers after tones** (`.chip--ghost`, `.chip--quiet` last), or a tone silently overrides
+the modifier — `chip--ghost chip--info` rendered the info background, `chip--quiet
+chip--warning` the warning color. Verify chip combinations by computed style, not by reading
+the stylesheet.
+
 **Rationale.** The dev-artifact-review page shipped four chip dialects (hero badges, ad-hoc
 header chips, table pills, `.artifact-status`); the misaligned "v2 era" chip was an instance
 of the missing primitive, not a one-off CSS bug. Fixing the primitive corrected every
@@ -92,7 +99,12 @@ day, guaranteed drift the next.
 `dai/apps/sports-app/src/styles.css`. Consumed as `rgba(var(--status-X-rgb), a)`.
 
 **Status: resolved 2026-07-09** by [[WI-0001-chip-primitive-and-long-token-treatment]]
-(commit `255e4ae`). Grep proof: each literal appears exactly once, at its definition site.
+(commit `255e4ae`). Grep proof: the success, warning, and error triplets each appear exactly
+once, at their definition site. The **info** triplet (`77, 141, 255`) also appears in seven
+pre-existing accent contexts (`--app-accent-wash`, the body radial gradient,
+`.premium-button` shadows) because DAI's brand accent `--app-accent: #4d8dff` *is* that
+color; those uses are accent, not status, and were not introduced by WI-0001. Collapsing
+`--status-info-rgb` into the accent token is a candidate cleanup, not a defect.
 The migration surfaced one real drift — the status banner's info title used a one-off
 `#b9d2ff` — now unified to the info token.
 

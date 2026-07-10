@@ -59,9 +59,11 @@ repo's structural patterns.
    client-side. See [[architecture-contracts]].
 
 7. **Shared visual primitives live in `styles.css`, not in components.** The `.chip`
-   primitive (sizes, tones, modifiers) is global because chips appear across sections and
-   pages; a component that needs a chip composes classes rather than restyling one. Promoted
-   from WI-0001.
+   primitive (sizes, tones, modifiers) is global because it is consumed by many sections of
+   a page and by encapsulated components (`status-banner`) that cannot see another
+   component's styles; a consumer composes classes rather than restyling one. Today the only
+   page consuming it is dev-artifact-review — this is a pattern with one page-level consumer,
+   not established doctrine (see the WI-0003 candidate). Promoted from WI-0001.
 
 8. **Unlayered component classes beat Tailwind utilities.** Tailwind v4 emits utilities into
    `@layer utilities`; plain CSS in `styles.css` is unlayered and therefore wins regardless
