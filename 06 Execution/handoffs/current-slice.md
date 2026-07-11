@@ -13345,3 +13345,59 @@ deliberate ledger entry (after 823281, 0/1) and moves market-opposed n=7→8 (re
 Reports: `06 Execution/reconciliations/v2-day1-cohort-settlement-2026-07-10-v1.md`,
 `06 Execution/reports/gate4-evidence-readout-v2-day1-2026-07-10-v1.md`,
 `06 Execution/reports/v2-accelerated-capture-day2-2026-07-10-v1.md`
+
+---
+
+## 2026-07-11 — v2 cadence WRAP (settle day-2, exclude 823357, final readout + baseline; authorization ENDS)
+
+**Ops:** 7 reconciliations + 1 exclusion, 0 paid calls, 0 code change. dai unchanged bb10c3c.
+
+**Day-2 settled 7/8:** finals guard READY 7/7 -> strict preflight exit 0 (7 ready/0 warn/0 block/
+agree 6/disagree 1) -> scores+identity re-verified from feed/live per game -> 7 identity
+/reconcile all SingleMatch on intended runs, full residue. **3 correct / 4 incorrect (0.4286).**
+The lone 0.80 run (823604 BOS@NYM) LOST. 823845 CLE@MIA (the deliberate divergence) settled
+**CORRECT** market-opposed (DAI away Cleveland 0.70 vs home consensus; CLE won 3-2).
+
+**823357 MIL@PIT EXCLUDED (postponed non-event):** postponed 07-10 (codedGameState=D),
+rescheduled 07-11 as a split doubleheader = distinct event context. Captured run 6c9d433e
+evaluated the 07-10 event that never occurred. Excluded via /exclude reason=`excluded` (operator
+reason; `invalid` mischaracterizes a sound decision, `superseded` needs a remake run that was
+deliberately not generated). Rationale: outcomes must correspond to the event actually evaluated;
+settling against a replay = post-hoc identity substitution + calibration contamination. No run
+captured for the replay; authorization ends here.
+
+**Verified:** rows 302->302 (0 new), outcomes 133->140 (+7), excluded 39->40 (+1), **exactly 8
+rows changed** = 7 settled + 823357; 0 dup outcomes; dup-active 0; residue complete on all 7.
+
+**Final Gate 4:** conclusionsAllowed FALSE, failingReasons [discrimination_inverted,
+insufficient_market_disagreement]. **Inversion deepened 4th readout running: -0.1184 -> -0.1343
+-> -0.1486** (gte_0.80 n17@0.4706 -> n18@0.4444 after 823604 lost; 0.75_0.79 n86@0.5930).
+coverage 0.6723 MET. market-opposed ledger n=7->8 (3c/5i, <10 unreadable). directional 112->119,
+reconciled 130->137, slates 16.
+
+**Deliberate-divergence ledger: 1 correct (823845 v2) / 1 incorrect (823281) = n2.** LEDGER
+COUNT, NOT EDGE (one correct contrarian call is a coin flip). candidate-edge language reserved
+for the count.
+
+**Hardened-Regime Baseline Measurement v1:** v2 guard Pass 14 / FAIL 0 / Unclear 1 (15 active
+rows) vs FROZEN v1 Pass 72/FAIL 10/Unclear 203; **corpus FAIL held at 10 all cadence** -- no v2
+run ever produced an attribution mismatch. hardening NOT contradicted, qualitatively confirmed
+(the deliberate divergence named the market-favored team), NOT statistically validated at n=15.
+NEVER pool v1+v2 rates. 822877 Unclear = classifier opponent-as-object ambiguity, not a model
+contradiction, not FAIL.
+
+**CADENCE TOTALS:** 16 captured (8+8), 15 settled, 1 excluded, 9 correct/6 incorrect, ~$0.0114,
+0 guard FAIL. **Discrimination is not volume-purchasable -- confirmed empirically.** Gate 4
+correctly FALSE.
+
+**Runtime:** fully stopped (bypassed stop-platform-api.ps1 per WI-0004; stopped listener + host
+by pid). **Authorization ENDED.** Posture HOLD/no-spend.
+
+**NEXT (engineering, non-operational):** WI-0005 (starter cache) is UNBLOCKED now the wrap is
+complete -- recommended next slice; then optionally WI-0004. Both approval-gated, neither
+implemented. WI-0002/0003 untouched.
+
+Reports: reconciliations/v2-day2-cohort-settlement-2026-07-11-v1.md;
+reports/gate4-evidence-readout-v2-day2-2026-07-11-v1.md;
+reports/hardened-regime-baseline-measurement-2026-07-11-v1.md;
+reports/v2-accelerated-capture-cadence-wrap-2026-07-11-v1.md
