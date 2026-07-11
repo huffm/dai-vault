@@ -13448,3 +13448,31 @@ remaining known code defect -- optional next engineering slice, its own approval
 untouched. Doubleheader gamePk disambiguation is a documented candidate follow-up.
 
 Report: WI-0005 spec + `06 Execution/handoffs/wi-0005-starter-cache-handoff-2026-07-11-v1.md`
+
+---
+
+## 2026-07-11 — WI-0005 integration + closeout (pushed)
+
+**Integrated and pushed.** WI-0005 verified once more, then merged to main by clean fast-forward.
+
+- re-verify: DevCore.Api.Tests 1092/1092, starter filter 36/36, build clean; runtime cold at start.
+- live smoke (authorized, non-paid): started devcore-sql + DevCore.Api from the branch, called
+  GET /source-readiness twice for one game -> second logged
+  `mlb starters cache hit: starters:v1:statsapi:mlb:pittsburgh pirates:milwaukee brewers:2026-07-11`,
+  proving the REAL DI wiring (Configure<StarterCacheOptions> bound, MlbStarterClient resolved via
+  the real container, shared MemoryCache, new identity-safe key) that the hand-constructed unit
+  tests bypass. no analyze/capture/reconcile/outcome/exclude route touched. runtime stopped after
+  (listener+host by pid, bypassing stop-platform-api.ps1 per WI-0004).
+- code review: APPROVE, diff byte-identical to the reviewed commit, no drift, no new blocker.
+- integration: pushed `wi/0005-starter-cache` (new remote branch, retained); `git checkout main`
+  (was bb10c3c) -> `merge --ff-only` -> `4693b9d`; tree `6829adb3...` == verified HEAD tree;
+  pushed `bb10c3c..4693b9d`. **dai/main == origin/main == 4693b9d (0/0).** no merge commit, no
+  force-push, no PR, no branch deletion.
+- guardrails: 0 paid calls / 0 capture / 0 reconcile / 0 outcome / 0 exclusion / 0 calibration /
+  0 prompt/model/confidence/scoring/regime/buyer/Gate-4/schema/angular change; WI-0002/0003/0004
+  untouched; doubleheader disambiguation not implemented; DevCore.Data.csproj phantom untouched;
+  vault untracked files untouched; no history rewrite.
+- runtime returned to cold: 5007/8000/4200/4201/1433 free, 0 containers, devcore-sql stopped.
+
+**NEXT (separate approval each; not started): WI-0004** (stop-platform-api.ps1 false-success);
+candidate doubleheader gamePk disambiguation. WI-0002/0003 remain BACKLOG.

@@ -70,8 +70,8 @@ extension, not a second dialect. A future hygiene audit should read this as inte
 - [[WI-0005-starter-retrieval-caches-transport-failures]] — Identity-Safe Starter Cache v1:
   `MlbStarterClient` no longer caches transport failures as "no starters announced"; cache admits
   only fully-grounded results, identity-safe key, configurable TTL, cancellation propagated
-  (**complete** 2026-07-11; dai `4693b9d` on `wi/0005-starter-cache`, local only / not pushed;
-  1092/1092 tests)
+  (**complete + integrated** 2026-07-11; dai `4693b9d` fast-forwarded to main and pushed,
+  origin synced; 1092/1092 tests; branch pushed + retained)
 
 ## scope boundary of this registry
 

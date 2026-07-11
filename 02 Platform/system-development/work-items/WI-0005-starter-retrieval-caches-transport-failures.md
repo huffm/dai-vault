@@ -186,9 +186,10 @@ doctrine surface; `/source-readiness` DTO unchanged -- the fix is internal to th
 ## links (completed at close)
 
 - work item: WI-0005 (ADO: AB#— when wired)
-- branch: `wi/0005-starter-cache` (from dai `bb10c3c`)
-- pr: — (not authorized this slice)
-- commits: dai `4693b9d` (implementation + tests, local only, NOT pushed)
+- branch: `wi/0005-starter-cache` (from dai `bb10c3c`) — pushed to origin 2026-07-11; retained
+- pr: — (merged direct via fast-forward: `bb10c3c..4693b9d`)
+- commits: dai `4693b9d` (implementation + tests) — **integrated to dai/main and pushed**
+  2026-07-11 (clean fast-forward, no merge commit); dai/main == origin/main at `4693b9d`
 - tests: `platform/dotnet/DevCore.Api.Tests/Sports/MlbStarterCacheTests.cs` (13 new);
   `MlbStarterClientTests.cs` (4 existing, unchanged behavior, output-invariance proof)
 - verification notes: `DevCore.Api.Tests` 1080 -> 1092 passed / 0 failed / 0 skipped;
