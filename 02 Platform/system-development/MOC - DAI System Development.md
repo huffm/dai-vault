@@ -67,10 +67,11 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   `dotnet.exe` host and exits 0 while `DevCore.Api.exe` keeps port 5007 bound, a false
   success (**BACKLOG, not authorized**; reproduced live 2026-07-10, fix deferred to its own
   slice)
-- [[WI-0005-starter-retrieval-caches-transport-failures]] — `MlbStarterClient` fails soft and
-  caches transport failures for 30 min as "no starters announced", false-negating 6 of 15
-  capture candidates (**BACKLOG, not authorized**; reproduced live 2026-07-10, worked around
-  by an API restart + paced re-screen)
+- [[WI-0005-starter-retrieval-caches-transport-failures]] — Identity-Safe Starter Cache v1:
+  `MlbStarterClient` no longer caches transport failures as "no starters announced"; cache admits
+  only fully-grounded results, identity-safe key, configurable TTL, cancellation propagated
+  (**complete** 2026-07-11; dai `4693b9d` on `wi/0005-starter-cache`, local only / not pushed;
+  1092/1092 tests)
 
 ## scope boundary of this registry
 

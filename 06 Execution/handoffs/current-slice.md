@@ -13401,3 +13401,50 @@ Reports: reconciliations/v2-day2-cohort-settlement-2026-07-11-v1.md;
 reports/gate4-evidence-readout-v2-day2-2026-07-11-v1.md;
 reports/hardened-regime-baseline-measurement-2026-07-11-v1.md;
 reports/v2-accelerated-capture-cadence-wrap-2026-07-11-v1.md
+
+---
+
+## 2026-07-11 — WI-0005 Identity-Safe Starter Cache v1 (engineering slice; committed local, NOT pushed)
+
+**Authorized engineering slice** (first code since the cadence). No paid/capture/reconcile/exclude;
+no push/merge/PR. dai branch `wi/0005-starter-cache` from `bb10c3c`.
+
+**Defect fixed:** `MlbStarterClient.GetStartersAsync` cached EVERY result 30 min including fail-soft
+`MlbStarterGrounding(null,null)` transport failures -> a transient network error was stored as, and
+indistinguishable from, "no starters announced". This false-negated 6/15 capture candidates live
+2026-07-10 (40%), incl. the rank-1 narrowest-gap game. Cache already existed at the seam, so this
+slice CORRECTED the existing cache (re-scoped per prompt) rather than adding one.
+
+**Fix (smallest correct):** (1) admit only a fully-grounded result (`Context != null`) to the
+starter cache and only `DataAvailable` quality to the pitcher cache -- every failure/not-announced
+result stays uncached, so a later call re-hits the provider. (2) identity-safe key
+`starters:v1:statsapi:mlb:{home}:{away}:{date}` (normalized) replacing team-names-only; tenant
+excluded (public data), gamePk not a lookup key (it's the output; retrieval can't distinguish
+doubleheaders -- documented limitation). (3) TTL configurable via `StarterCacheOptions` (default 30m,
+non-positive -> default), no hidden hardcoded TTL, absolute expiry, no stale fallback.
+(4) `OperationCanceledException` rethrown, never swallowed into a fail-soft null.
+
+**TDD:** red = compile gap (missing `StarterCacheOptions` + 4-arg ctor) + a poisoning-repro test;
+green after admission gate. 13 new deterministic tests (fake `ISystemClock` on the cache, no real
+sleeps): miss/hit+source-count, identity+date isolation, expiry + changed-after-expiry, 4 failure
+classes + not-announced + malformed not cached, cancellation propagated+uncached, TTL config +
+non-positive fallback, concurrency correctness. The 4 existing MlbStarterClient tests unchanged
+(output-invariance proof). **DevCore.Api.Tests 1080 -> 1092, all green; Starter filter 36 green.**
+
+**Review:** dai-code-reviewer APPROVE, 0 blockers. Blast radius verified: sole prod caller
+`RetrieveSignalHandlers.cs` returns the task directly and never relied on cancellation-swallowing.
+
+**Files:** new `Sports/StarterCacheOptions.cs`; edited `Sports/MlbStarterClient.cs`, `Program.cs`
+(DI binding); new `Sports/MlbStarterCacheTests.cs`; +1-line ctor updates in 3 existing test files.
+No locked-layer change (prompt/model/confidence/decision/reconcile/calibration/gate/buyer/registry/
+schema/angular untouched); no migration; `DevCore.Data.csproj` phantom left unstaged.
+
+**Commit:** dai `4693b9d` (impl+tests) + dai-vault docs commit -- **LOCAL ONLY, nothing pushed**
+(push not authorized this slice). WI-0005 status complete; MOC updated. Runtime never started
+(deterministic tests only).
+
+**NEXT (separate, unauthorized): WI-0004** (stop-platform-api.ps1 false-success shutdown) is the
+remaining known code defect -- optional next engineering slice, its own approval. WI-0002/0003
+untouched. Doubleheader gamePk disambiguation is a documented candidate follow-up.
+
+Report: WI-0005 spec + `06 Execution/handoffs/wi-0005-starter-cache-handoff-2026-07-11-v1.md`
