@@ -1,167 +1,186 @@
 ---
-title: "WI-0004 Platform API Shutdown Process Match"
+title: "WI-0004 Truthful Platform API Shutdown v1 (platform api shutdown process match)"
 type: "plan"
 date: "2026-07-10"
-status: "blocked"
+status: "complete"
 project: "DAI"
-slice: "WI-0004 platform api shutdown process match"
+slice: "WI-0004 Truthful Platform API Shutdown v1"
 repos:
-  dai: "unchanged"
+  dai: "code"
   dai-vault: "docs-only"
 tags:
   - system-development
   - work-item
-  - backlog
   - tooling
 related:
   - "06 Execution/reports/nightly-closeout-2026-07-09-v1.md"
-  - "06 Execution/plans/v2-day1-settlement-day2-capture-slice-2026-07-10-v1.md"
   - "06 Execution/patterns/settlement-readiness-discipline-v1.md"
+  - "06 Execution/handoffs/wi-0005-starter-cache-handoff-2026-07-11-v1.md"
 ---
 
-# WI-0004 platform api shutdown process match
+# WI-0004 truthful platform api shutdown v1
 
-**Status: BACKLOG. Implementation authorization: NOT AUTHORIZED.**
-Registered 2026-07-10 from a follow-up recorded by the 2026-07-09 nightly closeout and
-reproduced with live evidence during the 2026-07-10 operational slice. This spec records
-the defect and the decision space; it does not pre-decide the fix.
+**Status: IN PROGRESS. Implementation AUTHORIZED 2026-07-11** (Truthful Platform API Shutdown v1
+execution prompt). Registered 2026-07-10 BACKLOG from a follow-up in the nightly closeout;
+unblocked after WI-0005 integrated. Filename kept stable to preserve the MOC wikilink; title
+updated to the authorized scope.
 
-## problem statement
+## problem
 
-`dai/scripts/stop-platform-api.ps1` selects processes with
-`$_.Name -eq "dotnet.exe" -and $_.CommandLine -match "DevCore\.Api"`. Under `dotnet run`
-the API is hosted by a `dotnet.exe` parent that launches `DevCore.Api.exe` as the child
-that actually binds port 5007. The filter matches only the parent. The script therefore
-kills the host, prints `done`, and exits 0 while the listener survives.
+`dai/scripts/stop-platform-api.ps1` prints `done` / `no platform api process found` and exits 0
+without verifying that the platform API actually stopped or that its listener on port 5007 was
+released. This is a **false success**: an operator (or a closeout slice) trusts exit 0 while the
+API may still be bound, forcing manual PID cleanup.
 
-This is a **false success**, not merely a missed match: the operator gets an exit-0
-"stopped" signal from a script that left the port bound. The 2026-07-09 closeout recorded
-the symptom ("DevCore.Api ran as DevCore.Api.exe and ESCAPED stop-platform-api.ps1's
-CommandLine match") but attributed it to the name alone.
+## reproduction (this slice, 2026-07-11)
 
-## current evidence (reproduced 2026-07-10, read-only dry run, no process stopped)
+The 2026-07-09 closeout hypothesized the child `DevCore.Api.exe` survives when the `dotnet.exe`
+host is killed. **That hypothesis did NOT reproduce**: under `dotnet run`, killing the
+`dotnet.exe` host also brings down the `DevCore.Api.exe` child (job-object semantics) and 5007
+freed. Not inventing a fix for a defect that does not reproduce.
 
-Live during the day-1 settlement slice, with the API started by `scripts/start-platform-api.ps1`:
+The **actual, demonstrable** defect was reproduced faithfully:
 
-- Listener on 5007: `pid=27608 Name=DevCore.Api.exe`, CommandLine
-  `...\DevCore.Api\bin\Debug\net10.0\DevCore.Api.exe`
-- Host process: `pid=18988 Name=dotnet.exe`, CommandLine matches `DevCore\.Api`
-- The script's exact filter, evaluated read-only, returned **only pid 18988**.
-  Killing that alone leaves pid 27608 holding 5007.
+- Started `DevCore.Api.exe` directly with `ASPNETCORE_URLS=http://localhost:5007` (a supported way
+  to run the built app, and the shape of any orphaned apphost). Port 5007 owned by
+  `DevCore.Api.exe` pid 28992; **zero** `dotnet.exe`-with-`DevCore.Api` processes.
+- Ran the current `stop-platform-api.ps1` -> output `no platform api process found`, **exit 0**.
+- Port 5007 **STILL LISTENING** pid 28992 afterward. **False success confirmed.**
 
-Secondary latent defect, same file: line 3 assigns to `$matches`, a PowerShell **automatic
-variable** that `-match` inside the `Where-Object` scriptblock also writes. The 2026-07-07
-settlement-readiness slice recorded this exact class of bug (`$Home`/`$args`/`$matches`
-collisions) as a standing PowerShell gotcha. It is not the cause of the escape but sits in
-the same seven lines.
+## root cause
 
-`$ErrorActionPreference = "SilentlyContinue"` (line 1) additionally suppresses the
-`Stop-Process` failure that an elevated worker would raise — the 07-09 closeout needed an
-unsandboxed `Stop-Process` for the elevated uvicorn worker, so silent failure is reachable.
+Two independent defects, either sufficient for a false success:
 
-## affected surfaces
+1. **Narrow target identity.** The script matches only `Name -eq "dotnet.exe" -and CommandLine
+   -match "DevCore\.Api"`. It cannot see the `DevCore.Api.exe` apphost (the process that actually
+   binds 5007 when launched directly or orphaned).
+2. **No verification.** It prints `done`/`no ... found` and exits 0 unconditionally -- it never
+   checks process exit or port release. Even in the case where the stop happened to work, success
+   was asserted, not earned.
 
-- `dai/scripts/stop-platform-api.ps1` (sole implementation)
-- Any slice-closeout procedure that trusts its exit code as shutdown proof
-- `06 Execution/patterns/settlement-readiness-discipline-v1.md` (the "blocked runs are a
-  console result" doctrine assumes scripts report honestly)
+Secondary: assigns to `$matches` (a PowerShell automatic variable); `$ErrorActionPreference =
+"SilentlyContinue"` swallows `Stop-Process` failures.
 
-## classification
+## intended outcome
 
-**Non-blocking defect.** It does not block settlement, capture, calibration, or any write
-path. It degrades only closeout confidence, and only when the operator trusts exit 0
-instead of verifying the port. Operational slices can and do verify ports directly.
+The script succeeds only after independently verifying the stopped state. When the target cannot
+be stopped within a bounded window, it returns non-zero with actionable diagnostics.
 
-## scope
+## success invariant
 
-Correct the process selection and make failure loud. Nothing else in `scripts/`.
+Shutdown is successful only when **port 5007 is no longer listening AND no platform-api host
+process remains** (`DevCore.Api.exe`, or `dotnet.exe` running `DevCore.Api`). Already-stopped
+satisfies the invariant and is a success.
 
-## non-goals
+## design (smallest correct)
 
-No change to `start-platform-api.ps1`; no service-manager/supervisor introduction; no
-change to agent-service or SQL shutdown; no change to any settlement, capture, calibration,
-or runtime semantics; no new dependency.
+- **Target identity** (strongest first): the process that owns port 5007
+  (`Get-NetTCPConnection -State Listen -LocalPort $Port`) when it is a platform-api process; plus
+  any platform-api processes found by metadata. A platform-api process is
+  `Name -eq 'DevCore.Api.exe'` OR (`Name -eq 'dotnet.exe'` AND CommandLine matches `DevCore\.Api`).
+  The launching `pwsh.exe` and the script's own PID are excluded. Never terminate all `dotnet`/
+  `pwsh` processes by name.
+- **Ambiguity guard:** if a NON-platform-api process owns 5007, do not kill it -- return non-zero
+  with diagnostics (which pid/name owns the port).
+- **Truthful completion:** after issuing stops, poll (bounded `TimeoutSeconds`, `PollMilliseconds`
+  interval, re-reading fresh state each iteration to avoid PID reuse) until the success invariant
+  holds or the timeout expires. Success output is emitted only after the invariant verifies.
+- **Exit codes:** 0 stopped-or-already-stopped; 2 ambiguous port owner; 3 timeout / still bound.
+- **Idempotent:** no target and port free -> success, "already stopped", no process mutation.
+- **Testable:** pure decision functions (`Test-IsApiProcess`, `Resolve-ShutdownPlan`,
+  `Test-ShutdownComplete`) dot-sourced and tested with in-memory fake process/port tables, using
+  the `$MyInvocation.InvocationName -eq '.'` guard convention from check-settlement-finals.ps1.
+  No real sleeps in unit tests.
 
-## execution authority
+## in scope
 
-None. This item is registered, not authorized. It must not be implemented inside an
-operational cadence slice. It gets its own approved slice.
+`stop-platform-api.ps1`; its helper functions; a deterministic PowerShell test harness; live
+start/stop verification; process-exit + port-release verification; bounded polling; truthful exit
+codes; idempotent already-stopped; concise diagnostics.
 
-## activation gate
+## out of scope
 
-Implement when either: (a) a closeout is materially harmed by a false-success shutdown
-(port left bound into a later slice, causing a start conflict), or (b) any slice already
-opens `scripts/` for another approved reason and can absorb a bounded fix under TDD.
+Rewriting `start-platform-api.ps1` (no change needed); general process supervisor; Windows-service
+conversion; Docker orchestration; cross-platform process framework; FastAPI/Angular/DB-container
+shutdown; WI-0005/sports/decision changes; doubleheader work; broad dev-script cleanup; push/merge/PR.
 
-## decision space (all open)
+## risks (evaluated)
 
-1. Match on `CommandLine -match "DevCore\.Api"` regardless of `Name` (catches both host and
-   child; must then avoid killing the pwsh wrapper that also matches).
-2. Resolve the owner of port 5007 (`Get-NetTCPConnection -LocalPort 5007`) and stop that
-   process plus its parent — the port is the thing the operator actually cares about.
-3. Keep the name filter but add `DevCore.Api.exe` and verify the port is released before
-   exiting 0.
+killing an unrelated process (mitigated: platform-api predicate + port-owner-must-be-api guard,
+self/pwsh excluded); killing all dotnet (mitigated: name+commandline predicate, never name-only);
+trusting a launcher PID (mitigated: verify port release + process exit, not the stop call);
+orphaning a child (mitigated: both host and apphost are targets; verification catches survivors);
+PID reuse (mitigated: re-read fresh each poll); exit/port race (mitigated: invariant requires BOTH
+port-free AND no-api-process); fixed sleeps / infinite wait (mitigated: bounded poll, no long
+sleep, pure logic unit-tested); premature success (mitigated: output after verification only);
+nonzero on idempotent already-stopped (mitigated: AlreadyStopped -> exit 0); test cleanup leaving
+processes (mitigated: unit tests spawn no processes; live scenarios clean by pid).
 
-Option 2 is the only one that makes the exit code mean "5007 is free". Note the live dry
-run showed a third matching process (`pwsh.exe`, the wrapper that launched the script) —
-any CommandLine-only widening must exclude it or the script will kill its own shell.
+## acceptance criteria
 
-## acceptance criteria (for the future implementation slice)
-
-1. After the script exits 0, no process listens on 5007 — asserted, not assumed.
-2. When it cannot stop the listener, it exits non-zero and says which pid survived.
-3. It never terminates its own host shell, or any process it did not identify as the API.
-4. No automatic variables (`$matches`, `$args`, `$Home`, `$input`) are assigned.
-5. Offline-testable selection logic (a pure function over a process list), mirroring the
-   `check-settlement-finals.ps1` dot-source-testable pattern.
+1. Already-stopped (no target, port free) returns success, touches nothing.
+2. Normal stop returns success only after port 5007 is free AND no api process remains.
+3. A listener the old filter missed (DevCore.Api.exe with no dotnet parent) is stopped, or the run
+   fails non-zero -- never a false success.
+4. Stop failure / timeout returns non-zero with diagnostics (port, pid, listener, timeout).
+5. A non-api process owning 5007 is not killed; the run fails non-zero with diagnostics.
+6. Idempotent second invocation returns success ("already stopped").
+7. Success output is emitted only after verification.
+8. Unrelated processes are never terminated.
+9. Deterministic unit tests pass; live scenarios A-D pass.
+10. No locked-layer change; nothing pushed.
 
 ## test plan (written before implementation)
 
-Mirror `dai/scripts/dev/sports/test-check-settlement-finals.ps1`: dot-source the selection
-function and assert against injected process-table fixtures —
-(a) host-only `dotnet.exe`; (b) host + `DevCore.Api.exe` child; (c) child only;
-(d) an unrelated `dotnet.exe`; (e) the launching `pwsh.exe` present and never selected.
-Plus one live integration check: start the API, run the script, assert 5007 free.
+`dai/scripts/test-stop-platform-api.ps1` (new): dot-source the script, assert the pure functions
+against fake snapshots -- IsApiProcess (DevCore.Api.exe true / dotnet+DevCore.Api true / other
+dotnet false / pwsh false / unrelated false); Resolve-ShutdownPlan (already-stopped / stop-both /
+ambiguous-port -> no target); Test-ShutdownComplete (listening-or-procs-remain false, both-clear
+true). Live: Scenario A normal stop, B idempotent, C direct-exe listener the old script missed, D
+unrelated-process safety.
 
-## verification commands
+## rollback
 
-`pwsh -File dai/scripts/test-stop-platform-api.ps1` (new), then a live start/stop round trip
-asserting `Get-NetTCPConnection -LocalPort 5007` returns nothing.
+Single-script change plus one test file. Revert = the two commits. No application code, schema,
+persisted state, or runtime contract outside the shutdown workflow.
 
-## dependencies
+## approval boundary
 
-None. Independent of WI-0001/0002/0003.
-
-## risks
-
-- A CommandLine-only widening kills the operator's own `pwsh` shell (observed: pid 21244
-  matched). Any fix must exclude the launching process explicitly.
-- Over-broad matching in a shared dev box could stop an unrelated `dotnet.exe`.
-
-## rollback / containment posture
-
-Single-file script change; revert = one commit revert. No data, contract, runtime, or
-buyer surface. Zero blast radius outside developer convenience.
+WI-0004 authorizes only truthful shutdown remediation and its verification. It does NOT authorize
+paid calls, sports operations, starter-cache changes, decision-layer changes, doubleheader work,
+or integration to remote branches (no push/merge/PR this slice).
 
 ## required lifecycle stages
 
-All eight of [[implementation-lifecycle]]. Lite tier: this is a bounded tooling fix, not a
-feature-class item; no contract or doctrine surface, so no spec review gate beyond owner
-approval to authorize.
+All eight of [[implementation-lifecycle]]. Lite tier (bounded tooling fix, no contract/doctrine
+surface); no review gate beyond code review.
 
-## required links (at close)
+## links (completed at close)
 
-The standard 8 links per [[work-item-traceability]].
+- work item: WI-0004
+- branch: `wi/0004-truthful-api-shutdown` (from dai `4693b9d`)
+- pr: — (not authorized this slice)
+- commits: dai `e8050a9` (script + test) — **local only, NOT pushed**
+- tests: `dai/scripts/test-stop-platform-api.ps1` (15 offline assertions, all pass) + live
+  scenarios A-D (normal / idempotent / direct-exe blind spot / unrelated-process safety)
+- verification notes: unit 15/15; reproduction proved false success (DevCore.Api.exe on 5007,
+  old script exit 0 / port bound); live A-D pass; dai-code-reviewer APPROVE (0 blockers);
+  handoff `06 Execution/handoffs/wi-0004-truthful-shutdown-handoff-2026-07-11-v1.md`
+- docs updated: this WI; `06 Execution/handoffs/current-slice.md`; MOC (status complete)
+- lessons: a shutdown is successful only when the process is gone and its listener released --
+  never because a termination request returned
+
+## reproduction correction (recorded)
+
+The 07-09 "child survives when host is killed" hypothesis did NOT reproduce (dotnet run
+job-objects the child; it dies with the host). The real, faithful reproduction was a
+`DevCore.Api.exe` bound to 5007 with no dotnet parent (direct-exe / orphan shape): the old
+script reported `no platform api process found` / exit 0 while 5007 stayed bound. The fix
+addresses that proven defect (narrow filter + no verification), not the unreproduced hypothesis.
 
 ## definition of done
 
-Per [[implementation-lifecycle]], plus acceptance criterion 1 demonstrated live (port free
-after exit 0) and criterion 5's offline tests green.
-
-## provenance
-
-Symptom first recorded: `06 Execution/reports/nightly-closeout-2026-07-09-v1.md`.
-Root cause reproduced with live pids: the 2026-07-10 day-1 settlement / day-2 capture
-operational slice (see [[v2-day1-settlement-day2-capture-slice-2026-07-10-v1]]), which
-verified the defect read-only and deliberately did **not** fix it — shutdown there was
-completed by stopping the listener pid directly.
+Per [[implementation-lifecycle]]: reproduction proven; success invariant explicit; narrow target
+identity; verification-gated success; idempotent; non-zero on failure/timeout; unrelated processes
+protected; unit tests + live scenarios pass; code review APPROVE; no locked-layer change; nothing
+pushed.

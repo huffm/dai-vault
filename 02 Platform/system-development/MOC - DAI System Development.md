@@ -63,10 +63,11 @@ extension, not a second dialect. A future hygiene audit should read this as inte
 - [[WI-0003-shared-chip-and-long-token-module-promotion]] — promote `.chip` +
   `app-long-token` to a shared boundary (**BACKLOG, not authorized**; gated on a concrete
   second consumer)
-- [[WI-0004-platform-api-shutdown-process-match]] — `stop-platform-api.ps1` matches only the
-  `dotnet.exe` host and exits 0 while `DevCore.Api.exe` keeps port 5007 bound, a false
-  success (**BACKLOG, not authorized**; reproduced live 2026-07-10, fix deferred to its own
-  slice)
+- [[WI-0004-platform-api-shutdown-process-match]] — Truthful Platform API Shutdown v1:
+  `stop-platform-api.ps1` now verifies port release + process exit before reporting success,
+  targets the real listener owner, and refuses to kill an unrelated port owner (**complete**
+  2026-07-11; dai `e8050a9` on `wi/0004-truthful-api-shutdown`, local only / not pushed;
+  unit 15/15 + live scenarios A-D)
 - [[WI-0005-starter-retrieval-caches-transport-failures]] — Identity-Safe Starter Cache v1:
   `MlbStarterClient` no longer caches transport failures as "no starters announced"; cache admits
   only fully-grounded results, identity-safe key, configurable TTL, cancellation propagated

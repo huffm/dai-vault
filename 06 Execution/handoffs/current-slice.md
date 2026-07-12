@@ -13476,3 +13476,51 @@ Report: WI-0005 spec + `06 Execution/handoffs/wi-0005-starter-cache-handoff-2026
 
 **NEXT (separate approval each; not started): WI-0004** (stop-platform-api.ps1 false-success);
 candidate doubleheader gamePk disambiguation. WI-0002/0003 remain BACKLOG.
+
+---
+
+## 2026-07-11 — WI-0004 Truthful Platform API Shutdown v1 (engineering slice; committed local, NOT pushed)
+
+**Authorized engineering slice.** No paid/capture/reconcile/exclude; no push/merge/PR. dai branch
+`wi/0004-truthful-api-shutdown` from `4693b9d`.
+
+**Reproduction correction:** the 07-09 hypothesis (DevCore.Api.exe child survives when the
+dotnet.exe host is killed) did NOT reproduce -- under `dotnet run` the child dies with the host
+(job object) and 5007 freed. Did not invent a fix for that. The ACTUAL false-success was
+reproduced faithfully: started DevCore.Api.exe directly with ASPNETCORE_URLS=http://localhost:5007
+(a DevCore.Api.exe listener on 5007 with NO dotnet.exe parent = direct-exe/orphan shape); the
+current script printed `no platform api process found` / exit 0 while port 5007 stayed bound.
+
+**Root cause:** (1) narrow target filter (dotnet.exe+DevCore.Api only) cannot see the
+DevCore.Api.exe apphost; (2) no verification -- prints success unconditionally. Secondary: assigns
+to `$matches` (automatic var), `$ErrorActionPreference=SilentlyContinue` swallows failures.
+
+**Fix (smallest correct):** rewrote `scripts/stop-platform-api.ps1` around the invariant "port
+5007 released AND no api host process remains." Pure decision functions (Test-IsApiProcess /
+Resolve-ShutdownPlan / Test-ShutdownComplete) behind the `$MyInvocation.InvocationName -eq '.'`
+dot-source guard; target = the port owner when it is an api process + api processes by
+name+commandline (DevCore.Api.exe OR dotnet.exe+DevCore.Api; self + pwsh excluded); ambiguity
+guard refuses to kill a non-api port owner; bounded poll (TimeoutSeconds/PollMilliseconds,
+fresh state each iteration for PID-reuse safety); success printed only after the invariant
+verifies. Exit codes 0 stopped/already-stopped, 2 ambiguous port owner, 3 timeout.
+
+**Verification:** unit harness `scripts/test-stop-platform-api.ps1` **15/15**. Live scenarios:
+A normal dotnet-run shutdown (exit 0 after verification, port free, no orphan); B idempotent
+(exit 0 "already stopped"); C the exact direct-exe listener the old script missed (STOPPED it,
+exit 0, port free -- false-success fixed); D unrelated pwsh listener on 5007 (exit 2 "blocked",
+process NOT killed). dai-code-reviewer APPROVE, 0 blockers (informational: exit-3 timeout path
+unit-covered but not exercised live).
+
+**Files:** rewrote `scripts/stop-platform-api.ps1`; new `scripts/test-stop-platform-api.ps1`.
+Diff is scripts-only -- no C#/compiled/locked-layer change; DevCore.Data.csproj phantom untouched;
+WI-0005 (MlbStarterClient) untouched.
+
+**Commit:** dai script+test commit + dai-vault docs commit -- **LOCAL ONLY, nothing pushed** (push
+not authorized this slice). WI-0004 status complete; MOC updated. Runtime started for reproduction
++ live verification (devcore-sql + DevCore.Api via dotnet run AND direct exe); all stopped by pid
+(the corrected script itself performed the API stops in scenarios A/C); returned to cold.
+
+**NEXT (separate approval each; not started):** WI-0004 integration + push; candidate doubleheader
+gamePk disambiguation. WI-0002/0003 remain BACKLOG.
+
+Report: WI-0004 spec + `06 Execution/handoffs/wi-0004-truthful-shutdown-handoff-2026-07-11-v1.md`
