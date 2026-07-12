@@ -13524,3 +13524,31 @@ not authorized this slice). WI-0004 status complete; MOC updated. Runtime starte
 gamePk disambiguation. WI-0002/0003 remain BACKLOG.
 
 Report: WI-0004 spec + `06 Execution/handoffs/wi-0004-truthful-shutdown-handoff-2026-07-11-v1.md`
+
+---
+
+## 2026-07-11 — WI-0004 integration + closeout (pushed)
+
+**Integrated and pushed.** WI-0004 re-verified, then merged to main by clean fast-forward.
+
+- re-verify: unit harness 15/15 (exit 0); delta 4693b9d..e8050a9 = scripts only (no compiled/
+  locked-layer file); runtime cold at start.
+- live re-verification (authorized, non-paid): started devcore-sql + DevCore.Api. A normal
+  dotnet-run shutdown (exit 0 after verification, port free, no orphan); B idempotent (exit 0
+  "already stopped"); C direct DevCore.Api.exe on 5007 with no dotnet parent -> stopped, exit 0,
+  port free (the original blind spot stays fixed); D unrelated pwsh listener on 5007 -> exit 2
+  "blocked", process survived, cleaned up. No analyze/capture/reconcile/outcome/exclude touched.
+- code review: APPROVE, byte-identical to the reviewed e8050a9, no drift.
+- integration: pushed `wi/0004-truthful-api-shutdown` (remote == e8050a9, retained);
+  `git checkout main` (was 4693b9d == origin/main) -> `merge --ff-only` -> e8050a9; tree
+  bfeafe4 == reviewed branch tree; pushed `4693b9d..e8050a9`. **dai/main == origin/main ==
+  e8050a9 (0/0).** No merge commit, no force-push, no PR, no branch deletion.
+- guardrails: 0 paid / 0 capture / 0 reconcile / 0 outcome / 0 exclusion / 0 calibration /
+  0 prompt/model/confidence/scoring/regime/Gate-4/buyer/schema/Angular change; WI-0005 untouched;
+  WI-0002/0003 untouched; doubleheader not started; DevCore.Data.csproj phantom untouched;
+  vault untracked files untouched; no history rewrite.
+- runtime returned to cold (direct inspection): 5007/8000/4200/4201/1433 free, 0 containers,
+  devcore-sql stopped.
+
+**NEXT (separate approval each; not started):** candidate doubleheader gamePk disambiguation;
+WI-0002; WI-0003. All remain BACKLOG / not authorized.

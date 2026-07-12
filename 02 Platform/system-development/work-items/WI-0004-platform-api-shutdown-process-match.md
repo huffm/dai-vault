@@ -158,9 +158,10 @@ surface); no review gate beyond code review.
 ## links (completed at close)
 
 - work item: WI-0004
-- branch: `wi/0004-truthful-api-shutdown` (from dai `4693b9d`)
-- pr: — (not authorized this slice)
-- commits: dai `e8050a9` (script + test) — **local only, NOT pushed**
+- branch: `wi/0004-truthful-api-shutdown` (from dai `4693b9d`) — pushed to origin 2026-07-11; retained
+- pr: — (merged direct via fast-forward: `4693b9d..e8050a9`)
+- commits: dai `e8050a9` (script + test) — **integrated to dai/main and pushed** 2026-07-11
+  (clean fast-forward, no merge commit); dai/main == origin/main at `e8050a9`
 - tests: `dai/scripts/test-stop-platform-api.ps1` (15 offline assertions, all pass) + live
   scenarios A-D (normal / idempotent / direct-exe blind spot / unrelated-process safety)
 - verification notes: unit 15/15; reproduction proved false success (DevCore.Api.exe on 5007,

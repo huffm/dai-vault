@@ -65,9 +65,9 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   second consumer)
 - [[WI-0004-platform-api-shutdown-process-match]] — Truthful Platform API Shutdown v1:
   `stop-platform-api.ps1` now verifies port release + process exit before reporting success,
-  targets the real listener owner, and refuses to kill an unrelated port owner (**complete**
-  2026-07-11; dai `e8050a9` on `wi/0004-truthful-api-shutdown`, local only / not pushed;
-  unit 15/15 + live scenarios A-D)
+  targets the real listener owner, and refuses to kill an unrelated port owner (**complete +
+  integrated** 2026-07-11; dai `e8050a9` fast-forwarded to main and pushed, origin synced;
+  unit 15/15 + live scenarios A-D; branch pushed + retained)
 - [[WI-0005-starter-retrieval-caches-transport-failures]] — Identity-Safe Starter Cache v1:
   `MlbStarterClient` no longer caches transport failures as "no starters announced"; cache admits
   only fully-grounded results, identity-safe key, configurable TTL, cancellation propagated
