@@ -273,9 +273,12 @@ unrelated backlog work. Local commits only: no push, merge, PR, rebase, amend, o
 ## links
 
 - work item: WI-0006 (ADO: AB#— when wired)
-- branch: `wi/0006-doubleheader-gamepk-resolution` (from dai `e8050a9`) — **local only, not pushed**
-- pr: — (not authorized)
-- commits: dai `4f8f381` (implementation + tests); dai-vault (WI closeout + handoff) — this commit
+- branch: `wi/0006-doubleheader-gamepk-resolution` (from dai `e8050a9`) — **pushed to origin
+  2026-07-13; retained**
+- pr: — (merged direct via fast-forward: `e8050a9..4f8f381`)
+- commits: dai `4f8f381` (implementation + tests) — **integrated to dai/main and pushed**
+  2026-07-13 (clean fast-forward, no merge commit; main tree == branch tree; dai/main ==
+  origin/main at `4f8f381`); dai-vault `0db3cd2` (WI closeout + handoff) + integration addendum
 - tests: `platform/dotnet/DevCore.Api.Tests/Sports/MlbDoubleheaderResolutionTests.cs` (20 new);
   `SourceReadinessClassifierTests.cs` (+4); `Integration/AgentRunsControllerTests.cs` (+4);
   `MlbStarterCacheTests.cs` (13) + `MlbStarterClientTests.cs` (4) pass **unmodified** — the
@@ -300,10 +303,27 @@ unrelated backlog work. Local commits only: no push, merge, PR, rebase, amend, o
      outcome from *missing data*. They fail in opposite directions — one is fixed by asking a better
      question, the other by waiting for the source.
 
-## deferred (NOT authorized by this WI)
+## integration record (2026-07-13)
 
-- Plumbing `gamePk` into `CompetitionMatchupInput` so **capture/generation** can target a specific
-  doubleheader game. Until then, generation fails closed (priors-only, unmatched identity) on an
-  ambiguous doubleheader rather than guessing.
-- WI-0006 integration and push.
-- Cross-sport event-identity abstraction.
+Re-verified before integration, all evidence regenerated (not inherited from the build slice):
+invariant greps against `4f8f381` (no `FirstOrDefault` selection, v2 gamePk key, resolution entry
+gated on `requestedGamePk is null`, warm-hit revalidation, `gamePk<=0` -> 400, no migration);
+**B1 and B2 regressions run by name** and green; focused 67; full suite **1120/1120**; build clean;
+live scenarios A–H including **Scenario G in both adversarial orders** (explicit G1-first and
+explicit G2-first, ambiguity survived both); warm-cache mismatch failed closed; `gamePk=0` -> 400.
+Accepted limitation proven structurally: `AgentRunService` constructs the artifact with no gamePk,
+so ambiguous doubleheaders degrade to priors-only/unmatched in generation. Final review: APPROVE,
+zero blockers. Integrated by fast-forward only; feature branch pushed and retained.
+
+## deferred (NOT authorized by this WI -- two separate items, do not conflate)
+
+1. **Propagate `gamePk` through `CompetitionMatchupInput`** so capture/generation can target a
+   specific doubleheader game. Until then, generation fails closed (priors-only, unmatched
+   identity) on an ambiguous doubleheader rather than guessing. Contract-expansion work: touches
+   the persisted `InputJson` and the public analyze request body, so it needs its own WI and review.
+2. **Evaluate first-class `no_match` / `ambiguous` / `source_failure` identity statuses** on
+   `/source-readiness`. Today `ambiguous` is first-class but `no_match` and `source_failure` share
+   the `unmatched` status, distinguishable only via `IdentityReason`. Diagnostic-contract work,
+   independent of item 1.
+
+Also deferred: any cross-sport event-identity abstraction.

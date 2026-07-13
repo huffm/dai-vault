@@ -77,10 +77,10 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   Resolution v1: a matchup is not an event identity. `/source-readiness` takes an optional
   `gamePk`; an ambiguous same-day matchup now fails closed with explicit candidates instead of
   `FirstOrDefault`-ing whichever game the provider listed first; starter cache re-keyed to
-  `starters:v2:statsapi:mlb:{gamePk}` so game 1 and game 2 cannot collide (**complete, local
-  only** 2026-07-13; branch `wi/0006-doubleheader-gamepk-resolution` from `e8050a9`;
-  1120/1120 tests; live-verified on the real 2026-07-11 MIL@PIT split DH; **not pushed,
-  integration not authorized**)
+  `starters:v2:statsapi:mlb:{gamePk}` so game 1 and game 2 cannot collide (**complete +
+  integrated** 2026-07-13; dai `4f8f381` fast-forwarded to main and pushed, origin synced;
+  1120/1120 tests; live-verified on the real 2026-07-11 MIL@PIT split DH incl. adversarial
+  cache ordering both directions; branch pushed + retained)
 
 ## scope boundary of this registry
 

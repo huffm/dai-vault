@@ -13631,3 +13631,29 @@ possibly-wrong starters. Restoring *targeted* doubleheader capture needs `gamePk
 **NEXT (separate approval each; not started):** WI-0006 integration and push; `gamePk` on
 `CompetitionMatchupInput` for doubleheader capture; WI-0002; WI-0003; any cross-sport identity
 abstraction. All remain BACKLOG / not authorized.
+
+---
+
+## 2026-07-13 — WI-0006 INTEGRATED: fast-forwarded to dai/main and pushed
+
+**Ops:** 0 paid calls, 0 capture, 0 reconciliation, 0 calibration mutation. Integration slice only.
+
+Re-verified the exact reviewed commit `4f8f381` before shipping -- nothing inherited: invariant
+greps, **B1/B2 blocker regressions by name**, focused 67, full suite **1120/1120**, build clean,
+live scenarios A-H on the re-fetched 823357/823356 fixture with **Scenario G in both adversarial
+orders** (ambiguity survives explicit warms G1-first AND G2-first). Warm-cache mismatch fails
+closed; `gamePk=0` -> 400; ordinary single game (LAA@MIN 823682) unchanged. Accepted limitation
+proven structurally (generation passes no gamePk; `CompetitionMatchupInput` unchanged). Final
+review APPROVE, zero blockers.
+
+**Integration:** pushed `wi/0006-doubleheader-gamepk-resolution` (remote == `4f8f381`);
+`git merge --ff-only` on main (`e8050a9` -> `4f8f381`, main tree == branch tree); pushed main;
+**dai/main == origin/main == `4f8f381`**. No merge commit / force-push / rebase / amend / PR;
+branch retained. `DevCore.Data.csproj` phantom preserved; vault untracked files preserved.
+
+- runtime returned to cold (direct inspection): 5007/8000/4200/4201/1433 free, 0 containers,
+  devcore-sql stopped, no DevCore.Api / uvicorn / dotnet.
+
+**NEXT (separate approval each; not started):** (1) `gamePk` through `CompetitionMatchupInput`
+for doubleheader capture; (2) first-class no_match/ambiguous/source_failure statuses; WI-0002;
+WI-0003; cross-sport identity abstraction. All BACKLOG / not authorized.

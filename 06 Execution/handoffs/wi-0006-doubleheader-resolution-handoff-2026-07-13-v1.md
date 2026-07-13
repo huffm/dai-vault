@@ -6,8 +6,8 @@ status: "complete"
 project: "DAI"
 slice: "WI-0006 Identity-Safe MLB Doubleheader Resolution v1"
 repos:
-  dai: "code (local branch, not pushed)"
-  dai-vault: "docs-only (local, not pushed)"
+  dai: "code (integrated to main and pushed 2026-07-13; see integration addendum)"
+  dai-vault: "docs-only (pushed)"
 tags:
   - execution
   - handoff
@@ -149,3 +149,33 @@ reconcile against the wrong outcome -- but it means a doubleheader is currently 
   already distinguishable via `IdentityReason`; the status collapse is pre-existing).
 - WI-0002, WI-0003.
 - Any cross-sport event-identity abstraction (only one sport path needs it today).
+
+---
+
+## integration addendum (2026-07-13, same day)
+
+**WI-0006 is INTEGRATED and PUSHED.** This supersedes sections 8-9's "local only" state.
+
+- re-verification: all evidence regenerated on the current branch, none inherited. invariant
+  greps vs `4f8f381`; **B1 and B2 regressions run by name** (warm-cache mismatch; explicit-gamePk
+  cache poisoning) plus the reversed-provider-order test; focused 67; full `DevCore.Api.Tests`
+  **1120 / 0 / 0**; build clean.
+- live re-verification: scenarios A-H on the real 823357/823356 fixture (re-fetched from the
+  provider, identities and starters unchanged). **Scenario G ran in both adversarial orders**
+  (G1-first and, after an API restart for a cold cache, G2-first) -- team/date requests stayed
+  ambiguous after explicit warms in both directions. warm mismatch failed closed
+  (`identity_mismatch`); `gamePk=0` -> 400; ordinary LAA@MIN unchanged.
+- accepted limitation proven structurally: `AgentRunService.cs` constructs `SportsRunArtifact`
+  with no gamePk (only `/source-readiness` passes one), and `CompetitionMatchupInput` is
+  unchanged -- so ambiguous doubleheaders entering generation degrade to priors-only, unmatched.
+- final review: APPROVE, zero blockers (same commit as the build-slice APPROVE; evidence fresh).
+- integration: pushed `wi/0006-doubleheader-gamepk-resolution` (remote == `4f8f381`); switched to
+  main (`e8050a9` == origin); `git merge --ff-only` -> `4f8f381`; **main tree == branch tree**
+  (`cca307d`); pushed; **dai/main == origin/main == `4f8f381`, 0/0 ahead-behind**. no merge
+  commit, no force-push, no rebase, no amend, no PR; branch retained.
+- runtime returned to cold and independently verified after live checks.
+
+**Deferred (two separate items, not authorized, not started):**
+1. propagate `gamePk` through `CompetitionMatchupInput` (doubleheader capture enablement);
+2. evaluate first-class `no_match` / `ambiguous` / `source_failure` statuses.
+Plus WI-0002, WI-0003, and any cross-sport identity abstraction.
