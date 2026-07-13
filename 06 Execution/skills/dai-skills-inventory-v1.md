@@ -216,3 +216,28 @@ with tests defined before code, executes through the unchanged slice stack
   work-items/{_template, WI-0001}). The 9-field OKF front matter is deliberately extended to
   this subtree (placement extension recorded in the MOC; one new type value `moc`).
   No runtime code or behavior changed.
+
+## Skill-layer update (2026-07-13, WI-0007 mandatory work items + slice synopsis)
+
+WI-0007 (Mandatory Structured Work Items and Slice Synopsis Workflow v1) amended five existing
+skills; no skill added or retired (count stays 15). Two invariants entered the canonical layer,
+each with exactly one owner:
+
+1. **Work-item qualification gate** -- owned by `dai-slice-runner` (blocking, four-line output
+   before any production/script/workflow/skill/doctrine change; SLICE START/CLOSE templates
+   extended). Qualifying categories, non-qualifying exceptions, status discipline
+   (implementation complete vs merge ready vs integrated vs closed as body-level dispositions
+   over the canonical front-matter statuses), the integration-continuation rule, and the
+   meta-work rule live in `dai-system-development`. OKF placement/front matter/MOC
+   registration for work items is owned by `dai-docs-architect` (born-correct rule).
+   `dai-skill-router` surfaces the requirement at routing time.
+2. **Slice Synopsis** -- canonical Change/Reason/Proof/State/Next format (~100 words, always
+   the final section of every execution/implementation/integration/closeout handoff) defined
+   once in `dai-agent-handoff`, together with mandatory work-item identity fields (governing
+   WI, status, OKF path, MOC disposition). Other skills reference; none restate.
+
+Routine governed operational cadence under an existing OKF plan still does not mint a WI
+(v2-settlement precedent preserved); operational remediation, investigation, migration,
+measurement, and workflow/doctrine changes now do. Files: the five SKILL.md bodies under
+`dai/.claude/skills/`; governing WI:
+`02 Platform/system-development/work-items/WI-0007-mandatory-work-items-and-slice-synopsis-workflow.md`.

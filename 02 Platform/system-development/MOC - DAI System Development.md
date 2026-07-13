@@ -81,16 +81,28 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   integrated** 2026-07-13; dai `4f8f381` fast-forwarded to main and pushed, origin synced;
   1120/1120 tests; live-verified on the real 2026-07-11 MIL@PIT split DH incl. adversarial
   cache ordering both directions; branch pushed + retained)
+- [[WI-0007-mandatory-work-items-and-slice-synopsis-workflow]] — Mandatory Structured Work
+  Items and Slice Synopsis Workflow v1: qualification gate owned by `dai-slice-runner`
+  (qualifying slices need a WI before execution), canonical Slice Synopsis owned by
+  `dai-agent-handoff` as every handoff's mandatory final section (**in progress** 2026-07-13)
 
 ## scope boundary of this registry
 
-`WI-####` items cover changes to behavior, contracts, UI, schema, or doctrine — code work.
-Operational cadence work (capture, settlement, calibration readouts) is explicitly outside
-this taxonomy per [[operating-model]] ("not applicable to dai-vault strategy/calibration
-work") and is governed by OKF records under `06 Execution/`. Precedent:
+`WI-####` items cover qualifying slices per the WI-0007 qualification rule (canonical
+categories in the `dai-system-development` skill): implementation, investigation/discovery,
+integration and closeout, operational **remediation**, migrations, workflow-governance,
+doctrine or skill changes, measurement/validation, and documentation that changes canonical
+operating behavior. A slice does not stop qualifying because it is small, docs-only,
+script-only, single-session, or ends blocked/discovery-only.
+
+Routine governed operational **cadence** (capture, settlement, calibration readouts executed
+under an existing OKF plan) remains outside this taxonomy per [[operating-model]] and is
+governed by OKF records under `06 Execution/`. Precedent preserved:
 `06 Execution/plans/v2-day1-settlement-day2-capture-slice-2026-07-10-v1.md` is a governed
 operational slice that deliberately did **not** mint a WI, while the code defect it
-discovered did (WI-0004).
+discovered did (WI-0004). Genuinely clerical edits (typo, broken link, formatting-only,
+hash update in an open WI) proceed without a WI but record the explicit non-qualifying
+reason (WI-0007).
 
 ## skill layer
 

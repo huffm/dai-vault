@@ -13657,3 +13657,34 @@ branch retained. `DevCore.Data.csproj` phantom preserved; vault untracked files 
 **NEXT (separate approval each; not started):** (1) `gamePk` through `CompetitionMatchupInput`
 for doubleheader capture; (2) first-class no_match/ambiguous/source_failure statuses; WI-0002;
 WI-0003; cross-sport identity abstraction. All BACKLOG / not authorized.
+
+---
+
+## 2026-07-13 — WI-0007 mandatory work items + slice synopsis workflow (skills + doctrine, local only)
+
+**Ops:** 0 paid calls, 0 runtime change. dai on `wi/0007-workflow-governance` from `4f8f381`
+(5 SKILL.md edits); dai-vault docs-only. **Nothing pushed.**
+
+Two workflow invariants moved from per-prompt instruction into the canonical skill layer, one
+owner each: (1) **work-item qualification gate** — blocking four-line output owned by
+`dai-slice-runner` before any production/script/workflow/skill/doctrine change; qualifying
+categories, status discipline (implementation complete / merge ready / integrated / closed as
+body dispositions over canonical front-matter statuses), integration-continuation rule, and
+the meta-work rule in `dai-system-development`; WI OKF placement/MOC registration owned by
+`dai-docs-architect`; router surfaces the requirement. (2) **Slice Synopsis** — canonical
+Change/Reason/Proof/State/Next format (~100 words, always the final handoff section) defined
+once in `dai-agent-handoff` with mandatory WI identity fields.
+
+MOC scope boundary reconciled: routine operational cadence still mints no WI (v2-settlement
+precedent preserved); remediation/investigation/migration/measurement/workflow-governance now
+qualify. Clerical edits proceed with a recorded specific reason. Skills inventory updated in
+the same slice per `dai-write-skill`. WI-0007 was created BEFORE the first skill edit — the
+meta-work rule proven on itself.
+
+Validation: single-owner greps (format block only in handoff skill; categories only in
+system-development; gate only in slice-runner) + 6 desk-check scenarios all pass (new
+implementation, discovery-only, integration continuation, workflow change, clerical,
+exact-section-list prompt).
+
+**NEXT (separately gated, not started):** WI-0007 integration and push; WI-0006 deferred
+items; WI-0002; WI-0003.
