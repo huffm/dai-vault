@@ -13688,3 +13688,18 @@ exact-section-list prompt).
 
 **NEXT (separately gated, not started):** WI-0007 integration and push; WI-0006 deferred
 items; WI-0002; WI-0003.
+
+---
+
+## 2026-07-13 — WI-0007 INTEGRATED: fast-forwarded to dai/main and pushed
+
+Integration continuation of WI-0007 (no duplicate WI, per the rule it canonizes). Preconditions
+re-verified after fetch (neither remote advanced); pushed `wi/0007-workflow-governance`
+(remote == `41e0a46`); `git merge --ff-only` `4f8f381..41e0a46` (main tree == branch tree);
+pushed; **dai/main == origin/main == `41e0a46`**. Vault WI links/disposition + MOC updated and
+pushed. Branch retained. Phantom + vault untracked files preserved; runtime cold (nothing
+started — markdown-only delta). The qualification gate and mandatory Slice Synopsis are now
+live on main for every future slice.
+
+**NEXT (separately gated):** WI-0006 deferred items (gamePk via CompetitionMatchupInput;
+identity-status refinement); WI-0002; WI-0003.

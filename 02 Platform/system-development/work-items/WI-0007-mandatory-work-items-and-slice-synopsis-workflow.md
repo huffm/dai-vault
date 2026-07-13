@@ -188,10 +188,12 @@ migration/measurement/workflow now qualify.
 ## links
 
 - work item: WI-0007 (ADO: AB#-- when wired)
-- branch: `wi/0007-workflow-governance` (dai, from `4f8f381`) -- local only, not pushed
-- pr: -- (not authorized)
-- commits: dai (5 SKILL.md files) + dai-vault (this WI, MOC, skills inventory, current-slice,
-  handoff) -- hashes recorded in the slice handoff at close
+- branch: `wi/0007-workflow-governance` (dai, from `4f8f381`) -- **pushed 2026-07-13; retained**
+- pr: -- (merged direct via fast-forward: `4f8f381..41e0a46`)
+- commits: dai `41e0a46` (5 SKILL.md files) -- **integrated to dai/main and pushed** 2026-07-13
+  (clean fast-forward, main tree == branch tree; dai/main == origin/main at `41e0a46`);
+  dai-vault `37c0f24` (this WI, MOC, skills inventory, current-slice, handoff) + integration
+  record commit, pushed
 - tests: none (no executable surface); validation = single-owner greps + 6 desk-check scenarios
 - verification notes: see validation record above; `git diff` confined to the scoped files
 - docs updated: this WI; `MOC - DAI System Development.md` (registration + scope boundary);
@@ -203,4 +205,6 @@ migration/measurement/workflow now qualify.
 
 ## final disposition
 
-Implementation complete, local only (2026-07-13). Integration and push separately gated.
+Integrated and pushed (2026-07-13). Reviewed commit `41e0a46` fast-forwarded to dai/main
+(`4f8f381..41e0a46`); dai/main == origin/main; vault records pushed. Original acceptance
+criteria preserved and unchanged. Fully closed.

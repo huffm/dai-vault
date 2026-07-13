@@ -84,7 +84,9 @@ extension, not a second dialect. A future hygiene audit should read this as inte
 - [[WI-0007-mandatory-work-items-and-slice-synopsis-workflow]] — Mandatory Structured Work
   Items and Slice Synopsis Workflow v1: qualification gate owned by `dai-slice-runner`
   (qualifying slices need a WI before execution), canonical Slice Synopsis owned by
-  `dai-agent-handoff` as every handoff's mandatory final section (**in progress** 2026-07-13)
+  `dai-agent-handoff` as every handoff's mandatory final section (**complete + integrated**
+  2026-07-13; dai `41e0a46` fast-forwarded to main and pushed, origin synced; validation =
+  single-owner greps + 6 desk-check scenarios; branch pushed + retained)
 
 ## scope boundary of this registry
 
