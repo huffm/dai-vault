@@ -13736,3 +13736,20 @@ the 6c9d433e exclusion evidence; decision left gated. Review APPROVE, zero block
 
 **NEXT (separately gated):** WI-0008 integration and push; operator decision on WI-0009
 (gamePk propagation); WI-0002; WI-0003.
+
+---
+
+## 2026-07-13 — WI-0008 INTEGRATED: fast-forwarded to dai/main and pushed
+
+Integration continuation of WI-0008 (no duplicate WI). Preconditions re-verified after fetch
+(neither remote advanced); fixture suite re-run pre-integration: **45/45**. Pushed
+`wi/0008-evidence-grounded-next-slice-planner` (remote == `88c9f09`); `git merge --ff-only`
+`41e0a46..88c9f09` (main tree == branch tree); pushed; **dai/main == origin/main ==
+`88c9f09`**. Vault WI links/disposition + MOC updated and pushed (carries `9c20f45` close,
+`0123570` handoff wording correction, and this integration record). Branch retained. Phantom +
+vault untracked files preserved; runtime cold (markdown/ps-tooling delta; nothing started).
+The next-slice planner, snapshot tooling, and operator timeline are now live on main.
+
+**NEXT (separately gated):** operator decision on proposed WI-0009 (gamePk propagation via
+CompetitionMatchupInput — continue the existing planner proposal, do not re-mint); WI-0002;
+WI-0003.

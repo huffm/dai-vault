@@ -201,11 +201,13 @@ cost estimates, tracker adapters, operator feedback loop, candidate-to-WI drafti
 ## links
 
 - work item: WI-0008 (ADO: AB#-- when wired)
-- branch: `wi/0008-evidence-grounded-next-slice-planner` (dai, from `41e0a46`) -- local
-  only, not pushed
-- pr: -- (not authorized)
-- commits: recorded in the slice handoff at close (dai: tooling+skill+tests; dai-vault:
-  WI + timeline + records)
+- branch: `wi/0008-evidence-grounded-next-slice-planner` (dai, from `41e0a46`) -- **pushed
+  2026-07-13; retained**
+- pr: -- (merged direct via fast-forward: `41e0a46..88c9f09`)
+- commits: dai `88c9f09` (tooling + skill + tests + .gitignore) -- **integrated to dai/main
+  and pushed** 2026-07-13 (clean fast-forward, main tree == branch tree; dai/main ==
+  origin/main at `88c9f09`); dai-vault `9c20f45` (WI + timeline + records) + `0123570`
+  (handoff wording correction) + integration record, pushed
 - tests: `scripts/dev/planning/test-build-next-slice-snapshot.ps1` (45 asserts, fixtures
   under `scripts/dev/planning/fixtures/`)
 - verification notes: validation record above; diff confined to scoped files (only
@@ -221,4 +223,7 @@ cost estimates, tracker adapters, operator feedback loop, candidate-to-WI drafti
 
 ## final disposition
 
-Implementation complete, local only (2026-07-13). Integration and push separately gated.
+Integrated and pushed (2026-07-13). Reviewed commit `88c9f09` fast-forwarded to dai/main
+(`41e0a46..88c9f09`); dai/main == origin/main; fixture suite re-verified 45/45 immediately
+before integration; vault records pushed. Original acceptance criteria preserved. Fully
+closed.

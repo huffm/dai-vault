@@ -90,7 +90,7 @@ extension, not a second dialect. A future hygiene audit should read this as inte
 - [[WI-0008-evidence-grounded-next-slice-planner]] — Evidence-Grounded Next-Slice Planner v1:
   read-only deterministic planning snapshot (`scripts/dev/planning/`) + `dai-next-slice-planner`
   skill + operator-owned [[platform-delivery-timeline-v1]]; planner recommends one bounded next
-  slice with provenance, never creates/authorizes/executes (**complete, local only** 2026-07-13; 45/45 fixture asserts + real-state run + planner desk-run; not pushed, integration separately gated)
+  slice with provenance, never creates/authorizes/executes (**complete + integrated** 2026-07-13; dai `88c9f09` fast-forwarded to main and pushed, origin synced; 45/45 fixture asserts + real-state run + planner desk-run; branch pushed + retained)
 
 ## scope boundary of this registry
 
