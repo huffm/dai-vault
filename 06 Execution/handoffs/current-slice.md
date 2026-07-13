@@ -13703,3 +13703,36 @@ live on main for every future slice.
 
 **NEXT (separately gated):** WI-0006 deferred items (gamePk via CompetitionMatchupInput;
 identity-status refinement); WI-0002; WI-0003.
+
+---
+
+## 2026-07-13 — WI-0008 evidence-grounded next-slice planner v1 (code + docs, local only)
+
+**Ops:** 0 paid calls, 0 runtime change. dai on `wi/0008-evidence-grounded-next-slice-planner`
+from `41e0a46`; **nothing pushed.**
+
+Two-layer planning system shipped: deterministic tooling assembles facts, the skill evaluates
+tradeoffs. (1) `scripts/dev/planning/build-next-slice-snapshot.ps1` — read-only versioned JSON
+snapshot: WI inventory with WI-0007 status discipline machine-applied (front-matter status +
+final-disposition/links-block text, never mtime), deferred candidates distinct from WIs,
+latest-handoff selection by front-matter date, reconciliation pointer with provenance,
+fail-closed authorization from the operator-owned timeline block (`unknown` ≠ permission),
+timeline semantics (desired_by/due_by/not_before distinct; proposed_by_system never becomes an
+operator date; cycles/impossible windows/missing provenance warn), material-conflict warnings,
+byte-determinism under fixed -AsOfUtc, hash-proven read-only. 45/45 fixture asserts.
+(2) `dai-next-slice-planner` skill — hard eligibility gates, ≤3 ranked candidates, exactly one
+recommendation with alternatives explained, one gated operator decision, Slice Synopsis final;
+never creates/authorizes/schedules/executes. (3) operator-owned
+`06 Execution/plans/platform-delivery-timeline-v1.md` — authorization posture + 4 initiatives
+seeded from WI-0006 deferred items and WI-0002/0003 backlog; all dates honestly empty.
+
+Real-state run: WI-0004..0007 recognized integrated, 0 continuations, no-spend posture, gamePk
+boundary surfaced as deferred candidate. Real run also caught a fixture-blind gap (links-block
+integration on pre-WI-0007 WIs) — fixed red-first. Planner desk-run recommended **gamePk
+propagation (proposed WI-0009)** over identity-status refinement and doc-conventions, earned by
+the 6c9d433e exclusion evidence; decision left gated. Review APPROVE, zero blockers.
+
+- runtime cold throughout (read-only inspection only; nothing started).
+
+**NEXT (separately gated):** WI-0008 integration and push; operator decision on WI-0009
+(gamePk propagation); WI-0002; WI-0003.

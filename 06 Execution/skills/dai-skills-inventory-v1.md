@@ -241,3 +241,24 @@ Routine governed operational cadence under an existing OKF plan still does not m
 measurement, and workflow/doctrine changes now do. Files: the five SKILL.md bodies under
 `dai/.claude/skills/`; governing WI:
 `02 Platform/system-development/work-items/WI-0007-mandatory-work-items-and-slice-synopsis-workflow.md`.
+
+## Skill-layer update (2026-07-13, WI-0008 next-slice planner)
+
+WI-0008 added `dai-next-slice-planner` (skill count 15 -> 16): the evaluation half of the
+evidence-grounded planning system.
+
+- **Purpose:** consume the deterministic planning snapshot
+  (`dai/scripts/dev/planning/build-next-slice-snapshot.ps1`) and recommend exactly one bounded
+  next slice -- hard eligibility gates, <=3 ranked candidates across documented dimensions,
+  alternatives explained, one explicit operator decision request, mandatory Slice Synopsis.
+- **Use when:** choosing the next slice after a close/integration; ranking deferred candidates;
+  auditing a proposed slice against the evidence.
+- **Not when:** the operator already chose and authorized the next slice; mid-slice scope
+  questions; anything requiring the planner to act on its own recommendation.
+- **Kind:** DAI-specific. **Provenance:** DAI-native (WI-0008). Single-file SKILL.md.
+- **Hard boundary:** advisory only -- never creates/authorizes/schedules/executes work, never
+  writes dates (system suggestions are clearly-labelled proposals only), fail-closed on
+  authorization (`unknown` is not permission).
+- **Companion tooling:** `scripts/dev/planning/` (snapshot script + fixture test suite, 44
+  asserts) and the operator-owned `06 Execution/plans/platform-delivery-timeline-v1.md`
+  (timeline intent; authorization posture block).
