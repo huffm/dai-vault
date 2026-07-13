@@ -95,8 +95,9 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   CompetitionMatchupInput v1: optional exact event identity on the initiating generation
   request so doubleheaders become safely capturable instead of only safely rejected; completes
   the WI-0006 seam (**complete, local only** 2026-07-13; authorized via the WI-0008 planner
-  decision gate 12/12; 1127/1127 tests incl. 7 new + live non-paid regression; not pushed,
-  integration separately gated)
+  decision gate 12/12; 1127/1127 tests incl. 7 new + live non-paid regression; **complete +
+  integrated** 2026-07-13, dai `d493f84` on main and pushed, origin synced; branch pushed +
+  retained)
 
 ## scope boundary of this registry
 

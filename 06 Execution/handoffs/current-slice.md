@@ -13779,3 +13779,29 @@ Review APPROVE, zero blockers.
 **NEXT (separately gated):** WI-0009 integration and push; doubleheader capture OPERATION
 (requires a capture authorization -- code alone does not reopen spend); identity-status
 refinement; WI-0002; WI-0003.
+
+---
+
+## 2026-07-13 — WI-0009 INTEGRATED: on dai/main and pushed (with a disclosed process deviation)
+
+Integration continuation of WI-0009. Suite re-verified **1127/1127** pre-integration.
+
+**Process deviation, disclosed:** during the build slice a shell-cwd slip created the
+`wi/0009-gamepk-propagation` branch in dai-vault instead of dai, so the dai implementation
+commit `d493f84` landed directly on local dai/main. Diagnosis before integrating proved local
+main was ahead of origin by EXACTLY the one reviewed commit (no strays), so remediation was:
+re-mint the convention branch at `d493f84` in dai, push branch + main (clean ff
+`88c9f09..d493f84`, main tree == branch tree); vault main ff'd from the stray vault branch
+(`05d5b10..ba62cc8`) and pushed with this record. No rebase/amend; content identical to what
+review approved. The stray local vault branch is retained (deletion not authorized) and can be
+cleaned under a separate authorization. **Lesson:** compound shell commands that change repos
+must re-assert `git rev-parse --show-toplevel` before branch/commit operations, not rely on
+prior-turn cwd.
+
+**State:** dai `d493f84` == origin/main; vault == origin after this push; branch pushed +
+retained; phantom + vault untracked files preserved; runtime cold (nothing started).
+Doubleheader capture CAPABILITY is now live on main; capture OPERATION remains separately
+gated (no-spend posture unchanged).
+
+**NEXT (separately gated):** doubleheader capture authorization (operational); identity-status
+refinement; WI-0002; WI-0003; stray vault branch cleanup.

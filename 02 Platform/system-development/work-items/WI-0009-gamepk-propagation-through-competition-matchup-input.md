@@ -132,10 +132,15 @@ push/integration separately gated.
 ## links
 
 - work item: WI-0009 (ADO: AB#-- when wired)
-- branch: `wi/0009-gamepk-propagation` (dai, from `88c9f09`)
-- pr: -- (not authorized)
-- commits: dai (contract + service + controller + tests) -- hash in the slice handoff;
-  dai-vault (this WI + MOC + current-slice + handoff)
+- branch: `wi/0009-gamepk-propagation` (dai, at `d493f84`) -- **pushed 2026-07-13; retained**.
+  Process note: the build slice accidentally committed directly to local dai/main (shell-cwd
+  slip created the branch in dai-vault instead); local main contained exactly the one reviewed
+  commit, so integration re-minted the convention branch at `d493f84` and pushed both. No
+  rebase/amend; content identical to review.
+- pr: -- (merged direct via fast-forward: `88c9f09..d493f84`)
+- commits: dai `d493f84` (contract + service + controller + tests) -- **integrated to dai/main
+  and pushed** 2026-07-13 (dai/main == origin/main at `d493f84`, main tree == branch tree);
+  dai-vault `ba62cc8` (this WI + MOC + current-slice + handoff) + integration record, pushed
 - tests: `AgentRuns/GamePkPropagationTests.cs` (7: old-row round-trip, null suppression in
   BOTH serializer profiles incl. the default profile the controller persists with, value
   round-trip, service propagation, null passthrough, exact-identity reach);
@@ -154,4 +159,6 @@ push/integration separately gated.
 
 ## final disposition
 
-Implementation complete, local only (2026-07-13). Integration and push separately gated.
+Integrated and pushed (2026-07-13). Reviewed commit `d493f84` on dai/main == origin/main;
+suite re-verified 1127/1127 immediately before integration; vault records pushed. Original
+acceptance criteria preserved. Fully closed.
