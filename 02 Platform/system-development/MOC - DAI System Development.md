@@ -98,6 +98,11 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   decision gate 12/12; 1127/1127 tests incl. 7 new + live non-paid regression; **complete +
   integrated** 2026-07-13, dai `d493f84` on main and pushed, origin synced; branch pushed +
   retained)
+- [[WI-0010-planner-evidence-fidelity]] — Planner Evidence Fidelity v1.1: MOC integration
+  fallback (WI-0001 false-unknown), delivered-candidate exclusion + explicit-alias dedup,
+  structured reconciliation planning readout; four defects reproduced by the first
+  post-WI-0009 planning run (**complete, local only** 2026-07-13; 73/73 fixture asserts;
+  strict real-state run zero warnings; not pushed, integration separately gated)
 
 ## scope boundary of this registry
 

@@ -13805,3 +13805,31 @@ gated (no-spend posture unchanged).
 
 **NEXT (separately gated):** doubleheader capture authorization (operational); identity-status
 refinement; WI-0002; WI-0003; stray vault branch cleanup.
+
+---
+
+## 2026-07-13 — WI-0010 planner evidence fidelity v1.1 (tooling + docs, local only)
+
+**Ops:** 0 paid calls, 0 runtime change, runtime cold throughout. dai on
+`wi/0010-planner-evidence-fidelity` from `d493f84`; **nothing pushed.**
+
+Four planning-evidence defects, all reproduced pre-change, all fixed red-first: (A) MOC
+integration fallback -- WI-0001 now reads integrated via the registry (precedence 4, medium
+confidence, file untouched; contradictions warn, stronger sources always win); (B+C)
+candidate identity via explicit operator metadata -- timeline aliases + related-WI mapping
+(never fuzzy), gamePk classified `delivered` by WI-0009 and excluded from ranking with
+history retained, identity-status deduped to ONE canonical candidate (origins
+WI-0006+WI-0009), plausible-but-unmapped stays separate and warns; (D) structured
+reconciliation readout -- new canonical sidecar (values copied verbatim from the gate4/
+baseline/settlement closeouts with citations, never computed) parsed into
+`reconciliation.facts` with provenance; stale/malformed withhold facts and warn. Snapshot
+schema 1.0 -> 1.1. Operator-authorized timeline correction executed manually (gamepk-
+propagation complete, delivered_by WI-0009, d493f84; operational-gated capture initiative
+added; no dates invented; tooling still hash-proven read-only over the timeline).
+
+Verification: fixture suite **73/73**; **strict real-state run: ZERO warnings**; planner
+validation run consumed the corrected evidence (no delivered/gated work ranked, one gated
+recommendation, confidence high). Review APPROVE.
+
+**NEXT (separately gated):** WI-0010 integration and push; doubleheader capture
+authorization (operational); identity-status refinement; WI-0002; WI-0003.

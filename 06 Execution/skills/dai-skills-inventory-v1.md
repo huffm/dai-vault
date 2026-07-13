@@ -262,3 +262,14 @@ evidence-grounded planning system.
 - **Companion tooling:** `scripts/dev/planning/` (snapshot script + fixture test suite, 44
   asserts) and the operator-owned `06 Execution/plans/platform-delivery-timeline-v1.md`
   (timeline intent; authorization posture block).
+
+## Skill-layer update (2026-07-13, WI-0010 planner evidence fidelity)
+
+WI-0010 amended `dai-next-slice-planner` (compatibility only; count stays 16, ranking model
+unchanged): candidates now carry `status` (active/delivered/gated), canonical `initiativeId`,
+merged `origins`, and `deliveredBy` -- only `active` entries are rankable; `delivered` is
+history; `gated` is reported, never ranked. `reconciliation.facts` (structured,
+provenance-backed readout parsed from the canonical sidecar
+`06 Execution/reports/reconciliation-planning-readout-v1.md`) is consumed directly; null facts
+fall back to the pointer with an explicit statement. Snapshot schema 1.0 -> 1.1 (additive).
+Governing WI: `02 Platform/system-development/work-items/WI-0010-planner-evidence-fidelity.md`.

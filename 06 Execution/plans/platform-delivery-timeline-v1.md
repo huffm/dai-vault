@@ -55,24 +55,28 @@ authorization:
 ```yaml
 initiative_id: gamepk-propagation
 title: propagate gamePk through CompetitionMatchupInput for doubleheader capture
-status: candidate
+status: complete
 priority: high
 desired_by:
 due_by:
 not_before:
 proposed_by_system:
 date_source: none
-date_confidence: low
+date_confidence: high
+delivered_by: WI-0009
+completed: 2026-07-13
+status_source: operator-confirmed integrated WI (WI-0009 fully closed)
+integration_commit: d493f84
+aliases:
+  - gamePk
 depends_on:
 blocks:
-  - doubleheader-capture-capability
-economic_reason: doubleheaders are currently uncapturable (fail-closed); each ambiguous slate day forfeits capturable paid-product volume until the request can carry an exact event identity
-operator_intent: named as deferred item 1 at WI-0006 close; contract-expansion work requiring its own WI and review (touches persisted InputJson and the public analyze body)
+economic_reason: was -- doubleheaders uncapturable (fail-closed); DELIVERED -- the initiating request now carries exact event identity; capture OPERATION remains separately gated
+operator_intent: delivered per WI-0009; corrected under WI-0010 explicit authorization
 replan_triggers:
-  - capture authorization resumes
-  - a doubleheader-heavy slate is scheduled during an active capture window
 related_work_items:
   - WI-0006
+  - WI-0009
 ```
 
 ### first-class identity-status refinement
@@ -88,14 +92,18 @@ not_before:
 proposed_by_system:
 date_source: none
 date_confidence: low
+aliases:
+  - first-class
+  - identity outcome statuses
 depends_on:
 blocks:
 economic_reason: diagnostic clarity only; today the states are already distinguishable via IdentityReason, so buyer/product value is indirect
-operator_intent: named as deferred item 2 at WI-0006 close; independent of gamepk-propagation
+operator_intent: named as deferred item 2 at WI-0006 close; re-deferred at WI-0009 close; independent of gamepk-propagation
 replan_triggers:
   - a screening consumer misreads unmatched vs ambiguous in practice
 related_work_items:
   - WI-0006
+  - WI-0009
 ```
 
 ### artifact chip alignment (presentation backlog)
@@ -145,6 +153,32 @@ related_work_items:
   - WI-0003
 ```
 
+### doubleheader capture operation (operational gate, not an engineering slice)
+
+```yaml
+initiative_id: doubleheader-capture-operation
+title: doubleheader capture operation under the delivered gamePk capability
+status: operational-gated
+priority: medium
+desired_by:
+due_by:
+not_before:
+proposed_by_system:
+date_source: none
+date_confidence: low
+aliases:
+  - capture OPERATION
+depends_on:
+  - gamepk-propagation
+blocks:
+economic_reason: the code capability is delivered (WI-0009); realizing paid-product volume from doubleheaders requires an operator capture authorization, which is an operational decision outside the WI system
+operator_intent: named in the WI-0009 close NEXT list; requires explicit capture authorization; never a ranked engineering candidate
+replan_triggers:
+  - operator authorizes capture
+related_work_items:
+  - WI-0009
+```
+
 ## deferred decisions
 
 - calibration volume expansion: not currently justified (Gate 4 posture; v2 cadence closed
@@ -154,5 +188,11 @@ related_work_items:
 
 ## change log
 
+- 2026-07-13 (WI-0010): doubleheader-capture-operation added as an operational-gated
+  initiative (identity metadata for the WI-0009 deferred bullet; never a ranked candidate).
+- 2026-07-13 (WI-0010, operator-authorized manual correction): gamepk-propagation marked
+  complete, delivered_by WI-0009 (integration commit d493f84); aliases + WI-0009 relation
+  added to both initiatives for deterministic candidate mapping. No desired/due/proposed date
+  invented. Tooling never writes this file.
 - 2026-07-13: created (WI-0008). Seeded from WI-0006 deferred items and WI-0002/0003 backlog
   state. No operator dates exist yet; all date fields deliberately empty.
