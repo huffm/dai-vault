@@ -13753,3 +13753,29 @@ The next-slice planner, snapshot tooling, and operator timeline are now live on 
 **NEXT (separately gated):** operator decision on proposed WI-0009 (gamePk propagation via
 CompetitionMatchupInput — continue the existing planner proposal, do not re-mint); WI-0002;
 WI-0003.
+
+---
+
+## 2026-07-13 — WI-0009 gamePk propagation through CompetitionMatchupInput (code, local only)
+
+**Ops:** 0 paid calls (live checks used /health, /source-readiness, and pre-spend 400s only;
+zero analyzer/model log lines). dai on `wi/0009-gamepk-propagation` from `88c9f09`; **nothing
+pushed.** First slice both authorized through the WI-0008 planner decision gate (12/12) and
+executed under the WI-0007 qualification gate.
+
+The initiating generation request can now carry an exact MLB event identity: optional,
+null-suppressed `GamePk` on `CompetitionMatchupInput` (ordinary InputJson stays byte-identical
+in BOTH serializer profiles; historical rows deserialize to null), propagated by
+`AgentRunService` onto `SportsRunArtifact.RequestedGamePk` where the WI-0006 resolution seam
+already consumes it; `gamePk <= 0` rejected 400 at the trust boundary before the pending row
+and before any spend. Doubleheaders are now safely CAPTURABLE (exact Game 1/Game 2 identity),
+while identity-less requests keep the fail-closed behavior unchanged. No schema change, no
+migration, no new resolution logic.
+
+Verification: **1127/1127** (+7 new); WI-0006's 20 doubleheader regressions untouched and
+green; live non-paid regression on the real 823357/823356 fixture; runtime cold start/end.
+Review APPROVE, zero blockers.
+
+**NEXT (separately gated):** WI-0009 integration and push; doubleheader capture OPERATION
+(requires a capture authorization -- code alone does not reopen spend); identity-status
+refinement; WI-0002; WI-0003.

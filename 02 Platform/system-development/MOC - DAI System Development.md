@@ -91,6 +91,12 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   read-only deterministic planning snapshot (`scripts/dev/planning/`) + `dai-next-slice-planner`
   skill + operator-owned [[platform-delivery-timeline-v1]]; planner recommends one bounded next
   slice with provenance, never creates/authorizes/executes (**complete + integrated** 2026-07-13; dai `88c9f09` fast-forwarded to main and pushed, origin synced; 45/45 fixture asserts + real-state run + planner desk-run; branch pushed + retained)
+- [[WI-0009-gamepk-propagation-through-competition-matchup-input]] — Propagate gamePk Through
+  CompetitionMatchupInput v1: optional exact event identity on the initiating generation
+  request so doubleheaders become safely capturable instead of only safely rejected; completes
+  the WI-0006 seam (**complete, local only** 2026-07-13; authorized via the WI-0008 planner
+  decision gate 12/12; 1127/1127 tests incl. 7 new + live non-paid regression; not pushed,
+  integration separately gated)
 
 ## scope boundary of this registry
 
