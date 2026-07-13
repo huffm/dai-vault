@@ -13552,3 +13552,82 @@ Report: WI-0004 spec + `06 Execution/handoffs/wi-0004-truthful-shutdown-handoff-
 
 **NEXT (separate approval each; not started):** candidate doubleheader gamePk disambiguation;
 WI-0002; WI-0003. All remain BACKLOG / not authorized.
+
+---
+
+## 2026-07-13 — WI-0006 Identity-Safe MLB Doubleheader Resolution v1 (code, local only)
+
+**Ops:** 0 paid calls, 0 capture, 0 reconciliation, 0 calibration mutation. dai on
+`wi/0006-doubleheader-gamepk-resolution` from `e8050a9`; dai-vault docs-only. **Nothing pushed.**
+
+**Governing principle:** a matchup is not an event identity. When more than one game can satisfy
+the same teams and date, the system must resolve a stable provider identity or declare ambiguity.
+It must never guess.
+
+**Defect (reproduced live, non-paid).** `/source-readiness` accepted only
+`(competition, homeTeam, awayTeam, gameDate)` — a *matchup*, which on a doubleheader date names two
+games. Three failures, one cause:
+1. the endpoint could not express which game the caller meant (no `gamePk` parameter);
+2. `MlbStarterClient.FetchStartersAsync` did `games.FirstOrDefault(team-name match)` over the whole
+   date, so **provider array order silently picked the winner**;
+3. both games shared the cache key `starters:v1:...:{home}:{away}:{date}`, so game 1's starters
+   could be served for game 2.
+
+Live fixture — the real **2026-07-11 MIL@PIT split doubleheader**:
+`823357` (16:05Z, game 1, Ashcraft/Sproat) and `823356` (20:05Z, game 2, Chandler/Drohan).
+Starters are **disjoint**, so a cross-game hit is materially wrong evidence, not a cosmetic id
+error. `gamePk` is **not monotonic with game number** (game 1 has the higher pk) — order can never
+be inferred from the identifier. And per `v2-day2-cohort-settlement-2026-07-11-v1`, `823357` is the
+postponed 07-10 game that *became* this doubleheader and cost run `6c9d433e` (excluded, postponed
+non-event): postponement is how doubleheaders are born, so both hazards live on this code path.
+
+**Decision.** Option B + resolution owned by `MlbStarterClient` (which already fetched the schedule
+and selected the game — the resolution was existing client behavior, made correct and explicit, not
+relocated). Optional `gamePk`; supplied -> exact event after validating it is the matchup described;
+absent + one candidate -> unchanged ordinary behavior; absent + multiple -> **explicit ambiguity**
+with candidate gamePks, no selection, no starter-detail call, no cache write.
+Rejected: **A** (require gamePk — no caller has one before retrieval; breaks every ordinary call);
+**C** (select by gameNumber/start time — a caller who said nothing about game number expressed no
+preference; that is still a guess. Metadata is reported as diagnostics only);
+**D-as-default** (guard did not bite — the client already owned schedule resolution).
+`gamePk` rides on **`SportsRunArtifact`**, deliberately *not* `CompetitionMatchupInput` (which is
+both the persisted `InputJson` and the public `CreateAgentRunRequest` body). **No schema, no migration.**
+
+**Cache.** Two keys, each keyed by what it actually is:
+`starters:v2:statsapi:mlb:{gamePk}` (content, authoritative identity) and
+`mlb-event:v1:statsapi:mlb:{home}:{away}:{date}` -> resolved gamePk, admitted **only** when the
+matchup resolved to exactly one game. `v1` entries are in-memory and expire naturally.
+
+**Two blocking bugs found and fixed — each caught by a different gate:**
+- **B1 (found by LIVE verification; unit tests were green):** the gamePk cache fast-path returned a
+  warm entry *without* re-validating the matchup, so `gamePk=823357` requested under Yankees/Red Sox
+  was served Pittsburgh's starters. The cache bypassed the identity check the cold path performs.
+  Fixed: `MlbEventResolver.IdentityMatchesMatchup` re-checks every cache hit.
+- **B2 (found by CODE REVIEW; live had missed it):** the matchup->gamePk resolution entry was written
+  unconditionally, *including when an explicit gamePk was supplied* — so resolving game 1 explicitly
+  taught the cache that "PIT/MIL/07-11" means game 1, and the next ambiguous request would have been
+  silently answered with it. The removed guess, re-entering through the cache. Fixed: write the
+  resolution entry only when `requestedGamePk is null`. Re-verified live in **adversarial order**
+  (explicit first, then the ambiguous question).
+
+**Verification.** `DevCore.Api.Tests` **1120 passed / 0 failed / 0 skipped** (from 1092 at WI-0005;
++28). The 17 existing WI-0005 starter tests pass **unmodified** — the ordinary-single-game
+compatibility proof (the 4-arg `GetStartersAsync` signature is byte-identical; the identity-aware
+form is an overload). Live: ordinary single game (LAA@MIN `823682`) unchanged; ambiguous DH refuses
+with both candidates; game 1 -> Ashcraft/Sproat; game 2 -> Chandler/Drohan; cache isolation holds on
+repeat; identity mismatch fails closed against a warm cache. dai-code-reviewer: **APPROVE**.
+
+**Locked layers unchanged:** prompts, registry, model routing, confidence, scoring, decision, market
+agreement, reconciliation, calibration, Gate 4, buyer output, DB schema, Angular. No migration.
+
+**Accepted behavior change:** generation can no longer analyze an ambiguous doubleheader — it now
+degrades to priors-only with unmatched identity instead of silently analyzing a coin-flip game with
+possibly-wrong starters. Restoring *targeted* doubleheader capture needs `gamePk` on
+`CompetitionMatchupInput` — deferred, not authorized.
+
+- runtime returned to cold (direct inspection): 5007/8000/4200/4201/1433 free, 0 containers,
+  devcore-sql stopped, no DevCore.Api / uvicorn / dotnet (MSBuild node-reuse servers also shut down).
+
+**NEXT (separate approval each; not started):** WI-0006 integration and push; `gamePk` on
+`CompetitionMatchupInput` for doubleheader capture; WI-0002; WI-0003; any cross-sport identity
+abstraction. All remain BACKLOG / not authorized.
