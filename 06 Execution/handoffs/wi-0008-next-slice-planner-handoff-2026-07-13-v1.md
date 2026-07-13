@@ -80,20 +80,32 @@ the planning skill evaluates tradeoffs":
 - Reconciliation metrics are pointer-only by design; a structured readout collector is a
   future seam.
 
-## 5. recommended next slice
+## 5. deferred work (each item separate; none authorized, none started)
 
-Operator decision from the real-state planner run:
+1. WI-0008 integration and push.
+2. Operator decision on proposed WI-0009: propagate `gamePk` through
+   `CompetitionMatchupInput` (the planner's gated recommendation from the real-state run --
+   an existing proposal to continue, not a new WI to mint again).
+3. MOC-based integration collector for older WIs whose integration state exists only in the
+   MOC (the WI-0001 `unknown` limitation in section 4).
+4. Structured reconciliation-readout collector (today a provenance-carrying pointer).
+5. Future planning seams documented in WI-0008: product or tenant scopes, recurring reports,
+   cost estimates, tracker adapters, recommendation feedback, candidate-to-WI drafting.
+6. WI-0002 (backlog, operator activation gate).
+7. WI-0003 (backlog, gated on a concrete second consumer).
+
+Operator decision from the real-state planner run, left gated:
 `Authorize creation and execution of WI-0009: gamePk Propagation Through the Generation
-Request v1` -- or integrate WI-0008 first (separately gated).
+Request v1` -- or authorize WI-0008 integration first.
 
 ### Slice Synopsis
 
-**Change:** Read-only planning system shipped -- deterministic evidence snapshot,
-`dai-next-slice-planner` skill, and the operator-owned delivery timeline.
-**Reason:** Next-slice choice relied on manual re-reading of the spine with no provenance,
-no fail-closed authorization, and no operator/system date separation.
-**Proof:** 45/45 fixture asserts plus a real-state run that recognized WI-0004..0007 as
-integrated and produced one evidence-linked recommendation with alternatives.
-**State:** One local commit per repo, nothing pushed; WI-0008 complete (implementation),
-integration separately gated; runtime cold throughout.
-**Next:** WI-0008 integration and push (separately gated).
+**Change:** Completed the evidence-grounded planning system locally: deterministic snapshot
+tooling, `dai-next-slice-planner`, and the operator-owned delivery timeline.
+**Reason:** Next-slice selection lacked deterministic evidence assembly, fail-closed
+authorization, and separation between operator dates and system proposals.
+**Proof:** 45/45 assertions passed; the real-state run recognized WI-0004 through WI-0007 as
+integrated and produced one evidence-linked, gated recommendation.
+**State:** `dai` at `88c9f09` and vault at the corrected documentation HEAD, local only;
+nothing pushed; WI-0008 implementation complete; runtime cold.
+**Next:** Separately authorize WI-0008 integration and push.
