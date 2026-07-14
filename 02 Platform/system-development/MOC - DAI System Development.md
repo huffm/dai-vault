@@ -101,8 +101,10 @@ extension, not a second dialect. A future hygiene audit should read this as inte
 - [[WI-0010-planner-evidence-fidelity]] — Planner Evidence Fidelity v1.1: MOC integration
   fallback (WI-0001 false-unknown), delivered-candidate exclusion + explicit-alias dedup,
   structured reconciliation planning readout; four defects reproduced by the first
-  post-WI-0009 planning run (**complete, local only** 2026-07-13; 73/73 fixture asserts;
-  strict real-state run zero warnings; not pushed, integration separately gated)
+  post-WI-0009 planning run (**complete + integrated** 2026-07-14, dai `e64567f` on main and
+  pushed, origin synced; 73/73 fixture asserts re-verified on main 2026-07-14; strict
+  real-state run zero warnings; branch deleted local + remote — deviation from the
+  branch-retained convention of WI-0004..0009)
 
 ## scope boundary of this registry
 

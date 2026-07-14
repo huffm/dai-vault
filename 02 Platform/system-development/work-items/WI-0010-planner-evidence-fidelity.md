@@ -124,7 +124,8 @@ Revert the two commits; the sidecar and timeline metadata are additive documenta
 ## approval boundary / integration gate
 
 WI-0010 authorizes evidence-fidelity work only, local commits only. Integration and push are
-a separately gated continuation of this WI.
+a separately gated continuation of this WI. (Gate exercised: the continuation was authorized
+and completed -- integrated and pushed as `e64567f`; see final disposition.)
 
 ## validation record (2026-07-13)
 
@@ -148,11 +149,12 @@ a separately gated continuation of this WI.
 ## links
 
 - work item: WI-0010 (ADO: AB#-- when wired)
-- branch: `wi/0010-planner-evidence-fidelity` (dai, from `d493f84`)
+- branch: `wi/0010-planner-evidence-fidelity` (dai, from `d493f84`; deleted locally and
+  remotely after integration -- deviation from the branch-retained convention)
 - pr: -- (not authorized)
-- commits: dai (tooling + fixtures + planner-skill note) and dai-vault (this WI, timeline
-  correction, readout sidecar, MOC, inventory, current-slice, handoff) -- hashes in the
-  slice handoff at close
+- commits: dai `e64567f` (tooling + fixtures + planner-skill note; integrated to dai/main and
+  pushed, origin synced) and dai-vault (this WI, timeline correction, readout sidecar, MOC,
+  inventory, current-slice, handoff) -- vault hashes in the slice handoff at close
 - tests: `scripts/dev/planning/test-build-next-slice-snapshot.ps1` -> 73/73
 - verification notes: validation record above; strict real-state run zero warnings
 - docs updated: this WI; MOC; `platform-delivery-timeline-v1` (authorized correction +
@@ -165,4 +167,11 @@ a separately gated continuation of this WI.
 
 ## final disposition
 
-Implementation complete, local only (2026-07-13). Integration and push separately gated.
+Complete + integrated (2026-07-14). Integration commit dai `e64567f` == dai/main ==
+origin/main, a pure fast-forward from `d493f84`; the integration and push occurred before
+this documentation correction, which exists solely to reconcile the vault record with the
+already-integrated repository state. Branch `wi/0010-planner-evidence-fidelity` was deleted
+locally and remotely (a disclosed deviation from the branch-retained convention of
+WI-0004..0009). Focused fixture suite re-verified on main 2026-07-14: 73/73. No
+implementation work remains open. This supersedes the prior "implementation complete, local
+only / integration separately gated" disposition of 2026-07-13.

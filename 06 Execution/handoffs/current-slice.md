@@ -13833,3 +13833,37 @@ recommendation, confidence high). Review APPROVE.
 
 **NEXT (separately gated):** WI-0010 integration and push; doubleheader capture
 authorization (operational); identity-status refinement; WI-0002; WI-0003.
+
+---
+
+## 2026-07-14 — WI-0010 INTEGRATED (docs reconciliation; vault record corrected to match main)
+
+Integration continuation of WI-0010 (no new WI, per the WI-0007 rule). The integration itself
+occurred BEFORE this entry: **dai/main == origin/main == `e64567f`**, a pure fast-forward from
+`d493f84`; branch `wi/0010-planner-evidence-fidelity` deleted locally and remotely — a
+disclosed deviation from the branch-retained convention of WI-0004..0009. Focused fixture
+suite re-run on main 2026-07-14: **73/73, exit 0**. dai-vault/main is updated SOLELY to
+reconcile its documentation with the already-integrated repository state; dai untouched this
+slice.
+
+Why the correction was owed: a strict real-state snapshot on 2026-07-14 read WI-0010
+`integrationState=pending` from the stale WI disposition (precedence 2, "local only /
+separately gated") and minted a FALSE WI-0010 integration continuation — the exact
+evidence-fidelity defect class WI-0010 exists to eliminate. Files corrected: the WI-0010
+work item (final disposition -> complete + integrated `e64567f`; gate noted exercised; links
+block updated), the MOC WI-0010 line (**complete + integrated** 2026-07-14), and this entry.
+
+Verified after the corrections (strict snapshot, exit 0): WI-0010 `integrationState=integrated`
+(precedence 2), **integration continuations 0** (was 1), **warnings 0**, work items 10,
+deferred candidates 6 with statuses byte-identical to the before run (no unrelated candidate
+or work item promoted; activeCandidates 4 before and after).
+
+**Ops:** 0 paid calls; 0 sports runs or captures; 0 reconciliation or database writes;
+0 runtime/prompt/routing/scoring/confidence/buyer/calibration change; runtime cold throughout
+(snapshot tooling is read-only). `DevCore.Data.csproj` line-ending phantom untouched; both
+intentionally untracked vault files (`system-state-synopsis-v1.md`,
+`preflight-settlement-manifest-2026-07-06-v1.json`) untouched and untracked.
+
+**NEXT (separately gated, not started):** doubleheader capture authorization (operational,
+needs a fresh operator capture go); identity-status refinement (stays candidate/low — replan
+trigger never observed); WI-0002; WI-0003.
