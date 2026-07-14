@@ -13992,3 +13992,36 @@ NOT started.
 
 **NEXT (separately gated):** WI-0012 Settled Outcome Recap v1 (target integrate Fri
 2026-07-24); then WI-0013 Pilot Operations Hardening v1 (07-29, RC drill 07-31).
+
+---
+
+## 2026-07-14 — WI-0012 Settled Outcome Recap v1 (code, local only)
+
+**Ops:** 0 paid calls, 0 captures, 0 reconciliation/DB writes; runtime started READ-ONLY for
+live verification and returned to cold. dai on `wi/0012-settled-outcome-recap` from `140b5a2`,
+committed `7152818` (5 files, +989/−43). **Nothing pushed.** Second V1 critical-path slice,
+minted under the WI-0007 gate before any change.
+
+**Shipped:** canonical buyer POSTGAME recap — `BuyerSettledRecapDto` embedding the WI-0011
+brief verbatim as the original read; closed fail-closed state vocabulary (not_settled /
+settled_evaluated / settled_not_evaluated / no_position / excluded / **no_result** [non-final
+settlements — never "evaluation pending"] / inconsistent); persisted evaluation = SOLE
+correctness source (never recomputed); no-position shows the score but is NEVER scored;
+excluded renders exactly "No result — event not evaluated."; per-read only, zero aggregate
+fields; deterministic invariant-culture Markdown export. Endpoints GET /{id}/recap +
+/recap/markdown; ALL FOUR buyer surfaces now share ONE loader (brief endpoints serve the
+recap's embedded Read) with the suppression tripwire + disambiguated fail-closed warnings.
+
+**Verification:** red-first; DevCore.Api.Tests **1212/1212** (baseline 1176, +36); vitest
+**134/134** (regression; no Angular production change). Live GET-only on real runs: 823845 →
+settled_evaluated "Correct" 3-2 w/ byte-identical markdown; 823357 → excluded; real lean-null
+run → no_position (score shown, not scored); real outcome-less run → not_settled. Focused
+review (3 angles): **9 findings FIXED** (no_result state for non-final outcomes; explicit
+eval-status switch; disambiguated warnings; partial-score residue omitted consistently;
+tripwire on all buyer surfaces via loader consolidation [~55-line duplication deleted]; shared
+identity-header fragment; winning-team side-word fallback; TryLabel contract) / **1 REFUTED**
+(WinningTeam correctly derives from the persisted OutcomeStatus — outcome row owns the factual
+result, evaluation owns only the verdict).
+
+**NEXT (separately gated):** WI-0012 integration and push (target Fri 07-24 = buyer-workflow-
+complete milestone); then WI-0013 Pilot Operations Hardening v1 (07-29, RC drill 07-31).

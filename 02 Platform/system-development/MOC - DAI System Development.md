@@ -114,6 +114,16 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   `140b5a2` fast-forwarded to main and pushed, origin synced; 1176/1176 C# + 134/134
   vitest re-verified pre-integration; review 10 findings fixed; live-verified on
   823845/822882; branch pushed + retained)
+- [[WI-0012-settled-outcome-recap]] — Settled Outcome Recap v1: canonical buyer postgame
+  recap (GET /recap + deterministic markdown at /recap/markdown) embedding the WI-0011
+  brief verbatim; closed fail-closed state vocabulary incl. honest `no_result` for
+  non-final settlements; persisted evaluation is the sole correctness source; no-position
+  never scored; excluded renders exact non-evaluation copy; per-read only, no aggregates;
+  all four buyer surfaces consolidated onto one loader + suppression tripwire; second V1
+  critical-path item (**complete, local only** 2026-07-14, dai `7152818` on
+  `wi/0012-settled-outcome-recap`; 1212/1212 C# + 134/134 vitest; review 9 fixed /
+  1 refuted; live-verified on 823845/823357/no-position/unsettled; not pushed,
+  integration separately gated)
 
 ## scope boundary of this registry
 
