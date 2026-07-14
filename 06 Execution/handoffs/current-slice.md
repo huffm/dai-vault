@@ -13867,3 +13867,59 @@ intentionally untracked vault files (`system-state-synopsis-v1.md`,
 **NEXT (separately gated, not started):** doubleheader capture authorization (operational,
 needs a fresh operator capture go); identity-status refinement (stays candidate/low — replan
 trigger never observed); WI-0002; WI-0003.
+
+---
+
+## 2026-07-14 — V1 Release Definition and Critical Path v1 (docs-only planning slice)
+
+**Ops:** 0 paid calls, 0 captures, 0 reconciliation/DB writes, runtime cold throughout
+(read-only code audit + StatsAPI/docs evidence only). dai UNCHANGED at `e64567f`.
+Governance: release-planning documentation mints no WI; WI-0011/0012/0013 are PROPOSED
+and each requires its own WI-0007-gated authorization.
+
+**Frozen:** V1 = private MLB decision brief, concierge-delivered (per the ACTIVE
+buyer-validation-brief: $29/mo, manual Stripe link = truth, no accounts/deploy/checkout
+for the pilot). Numeric confidence OMITTED from every buyer surface (15-row v2 evidence
+shows inverted discrimination; the current buyer panel renders a raw "75%" tile +
+threshold "Strong" labels from the unprojected POST response — the central conformance
+defect). Buyer strength language = the existing evidence-gated band only. Docs:
+`04 Products/sports-v1/v1-release-definition-and-scope-freeze-v1.md` (+ supersession
+banner on the 2026-04 `v1-scope.md`) and
+`06 Execution/plans/v1-release-critical-path-2026-07-14-v1.md`.
+
+**Code audit (dai e64567f) keys:** auth boundary intact ([Authorize AgentRunAccess],
+fail-closed DevBypass, MSAL config-gated fail-loud); buyer projection exists but the
+primary result panel bypasses it; market context + gamePk absent from buyer surface;
+no-position rendering EXISTS; settled outcomes never reach the buyer (history mocked;
+GET /recent unused); NO payment/entitlement code anywhere; run creation unguarded for
+duplicate active runs (UI and API); cost metering log-only and priced for gpt-4o-mini
+while provisioning seeds gpt-4.1-mini (None costs); Dockerfiles exist, CI empty, prod
+frontend env = http://localhost:5007 (hosted deploy = post-V1).
+
+**Critical path (<= 3 WIs):** WI-0011 Buyer Decision Brief Contract v1 (claim-safe
+panel + identity/market context + deterministic brief export; by 07-22) -> WI-0012
+Settled Outcome Recap v1 (per-read recap export incl. excluded-run form; by 07-24) ->
+WI-0013 Pilot Operations Hardening v1 (duplicate-creation guard, metering pricing fix,
+runbook, RC drill; by 07-29, drill by 07-31). Dates: freeze 07-17 (met early), buyer
+workflow 07-24, RC 07-31, first paid pilot 08-07, evaluation 08-21. Doubleheader
+operation stays independent (own packet/authorization; not a release dependency).
+
+**Triage highlights:** blockers = presentation conformance, brief export, outcome
+recap, creation guard, runbook, metering fix, manual payment process. Post-V1 = hosted
+deploy/Entra/CI, real history page, identity-status (dormant), WI-0002, buyer copy
+polish, /metrics denominator, EF tenant filter, registry default-ON. Rejected for V1 =
+WI-0003 (no second consumer), any tuning from n=15 (Gate 4 false).
+
+### Slice Synopsis
+
+**Change:** Froze the V1 pilot (MLB concierge decision brief) and committed the release
+plan: dates through 08-21, workflow audit, full backlog triage, and three proposed
+critical-path WIs (0011 brief contract, 0012 outcome recap, 0013 ops hardening).
+**Reason:** Operator authorized turning the settled v2 evidence into a dated delivery
+plan; the audit found the buyer surface renders unsupported numeric confidence and
+lacks delivery, recap, and duplicate-guard paths.
+**Proof:** Code audit with file:line evidence; strict snapshot 0 warnings / 0
+continuations before and after; only authorized vault docs changed.
+**State:** dai untouched e64567f; vault docs committed and pushed; posture no-spend
+unchanged.
+**Next:** Authorize WI-0011 (first implementation slice).

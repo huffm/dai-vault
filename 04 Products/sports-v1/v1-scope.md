@@ -1,5 +1,10 @@
 # v1 scope: sports-v1
 
+> **superseded for the V1 pilot (2026-07-14):** the frozen pilot scope is
+> `v1-release-definition-and-scope-freeze-v1.md` (MLB-only concierge decision brief).
+> where this document is broader (multi-sport coverage, delivery tiers, webhook
+> alerts), it remains the long-range map, not the pilot commitment.
+
 ## current dev app frontend
 
 the dev app at `apps/sports-app/` (port 4201) has a thin angular shell with three routed pages. this documents what is real vs mocked as of 2026-04-19.
