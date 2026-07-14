@@ -14025,3 +14025,40 @@ result, evaluation owns only the verdict).
 
 **NEXT (separately gated):** WI-0012 integration and push (target Fri 07-24 = buyer-workflow-
 complete milestone); then WI-0013 Pilot Operations Hardening v1 (07-29, RC drill 07-31).
+
+---
+
+## 2026-07-14 — WI-0012 INTEGRATED: fast-forwarded to dai/main and pushed (BUYER WORKFLOW COMPLETE)
+
+Integration continuation of WI-0012 (no duplicate WI). Preconditions re-verified after fetch:
+dai main == origin == `140b5a2`; branch at the exact reviewed `7152818` (parent `140b5a2`,
+1 ahead, unpushed); vault local `2dc42c8` exactly 1 ahead of origin `486b247`; neither remote
+advanced. Suites re-run on the reviewed commit pre-integration: **DevCore.Api.Tests 1212/1212,
+sports-app vitest 134/134, bundle compiles** (covers recap projection/endpoints, markdown
+determinism, tenant isolation, identity provenance, claim safety, no-position/excluded/
+unsettled/non-final/missing-evaluation/inconsistent-residue tests, and all WI-0011 brief
+regressions through the consolidated loader).
+
+**Integration:** pushed `wi/0012-settled-outcome-recap` (remote == `7152818`, RETAINED local +
+remote); `git merge --ff-only` on main (`140b5a2` -> `7152818`); main tree == branch tree
+(`3c0f324`, byte-identical); 0 merge commits; pushed main. **dai/main == origin/main ==
+`7152818`.** WI-0011 retained branch unchanged at `140b5a2`. No rebase/amend/force-push/PR/
+history rewrite.
+
+**Now live on main:** the canonical postgame recap (GET /{id}/recap + deterministic markdown at
+/recap/markdown) embedding the WI-0011 brief verbatim; fail-closed state distinctions incl.
+honest `no_result` for non-final settlements; persisted evaluation as sole correctness source;
+no-position never scored; excluded renders exact non-evaluation copy; all four buyer surfaces
+on ONE loader with the suppression tripwire. **The 2026-07-24 buyer-workflow-complete milestone
+is achieved 2026-07-14, ten days early:** the concierge deliverable pair (pregame brief +
+postgame recap) is complete on main.
+
+**Guardrails:** 0 paid calls / 0 captures / 0 reconciliation / 0 DB writes / 0 settlement-
+outcome-matching-evaluation-prompt-model-scoring-confidence-routing-calibration-schema change;
+runtime cold throughout (suites only; live smoke not repeated -- the reviewed tree was
+live-verified at build time); csproj phantom + both intentionally untracked vault files
+preserved; **WI-0013 NOT started** and separately gated.
+
+**NEXT (separately gated):** WI-0013 Pilot Operations Hardening v1 (duplicate-creation guard,
+metering pricing fix, operator runbook, RC drill; target integrate Wed 07-29, RC drill Fri
+07-31); then outreach + paid pilot per the frozen plan (08-07).

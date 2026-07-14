@@ -132,5 +132,11 @@ isolation 404; WI-0011 reuse (not re-derivation).
 
 ## final disposition
 
-Implementation complete, local only (2026-07-14). Review resolved (9 findings fixed,
-1 refuted). Integration and push separately gated.
+Complete + integrated (2026-07-14). Integration commit dai `7152818` == dai/main ==
+origin/main, a pure fast-forward from `140b5a2` (main tree byte-identical to the reviewed
+branch tree `3c0f324`); branch `wi/0012-settled-outcome-recap` pushed and RETAINED local
++ remote at `7152818`; the WI-0011 retained branch is unchanged at `140b5a2`.
+Pre-integration re-verification on the reviewed commit: DevCore.Api.Tests 1212/1212,
+sports-app vitest 134/134, bundle compiles. Review resolved (9 fixed, 1 refuted). No
+implementation work remains open. This supersedes the prior "implementation complete,
+local only" disposition.
