@@ -105,6 +105,14 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   pushed, origin synced; 73/73 fixture asserts re-verified on main 2026-07-14; strict
   real-state run zero warnings; branch deleted local + remote — deviation from the
   branch-retained convention of WI-0004..0009)
+- [[WI-0011-buyer-decision-brief-contract]] — Buyer Decision Brief Contract v1: canonical
+  server-owned buyer pregame brief (GET /brief + deterministic markdown export at
+  /brief/markdown); numeric confidence and threshold labels removed from every buyer
+  surface (panel, buyer artifact wire, history, landing); persisted identity incl. gamePk;
+  evidence-gated band as sole strength language; deterministic market-context copy via the
+  fidelity guard; first V1 critical-path item (**complete, local only** 2026-07-14, dai
+  `140b5a2` on `wi/0011-buyer-brief-contract`; 1176/1176 + 134/134; review 10 findings
+  fixed; live-verified on 823845/822882; not pushed, integration separately gated)
 
 ## scope boundary of this registry
 

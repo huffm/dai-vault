@@ -13923,3 +13923,42 @@ continuations before and after; only authorized vault docs changed.
 **State:** dai untouched e64567f; vault docs committed and pushed; posture no-spend
 unchanged.
 **Next:** Authorize WI-0011 (first implementation slice).
+
+---
+
+## 2026-07-14 — WI-0011 Buyer Decision Brief Contract v1 (code, local only)
+
+**Ops:** 0 paid calls, 0 captures, 0 reconciliation/DB writes; runtime started READ-ONLY for
+live verification and returned to cold. dai on `wi/0011-buyer-brief-contract` from `e64567f`,
+committed `140b5a2` (20 files, +1546/−359). **Nothing pushed.** First V1 critical-path slice,
+minted under the WI-0007 gate before any change.
+
+**Shipped:** canonical server-owned buyer pregame brief — `BuyerDecisionBriefDto` (persisted
+identity incl. requested+resolved gamePk + generated-at; stance + explicit no-position;
+evidence-gated band as the ONLY strength language; deterministic market-context line via the
+existing MarketAttributionFidelity guard; claim-safe prose with fail-closed transport
+suppression) + deterministic invariant-culture Markdown export (the concierge deliverable) on
+`GET /{id}/brief` and `/{id}/brief/markdown`. Numeric confidence and 0.70/0.45 threshold labels
+removed from EVERY buyer surface: analyzer tile+labels deleted, BuyerArtifactDto wire field
+dropped, history page numeric+badge scrubbed, landing static chip replaced. Angular renders the
+canonical projection (identity never from form state; frontend band derivation deleted; POST
+prose only in dev stub mode; live brief-failure = explicit degraded notice). Internal
+diagnostics (/artifact, prompt-trace, calibration) retain confidence — test-proven.
+
+**Verification:** red-first throughout; DevCore.Api.Tests **1176/1176**; sports-app vitest
+**134/134**; live read-only checks on real runs 823845 (deliberate-divergence market line
+naming the market-favored team, byte-identical markdown, no confidence on the buyer wire) and
+822882 (explicit no-position). `/code-review high`: 10 findings, ALL FIXED — copy-safety regex
+made phrase-precise ("sharp slider"/"lock down the ninth" no longer suppress sections) + plural
+internal-gap fix; single tiebroken market subquery; coarse legacy signal lists added to the
+brief; invariant-culture dates; history/landing scrubs; degraded-state fallback; suppression
+tripwire logging; dead EvidenceRichness off the buyer wire. Deferred with contract notes:
+create-response confidence (operator tooling), stance-label single-sourcing.
+
+**Docs:** WI-0011 (validation record complete), MOC registration, freeze-doc RC criterion 1
+corrected per the operator authorization (RC needs a marked TEST payment-link dry-run; the
+first REAL Stripe receipt stays on the 08-07 milestone), this entry, handoff
+`wi-0011-buyer-brief-handoff-2026-07-14-v1.md`.
+
+**NEXT (separately gated):** WI-0011 integration and push; then WI-0012 Settled Outcome Recap
+v1 (target 07-24); WI-0013 Pilot Operations Hardening v1 (target 07-29, RC drill 07-31).
