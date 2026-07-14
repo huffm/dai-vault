@@ -110,9 +110,10 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   /brief/markdown); numeric confidence and threshold labels removed from every buyer
   surface (panel, buyer artifact wire, history, landing); persisted identity incl. gamePk;
   evidence-gated band as sole strength language; deterministic market-context copy via the
-  fidelity guard; first V1 critical-path item (**complete, local only** 2026-07-14, dai
-  `140b5a2` on `wi/0011-buyer-brief-contract`; 1176/1176 + 134/134; review 10 findings
-  fixed; live-verified on 823845/822882; not pushed, integration separately gated)
+  fidelity guard; first V1 critical-path item (**complete + integrated** 2026-07-14, dai
+  `140b5a2` fast-forwarded to main and pushed, origin synced; 1176/1176 C# + 134/134
+  vitest re-verified pre-integration; review 10 findings fixed; live-verified on
+  823845/822882; branch pushed + retained)
 
 ## scope boundary of this registry
 

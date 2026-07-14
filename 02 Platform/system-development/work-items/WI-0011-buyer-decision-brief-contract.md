@@ -143,5 +143,10 @@ export determinism; internal surface retaining numeric confidence.
 
 ## final disposition
 
-Implementation complete, local only (2026-07-14). Review resolved (10 findings fixed).
-Integration and push separately gated.
+Complete + integrated (2026-07-14). Integration commit dai `140b5a2` == dai/main ==
+origin/main, a pure fast-forward from `e64567f` (main tree byte-identical to the reviewed
+branch tree `b3cbf68`); branch `wi/0011-buyer-brief-contract` pushed and RETAINED local +
+remote at `140b5a2` per the branch-retained convention. Pre-integration re-verification on
+the reviewed commit: DevCore.Api.Tests 1176/1176, sports-app vitest 134/134, bundle
+compiles. Review resolved (10 findings fixed). No implementation work remains open.
+This supersedes the prior "implementation complete, local only" disposition.

@@ -13962,3 +13962,33 @@ first REAL Stripe receipt stays on the 08-07 milestone), this entry, handoff
 
 **NEXT (separately gated):** WI-0011 integration and push; then WI-0012 Settled Outcome Recap
 v1 (target 07-24); WI-0013 Pilot Operations Hardening v1 (target 07-29, RC drill 07-31).
+
+---
+
+## 2026-07-14 — WI-0011 INTEGRATED: fast-forwarded to dai/main and pushed
+
+Integration continuation of WI-0011 (no duplicate WI). Preconditions re-verified after fetch:
+dai main == origin == `e64567f`, branch at the exact reviewed `140b5a2` (parent `e64567f`,
+1 ahead, unpushed); vault local `61200e1` exactly 1 ahead of origin `5ce12cb`; neither remote
+advanced. Suites re-run on the reviewed commit pre-integration: **DevCore.Api.Tests 1176/1176,
+sports-app vitest 134/134, bundle compiles** (covers buyer projection, markdown determinism,
+claim-safety, no-position, identity-provenance, and internal-confidence-retention tests).
+
+**Integration:** pushed `wi/0011-buyer-brief-contract` (remote == `140b5a2`, RETAINED local +
+remote); `git merge --ff-only` on main (`e64567f` -> `140b5a2`); main tree == branch tree
+(`b3cbf68`, byte-identical); 0 merge commits; pushed main. **dai/main == origin/main ==
+`140b5a2`.** No rebase, no amend, no force-push, no PR, no history rewrite.
+
+**Buyer-contract outcome now live on main:** canonical server-owned brief (GET /{id}/brief +
+deterministic markdown export); numeric confidence and 0.70/0.45 threshold labels removed from
+every buyer surface (panel, buyer artifact wire, history, landing); evidence-gated band = sole
+strength language; persisted identity incl. gamePk; market-context line via the fidelity guard;
+internal diagnostic surfaces retain numeric confidence (test-proven).
+
+**Guardrails:** 0 paid calls / 0 captures / 0 reconciliation / 0 DB writes / 0 prompt-model-
+scoring-confidence-value-routing-settlement-calibration-schema change; runtime cold throughout
+(suites only); csproj phantom + both intentionally untracked vault files preserved; WI-0012
+NOT started.
+
+**NEXT (separately gated):** WI-0012 Settled Outcome Recap v1 (target integrate Fri
+2026-07-24); then WI-0013 Pilot Operations Hardening v1 (07-29, RC drill 07-31).
