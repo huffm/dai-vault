@@ -14399,3 +14399,44 @@ count ambiguities.
 no values accessed.
 **State:** Committed on the WI-0020 branch only; NOT integrated.
 **Next:** Operator review, then separately authorized ff-only integration.
+
+---
+
+## 2026-07-15 — WI-0020 INTEGRATED (docs-only; separate integration authorization)
+
+**Repos:** dai UNTOUCHED at `85a8831` (RC frozen). dai-vault before: main == origin ==
+`1e89bda`, branch `wi/0020-platform-hardening-catalog-corrections` == `5c2500b`
+(exactly 1 ahead, 5c2500b^ == 1e89bda; transition 2dbd687 -> 1e89bda = the single
+authorized, already-pushed hardening-catalog commit). After: branch pushed to origin at
+`5c2500b` (no force, no PR) and retained; main fast-forwarded 1e89bda -> `5c2500b`
+(pure ff, tree-identical, no merge commit, no rebase, 5c2500b unamended); this
+integration-recording commit follows on main; both intentionally untracked files
+untouched.
+
+**Reviewed correction commit:** `5c2500b` — exactly the 6 reported files; all four
+correction categories confirmed in the diff (evidence taxonomy; canonical branch
+policy; G-10 classification + R-05-only remediation incl. corrected exposure facts;
+fitness count 14 = 11 + 3 with FC-C1..C3 conditional/excluded); consistency sweeps
+clean; ZERO credential values in the diff or anywhere else (key names only, no access,
+no remediation). Branch policy applies prospectively to ready-queue pulls; it does not
+retroactively invalidate separately authorized prior slices.
+
+**Strict snapshot:** pre-integration (on branch) exit 0, warnings 0,
+integrationContinuations [], posture no-spend; re-run post-record (same requirements).
+
+**Unchanged:** G-10 UNEXECUTED; R-05 GATED; G-01 unresolved; queue priorities
+(wording-only); protocol names/sequence; no new WI beyond WI-0020; posture no-spend.
+**NEXT operational event: RC Gate 1 pregame drill Friday 2026-07-17 under its own
+drill-day authorization.**
+
+### Slice Synopsis
+
+**Change:** Reviewed and integrated WI-0020 (`5c2500b`) into dai-vault/main by pure
+fast-forward; branch pushed and retained; integration recorded (WI disposition, MOC
+entry, this handoff).
+**Reason:** Separate WI-0020 integration authorization following branch review.
+**Proof:** Diff = exactly 6 files, four corrections verified, sweeps clean, snapshot
+0 warnings / []; trees identical; dai untouched.
+**State:** vault main at the integration-recording commit (pushed); zero spend/writes/
+credential access; G-10 unexecuted, R-05 gated.
+**Next:** RC Gate 1 drill 2026-07-17 under its own authorization.

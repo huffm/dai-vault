@@ -94,15 +94,26 @@ entries must prefer the v1.1 docs.
 ## links  <!-- LITE -->
 
 - work item: WI-0020
-- branch: wi/0020-platform-hardening-catalog-corrections (dai-vault)
-- pr: — (none; ff-only integration under separate authorization)
-- commits: recorded at close on the branch
+- branch: wi/0020-platform-hardening-catalog-corrections (dai-vault; pushed + retained
+  locally and remotely at 5c2500b)
+- pr: — (none; ff-only integration, separately authorized 2026-07-15)
+- commits: 5c2500b (correction commit, unamended) + the integration-recording commit
 - tests: none (docs-only; snapshot + grep proof)
-- verification notes: in the slice final report + current-slice entry
-- docs updated: the four v1.1 hardening docs + current-slice
+- verification notes: in the slice final report + current-slice entries
+- docs updated: the four v1.1 hardening docs + current-slice + MOC
 - lessons: append-only handoff wording cannot be edited -- supersede via new entry
+
+## final disposition (2026-07-15)
+
+**complete + reviewed + integrated.** Correction commit `5c2500b` reviewed against the
+four correction requirements and fast-forwarded to dai-vault/main under the separate
+integration authorization (pure ff, tree-identical, no merge commit, no rebase, no
+amend). Branch retained locally and remotely. No correction work remains open.
+Preserved: G-10 unexecuted; R-05 gated; G-01 unresolved; RC boundary unchanged
+(Gate 1 2026-07-17 next); no credential value accessed; no credential remediation
+performed; zero spend and writes.
 
 ## final handoff requirements
 
 Slice handoff appended to `06 Execution/handoffs/current-slice.md` on the branch;
-integration NOT performed (awaits separate review + ff authorization).
+integration recorded in a separate integration-recording commit on main (this update).

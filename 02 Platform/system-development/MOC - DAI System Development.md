@@ -138,6 +138,18 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   1235/1235 C# + 453/453 pytest + 134/134 vitest re-verified pre-integration; review
   12 fixed / 2 refuted; branch pushed + retained; RC drill NOT executed, separately
   gated; single-operator-host constraint standing)
+- [[WI-0020-platform-hardening-catalog-corrections]] — AI Engineering Hardening
+  Catalog v1.1 Corrections: canonical seven-class evidence taxonomy applied across the
+  four hardening docs; one branch policy (every pulled queue card branches, vault-docs
+  included, no direct-to-main, ff-only separately authorized integration); G-10 recast
+  as credential exposure classification + preparation with R-05-only remediation and
+  the corrected exposure facts (Development.json untracked/never committed; sa
+  password historically exposed in tracked appsettings.json until `ded9969`); fitness
+  count fixed at fourteen adopted = eleven existing + three added with FC-C1..C3
+  conditional and excluded (**complete + integrated** 2026-07-15, docs-only, dai-vault
+  `5c2500b` fast-forwarded to main -- pure ff, tree-identical; branch pushed +
+  retained; zero spend, zero writes, zero credential access; G-10 unexecuted, R-05
+  gated, G-01 unresolved)
 
 ## scope boundary of this registry
 
