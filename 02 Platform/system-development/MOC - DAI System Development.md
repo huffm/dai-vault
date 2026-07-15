@@ -150,6 +150,17 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   `5c2500b` fast-forwarded to main -- pure ff, tree-identical; branch pushed +
   retained; zero spend, zero writes, zero credential access; G-10 unexecuted, R-05
   gated, G-01 unresolved)
+- [[WI-0021-protocol-hardening-candidate-specifications]] — AI Engineering Protocol
+  Hardening Candidate Specifications v1: exactly six branch-ready implementation
+  specifications (PH-01 failure corpus, PH-02 trace completeness, PH-03 abstention
+  invariants, PH-04 artifact contract invariants, PH-05 delivery/entitlement guard,
+  PH-06 tool authorization fitness) with 40 fields each, falsifiable acceptance
+  criteria, Inspect/Prove/Guard packaging, WI-0020 evidence taxonomy, RC-neutral vs
+  RC-affecting policy, readiness verdicts (3 READY / 2 open-question / PH-05 NOT
+  READY); WIP-policy correction 361a2e6 (pulled PH-06 counts as active implementation
+  branch) (**complete + integrated** 2026-07-15, docs-only, dai-vault e3a5eb3+361a2e6
+  fast-forwarded to main -- pure ff, tree-identical; branch pushed + retained; zero
+  spend, zero writes; NO candidate activated or pulled)
 
 ## scope boundary of this registry
 

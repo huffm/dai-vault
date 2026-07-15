@@ -14537,3 +14537,48 @@ continuations recorded; dai untouched; six candidates exactly.
 **State:** Committed on the WI-0021 branch only; NOT pushed/integrated; no-spend.
 **Next:** Operator review of the branch; RC Gate 1 drill Friday under its own
 authorization.
+
+---
+
+## 2026-07-15 — WI-0021 INTEGRATED (docs-only; separate review + integration authorization)
+
+**Chain:** vault main `9302ca3` -> `e3a5eb3` (six PH specifications, reviewed) ->
+`361a2e6` (narrow WIP-policy correction) -> this integration-recording commit.
+Parent proof e3a5eb3^ == 9302ca3; exactly the 5 reported files (+910); pure ff,
+tree-identical; no merge commit, no rebase, neither spec commit amended. Branch
+pushed + retained locally AND remotely at `361a2e6`.
+
+**Review result:** exactly six candidates (PH-01..PH-06), all 40 fields, <next-id>
+slugs only (0 fixed numbers), falsifiable criteria per the authorization sections
+10-15, protocol doctrine conformant (Perceive intake-only; I/P/G = branch-execution
+phases, not cognitive micro-actions), WI-0020 taxonomy with no class inflation,
+readiness PH-01/04/06 READY / PH-02/03 READY W/ OPEN QUESTION / PH-05 NOT READY
+(open questions preserved verbatim), RC-neutral vs RC-affecting split confirmed.
+**WIP-policy correction (confirmed inconsistency, spec section 9 only):** replaced
+"PH-06 Green subset ... WITHOUT breaching WIP=1" with the canonical rule — a pulled
+PH-06 card counts as an ACTIVE implementation branch under WIP=1; may begin after the
+current implementation branch closes unless the operator explicitly authorizes a
+temporary exception; documentation planning is not an implementation branch;
+inspection inside an authorized planning WI does not pull PH-06; branch creation =
+pulled+active; Green never exempts from branch/WIP rules; no implicit exception.
+Unchanged: provisional order, PH-06 verdict/scope/criteria/Green-to-Amber split, all
+priorities.
+
+**Strict snapshots:** on branch exit 0 / warnings 0 / integrationContinuations [] /
+no-spend; re-run after this record (same requirements). **Ops:** 0 paid calls, 0
+source calls, 0 runs, 0 captures, 0 DB/reconciliation writes, 0 runtime changes, 0
+RC execution; dai untouched at `85a8831`; no PH candidate pulled; no implementation
+WI/branch; G-10 UNEXECUTED; R-05 GATED. **NEXT operational event: RC Gate 1 pregame
+drill Friday 2026-07-17 under its own drill-day authorization.**
+
+### Slice Synopsis
+
+**Change:** Reviewed WI-0021 (six PH specs), applied the one confirmed WIP-policy
+correction (`361a2e6`), pushed the branch, fast-forwarded vault main, and recorded
+the integration.
+**Reason:** Separate WI-0021 review + integration authorization.
+**Proof:** Diff exactly 5 files / 6 candidates; consistency sweeps clean; pure ff
+tree-identical; snapshots 0 warnings / [] before and after; dai untouched.
+**State:** vault main at the integration record (pushed); no candidate pulled;
+posture no-spend.
+**Next:** RC Gate 1 drill 2026-07-17 under its own authorization.

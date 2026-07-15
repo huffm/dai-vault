@@ -96,7 +96,20 @@ loci at pull time); PH-05 specification could read as implementation pressure
 - docs updated: spec doc (new), ready queue, catalog, current-slice
 - lessons: none
 
+## final disposition (2026-07-15)
+
+**complete + reviewed + integrated.** Specification commit `e3a5eb3` reviewed against
+the WI-0021 authorization (six candidates, 40 fields, falsifiable criteria, doctrine
++ taxonomy conformance); one confirmed WIP-policy inconsistency corrected in the
+narrow second commit `361a2e6` ("align PH-06 sequencing with WIP policy" -- a pulled
+PH-06 card counts as an active implementation branch; no implicit WIP exception;
+e3a5eb3 unamended). Fast-forwarded to dai-vault/main (pure ff, tree-identical);
+branch pushed and retained locally and remotely at `361a2e6`. No PH candidate
+pulled; no implementation authority granted; no unresolved specification work
+remains. Preserved: G-10 unexecuted; R-05 gated; G-01 unresolved; RC Gate 1
+(2026-07-17) next operational event; zero spend and writes.
+
 ## final handoff requirements
 
-Slice handoff appended to current-slice.md on the branch; push and integration
-require separate operator authorization.
+Slice handoff appended to current-slice.md on the branch; integration recorded in a
+separate integration-recording commit on main (this update).
