@@ -14251,3 +14251,66 @@ passed and returned to cold; strict snapshot 0 warnings; dai untouched.
 **State:** Vault docs-only commit pushed; verdict READY WITH OPERATOR ACTION (Stripe
 test link outstanding); posture no-spend.
 **Next:** Gate 1 drill 07-17 under its own authorization.
+
+---
+
+## 2026-07-15 — DAI AI Engineering Hardening Catalog and Protocol Ready Queue v1 (docs-only planning slice)
+
+**Ops:** 0 paid calls, 0 sports runs, 0 reconciliation/DB writes, 0 Stripe transactions,
+0 outreach; dai UNCHANGED at `85a8831` (read-only protocol + discipline inventory with
+file:line evidence); no branch created, no WI minted, WI-0014..0019 not promoted;
+posture no-spend; RC Gate 1 (07-17) unaffected — nothing in this slice integrates
+before the RC verdict.
+
+**Doctrine note (NOT silently reconciled):** the operator authorization counts the 12
+canonical micro-actions as Interrogate+Discern+Decide+Synthesize(Integrate/Compose/
+Deliver) with Perceive as intake-only; protocol-vocabulary-map.md (2026-05-14) counts
+Perceive(Detect/Frame/Aim) in the 12 and excludes Synthesize. Conflict recorded in the
+maturity matrix section 0; reconciliation queued as card G-01 (operator decision).
+
+**Findings:** strongest protocol elements = Decide.Position (validated enum,
+buyer-bearing), Interrogate.Probe (only deterministic cognitive station, 35 tests),
+Synthesize.Compose (pure, byte-deterministic), intake identity/readiness (settlement
+proven), Decide.Resolve consistency enforcement (fired in production — 4 mismatch runs
+excluded). Mostly representation = Synthesize.Integrate/Deliver (constant strings),
+Question/Verify/Justify/Resolve prose (structural tests only, zero semantic
+evaluation). Dormant by doctrine (do NOT activate): DiscernStationRunner,
+ProtocolNodeRunner (probe-only), Probe Refresh chain (Disabled), station-id policy
+branch, activation options. Biggest gaps: quality warnings invisible to operators
+(fail-open + unsurfaced), no persisted-run replay through projections, no protocol
+completeness surface, Angular protocol view untested, OddsApi key + ProvisionKey
+committed in appsettings.Development.json (hygiene card G-10 + rotation R-05).
+
+**Docs (4 new):** `plans/ai-engineering-hardening-catalog-v1.md` (39-feature catalog by
+micro-action + discipline map + candidate evaluations), `reports/
+protocol-coverage-and-maturity-matrix-v1.md` (evidence matrix, representation-vs-
+execution, dormant stations, Perceive intake checklist as operational guidance),
+`plans/hardening-ready-queue-v1.md` (17 cards: 10 Green / 7 Amber + 7 Red gated;
+lanes; Inspect->Prove->Guard packaging convention; idle-window selector; WIP=1;
+branch rules wi/<next-id>-<protocol>-<micro-action>-<feature>; 3 post-RC candidates),
+`plans/ai-engineering-fitness-checks-v1.md` (14 adopted [11 EXIST, 3 ADD], 3
+conditional-at-gate, 6 rejected as excessive).
+
+**Top Green:** G-10 secrets hygiene, G-01 doctrine reconciliation, G-04 direction-
+consistency failure corpus, G-03 prose semantic fixtures, G-09 tool authorization
+audit. **Top Amber:** A-01 quality-warning surfacing, A-02 trace completeness, A-03
+run replay harness, A-04 model-config single source, A-06 readiness probe. **Post-RC
+candidates (not minted):** run replay + failure corpus; protocol trace completeness;
+capability descriptor design doc.
+
+**NEXT (separately gated):** RC Gate 1 drill 2026-07-17 under its own authorization
+(unchanged, next operational event); queue cards pull-able only per lane rules — vault-
+docs Green cards any idle window; dai-touching cards only after the final RC verdict.
+
+### Slice Synopsis
+
+**Change:** Published the AI engineering hardening catalog, protocol maturity matrix,
+17-card ready queue (lanes, selector, WIP=1), and fitness checks; recorded the
+12-micro-action doctrine-count conflict for operator decision.
+**Reason:** Authorized catalog/work-sequencing slice so idle capacity can pull bounded
+hardening without reopening the roadmap.
+**Proof:** All claims repository-evidenced at dai `85a8831` (read-only); strict
+snapshot 0 warnings / 0 continuations; dai untouched.
+**State:** Vault docs-only commit pushed; no WI/branch created; RC Gate 1 07-17
+unaffected; posture no-spend.
+**Next:** RC Gate 1 drill Friday under its own authorization.
