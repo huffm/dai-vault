@@ -270,6 +270,23 @@ auth | integration | stop | done. Defaults: paid 0 / external writes 0 / db writ
 - distributed starter cache / multi-instance concurrency work before WI-0015's gate
 - Prometheus /metrics endpoint (no consumer exists; single-host pilot)
 
+### PH specification candidates (WI-0021 -- specified, NOT pulled, NOT active)
+
+Authoritative specs: `06 Execution/plans/protocol-hardening-candidate-specifications-v1.md`.
+Branches use <next-id>, assigned only at pull. READY does not authorize implementation.
+
+| id | title | protocol ownership | lane | size | proposed branch | readiness | dependency | RC impact |
+|---|---|---|---|---|---|---|---|---|
+| PH-01 | Representative Protocol Failure Corpus v1 | Discern.Stress | Green | M | wi/<next-id>-discern-stress-protocol-failure-corpus | READY | none | RC-neutral |
+| PH-02 | Evidence and Decision Trace Completeness v1 | Interrogate.Verify | Amber | M | wi/<next-id>-interrogate-verify-evidence-trace | READY W/ OPEN QUESTION (trace persistence decision) | soft: PH-01, PH-06 | RC-affecting |
+| PH-03 | Decision Abstention Invariants v1 | Decide.Resolve | Amber | M-L | wi/<next-id>-decide-resolve-abstention-invariants | READY W/ OPEN QUESTION (block-vs-warn policy) | soft: PH-01, PH-02, PH-06 | RC-affecting |
+| PH-04 | Synthesized Artifact Contract Invariants v1 | Synthesize.Integrate | Amber (verification subset Green) | M | wi/<next-id>-synthesize-integrate-artifact-invariants | READY | soft: PH-01, PH-03 | split (criterion 19) |
+| PH-05 | Delivery Idempotency and Entitlement Guard v1 | Synthesize.Deliver | Amber; Red if external delivery/schema | L | wi/<next-id>-synthesize-deliver-entitlement-idempotency | NOT READY (persistence model; commercial activation timing; target handling) | HARD: operator decisions | RC-affecting |
+| PH-06 | Tool Authorization Fitness v1 | Interrogate.Probe | Green (inventory) -> Amber (enforcement) | M (S Green subset) | wi/<next-id>-interrogate-probe-tool-authorization | READY | none | split |
+
+Recommended order (WI-0021): PH-01 -> PH-06(Green) -> PH-02 -> PH-03 -> PH-04;
+PH-05 deferred. No dai-touching change integrates before the final RC verdict.
+
 ## 4. prioritized ranking (criteria: observed pain > release/tenant risk > feedback
 quality > cross-niche reuse > cost > reversibility > evidence > distraction risk)
 

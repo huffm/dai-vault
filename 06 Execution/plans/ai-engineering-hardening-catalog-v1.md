@@ -284,6 +284,19 @@ section 2). Branch slugs use wi/<next-id>-... -- numeric ids assigned only at mi
   documented in the ledger template | slug: wi/<next-id>-synthesize-deliver-ledger-linkage |
   size XS | priority P3 | confidence high
 
+## 1b. detailed implementation specifications (WI-0021)
+
+Six operator-approved candidates now carry authoritative branch-ready specifications
+in `06 Execution/plans/protocol-hardening-candidate-specifications-v1.md` (WI-0021;
+specification only -- nothing implemented, minted, or integrated): PH-01 failure
+corpus (Discern.Stress), PH-02 evidence/decision trace (Interrogate.Verify), PH-03
+abstention invariants (Decide.Resolve), PH-04 artifact contract invariants
+(Synthesize.Integrate), PH-05 delivery idempotency + entitlement guard
+(Synthesize.Deliver), PH-06 tool authorization fitness (Interrogate.Probe). Where a
+PH spec overlaps a catalog feature (A-02/A-03, CAT-DEC-R-1, CAT-SYN-D-1, G-09), the
+PH specification is the authoritative implementation definition; the catalog rows
+remain the feature index.
+
 ## 2. cross-cutting candidate evaluations (suggested candidates, judged on evidence)
 
 - **Cognitive Protocol Fitness Harness v1** -- worthwhile as ONE cross-boundary

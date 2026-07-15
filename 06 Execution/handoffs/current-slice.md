@@ -14483,3 +14483,57 @@ directional denominator 119 -> 134.
 0 orphans; v2 era untouched; runtime returned to cold.
 **State:** Vault record pushed; posture no-spend; RC drill identities unconsumed.
 **Next:** RC Gate 1 drill 2026-07-17 under its own authorization.
+
+---
+
+## 2026-07-15 — WI-0021 Protocol Hardening Candidate Specifications v1 (docs-only, ON BRANCH, not integrated)
+
+**Work item + branch:** WI-0021 on dai-vault branch
+`wi/0021-protocol-hardening-candidate-specifications` (from main `9302ca3`).
+**Committed locally only — NOT pushed, NOT integrated; operator review required.**
+
+**Ops:** 0 model calls, 0 paid-source calls, 0 sports runs, 0 DB/reconciliation
+writes, 0 dai changes (read-only inspection at `85a8831`), 0 implementation WIs or
+branches (all candidate slugs use <next-id>), 0 RC/G-10/R-05/commercial authority
+inferred; protocol vocabulary unchanged (G-01 still open); posture no-spend.
+
+**Delivered:** authoritative `plans/protocol-hardening-candidate-specifications-v1.md`
+— six branch-ready specs (PH-01 failure corpus / Discern.Stress, Green, READY;
+PH-02 evidence+decision trace / Interrogate.Verify, Amber, READY w/ open question
+[trace persistence]; PH-03 abstention invariants / Decide.Resolve, Amber, READY w/
+open question [block-vs-warn operator policy]; PH-04 artifact contract invariants /
+Synthesize.Integrate, Amber, READY; PH-05 delivery idempotency + entitlement guard /
+Synthesize.Deliver, Amber/Red, NOT READY [persistence model + commercial activation
+timing + target handling]; PH-06 tool authorization fitness / Interrogate.Probe,
+Green->Amber, READY). Each spec carries all 40 required fields: verified loci,
+observed-vs-preventive evidence per the WI-0020 taxonomy (achievable evidence class
+stated; higher classes never inferred), falsifiable acceptance criteria (the
+authorized criteria sections 10-15 verbatim), Inspect/Prove/Guard (labeled
+branch-execution phases, NOT cognitive micro-actions), idle-window tasks
+(15/30/60/240m with entry state, action, artifact, stop condition, partial-progress
+flag), definitions of ready/done, RC-neutral vs RC-affecting classification.
+Ready queue gained the PH table; catalog gained section 1b links (no duplication).
+
+**Dependency + order:** no hard inter-candidate deps (PH-05's hard deps are operator
+decisions); soft deps PH-01->PH-03/04, PH-06->PH-02/03. Recommended order: PH-01 ->
+PH-06(Green) -> PH-02 -> PH-03 -> PH-04; PH-05 DEFERRED. NOTHING dai-touching
+integrates before the final RC verdict; PH-02/03/04/05 + PH-06 enforcement are
+RC-affecting (integration = new RC review + Gate 0 rerun + Friday authorization
+update per policy).
+
+**NEXT ACTION (exact):** operator reviews the WI-0021 branch diff; if approved,
+separately authorize push + ff-only integration. RC Gate 1 (2026-07-17) remains the
+next operational event and is unaffected.
+
+### Slice Synopsis
+
+**Change:** WI-0021 specified all six PH hardening candidates (40 fields each,
+falsifiable criteria, I/P/G, lanes, RC impact, readiness verdicts: 3 READY, 2 READY
+w/ open question, PH-05 NOT READY) and linked them from the queue and catalog.
+**Reason:** Convert operator-approved candidates into pull-ready specs without
+implementing anything.
+**Proof:** Loci verified read-only at dai 85a8831; strict snapshot 0 warnings /
+continuations recorded; dai untouched; six candidates exactly.
+**State:** Committed on the WI-0021 branch only; NOT pushed/integrated; no-spend.
+**Next:** Operator review of the branch; RC Gate 1 drill Friday under its own
+authorization.
