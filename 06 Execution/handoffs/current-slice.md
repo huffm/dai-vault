@@ -14143,3 +14143,55 @@ intentionally untracked vault files preserved; frozen scope/dates/RC criteria un
 **NEXT (separately gated):** RC drill gate 1 (pregame; ≤ Fri 07-31 per the package); then
 drill gate 2 (settlement) + gate 3 (payment-link test); then outreach + first paid pilot
 delivery (Fri 08-07).
+
+---
+
+## 2026-07-14 — Release Timeline, Architecture Runway, and Multisport Sequence Review v1 (docs-only planning slice)
+
+**Ops:** 0 paid calls, 0 captures, 0 reconciliation/DB writes, 0 payment transactions; dai
+UNCHANGED at `85a8831` (read-only inspection incl. a full competition-seam inventory with
+file:line evidence); runtime cold; RC drill NOT executed; no implementation WI minted;
+authorization posture unchanged (no-spend).
+
+**Verdict: KEEP TIMELINE WITH CORRECTIONS.** Dominant constraint = **buyer acquisition**
+(outreach copy ACTIVE since 07-06, zero contacts; the engineering loop is over-served while
+the commercial loop has never fired). Corrections: outreach starts 2026-07-15 (parallel to
+everything); RC drill candidates = the 07-17 TB@BOS DH (824766/824737 — retires the dormant
+doubleheader packet inside the same 2-call cap); the settled 823845 brief+recap pair is the
+zero-spend demonstration sample; 08-07 stays as the LATEST paid date. Release ladder: V1.0
+MLB concierge pilot → V1.1 repeatable ops → V1.2 cloud single-sport (recommended target
+Azure Container Apps + Azure SQL, provisional; single-instance stage keeps the process-local
+guard valid at replicas=1) → V1.3 second sport = **NBA** (daily cadence, buyer-ready flag +
+real-but-thin path exist; gating gap = settlement-grade identity provider) → collegiate as
+its OWN release (structural blocker: two-team home/away single-winner outcome stack breaks
+on tournaments/neutral sites). Seam inventory: spine genuinely generic (catalog, selector,
+odds, reconciliation, outcome vocab, brief/recap frames, metering); evidence-and-identity
+layer deeply MLB-specific (readiness regimes, statsapi identity, recipes, settlement
+scripts). ≤6 proposed WIs (NOT minted): WI-0014 cloud stage 2, WI-0015 db-coordinated
+duplicate enforcement, WI-0016 competition capability contract, WI-0017 NBA qualification,
+WI-0018 buyer copy polish, WI-0019 evidence-justified automation — all gated. Process
+critique: keep every paid/write/schema gate; adopt combined implement+integrate authority
+for XS/S reversible slices, single evidence record (drop separate handoff files), explicit
+commercial WIs, WIP limit 1.
+
+**Docs:** `reports/release-architecture-review-2026-07-14-v1.md` (verdicts, four lenses,
+18 required conclusions), `plans/v1-to-v2-release-sequence-v1.md` (ladder, hierarchy,
+dates, gates, proposed WIs, immediate commercial actions), `plans/
+competition-capability-matrix-v1.md` (MLB/NBA/NFL/NCAAMB/NCAAF, proof levels, seams),
+`plans/cloud-and-multisport-runway-v1.md` (4 cloud stages, target recommendation, sport
+qualification ladder, collegiate prerequisites, fitness checks).
+
+**NEXT:** (1) commercial actions start 07-15 (no WI needed); (2) RC drill gate 1 on 07-17
+under its own authorization; (3) 08-21 pilot evaluation gate governs everything beyond.
+
+### Slice Synopsis
+
+**Change:** Produced the decision-complete release/architecture review and its three
+companion plans (sequence+gates, capability matrix, cloud+multisport runway); committed and
+pushed docs-only.
+**Reason:** Operator-authorized critical review of timeline, architecture runway, and
+multisport sequence before the RC drill.
+**Proof:** Repository-evidenced seam inventory at 85a8831; strict snapshot 0 warnings / 0
+continuations before and after; dai untouched.
+**State:** vault pushed; posture no-spend unchanged; RC drill still gated; no WI minted.
+**Next:** Outreach 07-15; RC drill gate 1 authorization for 07-17.
