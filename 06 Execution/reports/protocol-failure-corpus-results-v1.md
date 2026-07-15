@@ -31,13 +31,13 @@ commercially validated. A green harness is NOT proof of runtime safety.
 
 | id | class | origin | status | seam coverage | follow-up |
 |---|---|---|---|---|---|
-| PF-01 | missing required evidence | observed | guard_verified | existing production seam (SourceReadinessClassifier eligibility fail-closed) | PH-03 (in-artifact block-vs-warn) |
+| PF-01 | missing required evidence | observed | behavior_characterized (REVIEW-CORRECTED: the paid creation path never consults readiness -- classification/reporting is fail-closed, enforcement is procedural) | existing production seam (SourceReadinessClassifier) | PH-03 (missing-required-evidence enforcement + block-vs-warn) |
 | PF-02 | stale required evidence | preventive | policy_blocked | policy unresolved (no freshness state exists) | PH-02 + PH-03 |
 | PF-03 | unavailable provider | observed (WI-0005 incident) | behavior_characterized | existing production seam (absence collapses to missing; unavailable != missing NOT distinguishable) | PH-02 + G-06 design |
 | PF-04 | contradictory evidence | preventive | guard_missing | runtime seam absent (no cross-source contradiction detector) | PH-02 + PH-03 |
 | PF-05 | requested/resolved identity mismatch | reconstructed (WI-0006 fixtures; 823613 collision) | guard_verified | existing production seam (ambiguity fails closed w/ candidates; mismatch selects nothing) | — |
-| PF-06 | incomplete provenance | observed (v7c thin residue) | guard_verified | existing production seam (SettlementProvenance -> 422) | — |
-| PF-07 | unsupported directional position | preventive | guard_verified | existing production seam (python posture clamp to None) | — |
+| PF-06 | incomplete provenance | observed (v7c thin residue) | guard_verified (SETTLEMENT WRITE PATH ONLY; generation-side attribution gaps warn-only) | existing production seam (SettlementProvenance -> 422) | — |
+| PF-07 | unsupported directional position | preventive | guard_verified (parse-time clamp; null-posture projection covered by existing WI-0011 no-position suites) | existing production seam (python posture clamp to None) | — |
 | PF-08 | unresolved decision contradiction | observed (4 excluded mismatch runs) | guard_verified | existing production seam (PotentialMismatch detection; settlement 422) | PH-03 (earlier blocking), PH-04 |
 | PF-09 | unknown model pricing | observed (WI-0013 pre-fix) | guard_verified | existing production seam (named unpriced_model state; VISIBILITY guard -- execution not blocked) | PH-03 posture; R-04 gated |
 | PF-10 | unauthorized tool action | preventive | guard_verified | existing production seam (ToolGateway fail-closed x2) | PH-06 |
@@ -47,9 +47,11 @@ commercially validated. A green harness is NOT proof of runtime safety.
 | PF-14 | unsupported profitability/superiority claim | preventive | guard_verified | existing production seam (BuyerCopySafety fail-closed suppression) | — |
 | PF-15 | delivery without valid entitlement | preventive | not_applicable | runtime seam absent (delivery is manual; runbook 7 + ledger contract preserved as expected future contract) | PH-05 (NOT READY) |
 
-Totals: guard_verified 10 | behavior_characterized 2 | guard_missing 1 |
-policy_blocked 1 | not_applicable 1. Origins: observed 6 | reconstructed 1 |
-preventive 8.
+Totals (REVIEWED 2026-07-15): guard_verified 9 | behavior_characterized 3 |
+guard_missing 1 | policy_blocked 1 | not_applicable 1. Origins: observed 6 |
+reconstructed 1 | preventive 8. Review corrections: PF-01 reclassified
+guard_verified -> behavior_characterized (creation path bypass); PF-06/PF-07
+claims narrowed to their exercised seams.
 
 ## 2. harness architecture + anti-duplication
 
@@ -94,9 +96,11 @@ contract and the characterized seam behaviors only.
 
 ## 5. current vs target behavior (compact; full detail in the fixtures)
 
-Fail-closed today: readiness eligibility, identity ambiguity/mismatch, settlement
-residue 422, direction-integrity 422, tool gateway, duplicate guard, posture clamp,
-buyer copy suppression, confidence-free buyer contracts. Deterministic-but-not-final:
+Fail-closed today: identity ambiguity/mismatch, settlement
+residue 422 (settlement write path), direction-integrity 422, tool gateway,
+duplicate guard, posture clamp (parse-time), buyer copy suppression, confidence-free
+buyer contracts. Deterministic-but-not-final: readiness eligibility (fail-closed
+CLASSIFICATION consumed procedurally -- the paid creation path never consults it);
 provider absence collapsing to "missing" (no unavailable/stale states); honest recap
 states without malformed-residue validation. Missing: cross-source contradiction
 detection (PF-04). Policy-blocked: staleness handling (PF-02). Not applicable:

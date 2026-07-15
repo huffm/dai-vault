@@ -70,10 +70,13 @@ Inspect re-verified WI-0021 loci at 85a8831 (one targeted correction: fixtures i
 this repo are inline raw strings; no Content-copy convention -- corpus therefore
 lives as static C# data, keeping csproj untouched). Seam tests mirror existing test
 construction patterns verbatim (classifier helpers, DI-built gateway, projection
-builders). Classification deviations from the authorization's provisional grouping,
-evidence-based: PF-01 guard_verified (readiness eligibility is fail-closed
-pre-spend -- the provisional grouping expected characterization); PF-09
-guard_verified as a VISIBILITY guard (spend-blocking = PH-03/R-04).
+builders). Classification notes: PF-09
+guard_verified as a VISIBILITY guard only (spend-blocking = PH-03/R-04). REVIEW
+CORRECTION (integration review, 2026-07-15): PF-01 reclassified guard_verified ->
+behavior_characterized -- the readiness classifier is fail-closed classification, but
+the paid creation path never consults it (enforcement is procedural), matching the
+authorization's provisional grouping after all; PF-06/PF-07 claims narrowed to their
+exercised seams (settlement write path only; parse-time clamp).
 
 ## docs to update
 
