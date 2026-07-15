@@ -125,6 +125,18 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   1212/1212 C# + 134/134 vitest re-verified pre-integration; review 9 fixed / 1
   refuted; live-verified on 823845/823357/no-position/unsettled; branch pushed +
   retained)
+- [[WI-0013-pilot-ops-hardening]] — Pilot Operations Hardening v1: fail-closed 409
+  duplicate active-run creation guard (identity precedence gamePk-equality over
+  orientation-insensitive matchup; per-identity in-process creation gate; excluded/failed
+  never block; distinct doubleheader gamePks independently creatable; tenant-scoped,
+  zero-spend/zero-row rejection); metering price coverage for every configurable model
+  (gpt-4.1-mini added) with explicit pricingStatus + loud unpriced warning; V1 concierge
+  operations runbook + delivery-ledger/operator-time templates + RC drill package
+  (prepared, NOT executed; four separate authorization gates); third and final V1
+  critical-path item (**complete, local only** 2026-07-14, dai `85a8831` on
+  `wi/0013-pilot-ops-hardening`; 1235/1235 C# + 453/453 pytest + 134/134 vitest; review
+  12 fixed / 2 refuted; not pushed, integration separately gated; RC drill separately
+  gated)
 
 ## scope boundary of this registry
 

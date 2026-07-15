@@ -14062,3 +14062,43 @@ preserved; **WI-0013 NOT started** and separately gated.
 **NEXT (separately gated):** WI-0013 Pilot Operations Hardening v1 (duplicate-creation guard,
 metering pricing fix, operator runbook, RC drill; target integrate Wed 07-29, RC drill Fri
 07-31); then outreach + paid pilot per the frozen plan (08-07).
+
+---
+
+## 2026-07-14 — WI-0013 Pilot Operations Hardening v1 (code + ops doctrine, local only)
+
+**Ops:** 0 paid calls, 0 captures, 0 reconciliation/DB writes; **runtime never started**
+(docs review verified every referenced route/script against source; all runbook procedures
+were exercised live earlier this operating day). dai on `wi/0013-pilot-ops-hardening` from
+`7152818`, committed `85a8831` (7 files, +711/−27). **Nothing pushed. The RC drill is
+PREPARED, NOT EXECUTED** — its four authorization gates (pregame drill / settlement /
+payment-link test / no real buyer delivery) remain closed.
+
+**Shipped:** (1) fail-closed **409 duplicate active-run creation guard** — identity
+precedence known-gamePk equality (request pk / resolved ExternalGameId / pending row's own
+InputJson pk) over orientation-insensitive normalized matchup; excluded + failed never
+block; pending + completed non-excluded block; distinct DH gamePks independently creatable;
+tenant-scoped; check runs BEFORE the pending row and BEFORE any paid work inside a bounded
+per-matchup in-process gate (concurrent duplicates → exactly one run + one 409, test-proven);
+reconciliation/settlement untouched. (2) **metering price coverage** — gpt-4.1-mini priced;
+explicit pricingStatus (priced/unpriced_model/tokens_unavailable); loud UNPRICED warning w/
+model+requestId; tokens/latency preserved; no guessed prices. (3) **operator doctrine** —
+`plans/v1-concierge-operations-runbook-v1` (opening checks → screening → generation →
+pregame delivery → settlement → postgame delivery → shutdown + R1–R14 bounded recovery),
+`plans/v1-delivery-ledger-template-v1` (PII stays out of the vault; $/operator-hour metric
+per the freeze doc), `plans/v1-rc-drill-package-v1` (caps 2 calls/2 runs; criterion-mapped
+incl. source-outage-class forced recovery).
+
+**Verification:** red-first; DevCore.Api.Tests **1235/1235** (+23), agent-service pytest
+**453/453** (+5), vitest **134/134**. Review (2 angles): **12 findings FIXED** (orientation-
+insensitive matchup+gate key; punctuation/whitespace normalization; collation-independent
+competition compare; bounded gate dictionary [date dropped from key]; deterministic
+oldest-first 409 id; runbook /api/ping + full rows path + R1 precondition + PII-to-private-
+note + metric alignment; drill criterion-7 remapped to source-outage class; label dedup) /
+**2 REFUTED** (non-numeric provider ids = unknown identity → fail closed, doctrine;
+/reconcile does return literal MatchKind names). RC criterion-1 test-transaction wording
+confirmed already correct.
+
+**NEXT (separately gated):** WI-0013 integration and push (target ≤ Wed 07-29 — ready
+2026-07-14, fifteen days early); then the RC drill under its own gates (≤ Fri 07-31); then
+outreach + paid pilot (08-07).
