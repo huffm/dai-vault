@@ -14102,3 +14102,44 @@ confirmed already correct.
 **NEXT (separately gated):** WI-0013 integration and push (target ≤ Wed 07-29 — ready
 2026-07-14, fifteen days early); then the RC drill under its own gates (≤ Fri 07-31); then
 outreach + paid pilot (08-07).
+
+---
+
+## 2026-07-14 — WI-0013 INTEGRATED: fast-forwarded to dai/main and pushed (ALL V1 CRITICAL-PATH ITEMS ON MAIN)
+
+Integration continuation of WI-0013 (no duplicate WI). Preconditions re-verified after fetch:
+dai main == origin == `7152818`; branch at the exact reviewed `85a8831` (parent `7152818`,
+1 ahead, unpushed); retained wi/0011 (`140b5a2`) + wi/0012 (`7152818`) unchanged local+remote;
+vault local `c53ea52` exactly 1 ahead of origin `a3ec36b`; neither remote advanced. Suites
+re-run on the reviewed commit pre-integration: **DevCore.Api.Tests 1235/1235, agent-service
+pytest 453/453 (metering 11/11), vitest 134/134, bundle compiles** — covering the full
+duplicate-status matrix (409 before pending row and before service invocation; concurrent
+identical requests → exactly one run + one 409; tenant isolation; distinct DH gamePks
+creatable; excluded/failed retry rules; 400 preserved; settlement/reconciliation unchanged),
+metering coverage (both configurable models priced; unknown model → explicit unpriced status
++ structured warning + preserved telemetry; no guessed price; internal telemetry not billing),
+and WI-0011/0012 buyer regressions (no numeric confidence, no aggregates).
+
+**Integration:** pushed `wi/0013-pilot-ops-hardening` (remote == `85a8831`, RETAINED);
+`git merge --ff-only` on main (`7152818` -> `85a8831`); main tree == branch tree (`418a73a`,
+byte-identical); 0 merge commits; pushed main. **dai/main == origin/main == `85a8831`.**
+No rebase/amend/force-push/PR/history rewrite.
+
+**Now live on main:** the fail-closed duplicate-creation guard and full metering price
+coverage. Available in the vault: `plans/v1-concierge-operations-runbook-v1`,
+`plans/v1-delivery-ledger-template-v1`, `plans/v1-rc-drill-package-v1`. **Standing V1
+operating constraint: duplicate concurrency protection is process-local — ONE operator host;
+multi-instance needs db-coordinated uniqueness (separately authorized schema work).**
+
+**ALL THREE V1 CRITICAL-PATH IMPLEMENTATION ITEMS ARE NOW INTEGRATED** (WI-0011 brief,
+WI-0012 recap, WI-0013 ops hardening) — the release-candidate implementation milestone is
+achieved 2026-07-14, fifteen days ahead of the 07-29 target. **The RC drill remains
+separately gated and NOT executed** (four gates per the drill package).
+
+**Guardrails:** 0 paid calls / 0 captures / 0 run-creation calls / 0 reconciliation / 0 DB
+writes / 0 payment transactions; runtime cold throughout (suites only); csproj phantom + both
+intentionally untracked vault files preserved; frozen scope/dates/RC criteria unchanged.
+
+**NEXT (separately gated):** RC drill gate 1 (pregame; ≤ Fri 07-31 per the package); then
+drill gate 2 (settlement) + gate 3 (payment-link test); then outreach + first paid pilot
+delivery (Fri 08-07).

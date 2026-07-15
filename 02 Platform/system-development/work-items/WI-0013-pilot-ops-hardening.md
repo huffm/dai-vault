@@ -142,6 +142,19 @@ one); identity-status; WI-0002/0003; doubleheader capture operation; push/merge
 
 ## final disposition
 
-Implementation complete, local only (2026-07-14). Review resolved (12 findings fixed,
-2 refuted). Integration and push separately gated; the RC drill separately gated and NOT
-executed.
+Complete + integrated (2026-07-14). Integration commit dai `85a8831` == dai/main ==
+origin/main, a pure fast-forward from `7152818` (main tree byte-identical to the reviewed
+branch tree `418a73a`); branch `wi/0013-pilot-ops-hardening` pushed and RETAINED local +
+remote; WI-0011 (`140b5a2`) and WI-0012 (`7152818`) retained branches unchanged.
+Pre-integration re-verification on the reviewed commit: DevCore.Api.Tests 1235/1235,
+agent-service pytest 453/453 (metering focused 11/11), sports-app vitest 134/134, bundle
+compiles. Review resolved (12 fixed, 2 refuted). No implementation work remains open.
+
+**Standing release constraint (preserved):** the V1 duplicate guard provides concurrent
+protection within ONE api process; the release candidate supports one operator host.
+Multi-instance deployment is NOT authorized without database-coordinated duplicate
+enforcement (schema change, separately authorized future work).
+
+**The RC drill remains PREPARED and NOT EXECUTED**; it requires its own authorization
+per the four gates in `06 Execution/plans/v1-rc-drill-package-v1.md`. This supersedes
+the prior "implementation complete, local only" disposition.

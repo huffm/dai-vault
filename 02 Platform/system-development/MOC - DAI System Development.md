@@ -133,10 +133,11 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   (gpt-4.1-mini added) with explicit pricingStatus + loud unpriced warning; V1 concierge
   operations runbook + delivery-ledger/operator-time templates + RC drill package
   (prepared, NOT executed; four separate authorization gates); third and final V1
-  critical-path item (**complete, local only** 2026-07-14, dai `85a8831` on
-  `wi/0013-pilot-ops-hardening`; 1235/1235 C# + 453/453 pytest + 134/134 vitest; review
-  12 fixed / 2 refuted; not pushed, integration separately gated; RC drill separately
-  gated)
+  critical-path item (**complete + integrated** 2026-07-14, dai `85a8831`
+  fast-forwarded to main and pushed, origin synced -- pure ff, tree-identical;
+  1235/1235 C# + 453/453 pytest + 134/134 vitest re-verified pre-integration; review
+  12 fixed / 2 refuted; branch pushed + retained; RC drill NOT executed, separately
+  gated; single-operator-host constraint standing)
 
 ## scope boundary of this registry
 
