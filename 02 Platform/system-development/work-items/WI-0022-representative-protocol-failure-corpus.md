@@ -111,10 +111,16 @@ proven final policy").
 
 ## final disposition (2026-07-15)
 
-**complete ON BRANCH, awaiting review.** Evidence class achieved:
-contract-represented + fixture-proven (characterization of existing seams); nothing
-higher claimed. RC-NEUTRAL evidenced (zero production diff vs 85a8831). Runtime gaps
-discovered: none new -- all map to PH-02..PH-06 (see evidence report section 6).
-Integration remains separately authorized; WIP slot stays occupied by WI-0022 until
-review or explicit closure. G-10 unexecuted; R-05 gated; RC Gate 1 (2026-07-17)
-unaffected.
+**complete + reviewed + integrated.** Integration review audited every
+guard_verified classification against its exercised seam; corrections applied as
+new commits (dai `a0ca54d` narrows PF-01 -> behavior_characterized and scopes
+PF-06/PF-07 claims; vault `b7c6842` aligns the evidence report; final distribution
+9/3/1/1/1). All suites re-verified green post-correction (1262 C# / 456 py / 27+3
+focused). RC-neutrality proven (empty production diff, project-graph proof, runtime
+smoke health-only cold-to-cold) and recorded in
+`rc-equivalence-wi-0022-2026-07-15-v1.md`: dai/main fast-forwarded 85a8831 ->
+`a0ca54d` (the new repository RC commit; same release candidate artifact); vault/main
+fast-forwarded to `b7c6842` + integration record. Both branches pushed and retained.
+Evidence class achieved: contract-represented + fixture-proven; nothing higher.
+PH-01 CLOSED. WIP = 0. G-10 unexecuted; R-05 gated; RC Gate 1 (2026-07-17) remains
+the next operational event with the opening check updated to a0ca54d.

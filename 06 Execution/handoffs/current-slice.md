@@ -14640,3 +14640,50 @@ honestly before further hardening.
 **State:** Both branches local-only, branch-complete, awaiting review; WIP slot
 occupied; posture no-spend.
 **Next:** Separate review/integration authorization; RC Gate 1 drill 07-17.
+
+---
+
+## 2026-07-15 — WI-0022 INTEGRATED (review + correction + ff + push; PH-01 CLOSED; WIP = 0)
+
+**Review + correction:** classification-precision audit of every guard_verified
+fixture found ONE overstatement: PF-01 claimed enforcement, but the paid creation
+path (POST /api/agent-runs) never consults source readiness (verified in code) —
+reclassified guard_verified -> behavior_characterized; PF-06 narrowed to the
+settlement write path only; PF-07 narrowed to the parse-time clamp. Corrections as
+NEW commits (dai `a0ca54d`, vault `b7c6842`; no amend). Final distribution:
+**9 guard_verified / 3 behavior_characterized / 1 guard_missing / 1 policy_blocked /
+1 not_applicable.** Post-correction suites: focused 27/27 C# + 3/3 py; FULL
+1262/1262 C# + 456/456 py.
+
+**RC equivalence (record: `reports/rc-equivalence-wi-0022-2026-07-15-v1.md`):**
+production diff 85a8831..a0ca54d over every production tree = EMPTY; project-graph
+proof (no production reference to tests; IsPackable=false); runtime smoke from the
+reviewed branch: SQL + API + agent service, health 200 + ping 200, zero runs/provider
+calls, authoritative shutdown to cold. **Old RC commit `85a8831` -> new repository RC
+commit `a0ca54d` (same release candidate artifact); Friday's Gate 1 opening check now
+expects dai main == a0ca54d.** Gate 0 report NOT rewritten — superseded by reference.
+Rollback point: 85a8831.
+
+**Integration:** both branches pushed (dai wi/0022 @ a0ca54d; vault wi/0022 @
+b7c6842) and retained; dai/main ff 85a8831 -> a0ca54d (tree-identical); vault/main
+ff 6ac892c -> b7c6842 + this integration-recording commit. WI-0022 = complete +
+reviewed + integrated; **PH-01 = implemented, reviewed, integrated, CLOSED; WIP = 0.**
+PH-02..PH-06 remain unpulled; G-10 unexecuted; R-05 gated; posture no-spend; zero
+paid/provider calls, runs, captures, DB/reconciliation writes, RC execution.
+
+**NEXT operational event: RC Gate 1 pregame drill Friday 2026-07-17 (TB@BOS DH
+824766/824737) under its own drill-day authorization — opening check hash a0ca54d;
+standing operator action: approved Stripe TEST-MODE link.**
+
+### Slice Synopsis
+
+**Change:** Reviewed WI-0022 (one classification overstatement corrected: PF-01 ->
+behavior_characterized; PF-06/07 narrowed), pushed both branches, fast-forwarded both
+mains (dai 85a8831 -> a0ca54d tests-only, RC-equivalent), recorded the integration +
+RC-equivalence; PH-01 closed.
+**Reason:** Separate WI-0022 review/integration authorization.
+**Proof:** Empty production diff + project-graph + health-only smoke cold-to-cold;
+post-correction suites 1262/456 green; pure ff tree-identical; snapshot clean.
+**State:** dai main == a0ca54d (new RC hash, same artifact); vault main at the
+integration record; WIP = 0; posture no-spend.
+**Next:** RC Gate 1 drill Friday 07-17 (opening check = a0ca54d).

@@ -161,6 +161,16 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   branch) (**complete + integrated** 2026-07-15, docs-only, dai-vault e3a5eb3+361a2e6
   fast-forwarded to main -- pure ff, tree-identical; branch pushed + retained; zero
   spend, zero writes; NO candidate activated or pulled)
+- [[WI-0022-representative-protocol-failure-corpus]] — Representative Protocol
+  Failure Corpus v1 (PH-01 Green subset, first hardening pull): deterministic
+  15-class failure corpus (schema 1.0) + integrity harness + real-seam
+  characterization tests (+27 C# / +3 python; suites 1262/456 green);
+  review-corrected classifications 9 guard_verified / 3 behavior_characterized /
+  1 guard_missing / 1 policy_blocked / 1 not_applicable, every gap owned by
+  PH-02..PH-06; evidence class contract-represented + fixture-proven only
+  (**complete + reviewed + integrated** 2026-07-15: dai 85a8831 -> `a0ca54d`
+  tests-only ff with RC-equivalence record + runtime smoke; vault `b7c6842`;
+  branches pushed + retained; PH-01 CLOSED; WIP freed; zero spend/writes)
 
 ## scope boundary of this registry
 
