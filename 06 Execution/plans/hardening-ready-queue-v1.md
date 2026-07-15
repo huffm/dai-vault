@@ -277,7 +277,7 @@ Branches use <next-id>, assigned only at pull. READY does not authorize implemen
 
 | id | title | protocol ownership | lane | size | proposed branch | readiness | dependency | RC impact |
 |---|---|---|---|---|---|---|---|---|
-| PH-01 | Representative Protocol Failure Corpus v1 | Discern.Stress | Green | M | wi/<next-id>-discern-stress-protocol-failure-corpus | READY | none | RC-neutral |
+| PH-01 | Representative Protocol Failure Corpus v1 | Discern.Stress | Green | M | **PULLED: WI-0022 -- BRANCH-COMPLETE, NOT integrated** (Green fixture + characterization subset); dai wi/0022-discern-stress-protocol-failure-corpus @ f057a39 (3 commits from 85a8831, tests-only) + coordinated vault branch; occupies the WIP=1 slot until review/closure | branch-complete 2026-07-15; achieved: contract-represented + fixture-proven (15/15 classes: 10 guard_verified / 2 characterized / 1 guard_missing / 1 policy_blocked / 1 not_applicable); unresolved gaps mapped to PH-02/03/04/05/06 (evidence report) | none | RC-neutral EVIDENCED (zero production diff); integration separately reviewed |
 | PH-02 | Evidence and Decision Trace Completeness v1 | Interrogate.Verify | Amber | M | wi/<next-id>-interrogate-verify-evidence-trace | READY W/ OPEN QUESTION (trace persistence decision) | soft: PH-01, PH-06 | RC-affecting |
 | PH-03 | Decision Abstention Invariants v1 | Decide.Resolve | Amber | M-L | wi/<next-id>-decide-resolve-abstention-invariants | READY W/ OPEN QUESTION (block-vs-warn policy) | soft: PH-01, PH-02, PH-06 | RC-affecting |
 | PH-04 | Synthesized Artifact Contract Invariants v1 | Synthesize.Integrate | Amber (verification subset Green) | M | wi/<next-id>-synthesize-integrate-artifact-invariants | READY | soft: PH-01, PH-03 | split (criterion 19) |

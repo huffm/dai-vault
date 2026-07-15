@@ -14582,3 +14582,61 @@ tree-identical; snapshots 0 warnings / [] before and after; dai untouched.
 **State:** vault main at the integration record (pushed); no candidate pulled;
 posture no-spend.
 **Next:** RC Gate 1 drill 2026-07-17 under its own authorization.
+
+---
+
+## 2026-07-15 — WI-0022 Representative Protocol Failure Corpus v1 (PH-01 Green subset; ON COORDINATED BRANCHES, not integrated)
+
+**Pull + branches:** PH-01 pulled as WI-0022 (the single WIP=1 implementation work
+item). dai branch `wi/0022-discern-stress-protocol-failure-corpus` from `85a8831`
+(3 tests-only commits: e348310 fixture contract + 15 canonical fixtures, d35de5c
+integrity harness, f057a39 seam characterization tests) + coordinated dai-vault
+branch from `6ac892c`. **BOTH LOCAL-ONLY — not pushed, not integrated; review is a
+separate authorization. dai main remains 85a8831 (RC frozen).**
+
+**Ops:** 0 model calls, 0 paid/provider calls, 0 sports runs, 0 DB/reconciliation
+writes, 0 production-code changes (git diff 85a8831 over all production trees =
+EMPTY), 0 RC drill actions; runtime cold throughout (pure test execution); gamePks
+824766/824737 and pending 087A433E untouched; PH-02..PH-06 remain unpulled.
+
+**Corpus:** 15/15 canonical classes (PF-01..PF-15), schema 1.0, deterministic
+(byte-stable double serialization + SHA-256), offline, credential/customer-free.
+Classifications (evidence-based): 10 guard_verified (PF-01 readiness eligibility,
+PF-05 identity ambiguity/mismatch, PF-06 residue 422, PF-07 posture clamp, PF-08
+direction contradiction, PF-09 unpriced-model visibility, PF-10 tool gateway, PF-11
+duplicate guard, PF-13 confidence-free contracts, PF-14 claim suppression); 2
+behavior_characterized (PF-03 unavailable-collapses-to-missing, PF-12 honest recap
+states w/ malformed-residue validation missing); 1 guard_missing (PF-04 cross-source
+contradiction); 1 policy_blocked (PF-02 staleness — names the unresolved decision);
+1 not_applicable (PF-15 delivery/entitlement — no runtime claim). Origins: 6
+observed / 1 reconstructed / 8 preventive. Every gap maps to PH-02..PH-06; no new
+deferred candidate needed. Two evidence-based deviations from the provisional
+grouping recorded (PF-01, PF-09 verified rather than characterized).
+
+**Tests:** focused 27/27 C# + 3/3 python; FULL regressions 1262/1262 C# (+27) and
+456/456 python (+3), 0 failed/skipped; vitest not run (no Angular change). Passing
+totals are corpus-contract proof, NOT semantic validation. **Evidence class
+achieved: contract-represented + fixture-proven — nothing higher claimed.**
+
+**Docs:** `reports/protocol-failure-corpus-results-v1.md` (manifest, per-fixture
+status/seams, determinism + RC-neutrality proof, limitations) + WI-0022 record +
+queue PH-01 = branch-complete.
+
+**NEXT ACTION (exact):** operator review of BOTH WI-0022 branches (RC-neutrality
+re-verified at review), then separately authorized push + ff-only integration —
+integration of the dai branch before the RC verdict requires the explicit
+RC-neutral-integration review path. RC Gate 1 drill Friday 2026-07-17 remains the
+next operational event and is unaffected.
+
+### Slice Synopsis
+
+**Change:** WI-0022 built the deterministic 15-class protocol failure corpus (PH-01
+Green subset): fixtures + integrity harness + real-seam characterization tests
+(+27 C# / +3 py), all classifications evidence-based with follow-up owners.
+**Reason:** First hardening pull — pin production failure knowledge and expose gaps
+honestly before further hardening.
+**Proof:** Focused + full suites green (1262 C# / 456 py); zero production diff vs
+85a8831; byte-stable corpus; strict snapshot clean.
+**State:** Both branches local-only, branch-complete, awaiting review; WIP slot
+occupied; posture no-spend.
+**Next:** Separate review/integration authorization; RC Gate 1 drill 07-17.
