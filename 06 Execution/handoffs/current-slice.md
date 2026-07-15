@@ -14314,3 +14314,88 @@ snapshot 0 warnings / 0 continuations; dai untouched.
 **State:** Vault docs-only commit pushed; no WI/branch created; RC Gate 1 07-17
 unaffected; posture no-spend.
 **Next:** RC Gate 1 drill Friday under its own authorization.
+
+---
+
+## 2026-07-15 — WI-0020 AI Engineering Hardening Catalog v1.1 Corrections (docs-only, ON BRANCH, not integrated)
+
+**Work item + branch:** WI-0020 (minted; next after WI-0013 with 0014-0019 reserved) on
+dai-vault branch `wi/0020-platform-hardening-catalog-corrections` (from main
+`1e89bda`). **NOT integrated, NOT pushed to main — review + ff-only integration
+requires separate authorization.**
+
+**Ops:** 0 paid calls, 0 source calls, 0 sports runs, 0 captures, 0 DB/reconciliation
+writes, 0 secret rotations, 0 RC drill actions; dai UNCHANGED at `85a8831` (read-only
+history verification only, key NAMES only, no credential value accessed or recorded).
+
+**Four corrections completed:**
+1. **Evidence taxonomy** — canonical 7-class taxonomy (contract-represented /
+   fixture-proven / integration-proven / paid-run observed / production-observed /
+   operationally proven / commercially validated) defined ONCE in the maturity matrix;
+   all 14 matrix maturity cells reclassified (no evidence reduced); Synthesize.Deliver
+   = fixture-proven + integration-proven, NOT operationally proven / commercially
+   validated; prose fields = paid-run observed w/ semantics unevaluated; deterministic
+   coverage = mature vs semantic evaluation = developing; maturity is
+   dimension-specific, never inferred from test volume.
+2. **Branch policy** — canonical: EVERY pulled queue card uses a dedicated wi/ branch,
+   vault-docs Green cards included; NO card commits directly to main; integration =
+   separate reviewed authorized ff-only action; lane/WIP/selector/post-RC-candidate
+   text updated; corrected canonical G-10 pull prompt embedded as queue section 8
+   (supersedes the chat-report prompt that instructed a direct main commit).
+3. **G-10/R-05 separation + factual correction** — G-10 rewritten as Credential
+   Exposure Classification + Rotation Checklist: classify each committed credential
+   reference (placeholder / inactive-revoked / active / unknown) covering
+   OddsApi:ApiKey, sa password, Dev:ProvisionKey; read-only historical-exposure
+   determination; record identifier/classification/history/method/next-action ONLY;
+   ACTIVE or UNKNOWN committed credential -> explicit R-05 escalation; G-10 is
+   documentation/preparation, NEVER remediation/closure/rotation/revocation/
+   containment; R-05 alone authorizes+performs rotation, revocation, replacement,
+   validation, history response. FACT CORRECTED (verified read-only):
+   appsettings.Development.json is GITIGNORED/untracked/zero-history (prior "committed"
+   claim in the 07-15 catalog entries was WRONG and is superseded by this entry);
+   tracked appsettings.json DID carry the SQL connection string until `ded9969`
+   (2026-05-21) -> HISTORICAL repo exposure exists for the sa password. G-10 remains
+   UNEXECUTED; R-05 remains GATED.
+4. **Fitness counts** — canonical: FOURTEEN adopted (eleven existing + three added:
+   FC-1/FC-4/FC-14); conditionals labeled FC-C1 (replicas==1), FC-C2 (reproducible
+   deploy+rollback), FC-C3 (CI) = conditional, not adopted, not active, NOT in the
+   fourteen, gated by cloud stage-2 / WI-0014. Adoption remains fourteen.
+
+**Files changed (all dai-vault, on the branch):** the four hardening docs (front-matter
+titles -> v1.1, filenames unchanged): plans/ai-engineering-hardening-catalog-v1.md,
+reports/protocol-coverage-and-maturity-matrix-v1.md, plans/hardening-ready-queue-v1.md,
+plans/ai-engineering-fitness-checks-v1.md; NEW 02 Platform/system-development/
+work-items/WI-0020-platform-hardening-catalog-corrections.md; this handoff entry.
+
+**Proof searches:** repo-wide sweeps for proven / mature / paid-run / commit direct /
+directly to main / G-10 / R-05 / rotation / remediat / 14-11-3 counts / conditional /
+replicas / rollback / CI: zero non-conformant occurrences remain in the four v1.1 docs;
+remaining "proven" strings are taxonomy class names or identifiers; earlier
+current-slice entries retain superseded wording by design (append-only log; this entry
+records the supersession). Unchanged: RC boundary + Gate 1 plan (07-17), no-spend
+posture, WIP=1, independent authorization requirements, G-01 conflict (unresolved by
+design), queue priorities (wording-only updates).
+
+**Strict zero-action snapshot:** 0 warnings, integrationContinuations [], posture
+no-spend (run at close on the branch).
+
+**Review/integration status:** awaiting operator review; integration = separate
+authorization, ff-only from `wi/0020-platform-hardening-catalog-corrections`.
+
+**NEXT ACTION (exact):** operator reviews the branch diff; if approved, authorize
+ff-only integration of wi/0020-platform-hardening-catalog-corrections into
+dai-vault/main and push; RC Gate 1 (07-17) remains the next operational event.
+
+### Slice Synopsis
+
+**Change:** WI-0020 corrected the four hardening-catalog defects — canonical evidence
+taxonomy applied, one branch policy (every pulled card branches; no direct-to-main),
+G-10 recast as classification+preparation with R-05-only remediation (plus factual fix:
+Development.json never committed; sa password historically exposed via appsettings.json
+until ded9969), fitness count fixed at 14 = 11 + 3 with conditionals excluded.
+**Reason:** v1 review found evidence-language, branch-policy, credential-exposure, and
+count ambiguities.
+**Proof:** Repo-wide term sweeps clean; strict snapshot 0 warnings / []; dai untouched;
+no values accessed.
+**State:** Committed on the WI-0020 branch only; NOT integrated.
+**Next:** Operator review, then separately authorized ff-only integration.

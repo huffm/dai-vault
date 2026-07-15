@@ -1,5 +1,5 @@
 ---
-title: "AI Engineering Fitness Checks v1 (2026-07-15)"
+title: "AI Engineering Fitness Checks v1.1 (2026-07-15; WI-0020 corrections)"
 type: "plan"
 date: "2026-07-15"
 status: "active"
@@ -19,7 +19,14 @@ related:
   - "06 Execution/plans/hardening-ready-queue-v1.md"
 ---
 
-# ai engineering fitness checks v1
+# ai engineering fitness checks v1.1
+
+**CANONICAL COUNT (v1.1, WI-0020): Fourteen architecture fitness checks are currently
+adopted: eleven existing checks and three newly added checks (FC-1, FC-4, FC-14).
+The three conditional checks in section 2 (FC-C1 replicas-equals-one assertion,
+FC-C2 reproducible deployment and rollback, FC-C3 CI enforcement) are defined but
+CONDITIONAL: not adopted, not active, and NOT included in the adopted count of
+fourteen. They remain gated by the cloud stage-2 deployment boundary / WI-0014.**
 
 Minimal high-value checks. Extends (does not duplicate) the runway doc's fitness table
 (cloud-and-multisport-runway-v1.md section 6); rows marked EXISTS cite their proof and
@@ -27,7 +34,7 @@ change nothing. Checks are rejected when maintenance burden is disproportionate 
 CURRENT risk. Trigger vocabulary: per-suite-run (local full suite), per-slice (before
 any integration), per-event (operational days), per-gate (cloud/sport gates).
 
-## 1. adopted checks
+## 1. adopted checks (14 total: 11 EXISTS + 3 ADD; conditional checks NOT counted here)
 
 | # | check | status | type | location | trigger | failure action | maint. cost | risk controlled |
 |---|---|---|---|---|---|---|---|---|
@@ -46,14 +53,18 @@ any integration), per-event (operational days), per-gate (cloud/sport gates).
 | FC-13 | new competition passes the qualification ladder | EXISTS as process (runway ladder stages 1-12) | gate checklist (NOT automated) | runway doc; per-sport readouts | per-gate (second sport+) | ladder stage refuses entry | none until sport 2 | unproven sport reaching buyers |
 | FC-14 | protocol completion invariant (successful compose => completed protocol; failed => null) | ADD (CAT-SYN-I-1) | automated test | SportsComposer tests | per-suite-run | fail | trivial | partially-completed artifacts |
 
-## 2. conditional (adopt at their gate, not now)
+## 2. conditional checks (CONDITIONAL -- not adopted, not active, NOT included in the
+adopted-check total of fourteen; each gated by the cloud stage-2 deployment boundary /
+WI-0014)
 
-- duplicate protection matches deployed topology (assert replicas==1 until WI-0015) --
-  pipeline check, ADD AT CLOUD STAGE 2 (already in the runway table).
-- deployment artifact reproducible / env rebuildable + rollback tested -- stage 2
-  pipeline checks (runway table).
-- CI running the full suites -- adopt WITH WI-0014 (no pipeline exists to host checks
-  today; local discipline + snapshot is the current control).
+- **FC-C1 (conditional, not adopted):** duplicate protection matches deployed topology
+  (assert replicas==1 until WI-0015) -- pipeline check, adopt at cloud stage 2
+  (already in the runway table).
+- **FC-C2 (conditional, not adopted):** deployment artifact reproducible / env
+  rebuildable + rollback tested -- stage-2 pipeline checks (runway table).
+- **FC-C3 (conditional, not adopted):** CI running the full suites -- adopt with
+  WI-0014 (no pipeline exists to host checks today; local discipline + snapshot is the
+  current control).
 
 ## 3. rejected as excessive today (burden > current risk)
 

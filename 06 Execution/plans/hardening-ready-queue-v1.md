@@ -1,5 +1,5 @@
 ---
-title: "Hardening Ready Queue v1 (2026-07-15)"
+title: "Hardening Ready Queue v1.1 (2026-07-15; WI-0020 corrections)"
 type: "plan"
 date: "2026-07-15"
 status: "active"
@@ -19,14 +19,24 @@ related:
   - "06 Execution/plans/ai-engineering-fitness-checks-v1.md"
 ---
 
-# hardening ready queue v1
+# hardening ready queue v1.1
 
 Branch-ready queue over the hardening catalog. NOTHING here is minted or authorized;
 branches are created only when a card is pulled; numeric WI ids are assigned only at
 mint time (slugs use <next-id>). Release boundary: dai main is FROZEN as the RC commit
 `85a8831` until the final RC verdict -- no dai-touching card may integrate before it,
 and no card may delay RC Gate 1 (2026-07-17). A passing RC verdict does NOT authorize
-this queue; pulling any card is its own operator decision.
+this queue; pulling any card is its own operator decision. Evidence language uses the
+canonical taxonomy defined in `protocol-coverage-and-maturity-matrix-v1.md`.
+
+**CANONICAL BRANCH POLICY (v1.1, WI-0020 -- supersedes any contrary statement):**
+Every pulled ready-queue card uses a dedicated work-item branch
+(wi/<next-id>-<protocol>-<micro-action>-<feature>), INCLUDING vault-docs Green cards.
+NO card commits directly to main -- in either repository. Integration is always a
+separate reviewed, authorized, fast-forward-only action; creating a branch never
+implies approval to integrate it. Unfinished branches must retain: current state; which
+of Inspect/Prove/Guard is complete; the exact next action; and unchanged authorization
+boundaries.
 
 ## 1. work lanes (authoritative)
 
@@ -36,12 +46,14 @@ this queue; pulling any card is its own operator decision.
   locked-layer behavior change; easily reversible; does not alter the active RC
 - entry criteria: repo state verified; card unblocked; no operational event in progress
   that needs attention
-- authorization: standing for vault-docs-only cards; dai-touching Green cards need a
-  minted WI + branch but NO extra spend authority
-- branch: vault-docs cards commit direct to vault main; dai cards get wi/<next-id>-...
-  branch, never integrate pre-verdict
+- authorization: a minted WI is required for EVERY pulled card, vault-docs included;
+  Green grants NO spend authority
+- branch: EVERY pulled card gets a dedicated wi/<next-id>-... branch (canonical branch
+  policy above) -- vault-docs cards branch dai-vault, dai cards branch dai; no card
+  commits directly to main; dai branches never integrate pre-verdict
 - tests: suites relevant to touched area green; docs cards = snapshot 0 warnings
-- integration: ff-only after review; pre-verdict dai integration PROHIBITED
+- integration: separate reviewed, authorized, ff-only action; pre-verdict dai
+  integration PROHIBITED
 - prohibited: paid calls, external writes, db writes, schema, prompt/model/scoring
   changes, touching locked layers, touching the RC commit
 
@@ -97,9 +109,10 @@ auth | integration | stop | done. Defaults: paid 0 / external writes 0 / db writ
   I: present both countings (map 2026-05-14 vs authorization 2026-07-15) with evidence;
   P: side-by-side table, impact of each on catalog organization;
   G: operator decides the canonical counting; map updated with a decision record |
-  tests: none (docs) | auth: operator doctrine decision REQUIRED | integration: vault
-  commit | stop: any temptation to rename runtime fields | done: one canonical counting
-  recorded, no runtime change
+  tests: none (docs) | auth: operator doctrine decision REQUIRED | integration:
+  dedicated vault branch, then separate reviewed ff-only integration (canonical branch
+  policy) | stop: any temptation to rename runtime fields | done: one canonical
+  counting recorded, no runtime change
 - **G-02 | Perceive Intake Checklist v1 (operational guidance)** |
   wi/<next-id>-perceive-intake-checklist | Green | XS | G-01 helpful not required |
   dai-vault | runbook section 2 + matrix section 4 | I: confirm checklist matches code;
@@ -147,12 +160,36 @@ auth | integration | stop | done. Defaults: paid 0 / external writes 0 / db writ
   test asserting every tool declares both; doc table of endpoint -> class; G: test in
   suite + table in vault | done: every tool/endpoint has a declared class; enforcement
   gaps explicitly listed (cost-class enforcement stays Red)
-- **G-10 | Secrets Hygiene Record + Rotation Checklist v1** |
-  wi/<next-id>-perceive-secrets-hygiene-checklist | Green | XS | none | dai-vault |
-  runbook amendment | I: record that OddsApi:ApiKey + Dev:ProvisionKey sit in committed
-  appsettings.Development.json (observed this slice); P: rotation checklist (odds key,
-  sa password, provision key) with verification steps; G: runbook note; ROTATION ITSELF
-  = operator action (R-05) | done: hygiene state recorded, rotation ready to execute
+- **G-10 | Credential Exposure Classification + Rotation Checklist v1 (corrected
+  v1.1 -- documentation and preparation ONLY, NOT remediation)** |
+  wi/<next-id>-perceive-secrets-hygiene-checklist | Green | XS-S | none | dai-vault
+  (dedicated branch per canonical branch policy; no direct main commit) | runbook
+  amendment + classification record |
+  KNOWN FACTS (verified read-only 2026-07-15, key names only, no values):
+  appsettings.Development.json is GITIGNORED, untracked, zero git history -- its
+  OddsApi:ApiKey, Dev:ProvisionKey, and SQL password are local-file-only; the TRACKED
+  appsettings.json historically carried the SQL connection string incl. password until
+  `ded9969` ("remove tracked secret values", 2026-05-21) replaced it with a
+  placeholder -- HISTORICAL repository exposure exists for the sa password.
+  I: classify EACH committed credential reference as placeholder | inactive/revoked |
+  active | unknown -- covering at minimum OddsApi:ApiKey, the service-account (sa)
+  password, and Dev:ProvisionKey; determine (read-only) whether each was ever committed
+  in repository history;
+  P: record per credential ONLY: identifier/config key, current exposure
+  classification, historical-repository-exposure yes/no, verification method, required
+  next action -- never a value;
+  G: rotation checklist + runbook note stating EXPLICITLY that this checklist is not
+  remediation.
+  ESCALATION RULE: any ACTIVE or UNKNOWN committed credential creates an explicit R-05
+  operator escalation. G-10 completion must never be described as remediation, closure,
+  rotation, revocation, or containment.
+  G-10 MUST NOT: rotate or revoke credentials; modify application configuration;
+  rewrite git history; remove historical commits; access or print secret values; claim
+  exposure is resolved.
+  acceptance: (1) every credential classified; (2) historical exposure status recorded;
+  (3) active/unknown cases escalated to R-05; (4) runbook states the checklist is not
+  remediation; (5) no credential value appears in any artifact, log, commit message, or
+  report | done: exposure documented + rotation prepared; remediation remains R-05
 
 ### Amber
 
@@ -209,8 +246,12 @@ auth | integration | stop | done. Defaults: paid 0 / external writes 0 / db writ
   only when a change WI exists)
 - **R-04** AI cost/latency budget ENFORCEMENT (gateway cost-class enforcement, spend
   caps in code; triggers: unpriced event, cap near-miss, automation or cloud gate)
-- **R-05** secrets ROTATION execution (odds key, sa password, provision key -- operator
-  action; G-10 prepares it)
+- **R-05** credential remediation (operator gate): AUTHORIZES AND PERFORMS credential
+  rotation, revocation, replacement, post-rotation validation, and any repository-
+  history response for the odds key, sa password, and provision key. G-10 only
+  documents, classifies, and prepares the rotation checklist; every ACTIVE or UNKNOWN
+  committed credential classification escalates here. Completion of G-10 is never
+  remediation, closure, rotation, revocation, or containment of an exposure.
 - **R-06** EF migration path verification on managed SQL (WI-0014, cloud gate)
 - **R-07** NBA settlement-grade identity provider (WI-0017 ladder stage 1)
 
@@ -232,7 +273,7 @@ auth | integration | stop | done. Defaults: paid 0 / external writes 0 / db writ
 ## 4. prioritized ranking (criteria: observed pain > release/tenant risk > feedback
 quality > cross-niche reuse > cost > reversibility > evidence > distraction risk)
 
-**Top five Green:** 1) G-10 secrets hygiene (observed, security, XS) 2) G-01 doctrine
+**Top five Green:** 1) G-10 credential exposure classification (observed, security, XS-S) 2) G-01 doctrine
 reconciliation (observed conflict, blocks clean catalog vocabulary) 3) G-04 failure
 corpus (real production defects pinned) 4) G-03 semantic fixtures (largest evaluation
 gap) 5) G-09 tool authorization audit (release+tenant safety visibility).
@@ -252,6 +293,8 @@ Selection algorithm:
    (docs-only planning is allowed only when it does not distract).
 3. pre-RC-verdict: only vault-docs-only Green cards are eligible (G-01, G-02, G-06,
    G-07, G-10 doc part). dai-touching cards are NOT eligible before the verdict.
+   Every selected card -- vault-docs included -- runs on its own dedicated wi/ branch;
+   the selector never authorizes a direct commit to main or an integration.
 4. post-verdict: eligible = unblocked cards in lane order Green then Amber, ranked per
    section 4; Amber eligible only if the single WIP slot is free.
 5. within eligible, pick by time window:
@@ -277,7 +320,9 @@ speculative abstraction (rejected list); any paid or write-bearing action.
 - docs-only planning may proceed in parallel ONLY when it does not distract from an
   authorized operational event (drill days: nothing else).
 - NO precreated empty branches; a branch exists only when its card is pulled and its
-  WI is minted (branch = wi/<next-id>-<protocol>-<micro-action>-<feature>).
+  WI is minted (branch = wi/<next-id>-<protocol>-<micro-action>-<feature>). This
+  applies to EVERY card, vault-docs Green cards included: no pulled card ever commits
+  directly to main in either repository (canonical branch policy, v1.1).
 - <next-id> is assigned at mint time from the WI registry; catalog/queue docs never
   fix numeric ids in advance (avoids collision with WI-0014..0019 proposals).
 - an unfinished branch MUST carry a current handoff note + explicit next action before
@@ -313,6 +358,38 @@ NOT authorized, NOT minted by this document)
    gates table explicitly permits early contract DESIGN. Why not before: zero release
    value pre-verdict; attention belongs to the drill. Trigger evidence: RC verdict +
    operator interest in the second-sport option (NBA window planning). Branch:
-   vault-docs (design only; implementation stays WI-0016, second-sport-gated). Size M
-   (docs). Payment/repeat-use gated: implementation YES (second-sport gate);
-   design doc NO.
+   dedicated dai-vault wi/ branch (docs-only design; canonical branch policy applies;
+   implementation stays WI-0016, second-sport-gated). Size M (docs). Payment/repeat-use
+   gated: implementation YES (second-sport gate); design doc NO.
+
+## 8. canonical G-10 pull prompt (v1.1 -- supersedes the prompt in the 2026-07-15
+catalog slice final report, which wrongly instructed a direct commit to dai-vault main)
+
+> Pull ready-queue card G-10 (Credential Exposure Classification + Rotation Checklist
+> v1) from dai-vault "06 Execution/plans/hardening-ready-queue-v1.md" section 3.
+>
+> Preconditions: final RC verdict recorded; dai main == origin/main (report hash);
+> dai-vault main == origin/main; WIP slot free; posture no-spend unchanged.
+>
+> Work packaging: mint the next WI id from the canonical registry and create a
+> DEDICATED dai-vault branch wi/<next-id>-perceive-secrets-hygiene-checklist from
+> synchronized main. Do NOT commit to main. Integration is a separate reviewed,
+> authorized, fast-forward-only action under its own approval.
+>
+> Inspect: classify each committed credential reference -- at minimum OddsApi:ApiKey,
+> the sa password, and Dev:ProvisionKey -- as placeholder / inactive-or-revoked /
+> active / unknown, and determine read-only whether each was ever committed in
+> repository history (start from the WI-0020 verified facts: Development.json
+> untracked with zero history; tracked appsettings.json carried the SQL connection
+> string until ded9969).
+> Prove: record per credential ONLY identifier/config key, exposure classification,
+> historical-exposure yes/no, verification method, and required next action -- never a
+> value.
+> Guard: write the rotation checklist and the runbook note stating explicitly that
+> this checklist is NOT remediation; escalate every active or unknown committed
+> credential to R-05.
+>
+> Do NOT rotate or revoke anything, modify dai or application configuration, rewrite
+> history, or print secret values. Completion means documentation and preparation
+> only; remediation authority remains exclusively with R-05. Close with the strict
+> snapshot (0 warnings / [] continuations) and a Slice Synopsis on the branch.

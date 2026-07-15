@@ -1,5 +1,5 @@
 ---
-title: "AI Engineering Hardening Catalog v1 (2026-07-15)"
+title: "AI Engineering Hardening Catalog v1.1 (2026-07-15; WI-0020 corrections)"
 type: "plan"
 date: "2026-07-15"
 status: "active"
@@ -20,7 +20,13 @@ related:
   - "06 Execution/plans/v1-to-v2-release-sequence-v1.md"
 ---
 
-# ai engineering hardening catalog v1
+# ai engineering hardening catalog v1.1
+
+Evidence language in this catalog uses the canonical evidence taxonomy defined ONCE in
+`protocol-coverage-and-maturity-matrix-v1.md` (contract-represented / fixture-proven /
+integration-proven / paid-run observed / production-observed / operationally proven /
+commercially validated); the classes are not interchangeable, and maturity is
+dimension-specific (never inferred from test volume alone).
 
 Catalog of branch-ready hardening features organized by the canonical protocol
 (operator doctrine 2026-07-15: Perceive intake -> Interrogate -> Discern -> Decide ->
@@ -44,7 +50,7 @@ section 2). Branch slugs use wi/<next-id>-... -- numeric ids assigned only at mi
 ### Perceive (intake layer -- operational guidance, no canonical micro-actions invented)
 
 - **CAT-PER-1 intake identity + regime contract test pack** | discipline: evidence/data
-  quality | class: tests | [preventive] extends proven controls | problem: intake
+  quality | class: tests | [preventive] extends production-observed controls | problem: intake
   invariants (explicit gamePk on DH dates, regime classification, eligibility fail-closed)
   are tested piecewise; no single contract suite states the intake promise | locus:
   SourceReadiness.cs, DuplicateRunGuard, gamePk plausibility check | change: one intake
@@ -204,7 +210,7 @@ section 2). Branch slugs use wi/<next-id>-... -- numeric ids assigned only at mi
   one fixture list | slug: wi/<next-id>-decide-position-vocabulary-lockstep | size S |
   priority P2 | confidence high
 - **CAT-DEC-P-2 no-position matrix extension** | discipline: evaluation | class: tests |
-  [preventive; WI-0011 no-position rendering proven] | change: full posture x lean-null
+  [preventive; WI-0011 no-position rendering fixture-proven + production-observed] | change: full posture x lean-null
   matrix through brief + recap | slug: wi/<next-id>-decide-position-noposition-matrix |
   size XS | priority P3 | confidence high
 - **CAT-DEC-P-3 posture distribution telemetry** | discipline: observability | class:
@@ -316,15 +322,15 @@ section 2). Branch slugs use wi/<next-id>-... -- numeric ids assigned only at mi
 
 | discipline | existing controls (strength) | gaps / weak / duplicated / expensive | phases served |
 |---|---|---|---|
-| evaluation engineering | 1141 C# + 399 py + 134 vitest; golden hashes; byte-determinism (brief/recap); pooled_calibration Gate-4 sufficiency gates; shadow soak (assembly replay) | GAP: no persisted-run replay through projections; prose micro-actions untested semantically; Angular protocol view untested | all |
-| evidence/data quality | regime classifier (settlement proven); grounded-signal rule; sufficiency gate fail-closed; lean containment; direction consistency (fired in prod) | WEAK: quality checker fails open AND invisible; verify prose ungrounded-checkable | Perceive, Interrogate, Decide |
+| evaluation engineering | deterministic testing and invariant coverage: MATURE (1141 C# + 399 py + 134 vitest; golden hashes; byte-determinism brief/recap; pooled_calibration Gate-4 sufficiency gates; shadow soak assembly replay). semantic evaluation and representative failure-corpus coverage: DEVELOPING -- test volume alone does not confer maturity on that dimension | GAP: no persisted-run replay through projections; prose micro-actions untested semantically; Angular protocol view untested | all |
+| evidence/data quality | regime classifier (production-observed through 15 settlements); grounded-signal rule; sufficiency gate fail-closed; lean containment; direction consistency (production-observed: fired on 4 real runs) | WEAK: quality checker fails open AND invisible; verify prose ungrounded-checkable | Perceive, Interrogate, Decide |
 | prompt/recipe governance | registry v2 + manifest hash verify + 57 governance tests; canary default-off; byte-identical promotion rule; fail-closed fallback with named reasons | none urgent; impact harness deferred until a change is proposed | Interrogate, Decide |
 | model config/metering | PRICING covers both configured models; named unpriced states; cost log JSON lines; metering coverage test | OBSERVED: model name dual-sourced (analyzer hardcodes gpt-4o-mini :657; AgentProfile default gpt-4.1-mini) -- consistency risk, not a defect today | all |
 | tool routing/permissions | ToolGateway fail-closed (registry + node allowlist); 10 tools with CostClass/idempotency/TTL metadata; per-invocation telemetry | cost-class NOT enforced (deferred by design); station-id policy branch dormant | Interrogate (probe seam), platform |
 | provenance/traceability | settlement residue 422 (ADR 0006); X-Agent-Run-Id; route provenance + attributionStatus; gamePk propagation (WI-0009) | trace lacks protocol completion status; fallbackDetail narrow | Decide, Synthesize |
 | reliability/recovery | duplicate 409 guard (23 tests); idempotent settlement 409; failed-never-blocks matrix; verified shutdown script; identity-safe starter cache | single-instance only (known, gated WI-0015) | intake, Synthesize |
 | observability | structured logs; cost log; /rows rich export; prompt-trace; cognitive-factory diagnostics (read-only) | WEAK: single /health (no readiness); calibration metrics denominator includes excluded runs (documented, gated); quality warnings invisible | all |
-| security/tenant isolation | fail-closed authorize policy + DevBypass double condition; tenant-scoped queries + 404 matrices; batch-runs double-gated fail-closed; buyer-copy suppression | OBSERVED: OddsApi key + ProvisionKey committed in appsettings.Development.json (rotation = operator action R-05; hygiene docs G-10) | all |
+| security/tenant isolation | fail-closed authorize policy + DevBypass double condition; tenant-scoped queries + 404 matrices; batch-runs double-gated fail-closed; buyer-copy suppression | OBSERVED (corrected v1.1, verified read-only 2026-07-15): appsettings.Development.json is GITIGNORED and was NEVER committed -- its OddsApi:ApiKey, Dev:ProvisionKey, and SQL password are local-file-only; the tracked appsettings.json DID historically carry the SQL connection string incl. password until `ded9969` replaced it with a placeholder, so HISTORICAL repository exposure exists for the sa password. Classification + escalation = G-10 (documentation, unexecuted); rotation/revocation/history response = R-05 (operator gate). G-10 completion is NOT remediation | all |
 | cost/latency | per-call cost + latency_ms; 30s model timeout; 1500 completion-token cap | no per-run rollup persisted; no budget enforcement (procedural caps only) -- acceptable for V1, gated R-04 | Decide, Synthesize |
 | deployment/reproducibility | Dockerfiles + compose.smoke; deterministic exports; snapshot tooling | GAP: CI empty despite 1600+ tests; 1 EF migration, schema drift out-of-band (cloud blockers, WI-0014) | platform |
 | provider resilience | per-provider fail-soft-to-null; readiness regime vocabulary bridges to honest postures; ActionNetwork degradation observable | no unified cross-provider state machine (G-06 design doc; implementation multisport-gated) | Perceive |

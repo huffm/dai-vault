@@ -1,5 +1,5 @@
 ---
-title: "Protocol Coverage and Maturity Matrix v1 (2026-07-15)"
+title: "Protocol Coverage and Maturity Matrix v1.1 (2026-07-15; WI-0020 corrections)"
 type: "evidence-report"
 date: "2026-07-15"
 status: "complete"
@@ -20,13 +20,31 @@ related:
   - "06 Execution/plans/ai-engineering-fitness-checks-v1.md"
 ---
 
-# protocol coverage and maturity matrix v1
+# protocol coverage and maturity matrix v1.1
 
-Every cell is repository-evidenced at dai `85a8831`. Maturity levels: doctrine only ->
-represented in contracts -> runtime implemented -> fixture proven -> live read proven ->
-paid-run proven -> settlement proven -> buyer proven -> operationally proven. Maturity is
-never inferred without evidence; "buyer proven" is claimed only where a surface is
-deliberately buyer-bearing.
+Every cell is repository-evidenced at dai `85a8831`. (v1.1, WI-0020: evidence taxonomy
+made canonical and applied throughout; no evidence was reduced, only reclassified.)
+
+## canonical evidence taxonomy (defined HERE once; the catalog, queue, and fitness
+docs reference this section and must not redefine it)
+
+| class | meaning |
+|---|---|
+| contract-represented | a field, constant, DTO, interface, or named operation exists |
+| fixture-proven | deterministic fixtures or unit tests demonstrate the behavior |
+| integration-proven | an integrated execution path demonstrates the behavior across components |
+| paid-run observed | the behavior or output has been observed through a paid model or source path |
+| production-observed | the behavior has occurred in the deployed or operational workflow |
+| operationally proven | the behavior has repeatedly satisfied its intended operational use under representative conditions |
+| commercially validated | real buyer behavior or payment evidence supports the claimed value |
+
+These classes are NOT interchangeable and do not form a single strict ladder: a
+behavior can be paid-run observed yet weakly fixture-proven, and vice versa. Maturity
+is DIMENSION-SPECIFIC and can never be inferred from total test volume alone --
+deterministic invariant coverage and semantic evaluation are separate dimensions
+(current standing: deterministic testing and invariant coverage = mature; semantic
+evaluation and representative failure-corpus coverage = developing). Nothing in DAI is
+commercially validated while outreach and buyer delivery remain deferred.
 
 ## 0. doctrine note (recorded, NOT silently reconciled)
 
@@ -59,20 +77,20 @@ GET /api/agent-runs/{id}/artifact -> Angular /dev/artifacts (operator/dev only).
 
 | element | computed by | validated | persisted | observable | tests | buyer exposure | maturity |
 |---|---|---|---|---|---|---|---|
-| Perceive intake (detect/frame/aim fields) | model-emitted prose (seed, sports.py:120-125) | null-safe only | OutputJson | /artifact ProtocolView (dev page) | parsing + 10 projection tests | none | paid-run proven (fields present across 285 v1 + 16 v2 runs) |
-| Perceive intake: identity/evidence staging | deterministic (SportsRetriever; readiness classifier SourceReadiness.cs) | eligibility gate + gamePk plausibility (controller :59-63) | run row + MarketSnapshotBatch + SignalAvailability | source-readiness endpoint; /rows | DH suite 20, readiness 10, depth 13, envelope 15, fulfillment 9 | none (drives eligibility) | settlement proven (identity through 15 settlements) |
-| Interrogate.Question | model-emitted prose | null-safe; counter_case falls back to it | OutputJson | ProtocolView | structural only (parse/fallback) | none | paid-run proven |
-| Interrogate.Probe | DETERMINISTIC (CognitiveProtocolBuilder.BuildProbe :103-141; templates :202-209) | dedup + ordinal sort; unknown signals dropped; null when no template | OutputJson | ProtocolView + prompt-trace re-derivation (PromptTrace.cs:240,265) | 22 builder + 7 request + 6 node-execute | none | paid-run proven |
-| Interrogate.Verify | model-emitted prose | null-safe only | OutputJson | ProtocolView | structural only | none | paid-run proven |
-| Discern.Weigh | model prose + DETERMINISTIC surface (SignalQualityEvaluator :12-102: Quality/DecisionUse/ConfidenceEffect/FollowUpSignals) | evaluator matrix incl. sharp_public->market coupling | OutputJson + SignalAvailability | ProtocolView; availability on artifact | evaluator tests; quality-checker rule 6 | indirect only | paid-run proven (deterministic surface fixture proven) |
-| Discern.Contrast | model-emitted prose | null-safe | OutputJson | ProtocolView | MarketAttributionFidelity 15 | INDIRECT: feeds market-divergence wording pick in brief (BuyerDecisionBrief.cs:156-164); strings never emitted | buyer proven (indirect, via WI-0011 live verification) |
-| Discern.Stress | model-emitted prose; single-source by contract | null-safe; watch_for derives from it (:521-522) | OutputJson | ProtocolView | fallback test :483 | indirect (watchFor) | buyer proven (indirect) |
-| Decide.Resolve | model-emitted prose | direction-consistency evaluator at compose + settlement 422 integrity | OutputJson | ProtocolView | consistency suites; lean-containment 11 | indirect (stance) | settlement proven (4 lean-mismatch runs caught + excluded = the control demonstrably fired) |
-| Decide.Position | model-emitted, VALIDATED enum {play,pass,monitor,wait,compare,avoid} (sports_analyzer.py:401-434) | strict vocabulary; invalid -> None | OutputJson + posture deliver-extract | ProtocolView; buyer stance derives from posture | posture matrix tests ~15 | YES (stance vocabulary is buyer-bearing) | buyer proven |
-| Decide.Justify | model-emitted prose | null-safe only | OutputJson | ProtocolView | structural only | none | paid-run proven |
-| Synthesize.Integrate | platform CONSTANT string (CognitiveProtocolBuilder.cs:27-32) | n/a | OutputJson | SynthesizeView | mapper tests | none | represented in contracts (NOT an executed operation) |
-| Synthesize.Compose | DETERMINISTIC platform op (SportsComposer.Compose :27-108; no I/O, no model) | direction-consistency evaluator inside compose | OutputJson (artifact v3 stamp) | /artifact; brief/recap exports downstream | 32 composer + 25 brief + 23 recap determinism | YES (brief/recap are its products) | buyer proven |
-| Synthesize.Deliver | platform op = AgentRunResultDto mapping + persistence; label is a constant | buyer-copy safety suppression (BuyerCopySafety :76-94) | run row + OutputJson | brief/recap endpoints; ledger (procedural) | sentinel + payload tests | YES | buyer proven (test delivery); NOT operationally proven (no real buyer delivery yet -- deferred posture) |
+| Perceive intake (detect/frame/aim fields) | model-emitted prose (seed, sports.py:120-125) | null-safe only | OutputJson | /artifact ProtocolView (dev page) | parsing + 10 projection tests | none | paid-run observed (fields present across 285 v1 + 16 v2 runs); semantic correctness incompletely evaluated |
+| Perceive intake: identity/evidence staging | deterministic (SportsRetriever; readiness classifier SourceReadiness.cs) | eligibility gate + gamePk plausibility (controller :59-63) | run row + MarketSnapshotBatch + SignalAvailability | source-readiness endpoint; /rows | DH suite 20, readiness 10, depth 13, envelope 15, fulfillment 9 | none (drives eligibility) | production-observed (identity held through 15 real settlements) + fixture-proven (58 tests) |
+| Interrogate.Question | model-emitted prose | null-safe; counter_case falls back to it | OutputJson | ProtocolView | structural only (parse/fallback) | none | paid-run observed; semantic correctness unevaluated |
+| Interrogate.Probe | DETERMINISTIC (CognitiveProtocolBuilder.BuildProbe :103-141; templates :202-209) | dedup + ordinal sort; unknown signals dropped; null when no template | OutputJson | ProtocolView + prompt-trace re-derivation (PromptTrace.cs:240,265) | 22 builder + 7 request + 6 node-execute | none | fixture-proven (35 tests) + paid-run observed |
+| Interrogate.Verify | model-emitted prose | null-safe only | OutputJson | ProtocolView | structural only | none | paid-run observed; semantic correctness unevaluated |
+| Discern.Weigh | model prose + DETERMINISTIC surface (SignalQualityEvaluator :12-102: Quality/DecisionUse/ConfidenceEffect/FollowUpSignals) | evaluator matrix incl. sharp_public->market coupling | OutputJson + SignalAvailability | ProtocolView; availability on artifact | evaluator tests; quality-checker rule 6 | indirect only | prose: paid-run observed; deterministic surface: fixture-proven |
+| Discern.Contrast | model-emitted prose | null-safe | OutputJson | ProtocolView | MarketAttributionFidelity 15 | INDIRECT: feeds market-divergence wording pick in brief (BuyerDecisionBrief.cs:156-164); strings never emitted | paid-run observed; indirect buyer wording path integration-proven (WI-0011 live verification); not commercially validated |
+| Discern.Stress | model-emitted prose; single-source by contract | null-safe; watch_for derives from it (:521-522) | OutputJson | ProtocolView | fallback test :483 | indirect (watchFor) | paid-run observed; indirect buyer path integration-proven |
+| Decide.Resolve | model-emitted prose | direction-consistency evaluator at compose + settlement 422 integrity | OutputJson | ProtocolView | consistency suites; lean-containment 11 | indirect (stance) | production-observed (the consistency control demonstrably fired: 4 real lean-mismatch runs caught + excluded) + fixture-proven |
+| Decide.Position | model-emitted, VALIDATED enum {play,pass,monitor,wait,compare,avoid} (sports_analyzer.py:401-434) | strict vocabulary; invalid -> None | OutputJson + posture deliver-extract | ProtocolView; buyer stance derives from posture | posture matrix tests ~15 | YES (stance vocabulary is buyer-bearing) | fixture-proven + production-observed on the buyer-bearing stance surface; not commercially validated |
+| Decide.Justify | model-emitted prose | null-safe only | OutputJson | ProtocolView | structural only | none | paid-run observed; semantic correctness unevaluated |
+| Synthesize.Integrate | platform CONSTANT string (CognitiveProtocolBuilder.cs:27-32) | n/a | OutputJson | SynthesizeView | mapper tests | none | contract-represented (NOT an executed operation) |
+| Synthesize.Compose | DETERMINISTIC platform op (SportsComposer.Compose :27-108; no I/O, no model) | direction-consistency evaluator inside compose | OutputJson (artifact v3 stamp) | /artifact; brief/recap exports downstream | 32 composer + 25 brief + 23 recap determinism | YES (brief/recap are its products) | fixture-proven (80 tests) + production-observed; not commercially validated |
+| Synthesize.Deliver | platform op = AgentRunResultDto mapping + persistence; label is a constant | buyer-copy safety suppression (BuyerCopySafety :76-94) | run row + OutputJson | brief/recap endpoints; ledger (procedural) | sentinel + payload tests | YES | fixture-proven + integration-proven (test delivery path); NOT operationally proven and NOT commercially validated (no real buyer use; posture deferred) |
 
 ## 2. representation vs execution findings
 
@@ -113,7 +131,7 @@ status; do NOT activate to match the diagram):
 - SportsQualityChecker (6 rules, :57-106) FAILS OPEN: warnings persisted in
   OutputJson.ArtifactQualityWarnings, deliberately NOT surfaced on any DTO/UI (:8-9) --
   the single biggest observability gap in the protocol path.
-- Lean/prose contradiction -> settlement integrity 422 refuses the write (proven by 4
+- Lean/prose contradiction -> settlement integrity 422 refuses the write (demonstrated by 4
   excluded mismatch runs; see lean-encoding-integrity history).
 - Probe: no templated gap -> null (honest absence); unknown signal silently dropped.
 - ComposeFailedRun -> CognitiveProtocol null on failed runs (contract).
@@ -132,7 +150,8 @@ For each intake, the platform already executes; the operator verifies on screen:
 Strongest: Decide.Position (validated enum, buyer-bearing, matrix-tested);
 Interrogate.Probe (only deterministic cognitive station, 35 tests across 3 suites);
 Synthesize.Compose (pure, byte-deterministic products); intake identity/readiness
-(settlement proven, adversarially DH-tested); Decide.Resolve consistency enforcement
+(production-observed through 15 settlements, adversarially DH-tested); Decide.Resolve
+consistency enforcement
 (fired in production, 422 + exclusions).
 
 Weakest / mostly representation: Synthesize.Integrate + Deliver as named operations;
