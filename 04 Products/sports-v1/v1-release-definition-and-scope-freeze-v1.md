@@ -161,9 +161,12 @@ The release candidate must demonstrate, end-to-end on the real local stack:
 
 1. the Stripe payment-link and entitlement-ledger workflow has been successfully
    dry-run using a non-production or explicitly marked test transaction and recorded
-   on the delivery ledger (corrected 2026-07-14 under the WI-0011 authorization: the
-   FIRST REAL paid entitlement and Stripe receipt remain required by the 2026-08-07
-   paid-pilot milestone, not by RC)
+   on the delivery ledger (corrected 2026-07-14 under the WI-0011 authorization; the
+   FIRST REAL paid entitlement and Stripe receipt remain required for pilot
+   validation, not by RC -- and per the 2026-07-15 operator decision, 2026-08-07 is
+   the earliest planning target for a paid private pilot if commercial activation is
+   separately authorized, not an active commitment while outreach, buyer contact, and
+   real delivery remain deferred)
 2. an upcoming MLB matchup is selected from the live schedule
 3. one analysis generates with no duplicate active run (creation guard + runbook check)
 4. the rendered buyer brief is comprehensible and matches the section-3 contract

@@ -2,7 +2,7 @@
 title: "Sports-v1 Buyer Validation Brief v1"
 type: "product"
 date: "2026-07-06"
-status: "ACTIVE -- first-subscriber validation plan; authorizes outreach, not building"
+status: "RETAINED, OUTREACH DEFERRED -- validation plan kept ready; outreach and buyer contact NOT authorized (operator decision 2026-07-15); activation requires a separate explicit operator decision"
 project: "DAI"
 related:
   - "04 Products/sports-v1/product-brief.md"

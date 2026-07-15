@@ -14195,3 +14195,59 @@ multisport sequence before the RC drill.
 continuations before and after; dai untouched.
 **State:** vault pushed; posture no-spend unchanged; RC drill still gated; no WI minted.
 **Next:** Outreach 07-15; RC drill gate 1 authorization for 07-17.
+
+---
+
+## 2026-07-15 — DAI RC Gate 0 Readiness and Timeline Alignment v1 (docs + read-only readiness slice)
+
+**Ops:** 0 paid calls, 0 sports runs, 0 captures, 0 reconciliation/DB writes, 0 Stripe
+transactions, 0 outreach/buyer contact; dai UNCHANGED at `85a8831`; no branch, no WI
+minted, no candidate promoted; posture no-spend unchanged.
+
+**Timeline alignment (operator decision recorded):** outreach DEFERRED; prospect/buyer
+contact, free samples, and real delivery NOT authorized; no commercial action inferred
+from technical readiness; commercial activation requires a separate explicit operator
+decision. 08-07 converted committed milestone -> CONDITIONAL TARGET (earliest planning
+target if commercial activation is separately authorized). RC outcome = operational
+readiness only (authorizes no outreach, payment, cloud, multisport, automation, or
+features). Committed technical sequence: Gate 0 -> Gate 1 pregame drill (07-17) ->
+read-only settlement preflight -> separately authorized reconciliation -> recap
+verification -> final RC verdict -> explicit operator decision. Corrected docs:
+sequence (new section 0 + horizon + deferred section 8), architecture review
+(supersession block), critical path (milestones + dated path), freeze doc (criterion 1
+note), buyer-validation brief (status: outreach deferred). WI-0014..0019 remain
+proposed/NOT minted; cloud+multisport remain forecast/option horizon.
+
+**Gate 0 readiness:** VERDICT = READY WITH OPERATOR ACTION (full record:
+`reports/rc-gate0-readiness-2026-07-15-v1.md`). Repos match authorized state (dai
+`85a8831`, retained WI branches at documented hashes, only the csproj phantom; vault
+`02a5d30` + the two documented untracked files). Drill package verified against the
+repo: every command/path/endpoint/param/port VERIFIED; stale/missing/unclear = NONE;
+no code or script defect. Config presence: all 9 required areas PRESENT (values never
+read). Stripe test-mode link: operator-action-required (no evidence found; Gate 1
+entitlement criterion caps at CONDITIONAL PASS until provided). TB@BOS DH re-verified
+free (824766 game 1 / 824737 game 2, split DH, Scheduled, distinct+stable; TB G1
+probable Griffin Jax); fallback rule reconfirmed. Startup/shutdown rehearsal from the
+runbook: PASS (health 200 on 5007+8000, correct port owners, stop script exit 0,
+returned to cold; deviations recorded: Stop-Process instead of ctrl-c, pre-existing
+NU1903 advisory noted, Angular not required). Drill workspace prepared OUTSIDE both
+repos at `rc-drill-2026-07-17\` (9 artifacts incl. command checklist, stop conditions,
+RC record working file, gate 2 preflight skeleton; no secrets, no buyer identifiers).
+
+**NEXT (separately gated):** RC Gate 1 pregame drill Fri 2026-07-17 per the drill
+package (caps 2 calls/2 runs) under its own drill-day authorization; operator action:
+approved Stripe TEST-MODE payment link before drill; gate 2 the day after finals under
+its own authorization; then final RC verdict -> explicit operator decision.
+
+### Slice Synopsis
+
+**Change:** Recorded the outreach-deferral operator decision across 5 release docs
+(08-07 now conditional; RC verdict authorizes nothing commercial) and produced the RC
+Gate 0 readiness record + Friday execution packet.
+**Reason:** Authorized Gate 0 readiness + timeline-alignment slice before the 07-17
+drill.
+**Proof:** Runbook commands verified against dai `85a8831`; startup/shutdown rehearsal
+passed and returned to cold; strict snapshot 0 warnings; dai untouched.
+**State:** Vault docs-only commit pushed; verdict READY WITH OPERATOR ACTION (Stripe
+test link outstanding); posture no-spend.
+**Next:** Gate 1 drill 07-17 under its own authorization.

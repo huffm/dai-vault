@@ -27,15 +27,15 @@ the workflow audit, backlog triage, the three critical-path work items, and the 
 path. Implementation is NOT authorized by this plan -- each work item gets its own
 authorization under the WI-0007 gate.
 
-## release dates (operator-set 2026-07-14; audit found no infeasibility)
+## release dates (operator-set 2026-07-14; corrected 2026-07-15)
 
 | milestone | date |
 |---|---|
 | V1 scope freeze | Fri 2026-07-17 (frozen early, 2026-07-14) |
-| buyer workflow complete (WI-0011 + WI-0012 integrated) | Fri 2026-07-24 |
-| release candidate (WI-0013 integrated + RC drill passed) | Fri 2026-07-31 |
-| first paid private pilot | Fri 2026-08-07 |
-| pilot evaluation | Fri 2026-08-21 |
+| buyer workflow complete (WI-0011 + WI-0012 integrated) | Fri 2026-07-24 (met early, 2026-07-14) |
+| release candidate (WI-0013 integrated + RC drill passed) | Fri 2026-07-31 (integration met 2026-07-14; drill gated) |
+| first paid private pilot | CONDITIONAL TARGET: 2026-08-07 is the earliest planning target if commercial activation is separately authorized; not an active commitment while outreach, buyer contact, and real delivery remain deferred (operator decision 2026-07-15) |
+| pilot evaluation | Fri 2026-08-21 (applies only if a pilot is running) |
 
 ## workflow audit (code evidence, dai e64567f, 2026-07-14)
 
@@ -182,8 +182,8 @@ stack by design.
 | Fri 07-24 | WI-0012 integrated -- buyer workflow complete (milestone met) |
 | Mon 07-27 .. Wed 07-29 | authorize + implement + integrate WI-0013 |
 | Thu 07-30 .. Fri 07-31 | RC drill from runbook; RC record committed (milestone met) |
-| Mon 08-03 .. Fri 08-07 | outreach per buyer-validation-brief (free sample -> Stripe link); first paid delivery day by Fri 08-07 |
-| Fri 08-07 .. Fri 08-21 | pilot operation; ledger + metrics collection; evaluation 08-21 |
+| (deferred) | outreach per buyer-validation-brief (free sample -> Stripe link) and first paid delivery: NOT scheduled -- outreach, buyer contact, sample delivery, and real delivery are deferred (operator decision 2026-07-15); requires a separate explicit operator activation decision; earliest planning target if activated remains 08-07 |
+| (conditional) | pilot operation; ledger + metrics collection; evaluation 08-21 applies only if a pilot is running |
 
 Slack: each WI has 1-2 buffer days; the path holds even if WI-0011 slips to 07-24,
 because WI-0012 is small and WI-0013's drill is the only hard RC dependency.

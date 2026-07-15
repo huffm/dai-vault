@@ -26,6 +26,22 @@ Reviewed against dai `85a8831` (all three V1 critical-path WIs integrated 2026-0
 vault `a737d4e`. Companion documents carry the sequence, matrix, and runway detail; this
 report carries the verdicts.
 
+> **OPERATOR DECISION 2026-07-15 (supersedes the commercial-activation statements in
+> this report).** This report's review verdicts stand as the 2026-07-14 record, but the
+> following statements are superseded wherever they appear below (sections 1, 7, 10):
+> outreach starting 2026-07-15, prospect-contact quotas, demonstration conversations,
+> sample delivery, and 2026-08-07 as a paid-pilot commitment. Current posture: outreach
+> is deferred; prospect and buyer contact are not authorized; free sample delivery is
+> not authorized; real buyer delivery is not authorized; no commercial action is
+> inferred from technical readiness; commercial activation requires a separate explicit
+> operator decision. August 7 remains the earliest planning target for a paid private
+> pilot if commercial activation is separately authorized -- it is not an active
+> commitment while outreach, buyer contact, and real delivery remain deferred. A
+> passing RC verdict proves operational readiness; it does not authorize outreach,
+> buyer contact, payment collection, cloud deployment, multisport implementation,
+> automation, or additional feature work. The governing plan is
+> `06 Execution/plans/v1-to-v2-release-sequence-v1.md` section 0.
+
 ## 1. executive verdict
 
 **Timeline: KEEP WITH CORRECTIONS.** The engineering side of V1 is finished fifteen days

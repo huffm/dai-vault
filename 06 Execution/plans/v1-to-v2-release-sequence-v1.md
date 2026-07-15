@@ -25,6 +25,29 @@ dates, and gates. Sizes are relative (XS/S/M/L/XL) with confidence high/med/low 
 hour estimates. Nothing here authorizes work; every paid/write/implementation step keeps
 its own gate.
 
+## 0. commercial posture (operator decision 2026-07-15 -- governs this document)
+
+This section supersedes every statement below that treats outreach, buyer contact, or
+commercial activation as active, scheduled, or committed.
+
+- Outreach is DEFERRED. Prospect and buyer contact are NOT authorized.
+- Free sample delivery is NOT authorized. Real buyer delivery is NOT authorized.
+- No commercial action is inferred from technical readiness. Commercial activation
+  requires a separate explicit operator decision.
+- **August 7:** August 7 remains the earliest planning target for a paid private pilot
+  if commercial activation is separately authorized. It is not an active commitment
+  while outreach, buyer contact, and real delivery remain deferred.
+- **RC outcome:** a passing RC verdict proves operational readiness. It does not
+  authorize outreach, buyer contact, payment collection, cloud deployment, multisport
+  implementation, automation, or additional feature work.
+- **Committed technical sequence:** (1) RC Gate 0 readiness -> (2) RC Gate 1 pregame
+  drill -> (3) read-only settlement preflight -> (4) separately authorized
+  reconciliation -> (5) recap verification -> (6) final RC verdict -> (7) explicit
+  operator decision. Nothing is scheduled after step 7.
+
+The long-term commercial gates in section 6 (payment as the only validation, Stripe as
+truth) remain in force unchanged; deferral does not redefine payment as unnecessary.
+
 ## 1. release ladder
 
 | release | promise | boundary evidence |
@@ -40,7 +63,7 @@ its own gate.
 Legend per row: value | owner (platform/niche/frontend/ops) | prereq | feedback | size/conf
 | P = required before payment, C = before cloud, S = before second sport.
 
-### V1.0 epic: commercial validation  (owner: ops/commercial -- NO code)
+### V1.0 epic: commercial validation  (owner: ops/commercial -- NO code; entire epic DEFERRED per section 0, decomposition retained for activation)
 - **Target-buyer confirmation** -- validates segment | ops | none | conversation signal | XS/high | P
 - **Outreach wave 1 (>= 10 genuine contacts)** -- starts loop 2 | ops | send-ready copy (exists) | interest/objections | S/high | P
 - **Sample delivery (existing 823845 brief+recap pair)** -- proof artifact, zero spend | ops | none | comprehension feedback | XS/high | P
@@ -96,21 +119,25 @@ is a heavier evidence-source slice (L/low).
 Collegiate (NCAAB then NCAAF): feasibility SPIKE first (provider coverage + identity
 scale + market depth on real data, read-only, XS-S) before any ladder entry.
 
-## 3. dependency + parallel map (committed horizon)
+## 3. dependency + parallel map (corrected 2026-07-15 per section 0)
+
+Committed (technical only):
 
 ```
-07-15..16  OUTREACH wave 1 (parallel, no deps)     STRIPE test-mode link created
-07-17      RC GATE 1 drill (TB@BOS DH)  ||  outreach continues
-07-18      RC GATE 2 settlement + recap -> RC VERDICT (13 days early)
-07-18..08-06  samples (dep: gate 1) -> conversion -> live Stripe link (dep: none)
-<= 08-07   FIRST PAID DELIVERY (dep: RC verdict + paying buyer)  [earlier allowed]
-08-07..21  pilot ops >= 3 delivery days/week; ledger; feedback interview (~08-14)
-08-21      PILOT EVALUATION GATE
+07-15      RC GATE 0 readiness (docs reconciliation + drill-package verification)
+07-17      RC GATE 1 pregame drill (TB@BOS DH candidates; fallback rule applies)
+after finals  read-only settlement preflight -> separately authorized reconciliation
+           -> recap verification -> FINAL RC VERDICT -> explicit operator decision
 ```
-Truly sequential: gate1 -> fresh samples; RC verdict + payment -> paid delivery;
-finals -> gate 2. Everything commercial runs parallel to everything operational.
-Optional: extra samples beyond conversion. Creates-no-buyer-feedback (deprioritized):
-any further internal tooling, refactors, docs beyond gate records.
+
+Deferred commercial track (NOT scheduled; requires separate explicit operator
+activation): outreach wave 1, demonstration samples, fresh prospect-chosen samples,
+Stripe live link, conversion, first paid delivery, pilot operation, feedback interview.
+Dependency structure when activated remains: gate 1 -> fresh samples; RC verdict +
+payment -> paid delivery; finals -> gate 2. August 7 is the earliest planning target
+for a paid private pilot if commercial activation is separately authorized -- not an
+active commitment while outreach, buyer contact, and real delivery remain deferred.
+The 08-21 pilot evaluation gate applies only if a pilot is running by then.
 
 ## 4. forecast horizon (2026-08-24 -> ~2026-10-30, CONDITIONAL on the 08-21 gate)
 
@@ -153,11 +180,16 @@ Payment and repeat use ALWAYS outrank internal technical completion as evidence.
 | WI-0018 | Buyer Copy Polish v1 | ledger entry 21 + real buyer feedback | tone/cadence/label polish on brief+recap copy only | scoring/confidence/claims changes | claim-safety suites green; buyer feedback addressed | niche/frontend | V1.1 | late Aug (gated) | S | retained buyer |
 | WI-0019 | Evidence-Justified Ops Automation v1 | repeated manual pain (if ledger proves it) | automate ONLY the specific ledger-proven steps | speculative automation | minutes/delivery drop measurably; no new paid paths | ops/platform | V1.1+ | Sept+ (gated) | M | automation gate |
 
-## 8. immediate non-code commercial actions (no WI needed, start 07-15)
+## 8. non-code commercial actions (DEFERRED 2026-07-15 per section 0)
+
+These actions are NOT started and NOT scheduled. They become available only under a
+separate explicit operator activation decision. Retained as the ready-to-run checklist
+for that decision:
 
 1. Select the single outreach venue (per buyer-validation-brief section 6).
-2. Send >= 3 first-contact messages 07-15/16 using the approved copy; >= 10 by 07-25.
+2. Send first-contact messages using the approved copy (quotas set at activation).
 3. Prepare the demonstration sample from the settled 823845 brief + recap markdown.
-4. Create the Stripe payment link and complete the TEST-MODE dry-run inside RC gate 1.
+4. Create the Stripe payment link (the TEST-MODE dry-run inside RC gate 1 is technical
+   rehearsal and carries no commercial authorization).
 5. Start the delivery ledger + operator-time log files from the templates.
-6. Schedule the ~08-14 buyer feedback interview slot in advance.
+6. Schedule the buyer feedback interview slot.
