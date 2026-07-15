@@ -1,5 +1,5 @@
 ---
-title: "Reconciliation Planning Readout v1 (as of 2026-07-11 cadence close)"
+title: "Reconciliation Planning Readout v1 (as of 2026-07-15 cohort v4 + stragglers close)"
 type: "evidence-report"
 date: "2026-07-13"
 status: "complete"
@@ -30,10 +30,11 @@ newest reconciliation record, consumers must treat it as stale and warn.
 ```yaml
 planning-readout:
   schema_version: "1.0"
-  as_of: "2026-07-13"
-  source_date: "2026-07-11"
-  source_type: cadence-closeout
+  as_of: "2026-07-15"
+  source_date: "2026-07-15"
+  source_type: reconciliation-closeout
   sources:
+    - "06 Execution/reconciliations/cohort-v4-stragglers-reconciliation-2026-07-15-v1.md"
     - "06 Execution/reports/gate4-evidence-readout-v2-day2-2026-07-11-v1.md"
     - "06 Execution/reports/hardened-regime-baseline-measurement-2026-07-11-v1.md"
     - "06 Execution/reconciliations/v2-day1-cohort-settlement-2026-07-10-v1.md"
@@ -55,9 +56,9 @@ planning-readout:
   gate_discrimination_status: inverted
   gate_high_confidence_sample_size: 18
   gate_high_confidence_accuracy: 0.4444
-  gate_valid_directional_n: 119
-  market_opposed_sample_size: 8
-  market_opposed_correct: 3
+  gate_valid_directional_n: 134
+  market_opposed_sample_size: 9
+  market_opposed_correct: 4
   market_opposed_incorrect: 5
   market_opposed_readable: false
   attribution_pass: 14
@@ -79,3 +80,10 @@ planning-readout:
 - attribution: hardened-regime baseline ("Pass 14 | FAIL 0 | Unclear 1").
 - cadence/posture: current-slice 2026-07-11 wrap (authorization ENDS) + timeline
   authorization block.
+- 2026-07-15 refresh (cohort v4 + stragglers reconciliation record): 18 additional
+  settlements (15 directional 9/6 + 3 no-decision, all v1-era -- the v2 sample and its
+  gate block above are UNCHANGED and still sourced from the 07-11 readouts);
+  gate_valid_directional_n 119 -> 134; market_opposed 3/5 (n=8) -> 4/5 (n=9), still
+  not readable. captured/settled/excluded/correct/incorrect above remain the v2
+  cadence facts per the original convention; the v1-era settlement detail lives in the
+  2026-07-15 reconciliation record.

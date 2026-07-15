@@ -14440,3 +14440,46 @@ entry, this handoff).
 **State:** vault main at the integration-recording commit (pushed); zero spend/writes/
 credential access; G-10 unexecuted, R-05 gated.
 **Next:** RC Gate 1 drill 2026-07-17 under its own authorization.
+
+---
+
+## 2026-07-15 — Cohort V4 and Historical Stragglers Reconciliation v1 (authorized settlement, 18 runs)
+
+**Ops:** 0 model calls, 0 paid-source calls, 0 captures, 0 code/prompt/schema changes,
+0 exclusions altered; writes = EXACTLY 18 outcomes + 18 evaluations under the operator
+authorization referencing the Midweek Sweep section-6 packet; statsapi free reads only
+(feed/live re-verified per game immediately before each write); dai UNCHANGED at
+`85a8831`; runtime cold -> settle -> cold (stop script exit 0).
+
+**Execution:** all 18 gamePks (cohort v4 06-28 slate x14 incl. 02de423e replacement;
+824339; 824993; v8-partial 823932/823526) reconciled via identity POST /reconcile:
+SingleMatch 18/18, matched run ids == sweep inventory exactly, full residue on every
+write (source=mlb_statsapi, sourceRef=gamePk, notes naming the authorization).
+Pre-registry provenance warnings waived per the authorization (blockers 0). Verdicts:
+**9 correct / 6 incorrect / 3 no-decision — exactly as the sweep packet predicted per
+game.** Idempotency: re-POST x18 -> 18x 409, 0 writes. DB: outcomes 140->158, evals
+158, 0 orphans, 0 identity-bearing candidates remain; untouched: 824766/824737 (0
+runs), stale pending 087a433e, 102 identity-less legacy rows, all 40 exclusions.
+
+**Corpus after (eras never pooled):** settled non-excluded 155 (134 directional 78/56 =
+58.2% + 21 no-decision); v1-era live/legacy 48/34 (58.5%, n=82); v1 registry 21/16
+(56.8%, n=37); **v2 UNTOUCHED 9/6 (60.0%, n=15)**; market disagree 4/9 (44.4%) vs
+agree 51/85 (60.0%) — inversion persists, n small; bands High 55.8% vs Medium 71.4% —
+inversion persists; home 56.2% vs away 63.2%. Cohort v4 subset 8/6 (57.1%). Gate 4
+remains FALSE; no tuning, no buyer claim. Record:
+`reconciliations/cohort-v4-stragglers-reconciliation-2026-07-15-v1.md`.
+
+**NEXT:** RC Gate 1 pregame drill Friday 2026-07-17 (TB@BOS DH 824766/824737) under
+its own drill-day authorization; operator action standing: approved Stripe TEST-MODE
+link (else Gate 1 caps CONDITIONAL PASS on entitlement).
+
+### Slice Synopsis
+
+**Change:** Settled the 18 sweep-discovered runs (cohort v4 + stragglers) via identity
+reconcile: 9 correct / 6 incorrect / 3 no-decision, full residue, 18x409 idempotency;
+directional denominator 119 -> 134.
+**Reason:** Operator settlement authorization on the Midweek Sweep section-6 packet.
+**Proof:** feed/live re-verified per write; SingleMatch 18/18; outcomes 140->158 with
+0 orphans; v2 era untouched; runtime returned to cold.
+**State:** Vault record pushed; posture no-spend; RC drill identities unconsumed.
+**Next:** RC Gate 1 drill 2026-07-17 under its own authorization.
