@@ -672,10 +672,16 @@ operational (enforcement under real load).
 - SOFT dependencies: PH-03 and PH-04 consume PH-01 fixtures (cheaper, not required);
   PH-02 consumes PH-06 authorization/spend classes; PH-03 consumes PH-02 reasons and
   PH-06 classes; PH-04 consumes PH-03 abstention-state names.
-- PARALLEL opportunities: PH-06 Green inventory is docs/static and can proceed in
-  parallel with any one implementation branch WITHOUT breaching WIP=1 (it is
-  vault-docs + one static test; if the static test lands in dai it queues behind the
-  WIP slot).
+- PARALLEL opportunities (WIP-policy-corrected): PH-06's Green inventory and
+  static-validation subset can be independently bounded, but a pulled PH-06 card
+  still counts as an ACTIVE IMPLEMENTATION BRANCH under the default
+  one-active-implementation-branch limit. It may begin after the current
+  implementation branch closes, unless the operator explicitly authorizes a
+  temporary WIP-limit exception. Documentation planning does not count as an
+  implementation branch, and read-only inspection performed inside an already
+  authorized planning WI does not pull PH-06 -- but creating PH-06's branch marks the
+  card as pulled and active. Green classification does not exempt any card from
+  branch or WIP rules; no implicit WIP exception exists.
 - Keep INDEPENDENT: PH-01 (corpus must not absorb runtime fixes); PH-06 declarations
   (must not grow into a permission platform).
 - COUPLING RISK: building PH-05 before commercial activation = anticipatory design
