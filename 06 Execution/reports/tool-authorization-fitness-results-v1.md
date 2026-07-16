@@ -89,7 +89,8 @@ policy + dev bypass double-condition). Secret classes/key names only; no values 
 - **authorization requirement:** authenticated 9, explicit_named_authorization 3,
   bounded_operator_authorization 5, red_lane_authorization 3, none 3, not_applicable 9.
 - **enforcement status:** enforced 6, partially_enforced 8, procedural 8, absent 2,
-  not_applicable 3 (+ providers not_applicable). The 2 ABSENT are the material findings.
+  not_applicable 3 (+ providers not_applicable). The 2 ABSENT are the material
+  findings, dispositioned conditional_rc_risk (section 6 + risk-disposition record).
 
 ## 6. procedural-versus-enforced findings (declaration != enforcement)
 
@@ -104,16 +105,31 @@ policy + dev bypass double-condition). Secret classes/key names only; no values 
   Boundary unchanged.
 - Delivery/entitlement: NO runtime capability (WI-0022 PF-15) -- procedural contract
   only. Owner PH-05 (NOT READY).
-- Two ABSENT enforcement findings (material, RC-relevant at cloud stage 2, local-only
-  today): (a) competitions.reference routes are anonymous yet trigger a PaidExternal
-  odds call; (b) agent-service HTTP surface is unauthenticated yet exposes a paid model
-  call. Both are safe on the single operator host by the network trust boundary
-  (procedural) but MUST be closed before any hosted deployment. Follow-up: PH-06 Amber
-  (route/service auth) + WI-0014 (cloud gate prerequisite).
+- Two ABSENT enforcement findings, dispositioned by the 2026-07-15 integration
+  review as **conditional_rc_risk** (safety rests on a Gate-1-verifiable bind
+  assumption, not an enforced boundary):
+  (a) **competitions.reference** -- anonymous routes; matchup-dates triggers a
+  PaidExternal odds call ONLY after 4 db validations (real active competition + both
+  active teams -> no arbitrary amplification) with a 30m cache; DevCore.Api binds
+  http://localhost:5007 (LOOPBACK) via launchSettings default profile + runbook
+  `dotnet run`, so it is not externally reachable when bound loopback.
+  (b) **agent-service.surface** -- /api/sports/analyze is unauthenticated and paid; the
+  runbook's `uvicorn main:app --port 8000` binds 127.0.0.1 (uvicorn default; main.py
+  documents --host 127.0.0.1) = LOOPBACK, BUT the gRPC Assist server binds `[::]:50051`
+  = ALL INTERFACES, so the paid HTTP surface is loopback-safe while the gRPC surface is
+  LAN-reachable absent a firewall.
+  Both are safe in the approved single-operator-host V1 topology ONLY IF the loopback
+  bind (and a firewall blocking inbound :50051) hold -- these are startup assumptions,
+  so Gate 1 opening checks must verify them (see the risk-disposition record). Hard
+  cloud-stage blockers. Follow-up: PH-06 Amber (route/service auth) + WI-0014.
 
 ## 7. invalid-combination results (WI-0023 section 16)
 
-All 20 checks pass against the declaration set (no invalid combination present): paid
+All 20 checks pass against the declaration set (no invalid combination present).
+**The harness validates declaration INTEGRITY; it does NOT assert that all
+capabilities are adequately enforced** -- a check passes either because a valid
+enforced combination exists OR because an unenforced gap is explicitly declared and
+assigned an owner. The checks: paid
 without observability (0), paid retries unknown (0), writes without idempotency (0),
 reconciliation without named auth (0), credential/deployment without red-lane (0),
 tenant-owned with unknown scope (0), requirement without enforcement status (0),
@@ -129,8 +145,10 @@ the externally-effective POST count is pinned (11).
 ## 8. static drift-detection + anti-duplication + determinism proof
 
 Drift: `every_registered_tool_has_exactly_one_declaration` compares the declaration
-set against the REAL ToolRegistry.Default().All(); coverage test maps every controller
-in the assembly to a declaration; POST-action count pinned. Anti-duplication: the
+set against the REAL ToolRegistry.Default().All(); the CANONICAL safeguard is route
+IDENTITY (the coverage test maps every assembly controller to a declared capability; a
+new controller fails), with the POST-action count (11) pinned only as a SUPPLEMENTARY
+drift signal. Anti-duplication: the
 harness reads the real registry and real controller attributes via reflection -- it
 does NOT reimplement registry or route discovery; cost class and auth attributes are
 read from production, not restated as logic. Determinism: declaration serialization
@@ -158,8 +176,8 @@ NOT semantic or operational validation.
 | gap | owner | release-relevant | tenant | buyer | RC impact |
 |---|---|---|---|---|---|
 | cost-class metadata not enforced | PH-06 Amber + R-04 | no | no | no | none (procedural caps hold V1) |
-| anonymous competitions.reference triggers paid odds call | PH-06 Amber + WI-0014 | no (local-only) | partial (public route) | no | none for RC; cloud blocker |
-| unauthenticated agent-service paid surface | PH-06 Amber + WI-0014 | no (local-only) | yes (service boundary) | no | none for RC; cloud blocker |
+| anonymous competitions.reference triggers paid odds call | PH-06 Amber + WI-0014 | no (loopback-bound) | partial (public route) | no | conditional_rc_risk: Gate 1 verifies :5007 loopback bind; cloud blocker |
+| unauthenticated agent-service paid surface | PH-06 Amber + WI-0014 | no (loopback :8000; grpc :50051 all-ifaces) | yes (service boundary) | no | conditional_rc_risk: Gate 1 verifies :8000 loopback + firewall on :50051; cloud blocker |
 | readiness not enforced on creation | PH-03 | no | no | no | none |
 | reconciliation operator-naming procedural | existing reconciliation gate | no | yes | no | none (guards enforced) |
 | delivery/entitlement absent | PH-05 (NOT READY) | no | no | yes (future) | none |
