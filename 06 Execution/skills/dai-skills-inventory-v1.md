@@ -273,3 +273,5 @@ provenance-backed readout parsed from the canonical sidecar
 `06 Execution/reports/reconciliation-planning-readout-v1.md`) is consumed directly; null facts
 fall back to the pointer with an explicit statement. Snapshot schema 1.0 -> 1.1 (additive).
 Governing WI: `02 Platform/system-development/work-items/WI-0010-planner-evidence-fidelity.md`.
+
+> **Errata (WI-0025):** update-log entries above cite pre-migration paths (`06 Execution/agent-slice-workflow-doctrine-v1.md` and `06 Execution/prompt-ledger-hook-v1.md`); these documents now live under `06 Execution/patterns/`. Historical entries are preserved verbatim.

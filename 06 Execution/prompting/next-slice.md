@@ -1,5 +1,7 @@
 # Next Slice (proposal)
 
+> **Historical notice (WI-0025):** this document is retained as history and is no longer maintained. It described state as of its own stated date and repository heads. For current state, verify repository heads, run the strict planning snapshot, and read the latest wi-numbered handoff under `dai-vault/06 Execution/handoffs/`. Do not act on the claims below without re-verification.
+
 > **This is a PROPOSAL, not authority.** `dai-slice-runner` must validate live repo state against the expected
 > heads below before executing. On mismatch, re-derive rather than trusting this file.
 

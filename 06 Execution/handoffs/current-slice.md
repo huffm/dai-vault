@@ -1,5 +1,7 @@
 # current slice
 
+> **Registry notice (WI-0025):** this file is an append-only historical registry of slice records; the newest entries are at the BOTTOM. It is not a source of current truth. For the latest completed-slice evidence, read the latest wi-numbered handoff in `06 Execution/handoffs/`; for live state, re-verify repository heads and run the strict planning snapshot. Everything below this notice, including the header describing a 2026-05-14 slice, is preserved history.
+
 **slice:** cognitive protocol runtime -- artifact contract migration (slice 4)
 **status:** shipped 2026-05-14
 **repos touched:** `dai` (.NET backend, tests); `dai-vault` (this doc, contract doc, sports cognitive worker model, sports flow)
@@ -14833,3 +14835,35 @@ dai-vault closeout commit = the commit containing this entry (4 repair files + W
 **Handoff:** `06 Execution/handoffs/wi-0024-reference-integrity-handoff-2026-07-16-v1.md`.
 **Historical old-path references in evidence docs remain by design;** Phase 1 (WI-0025 OKF registry,
 banners, errata) is the recommended next slice, pending operator authorization.
+
+## 2026-07-16 — WI-0025 OKF Registry and Authority Contract v1 (docs-only, local commits, NOT pushed)
+
+Phase 1 of the DAI Knowledge System Architecture and Orchestration Plan v1.1, executed per the
+reviewed workspace-root authorization contract (sha256 51B04FEA7EE288004B90290D51B2B3E1F8F5BF823232DC228F9EFA43965102FC,
+operator-approved 2026-07-16). Governing WI:
+`02 Platform/system-development/work-items/WI-0025-okf-registry-and-authority-contract.md` (complete).
+Branches: `wi/0025-okf-registry` in both repos; push and merge NOT authorized.
+
+**What shipped (10 files):**
+- created: `06 Execution/patterns/okf-registry-v1.md` (registry doctrine, single fenced JSON block,
+  17 top-level keys, type_folders as canonical-parent arrays + legacy date gates + generated-artifact
+  lifecycle), `02 Platform/system-development/knowledge-system.md` (living contract + O5 rationale),
+  `dai/scripts/knowledge/schemas/okf-registry.schema.json` (draft 2020-12), the WI-0025 work item,
+  and `06 Execution/handoffs/wi-0025-okf-registry-handoff-2026-07-16-v1.md`
+- additive notices: D4 registry banner at the top of this file; D5 historical banners in
+  `dai/docs/current-state.md`, `dai/docs/session-handoff.md`, `06 Execution/prompting/next-slice.md`;
+  D6 errata footnote in `06 Execution/skills/dai-skills-inventory-v1.md`
+- O8 disposition recorded: untracked `06 Execution/system-state-synopsis-v1.md` retained untouched;
+  cleanup requires separate authorization
+
+**Verification:** registry parses (PowerShell ConvertFrom-Json + python json.loads, 17 keys);
+Test-Json true against the checked-in schema (negative controls rejected); strict snapshot 19 WIs /
+0 continuations / 0 warnings; this file's baseline (1400653 bytes, sha256
+5F2A3FEE95A28301D9A173574CEF1D76BC3CA70E8C4919C24321F0102601252B) reproduced byte-for-byte after
+removing the two insertions; insertion-only diffs on all five edited files; git diff --check clean;
+protected baselines unchanged; staged sets equal the allowlists exactly (7 vault / 3 dai).
+
+**Commits (local only):** dai `c6166e2de9238b4109beb6a975fd2f830447ef13` (3 files, +169);
+dai-vault closeout commit = the commit containing this entry (7 files).
+**Next:** Phase 2 (WI-0026 parser/validator/manifest) pending operator authorization; WI-0025
+integration separately gated.
