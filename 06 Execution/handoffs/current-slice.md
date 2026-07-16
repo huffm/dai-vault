@@ -14687,3 +14687,63 @@ post-correction suites 1262/456 green; pure ff tree-identical; snapshot clean.
 **State:** dai main == a0ca54d (new RC hash, same artifact); vault main at the
 integration record; WIP = 0; posture no-spend.
 **Next:** RC Gate 1 drill Friday 07-17 (opening check = a0ca54d).
+
+---
+
+## 2026-07-15 — WI-0023 Tool Authorization Fitness v1 (PH-06 Green subset; ON COORDINATED BRANCHES, not integrated)
+
+**Pull + branches:** PH-06 pulled as WI-0023 (Green declaration-inventory +
+static-validation subset only; enforcement/Amber NOT pulled) — the single WIP=1
+work item. dai branch `wi/0023-interrogate-probe-tool-authorization-fitness` from
+`a0ca54d` (3 tests-only commits: ef8acde declarations, 0534de1 static harness,
+383d7cb seam tests) + coordinated dai-vault branch from `8c24bd9`. **BOTH LOCAL-ONLY
+— not pushed, not integrated. dai main a0ca54d, vault main 8c24bd9 unchanged.**
+
+**Ops:** 0 model calls, 0 provider calls, 0 sports runs, 0 DB/reconciliation writes,
+0 production-code changes (git diff a0ca54d over all production trees = EMPTY), 0 RC
+actions, 0 credential access; runtime cold (pure test execution); PH-02..PH-05 unpulled.
+
+**Inventory:** 41 capabilities discovered from repo evidence — 10 registered tools
+(reverified == ToolRegistry.Default(), drift-checked), 8 provider integrations, 16
+externally effective API operations, 7 operational procedures. Declaration schema 1.0,
+deterministic (byte-stable + SHA-256), secrets by class/key-name only. Enforcement
+distribution: 6 enforced / 8 partially_enforced / 8 procedural / **2 ABSENT** / 3 n/a.
+**Two material ABSENT findings:** (a) competitions.reference routes are ANONYMOUS yet
+matchup-dates triggers a PaidExternal odds call; (b) the agent-service HTTP surface is
+UNAUTHENTICATED yet exposes a paid model call. Both single-host-safe today (network
+trust boundary, procedural) but HARD cloud-deployment blockers -> PH-06 Amber +
+WI-0014. Cost-class metadata exists but is NOT enforced (-> R-04); readiness-not-on-
+creation confirmed (-> PH-03); reconciliation guards enforced but operator-naming
+procedural; delivery absent (-> PH-05). All 20 invalid-combination checks pass; drift
+detection fails on any undeclared new tool/controller/POST. Zero deferred candidates;
+no queue priority changed.
+
+**Tests:** focused 16/16 C# + 3/3 python; FULL 1278/1278 C# (+16) and 459/459 python
+(+3), 0 failed/skipped; vitest not run (no Angular). **Evidence class achieved:
+contract-represented + fixture-proven + integration-proven (registry discovery,
+controller auth metadata, gateway denial, python route surface) — nothing higher; no
+runtime enforcement claimed.**
+
+**Docs:** `reports/tool-authorization-fitness-results-v1.md` (full inventory, matrices,
+procedural-vs-enforced, invalid-combination results, gaps) + WI-0023 record + queue
+PH-06 branch-complete.
+
+**NEXT ACTION (exact):** operator review of BOTH WI-0023 branches (RC-neutrality
+re-verified), then separately authorized push + ff-only integration (dai branch
+integrable before the RC verdict only under the RC-neutral-integration path, as with
+WI-0022). RC Gate 1 drill Friday 2026-07-17 remains the next operational event and is
+unaffected.
+
+### Slice Synopsis
+
+**Change:** WI-0023 built the deterministic 41-capability tool-authorization inventory
+(PH-06 Green subset): declaration contract + static drift/invalid-combination harness
++ real-seam tests (+16 C# / +3 py), surfacing 2 material ABSENT enforcement findings
+(anonymous paid route; unauthenticated paid service) with follow-up owners.
+**Reason:** Second hardening pull — answer which capabilities exist and where
+authorization is actually enforced vs declared/procedural, without changing runtime.
+**Proof:** Full suites green (1278 C# / 459 py); zero production diff vs a0ca54d;
+byte-stable declarations; strict snapshot clean.
+**State:** Both branches local-only, branch-complete, awaiting review; WIP occupied by
+WI-0023; posture no-spend.
+**Next:** Separate review/integration authorization; RC Gate 1 drill 07-17.
