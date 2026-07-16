@@ -16,7 +16,7 @@ tags:
   - identity
 related:
   - "02 Platform/system-development/work-items/WI-0005-starter-retrieval-caches-transport-failures.md"
-  - "02 Platform/decisions/ADR-0008-source-readiness-preflight-gate.md"
+  - "02 Platform/decisions/0008-source-readiness-preflight-gate.md"
   - "06 Execution/reconciliations/v2-day2-cohort-settlement-2026-07-11-v1.md"
 ---
 

@@ -15,7 +15,7 @@ tags:
 related:
   - "02 Platform/system-development/work-item-traceability.md"
   - "02 Platform/system-development/implementation-lifecycle.md"
-  - "06 Execution/agent-slice-workflow-doctrine-v1.md"
+  - "06 Execution/patterns/agent-slice-workflow-doctrine-v1.md"
 ---
 
 # DAI development operating model

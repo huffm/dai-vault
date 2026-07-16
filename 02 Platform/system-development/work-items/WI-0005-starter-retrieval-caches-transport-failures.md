@@ -17,7 +17,7 @@ tags:
 related:
   - "06 Execution/reports/v2-accelerated-capture-day2-2026-07-10-v1.md"
   - "06 Execution/plans/v2-day1-settlement-day2-capture-slice-2026-07-10-v1.md"
-  - "02 Platform/decisions/ADR-0008-source-readiness-preflight-gate.md"
+  - "02 Platform/decisions/0008-source-readiness-preflight-gate.md"
 ---
 
 # WI-0005 identity-safe starter cache v1

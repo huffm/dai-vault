@@ -14804,3 +14804,32 @@ topology disposition.
 **State:** dai main 3f244c8 (new RC, same artifact); vault main at integration record;
 WIP = 0; RC_CONDITIONAL_TOPOLOGY_CHECK.
 **Next:** RC Gate 1 drill 07-17, conditional on the added topology opening checks.
+
+## 2026-07-16 — WI-0024 Reference Integrity Repairs v1 (docs-only, local commits, NOT pushed)
+
+Phase 0 of the DAI Knowledge System Architecture and Orchestration Plan v1.1 (workspace-root
+artifact, outside both repos). Governing WI: `02 Platform/system-development/work-items/
+WI-0024-reference-integrity-repairs.md` (complete). Branches: `wi/0024-reference-integrity`
+in both repos; push and merge NOT authorized.
+
+**What shipped (11 repair files / 13 exact-string edits):**
+- fence closures: `dai/docs/request-flow.md`, `dai/docs/agent-runs.md` (both ended inside an unclosed code fence)
+- stale path repairs to `06 Execution/patterns/`: `dai-slice-runner` SKILL.md (doctrine x2),
+  `dai-slice-prompt-architect` SKILL.md (doctrine x1, prompt-ledger hook x1), `dai-docs-architect`
+  SKILL.md (hook x1), `dai-agent-handoff` SKILL.md (hook x1), `dai/docs/examples/agent-paths.example.md` (hook x1)
+- front-matter `related:` repairs: doctrine path in `operating-model.md` + `implementation-lifecycle.md`;
+  `ADR-0008-` -> `0008-source-readiness-preflight-gate.md` filename in WI-0005 + WI-0006
+
+**Verification:** strict planning snapshot 0 warnings (18 WIs parsed incl. WI-0024); fence parity
+even in both docs; 12/12 related entries resolve; scoped audit 0 old-string occurrences remain in
+`dai/.claude/skills/**/SKILL.md` + `dai/docs/examples/`; `git diff --check` clean; protected baselines
+unchanged (DevCore.Data.csproj, .obsidian/graph.json, both untracked 06 Execution files); this file
+appended under the exact-prefix protocol (baseline 1383684 bytes,
+sha256 866EB546DB7A3F11BF65A89B6BE5AF71C9C9010A51B2D2E910F580806E2DD75D preserved as prefix).
+
+**Commits (local only):** dai `876b73aa3be678b9e20fbe71e8f5d442deb424b6` (7 files, +11/-9);
+dai-vault closeout commit = the commit containing this entry (4 repair files + WI-0024 + handoff + this append).
+
+**Handoff:** `06 Execution/handoffs/wi-0024-reference-integrity-handoff-2026-07-16-v1.md`.
+**Historical old-path references in evidence docs remain by design;** Phase 1 (WI-0025 OKF registry,
+banners, errata) is the recommended next slice, pending operator authorization.
