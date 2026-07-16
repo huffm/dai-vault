@@ -29,6 +29,18 @@ runs, zero DB writes, zero reconciliation, zero Stripe transactions, zero outrea
 
 **READY WITH OPERATOR ACTION.**
 
+> **AMENDMENT (2026-07-15, added by reference — historical body below NOT rewritten):**
+> The Friday RC Gate 1 opening check now expects **dai main == `3f244c8`** (was
+> 85a8831 -> a0ca54d -> 3f244c8; both moves tests-only and RC-equivalent — see
+> rc-equivalence-wi-0022 and rc-equivalence-wi-0023). Per the WI-0023 review
+> (RC_CONDITIONAL_TOPOLOGY_CHECK, tool-authorization-risk-disposition-2026-07-15-v1),
+> the opening checks additionally REQUIRE, before any paid execution: (1) DevCore.Api
+> listens on 127.0.0.1:5007 only; (2) agent-service HTTP on 127.0.0.1:8000 only;
+> (3) no external publication of :5007/:8000/:50051 and a firewall/network profile
+> blocking inbound gRPC :50051; (4) operator-controlled host. STOP if the local-only
+> topology cannot be proven. All original hard caps (2 calls / 2 runs), the fallback
+> rule, and gamePks 824766/824737 are preserved unchanged.
+
 Technical readiness for RC Gate 1 on Friday 2026-07-17 passes on every criterion this
 slice can verify: repository state matches the authorized release state; every runbook
 command, path, endpoint, parameter, and port verifies against dai `85a8831`; all

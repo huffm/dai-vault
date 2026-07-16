@@ -109,11 +109,25 @@ issues). Enforcement is explicitly out of scope.
 
 ## final disposition (2026-07-15)
 
-**complete ON BRANCH, awaiting review.** Evidence class achieved: contract-represented
-+ fixture-proven + integration-proven; nothing higher. RC-NEUTRAL evidenced (empty
-production diff vs a0ca54d). 41 capabilities inventoried (10 tools / 8 providers /
-16 routes / 7 procedures); enforcement 6 enforced / 8 partial / 8 procedural /
-2 ABSENT / 3 n/a. Every gap owned (PH-03, PH-05, PH-06 Amber, R-04, G-10/R-05,
-WI-0014); zero deferred candidates. Integration remains separately authorized; WIP
-occupied by WI-0023 until review/closure. PH-02..PH-05 unpulled; G-10 unexecuted;
-R-05 gated; RC Gate 1 (2026-07-17) unaffected.
+**complete + reviewed + integrated.** Integration review audited terminology
+(declared_complete vs enforced vs procedural vs absent) and the two ABSENT findings
+against the actual V1 topology; one correction commit applied (dai `3f244c8`: refined
+competitions.reference + agent-service.surface with exact bind facts -- :5007/:8000
+loopback, gRPC :50051 all-interfaces -- and disposition conditional_rc_risk; added a
+topology-dependency integrity test; vault `6036897` aligned the evidence report +
+added the risk-disposition record). Final totals: 41 capabilities (10 tools / 8
+providers / 16 routes / 7 procedures); enforcement 6 enforced / 8 partial / 8
+procedural / 2 ABSENT / 3 n/a (distribution unchanged; wording corrected).
+
+Post-correction suites green (1279 C# / 459 py / 17+3 focused). RC-neutrality proven
+(empty production diff a0ca54d..3f244c8; project-graph proof; smoke with BIND
+verification confirming :5007/:8000 loopback and :50051 all-interfaces). **Aggregate
+RC disposition: RC_CONDITIONAL_TOPOLOGY_CHECK** (risk-disposition record); both ABSENT
+findings = conditional_rc_risk (loopback-safe, Gate-1-verifiable). dai/main
+fast-forwarded a0ca54d -> `3f244c8` (new RC commit, same artifact); vault/main ->
+`6036897` + integration record. Both branches pushed + retained. Evidence class:
+contract-represented + fixture-proven + integration-proven. **PH-06 GREEN SUBSET
+CLOSED; PH-06 Amber (enforcement) NOT pulled; WIP = 0.** Every gap owned (PH-03, PH-05,
+PH-06 Amber, R-04, G-10/R-05, WI-0014); zero deferred candidates. PH-02..PH-05
+unpulled; G-10 unexecuted; R-05 gated; RC Gate 1 (2026-07-17) remains next, conditional
+on the added topology opening checks (Friday input updated to hash 3f244c8).

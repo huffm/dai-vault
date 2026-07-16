@@ -14747,3 +14747,60 @@ byte-stable declarations; strict snapshot clean.
 **State:** Both branches local-only, branch-complete, awaiting review; WIP occupied by
 WI-0023; posture no-spend.
 **Next:** Separate review/integration authorization; RC Gate 1 drill 07-17.
+
+---
+
+## 2026-07-15 — WI-0023 INTEGRATED (review + topology disposition + ff + push; PH-06 Green CLOSED; WIP = 0)
+
+**Chain:** dai a0ca54d -> ef8acde -> 0534de1 -> 383d7cb -> `3f244c8` (review
+correction); vault 8c24bd9 -> f90ccd2 -> c993841 -> `6036897` (review correction) ->
+this integration record. Parent proofs verified; exactly the reviewed file sets; both
+branches pushed + retained (dai @ 3f244c8, vault @ 6036897).
+
+**Review + correction:** terminology audit (declared_complete vs enforced vs
+procedural vs absent) and per-finding topology classification. ONE correction commit
+each side: refined the two ABSENT findings with exact bind facts and disposition. dai
+`3f244c8` also adds a topology-dependency integrity test (absent+paid must declare a
+loopback/topology dependency + conditional_rc_risk + owner). Post-correction suites:
+focused 17/17 C# + 3/3 py; FULL 1279/1279 C# (+17 vs a0ca54d) and 459/459 py (+3).
+
+**Two ABSENT findings dispositioned (risk-disposition record):**
+(1) **competitions.reference** — anonymous route; matchup-dates triggers a paid odds
+call ONLY after 4 db validations (no arbitrary amplification) + 30m cache; DevCore.Api
+binds :5007 LOOPBACK. (2) **agent-service.surface** — /api/sports/analyze
+unauthenticated paid; uvicorn :8000 binds 127.0.0.1 (loopback) but gRPC :50051 binds
+`::` (ALL INTERFACES). Both = **conditional_rc_risk**. Smoke BIND VERIFICATION
+(Get-NetTCPConnection) confirmed: :5007 -> 127.0.0.1/::1, :8000 -> 127.0.0.1, :50051
+-> :: — matching the corrected declarations exactly. **Aggregate: RC_CONDITIONAL_
+TOPOLOGY_CHECK** (not release_blocker: paid HTTP surfaces are loopback; not cleared:
+safety rests on a Gate-1-verifiable bind + firewall assumption).
+
+**RC equivalence (rc-equivalence-wi-0023):** empty production diff a0ca54d..3f244c8;
+project-graph proof; smoke health-only cold-to-cold. Old RC `a0ca54d` -> new RC
+`3f244c8` (same artifact, tests-only). **Friday Gate 1 opening check = 3f244c8 + added
+topology checks** (Gate 0 report amended by reference; hard caps + gamePks preserved).
+Rollback: a0ca54d.
+
+**State:** WI-0023 complete+reviewed+integrated; **PH-06 GREEN SUBSET CLOSED; PH-06
+Amber (enforcement) NOT pulled; WIP = 0.** PH-02..PH-05 unpulled; G-10 unexecuted;
+R-05 gated; posture no-spend; zero paid/provider calls, runs, captures, DB/
+reconciliation writes, credential actions, RC execution, production-code changes.
+
+**NEXT operational event: RC Gate 1 pregame drill Friday 2026-07-17 (TB@BOS DH
+824766/824737), CONDITIONAL on the topology opening checks; opening hash 3f244c8;
+standing operator action: approved Stripe TEST-MODE link.**
+
+### Slice Synopsis
+
+**Change:** Reviewed WI-0023, classified the two ABSENT paid-surface findings as
+conditional_rc_risk (bind verification confirmed :5007/:8000 loopback, :50051
+all-interfaces), corrected declarations/evidence (dai `3f244c8`, vault `6036897`),
+fast-forwarded both mains, and recorded the integration + risk-disposition +
+RC-equivalence; PH-06 Green subset closed.
+**Reason:** Separate WI-0023 review/integration authorization with mandatory
+topology disposition.
+**Proof:** Empty production diff a0ca54d..3f244c8; smoke bind-verification; suites
+1279/459 green; pure ff tree-identical; snapshot 0/[]/no-spend.
+**State:** dai main 3f244c8 (new RC, same artifact); vault main at integration record;
+WIP = 0; RC_CONDITIONAL_TOPOLOGY_CHECK.
+**Next:** RC Gate 1 drill 07-17, conditional on the added topology opening checks.

@@ -172,6 +172,19 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   tests-only ff with RC-equivalence record + runtime smoke; vault `b7c6842`;
   branches pushed + retained; PH-01 CLOSED; WIP freed; zero spend/writes)
 
+- [[WI-0023-tool-authorization-fitness]] — Tool Authorization Fitness v1 (PH-06 Green
+  subset, second hardening pull): deterministic 41-capability inventory (10 registered
+  tools + 8 provider integrations + 16 externally effective routes + 7 operational
+  procedures) + declaration contract + static drift/invalid-combination harness +
+  real-seam tests (+17 C# / +3 python; suites 1279/459 green); enforcement 6 enforced /
+  8 partially_enforced / 8 procedural / 2 ABSENT / 3 n/a; the two ABSENT findings
+  (anonymous paid reference route + unauthenticated paid model service) dispositioned
+  **conditional_rc_risk** — loopback-safe in V1, Gate-1 bind verification required;
+  tests-and-declarations only, no runtime enforcement added (**complete + integrated**
+  2026-07-15: dai a0ca54d -> `3f244c8` tests-only ff with RC-equivalence + risk-
+  disposition records; vault `6036897`; branches pushed + retained; PH-06 Green subset
+  CLOSED, Amber unpulled; WIP freed; zero spend/writes)
+
 ## scope boundary of this registry
 
 `WI-####` items cover qualifying slices per the WI-0007 qualification rule (canonical
