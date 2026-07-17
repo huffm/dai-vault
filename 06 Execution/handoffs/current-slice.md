@@ -14867,3 +14867,54 @@ protected baselines unchanged; staged sets equal the allowlists exactly (7 vault
 dai-vault closeout commit = the commit containing this entry (7 files).
 **Next:** Phase 2 (WI-0026 parser/validator/manifest) pending operator authorization; WI-0025
 integration separately gated.
+
+## 2026-07-17 — RC Gate 1 Same-Morning Readiness Refresh v1 (docs-only, local branch, NOT pushed)
+
+Same-morning execution of the readiness refresh planned for 07-16 (never ran). Operator-
+authorized bounded slice; NOT Gate 1; zero paid activity. Records on branch
+`ops/rc-gate1-readiness-refresh-2026-07-17` (from vault main 5ff51f2): this append +
+`06 Execution/reports/rc-gate1-readiness-refresh-2026-07-17-v1.md` +
+`06 Execution/plans/rc-gate1-drill-day-authorization-2026-07-17-v1.md` (DRAFT, unsigned).
+Push and integration NOT authorized.
+
+**Verdict: RC_OPENING_BLOCKED:CANDIDATE_AVAILABILITY** — every technical criterion
+passed; the blocker is schedule/time only (not an RC failure). gamePk 824766 went
+**In Progress** (~17:35Z first pitch, verified 17:54Z statsapi attempt 2/2) before an
+authorization could be signed; 824737 still Scheduled 23:10Z. Doubleheader experiment
+DEFERRED; fallback candidate selection = operator decision.
+
+**What passed:** (1) RC equivalence `3f244c8` -> `c6166e2` = **RC_EQUIVALENT** (2 docs-only
+commits, 10 paths: 4 skill docs / 5 repo docs / 1 knowledge schema; zero runtime paths;
+no runtime schema reference; whitespace clean; ancestry verified) — **Gate 1 opening hash
+= c6166e2**. (2) Live contamination check PASS via SELECT-only SQL (15 SELECTs, 0
+non-SELECT, 0 application/domain-data writes; SQL engine/tempdb startup = disclosed
+infrastructure side effect): outcomes/evals 158/158; 824766/824737 zero
+runs/outcomes/evals (ExternalGameId + InputJson); pending 087A433E exactly 1, pending,
+0 children (its `invalid` exclusion predates the 07-08 baseline of 38; 38->40->40 fully
+explained; nothing changed since 07-15); legacy 102; exclusions 40; settled non-excluded
+155; orphans 0; statuses 296/5/1. (3) Strict snapshot 0 warnings / 19 WIs / WIP 0 /
+no-spend. (4) Protected baselines byte-identical throughout (csproj phantom, graph.json,
+2 untracked). (5) Stripe = MISSING (local metadata; entitlement capped CONDITIONAL
+PASS; dry-run separately gated NOT AUTHORIZED). (6) Topology evidence captured
+(cold ports free; static binds API :5007 loopback / agent :8000 loopback / gRPC
+all-interfaces :50051 by design; firewall default-inbound Block; MATERIAL: enabled
+Public-profile all-port inbound Allow rule scoped to a system Python executable outside
+the DAI workspace) — live bind verification + no-tunnel/forwarding attestations are
+mandatory Gate 1 opening STOP-gates incl. live rule-vs-:50051-owner comparison.
+(7) Workspace package refreshed (uncommitted, `rc-drill-2026-07-17/`): checklist
+corrected (hash chain, topology stop-gate section 4, forced outage BEFORE generation,
+single duplicate re-POST after simulated delivery), caps completed (2 calls / 2 runs /
+1 re-POST / 6 global external attempts / 2 screens per gamePk incl. failures), stop
+conditions extended; created readiness-refresh-2026-07-17.md/.json,
+topology-evidence-2026-07-17.txt, friday-drill-day-authorization-2026-07-17.md (DRAFT).
+
+**Ledger:** paid/model/odds/source-readiness/Stripe-network calls 0; runs 0; app-data
+writes 0; reconciliation 0; statsapi 2/2 free; dai writes 0; pushes 0. Cleanup
+discrepancy: Docker Desktop quit ineffective after operator confirmation (ports free,
+devcore-sql Exited; daemon-down posture NOT restored — operator to quit again).
+
+**Next:** operator either amends + signs the draft authorization with fallback
+candidates from tonight's pregame slate and opens Gate 1 under the corrected checklist,
+or defers Gate 1 to the next eligible slate. This append follows the exact-prefix
+protocol (baseline 1403460 bytes, sha256
+B94BBA279382793DDA0631E1D634C105C8EBD53E748658A382EB95F2B8D6FD3A preserved as prefix).
