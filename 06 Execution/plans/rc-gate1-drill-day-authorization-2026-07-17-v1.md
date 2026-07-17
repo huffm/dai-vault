@@ -2,12 +2,12 @@
 title: "RC Gate 1 Drill-Day Authorization v1 (2026-07-17) -- DRAFT"
 type: "plan"
 date: "2026-07-17"
-status: "blocked -- DRAFT, unsigned; candidate list invalid as written (824766 In Progress before sign-off); requires operator amendment + sign-off"
+status: "blocked"
 project: "DAI"
 slice: "RC Gate 1 Same-Morning Readiness Refresh 2026-07-17"
 repos:
   dai: "unchanged"
-  dai-vault: "docs-only (this branch)"
+  dai-vault: "docs-only"
 tags:
   - release
   - operations

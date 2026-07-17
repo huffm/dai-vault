@@ -2,12 +2,12 @@
 title: "RC Gate 1 Same-Morning Readiness Refresh v1 (2026-07-17)"
 type: "evidence-report"
 date: "2026-07-17"
-status: "complete -- refresh executed in full; verdict RC_OPENING_BLOCKED:CANDIDATE_AVAILABILITY (schedule blocker, not an RC failure)"
+status: "complete"
 project: "DAI"
 slice: "RC Gate 1 Same-Morning Readiness Refresh 2026-07-17"
 repos:
-  dai: "unchanged (read-only verification at c6166e2)"
-  dai-vault: "docs-only (this branch)"
+  dai: "unchanged"
+  dai-vault: "docs-only"
 tags:
   - release
   - readiness
