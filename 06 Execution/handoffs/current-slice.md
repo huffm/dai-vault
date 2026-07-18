@@ -15306,3 +15306,43 @@ pushes/merges. dai csproj phantom byte-identical.
 Slice 3 (model-assisted ingredient and capability recommender) under separate authorization. WI-0031
 status in-progress (Slice 2 implementation complete / merge ready / not integrated). Exact-prefix
 protocol preserved.
+
+## 2026-07-18 — WI-0031 Slice 2 Integration (reviewed + corrected, fast-forward, pushed, both repos)
+
+Independent review + integration of the WI-0031 Slice 2 resolver. Planning entry above NOT rewritten.
+Review found ONE binding architecture defect and corrected it before integration; otherwise the
+resolver/adapter boundary and security held.
+
+**Review verdict:** APPROVE after one correction. Confirmed: pure Domain resolver; thin Api adapter
+consuming `IProtocolToolAccessPolicy` + `IToolRegistry` (no permission duplication; IsAllowed is
+non-trivial: station cards + sentinels + AllowedProtocolNodes); adapter invokes no tool; no persistent
+registry; no endpoint/DI wiring; capability!=tool identity; accessible/shadow mutually exclusive;
+deterministic; malformed/duplicate handled explicitly; tenant isolation; Slice-1 composition (denied
+candidate never selectable); no secret/transport/tenant payload in output.
+
+**Correction (dai `b1c068a`, vault `9dc0ef4`, WI: WI-0031) — NOT EVALUATED != ALLOWED:** the original
+`CandidateAccessFacts` defaulted deferred dimensions to allowed, so a candidate could be reported
+`Accessible=true` when tenant/role/cost/etc. were never evaluated (overstating runtime authorization).
+Fixed: access is now an explicit per-dimension `AccessEvaluation` (NotApplicable/NotEvaluated/Allowed/
+Denied, defaulting NotEvaluated); a candidate is `AccessibleUnderEvaluatedChecks` (bounded terminology,
+NOT runtime authorization) only when nothing is denied AND the enforceable protocol node is
+evaluated-allowed; an unevaluated protocol node fails closed to shadow; deferred not-evaluated
+dimensions are surfaced on `UnevaluatedDimensions`; invalid accessible/disposition combinations are
+unrepresentable (private ctor + `MakeAccessible`/`MakeShadow` factories). Added tests:
+unevaluated-node-fails-closed, mismatched-access-fact-context-fails-closed, invalid-state-prevention.
+
+**Integration:** dai branch `wi/0031-capability-tool-registry-resolution` tip
+`b1c068a...` + vault tip `9dc0ef4...` pushed; both mains advanced fast-forward only (no merge commit):
+dai `69cee8b...` -> `b1c068a...`; vault `c6e881d...` -> `9dc0ef4...`. dai delta = only the 4 additive
+CapabilitySelection files (no existing source / project-file / gateway / endpoint / persistence /
+schema change). vault delta = WI-0031 spec (additive) + Slice-2 closeout + this handoff.
+
+**Verification:** DevCore.Domain builds 0 warnings/0 errors; full DevCore.Api.Tests **1306 passed / 0
+failed / 0 skipped**. resolver/adapter remain UNWIRED (no DI, no route). 0 model/registry-persistence/
+gateway-execution/endpoint/network/service/db/app-data/permission-authority/schema activity.
+Protected/classified drift byte-identical (graph.json b3d68588, CLAUDE.md 9127e464, manifest 68948ebd,
+synopsis 25835e6c, dai csproj 63ef2488); classified, not clean.
+
+**WI-0031 status:** remains `in-progress` (Slice 2 implementation-complete + integrated; Slices 3-6
+pending). **Exact next authorization:** WI-0031 Slice 3 (model-assisted ingredient and capability
+recommender). Exact-prefix protocol preserved.
