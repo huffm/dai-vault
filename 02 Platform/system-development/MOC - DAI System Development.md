@@ -196,6 +196,18 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   runtime not started; local vault-only branch + commits; not integrated). Reuses the Tool
   Gateway doctrine and the prompt-selection provenance dialect (ADR 0007) rather than forking.
 
+- [[WI-0032-dai-knowledge-architecture-and-writing-standard-v1]] — DAI Knowledge Architecture and
+  Writing Standard v1 (knowledge-system architecture + documentation governance + vault writing
+  standard): normative standard ([[dai-knowledge-architecture-and-writing-standard-v1]]) defining
+  areas / knowledge modules / typed records, the physical/logical/navigational separation, the
+  record-profile table (no forced universal front-matter dialect), the authority hierarchy (links
+  never grant authority), naming/relationship/inheritance rules, the optional-manifest trigger
+  policy, OKF compatibility without bundle terminology, the mandatory documentation-slice impact
+  declaration, supersession/validation/migration posture, plus an embedded WI-0031 pilot
+  assessment and a prospective adoption plan. **in-progress** (planning + documentation only
+  2026-07-18; prospective adoption; no broad migration; no tooling; local vault-only branch +
+  commits; not integrated).
+
 ## scope boundary of this registry
 
 `WI-####` items cover qualifying slices per the WI-0007 qualification rule (canonical

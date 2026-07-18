@@ -15042,3 +15042,54 @@ started). **Exact next project sequence:** (1) author + disposition `DAI Knowled
 and Writing Standard v1` (using WI-0031 as the pilot/source of evidence); (2) WI-0031 Slice 1
 (offline domain contracts + selection trace) AFTER that standard is dispositioned. This append
 follows the exact-prefix protocol.
+
+## 2026-07-18 — WI-0032 DAI Knowledge Architecture and Writing Standard v1 (planning + docs, vault-only branch, local, NOT pushed)
+
+Governed documentation-first standards slice. Category: knowledge-system architecture +
+documentation governance + vault writing standard. NO runtime/tooling/manifest/migration; no
+parser/validator/CLI/skill/hook/CI/schema/dashboard/search/graph; no record relocated or rewritten;
+WI-0031 records untouched.
+
+**Branch (vault-only, docs-only WI):** `wi/0032-dai-knowledge-architecture-and-writing-standard`
+from vault main `220f8f0` (verified origin). DAI untouched at `c6166e2` (csproj phantom only); no
+DAI branch. Pre-write gate: paths resolved; repos verified (dai c6166e2 0/0, vault 220f8f0 0/0,
+WI-0031 tip 4f3cb0f contained); drift classified+disjoint; strict snapshot exit 0 / 20 WIs / 0
+warnings / 0 continuations; WI-0032 = first free id after registered (through WI-0031) + reserved
+(0026-0030); branch created BEFORE first write.
+
+**What shipped (6 vault artifacts):** normative standard
+`02 Platform/system-development/dai-knowledge-architecture-and-writing-standard-v1.md`
+(type execution-pattern, matching knowledge-system.md neighbors; WI-0031 pilot assessment embedded);
+WI-0032 parent spec; adoption plan `06 Execution/plans/knowledge-architecture-adoption-plan-v1.md`;
+planning closeout `06 Execution/reports/knowledge-architecture-standard-planning-closeout-2026-07-18-v1.md`;
+MOC registration (WI-0032); this append.
+
+**Normative decisions:** physical/logical/navigational organization kept distinct (each answers a
+different question); per-profile metadata with a record-profile table (no universal front-matter
+dialect; nine-field OKF not forced on architecture/ADR/MOC/rolling-log profiles); explicit authority
+hierarchy (MOC/map = navigation only; handoff never supersedes a standard; plan never grants runtime
+authority beyond its WI); inheritance principle (context inherited only when deterministic +
+non-authoritative; v1 avoids inheritance); optional-manifest trigger policy (bundle/module/README
+not required; evidence-driven); OKF as interoperability influence, not governing vocabulary, no
+bundle terminology; mandatory documentation-slice impact declaration + branch-before-write change
+flow with a lightweight evidence/handoff path; supersession/deprecation; five validation levels with
+tooling gaps recorded; prospective migration posture (legacy records not invalid). Pilot: WI-0031 =
+coherent module; findings — no single module entry point (MOC is WI-keyed), implicit logical
+membership, different-but-valid profiles; dispositions — module map marginal/defer, manifest no
+value yet, all rules prospective. Decomposition: 1 standard+pilot (this) / 2 impact-declaration +
+checklist / 3 validation-gap assessment / 4 optional validator improvements / 5 second-module
+adoption.
+
+**Ledger:** 0 model/paid/source-readiness calls; 0 services; 0 DB reads/writes; 0 app-data writes;
+0 runtime changes; 0 files moved/renamed; 0 manifests; 0 skills; 0 validation tooling; 0
+pushes/merges. Protected baselines byte-identical open/close (graph.json b3d68588, CLAUDE.md
+9127e464, manifest 68948ebd, synopsis 25835e6c, dai csproj 63ef2488).
+
+**Follow-up (recorded, not actioned):** the MOC registers through WI-0023 plus WI-0031/0032 but omits
+WI-0024/0025 (integrated) — focused two-entry discoverability correction for a future hygiene slice
+under the prospective migration posture; not part of WI-0032.
+
+**Next:** WI-0032 Slice 2 (documentation-impact declaration + authoring checklist) under separate
+authorization; WI-0031 Slice 1 remains sequenced AFTER this standard is dispositioned. WI-0032 status
+in-progress (planning complete; runtime/tooling not started; not integrated). Exact-prefix protocol
+preserved.
