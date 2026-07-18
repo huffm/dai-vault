@@ -15218,3 +15218,43 @@ byte-identical.
 **Next:** review + integrate the dai + vault Slice-1 branches (separate gated step), then WI-0031 Slice 2
 (tenant-scoped capability/tool registry resolution) under separate authorization. WI-0031 status
 in-progress (Slice 1 implementation complete / merge ready / not integrated). Exact-prefix protocol preserved.
+
+## 2026-07-18 — WI-0031 Slice 1 Integration (reviewed + corrected, fast-forward, pushed, both repos)
+
+Independent review + integration of the WI-0031 Slice 1 offline capability-selection core. Planning
+entry above NOT rewritten. Review found ONE blocking correctness defect and corrected it before
+integration; otherwise the boundary held.
+
+**Review verdict:** APPROVE after one correction. Boundary confirmed pure/offline/deterministic/
+side-effect-free/unwired: no model call, no i/o, no env/credential reads, no gateway contact, no
+persistence, no HTTP context, no permission grant; `DevCore.Domain` is the correct owner; transport/
+persistence/gateway/provider details absent. Contracts: capability identity distinct from tool
+identity; disposition enum matches the normative set and serializes by name (camelCase); hard-gate
+failure cannot be a ranking penalty; score components are descriptive inputs, no weight profile;
+inaccessible/rejected candidates representable but not executable; screening/capture always false.
+
+**Correction (dai `69cee8b`, vault `a6c8d33`, WI: WI-0031):** `BuildTrace` selection was keyed by
+tool id alone, so a tool that is the best choice for one capability could be wrongly marked
+`Selected` under another capability where it was merely eligible. Re-keyed selection by
+`(capability, tool)`; added a regression test (tool best for one capability, eligible-not-selected
+for another) and an empty-candidate-set test. Determinism otherwise verified: ordinal input
+ordering, eligibility-before-ranking, no-score-rescue, shadow retention, stable tie-break, no
+culture/time/random/hash-order dependence, byte-identical JSON regardless of input order.
+
+**Integration:** dai branch `wi/0031-capability-selection-core` tip
+`69cee8ba4a8df0626da7ba360f678c599234f3cd` and vault tip `a6c8d33...` pushed; both mains advanced by
+fast-forward only (no merge commit, no conflict): dai
+`c6166e2de9238b4109beb6a975fd2f830447ef13` -> `69cee8ba4a8df0626da7ba360f678c599234f3cd`; vault
+`d6eef7d47582bd59a0846b6f2cf1e3bdb16ccb8f` -> `a6c8d33...`. dai delta = only the two additive
+CapabilitySelection .cs files (no existing source/csproj/config/gateway/endpoint/persistence change).
+vault delta = WI-0031 spec (additive) + Slice-1 closeout + this handoff.
+
+**Verification:** DevCore.Domain builds 0 warnings/0 errors; full DevCore.Api.Tests **1286 passed /
+0 failed / 0 skipped**. DAI runtime remains UNWIRED (the core is called by no endpoint). 0 model/
+registry/gateway/persistence/network/service/database/application-data activity. Protected/classified
+drift byte-identical (graph.json b3d68588, CLAUDE.md 9127e464, manifest 68948ebd, synopsis 25835e6c,
+dai csproj 63ef2488); classified, not clean.
+
+**WI-0031 status:** remains `in-progress` (Slice 1 implementation-complete + integrated; Slices 2-6
+pending). **Exact next authorization:** WI-0031 Slice 2 (tenant-scoped capability and tool registry
+resolution). Exact-prefix protocol preserved.
