@@ -15166,3 +15166,18 @@ synopsis 25835e6c, dai csproj 63ef2488).
 **Next:** WI-0032 Slice 3 (record-profile validation gap assessment) under separate authorization;
 WI-0031 Slice 1 remains sequenced after the knowledge-architecture standard is dispositioned. WI-0032
 status in-progress. Local branch + commits only; not pushed/integrated. Exact-prefix protocol preserved.
+
+## 2026-07-18 — WI-0032 Slice 2 Integration (fast-forward, pushed)
+
+Integrated the WI-0032 Slice 2 branch. Planning entry above NOT rewritten. Branch
+`wi/0032-documentation-impact-declaration-checklist` tip `874481cf8b1723da467c996aa2cca8a37d0b68d1`
+pushed to origin, then vault main advanced `885f28401e9fa9a98c3fc42c65e252393af3b924` ->
+`874481cf8b1723da467c996aa2cca8a37d0b68d1` by fast-forward only (no merge commit, no conflict).
+Records integrated: pattern `06 Execution/patterns/documentation-slice-impact-declaration-v1.md`,
+its closeout, the additive WI-0032 spec update (Slice 2 DELIVERED), and this handoff. DAI unchanged
+at `c6166e2`; no DAI branch/commit. 0 runtime/tooling/manifest/migration; 0 model/service/db/
+app-data activity; 0 files moved/renamed. Protected/classified drift preserved untouched
+(graph.json/CLAUDE.md/Welcome.md/2 untracked); classified, not clean. WI-0032 remains `in-progress`
+(Slices 1-2 integrated; Slices 3-5 pending). Next: WI-0032 Slice 3 (record-profile validation gap
+assessment) under separate authorization; WI-0031 Slice 1 sequenced after the standard is
+dispositioned. Exact-prefix protocol preserved.
