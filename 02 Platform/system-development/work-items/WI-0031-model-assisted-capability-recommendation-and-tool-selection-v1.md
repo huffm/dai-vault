@@ -142,9 +142,10 @@ boundary. Full slice definitions live in the implementation plan.
   CapabilitySelectionCore.cs` (CapabilityDisposition enum + NormalizedIngredient/HardGateResult/
   ScoreComponent/ToolCandidateInput/ScoredCandidate/SelectionTrace records + the pure BuildTrace core +
   canonical JSON). Tests: `platform/dotnet/DevCore.Api.Tests/CapabilitySelection/CapabilitySelectionCoreTests.cs`
-  (5 xUnit tests: highest-eligible-selected; no-score-rescues-a-failed-gate; inaccessible-retained-as-shadow;
+  (7 xUnit tests: highest-eligible-selected; no-score-rescues-a-failed-gate; inaccessible-retained-as-shadow;
   byte-identical serialization + capture/screening not authorized; deterministic order). dai commit
-  `5def141` (additive; DevCore.Domain builds 0 warnings; full DevCore.Api.Tests 1284 passed / 0 failed).
+  `5def141` core + `69cee8b` review correction (key selection by (capability,tool); additive;
+  DevCore.Domain builds 0 warnings; full DevCore.Api.Tests 1286 passed / 0 failed).
 - Slice 2: tenant-scoped capability and tool registry resolution (accessible + shadow catalogs).
 - Slice 3: model-assisted ingredient and capability recommender (strict schema, versioned prompt, metering).
 - Slice 4: deterministic eligibility, ranking, and recipe compiler (hard gates, contextual scoring, tie-breaks).

@@ -49,7 +49,7 @@ project or csproj change. Idiom mirrors the existing pure deriver pattern
 ## scope
 
 Included: the offline domain contracts (disposition enum, ingredient/gate/score/candidate/trace
-records), the pure `BuildTrace` core, canonical JSON serialization, and 5 xUnit tests; the WI-0031
+records), the pure `BuildTrace` core, canonical JSON serialization, and 7 xUnit tests; the WI-0031
 spec Slice-1 disposition; this closeout; the current-slice append. Excluded: the model call, the
 capability/tool registry and resolution (Slice 2), the recommender (Slice 3), real hard gates +
 ranking + recipe compilation (Slice 4), telemetry persistence (Slice 5), any pilot integration, and
@@ -72,13 +72,19 @@ any CLI/service/network.
 
 ## evidence
 
-- files (dai, additive; branch `wi/0031-capability-selection-core`, commit `5def141`):
+- review correction (2026-07-18, dai commit `69cee8b`, WI: WI-0031): selection is now keyed by
+  `(capability, tool)` rather than by tool id alone, so a tool that is the best choice for one
+  capability is no longer accidentally marked `Selected` under another capability where it is merely
+  eligible; added a regression test plus an empty-candidate-set test. This corrected a determinism/
+  correctness defect found in review before integration.
+- files (dai, additive; branch `wi/0031-capability-selection-core`, tip `69cee8b` = `5def141` core +
+  `69cee8b` review correction):
   `platform/dotnet/DevCore.Domain/CapabilitySelection/CapabilitySelectionCore.cs` (new),
   `platform/dotnet/DevCore.Api.Tests/CapabilitySelection/CapabilitySelectionCoreTests.cs` (new). No
   existing source modified; no csproj change; the documented DevCore.Data.csproj phantom untouched.
 - build: `DevCore.Domain` builds 0 warnings / 0 errors.
-- tests: targeted 5/5 pass; full `DevCore.Api.Tests` suite **1284 passed / 0 failed / 0 skipped**
-  (1279 prior + 5 new). Pre-existing warnings (NU1903 OpenApi advisory; CS warnings in
+- tests: targeted 7/7 pass; full `DevCore.Api.Tests` suite **1286 passed / 0 failed / 0 skipped**
+  (1279 prior + 7 new). Pre-existing warnings (NU1903 OpenApi advisory; CS warnings in
   TestAuthentication/BuyerArtifactProjection/ProtocolFailureSeam) are not from the new files.
 - pre-write gate: dai `c6166e2` 0/0, vault `d6eef7d` 0/0; drift classified + disjoint; strict
   snapshot exit 0 / 0 warnings; branches created before first write from the verified heads.
@@ -92,7 +98,8 @@ pushes/merges. The core has no i/o and no gateway dependency; it authorizes noth
 
 ## files created/changed (this slice)
 
-- dai (branch `wi/0031-capability-selection-core`, commit `5def141`): the two new .cs files above.
+- dai (branch `wi/0031-capability-selection-core`, tip `69cee8b`): the two new .cs files above
+  (`5def141` core + `69cee8b` review correction).
 - vault (branch `wi/0031-capability-selection-core`): WI-0031 spec Slice-1 disposition; this
   closeout; append-only `06 Execution/handoffs/current-slice.md`.
 
