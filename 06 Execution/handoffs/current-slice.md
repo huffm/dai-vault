@@ -14918,3 +14918,41 @@ candidates from tonight's pregame slate and opens Gate 1 under the corrected che
 or defers Gate 1 to the next eligible slate. This append follows the exact-prefix
 protocol (baseline 1403460 bytes, sha256
 B94BBA279382793DDA0631E1D634C105C8EBD53E748658A382EB95F2B8D6FD3A preserved as prefix).
+
+## 2026-07-18 — RC Gate 1 Readiness Integration (fast-forward, pushed)
+
+Completed the integration deferred on 07-17 (the push had been blocked by the session
+git-permission classifier, not by divergence). Read-only gates re-derived and re-passed
+before acting; no readiness-package content changed except this append.
+
+**Integration:** readiness branch `ops/rc-gate1-readiness-refresh-2026-07-17` tip
+`9af32bd1e07e830a92b8aaefd59fcbab1244911a` pushed to origin, then vault main advanced
+`5ff51f219d7129a0f09287cb36f386c32d41ef98` -> `9af32bd1e07e830a92b8aaefd59fcbab1244911a`
+by **fast-forward only** (`merge --ff-only`, no merge commit, no conflict, no content
+edit). Package path set (docs-only, all under `06 Execution/`):
+`reports/rc-gate1-readiness-refresh-2026-07-17-v1.md` (new),
+`plans/rc-gate1-drill-day-authorization-2026-07-17-v1.md` (new, unsigned DRAFT),
+`handoffs/current-slice.md` (append-only). Metadata-repair commit `9af32bd`
+(front-matter normalization to canonical OKF status/repos values) is included; verified
+front-matter-only (2/2 and 3/3 numstat), `git diff --check` clean, current-slice main
+version an exact byte-prefix of the tip version (+51/-0), DRAFT banner and verdict
+`RC_OPENING_BLOCKED:CANDIDATE_AVAILABILITY` intact.
+
+**Working-tree integrity (preserved untouched, disjoint from the delta):** protected
+`.obsidian/graph.json` (Obsidian-regenerated graph-view metadata), the two documented
+untracked `06 Execution` files (preflight manifest, system-state synopsis); unrelated
+user/tool drift `CLAUDE.md` (BOM strip on line 1) and deleted `Welcome.md` (operator:
+disregard). None staged, edited, restored, or committed here.
+
+**Activity:** 0 runtime/service/docker starts, 0 database reads/writes, 0 application-data
+writes, 0 paid/model/source-readiness/odds calls, 0 runs, 0 reconciliations, 0
+settlements. dai untouched at `c6166e2` (csproj phantom only).
+
+**State:** vault main == `9af32bd` + this closeout commit; remote readiness branch exists;
+main push follows this commit. Remaining operator prerequisites before any Gate 1 or
+capture: (1) commit or otherwise disposition the unrelated `CLAUDE.md`/`Welcome.md`
+working-tree changes if the next slice requires a clean tree; (2) fallback candidate
+selection + signed authorization remain required for Gate 1 (still unexecuted). **Next
+development review = DAI Daily Evidence Planner Stage 0 (revised proposal + authorization),
+NOT executed here.** Exact-prefix protocol: baseline 1407192 bytes, sha256
+585461C5D02708E06F2C2E324ED16C7BCA6CE233DA9A8DB3CDD2F36A2839C677 preserved as prefix.
