@@ -15181,3 +15181,40 @@ app-data activity; 0 files moved/renamed. Protected/classified drift preserved u
 (Slices 1-2 integrated; Slices 3-5 pending). Next: WI-0032 Slice 3 (record-profile validation gap
 assessment) under separate authorization; WI-0031 Slice 1 sequenced after the standard is
 dispositioned. Exact-prefix protocol preserved.
+
+## 2026-07-18 — WI-0031 Slice 1: Capability Selection Offline Core (code+tests, coordinated branches, local, NOT pushed)
+
+First WI-0031 implementation slice (capability recommendation + tool selection). FIRST production-code
+slice this session. Gated behind WI-0032 knowledge-architecture disposition (satisfied). Offline pure
+core only — NO model call / registry / resolution / gateway wiring / persistence / network / CLI.
+
+**Language/policy-authority decision (gating step): C#/.NET.** The deterministic authority WI-0031
+reuses is the .NET Tool Gateway (ToolDefinition/AllowedProtocolNodes/cost-class/idempotency); no Python
+capability-selection authority exists. Core lives in the pure `DevCore.Domain` project (net10.0, no i/o),
+transitively visible to `DevCore.Api.Tests` (xUnit) — bounded path, no new project/csproj.
+
+**Branches (coordinated, local, NOT pushed):** dai `wi/0031-capability-selection-core` from `c6166e2`
+(commit `5def141`); dai-vault `wi/0031-capability-selection-core` from `d6eef7d`. dai main still c6166e2.
+
+**What shipped (dai, additive):** `platform/dotnet/DevCore.Domain/CapabilitySelection/CapabilitySelectionCore.cs`
+(CapabilityDisposition enum [full normative set] + NormalizedIngredient/HardGateResult/ScoreComponent/
+ToolCandidateInput/ScoredCandidate/SelectionTrace records + pure `BuildTrace` + canonical JSON serializer);
+`platform/dotnet/DevCore.Api.Tests/CapabilitySelection/CapabilitySelectionCoreTests.cs` (5 xUnit tests).
+Vault: WI-0031 spec Slice-1 disposition; closeout `06 Execution/reports/capability-selection-core-slice-1-closeout-2026-07-18-v1.md`; this append.
+
+**Invariants proven by tests:** eligibility precedes ranking; NO score rescues a failed hard gate
+(blocked candidate -> ModelRecommendationRejectedByPolicy, FinalScore 0, retained as shadow even with
+5.0 relevance); inaccessible retained as shadow, never selected; screening/capture always false;
+byte-identical canonical JSON for identical inputs regardless of input order.
+
+**Verification:** DevCore.Domain builds 0 warnings/0 errors; targeted 5/5 pass; **full DevCore.Api.Tests
+1284 passed / 0 failed / 0 skipped** (1279 prior + 5). Change purely additive (2 new files, no existing
+source modified; csproj phantom untouched).
+
+**Ledger:** 0 model/paid/source-readiness calls; 0 services; 0 DB reads/writes; 0 app-data writes; 0
+network/runtime wiring; 0 gateway/permission/prompt/schema changes; 0 pushes/merges. dai csproj phantom
+byte-identical.
+
+**Next:** review + integrate the dai + vault Slice-1 branches (separate gated step), then WI-0031 Slice 2
+(tenant-scoped capability/tool registry resolution) under separate authorization. WI-0031 status
+in-progress (Slice 1 implementation complete / merge ready / not integrated). Exact-prefix protocol preserved.

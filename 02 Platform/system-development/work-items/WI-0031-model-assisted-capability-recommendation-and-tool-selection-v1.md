@@ -134,7 +134,17 @@ permits one work item across several slices. Promote a slice to a child work ite
 carries an independent policy authority, persistence, model-spend, tenant-security, or rollback
 boundary. Full slice definitions live in the implementation plan.
 
-- Slice 1: domain contracts and offline selection trace (no model call, no persistence, no network).
+- Slice 1: domain contracts and offline selection trace (no model call, no persistence, no network)
+  -- DELIVERED 2026-07-18. Language/policy-authority decision: **C#/.NET** (the deterministic
+  authority this WI reuses is the .NET Tool Gateway `ToolDefinition`/`AllowedProtocolNodes`/cost-class/
+  idempotency; no Python capability-selection authority exists). Implemented in the pure `DevCore.Domain`
+  project (no i/o, no gateway dependency yet): `platform/dotnet/DevCore.Domain/CapabilitySelection/
+  CapabilitySelectionCore.cs` (CapabilityDisposition enum + NormalizedIngredient/HardGateResult/
+  ScoreComponent/ToolCandidateInput/ScoredCandidate/SelectionTrace records + the pure BuildTrace core +
+  canonical JSON). Tests: `platform/dotnet/DevCore.Api.Tests/CapabilitySelection/CapabilitySelectionCoreTests.cs`
+  (5 xUnit tests: highest-eligible-selected; no-score-rescues-a-failed-gate; inaccessible-retained-as-shadow;
+  byte-identical serialization + capture/screening not authorized; deterministic order). dai commit
+  `5def141` (additive; DevCore.Domain builds 0 warnings; full DevCore.Api.Tests 1284 passed / 0 failed).
 - Slice 2: tenant-scoped capability and tool registry resolution (accessible + shadow catalogs).
 - Slice 3: model-assisted ingredient and capability recommender (strict schema, versioned prompt, metering).
 - Slice 4: deterministic eligibility, ranking, and recipe compiler (hard gates, contextual scoring, tie-breaks).
