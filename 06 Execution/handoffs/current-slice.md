@@ -15005,3 +15005,40 @@ integrated but not MOC-registered — pre-existing gap, out of scope for WI-0031
 authorization; repository-backed language/policy-authority decision first, then fixtures before
 code. WI-0031 status in-progress (planning complete; runtime not started; not integrated). This
 append follows the exact-prefix protocol (baseline recorded in the closeout).
+
+## 2026-07-18 — WI-0031 Planning Integration (reviewed, fast-forward, pushed)
+
+Independent review + integration of the WI-0031 planning branch. Read-only review re-derived
+truth and found NO blocking findings; no correction commit was needed. The planning closeout is
+NOT rewritten — it correctly records the pre-integration authoring state; this entry records the
+integration.
+
+**Review result:** PASS. Architecture boundaries verified against canonical authorities
+(Tool Gateway doctrine, ADR 0007 provenance, decision-intelligence model, evidence-readiness
+gates, system-development lifecycle/traceability, MOC conventions): model recommends but never
+authorizes; no model credentials; no free-form recipe executes without deterministic
+compilation; hard gates != soft weights and no score rescues a failed gate; weights only on
+eligible tools; no single global tool weight; inaccessible/unavailable/unmapped recommendations
+retained + observable but non-executable; capability != tool; tenant-scoped resolution; offline
+governed learning, no online self-modification, fine-tuning deferred; platform/niche boundary
+intact (Daily Evidence Planner = candidate future pilot only). Record profiles valid (WI/plan/
+closeout 9-field OKF; standard on the architecture topic-doc profile); links resolve; no machine
+paths/secrets; no duplicate canonical standard.
+
+**Integration:** branch `wi/0031-model-assisted-capability-recommendation-and-tool-selection`
+tip `4f3cb0fb98e1edc841cd1e58fe78a89a12533921` pushed to origin, then vault main advanced
+`ffa9e0e4fea5af45f17436d54abaa8319f3f093a` -> `4f3cb0fb98e1edc841cd1e58fe78a89a12533921` by
+fast-forward only (no merge commit, no conflict, no content edit). Six records integrated
+(WI-0031 spec, capability-recommendation-and-tool-selection-standard-v1, implementation-plan-v1,
+planning-closeout, MOC registration, current-slice append). DAI unchanged at `c6166e2` (csproj
+phantom only); no DAI branch/commit.
+
+**Activity:** 0 runtime implementation; 0 model/service/database/application-data activity; 0
+paid calls; 0 schedules; 0 skills. Protected/classified drift preserved untouched
+(.obsidian/graph.json, CLAUDE.md BOM-only, Welcome.md deleted, 2 untracked); classified, not clean.
+
+**WI-0031 status:** remains `in-progress` (planning + documentation integrated; runtime not
+started). **Exact next project sequence:** (1) author + disposition `DAI Knowledge Architecture
+and Writing Standard v1` (using WI-0031 as the pilot/source of evidence); (2) WI-0031 Slice 1
+(offline domain contracts + selection trace) AFTER that standard is dispositioned. This append
+follows the exact-prefix protocol.
