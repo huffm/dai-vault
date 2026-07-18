@@ -177,6 +177,82 @@ A local module map is justified only when the module contains multiple durable r
 MOC discovery is insufficient, the subject has multiple dependencies or lifecycle threads, or
 agent context assembly benefits from one bounded entry point.
 
+## physical filesystem structure (binding)
+
+The conceptual dimensions above are not enough; the physical vault has concrete rules.
+
+### canonical hierarchy
+
+- **Numbered top-level areas** (`01 Operating System`, `02 Platform`, `03 Niches`, `04 Products`,
+  `05 Research`, `06 Execution`) are the durable knowledge areas; they are stable and are not
+  renamed or added without an explicit decision.
+- **Record-category folders** inside an area group records by profile/type: e.g.
+  `02 Platform/architecture/`, `02 Platform/decisions/`, `02 Platform/system-development/`,
+  `02 Platform/system-development/work-items/`, `06 Execution/{plans,reports,reconciliations,
+  diagnostics,exports,patterns,handoffs}/`. `type == folder` for OKF records.
+- **Durable topic subfolders** group several related durable records about one stable subject
+  inside a category (e.g. `02 Platform/architecture/cognitive-factory/`,
+  `04 Products/sports-v1/calibration/`).
+- **Flat category folder** is the default: a record stays directly in its category folder until a
+  durable topic subfolder is genuinely justified. Most records never need a subfolder.
+
+### topic-folder creation threshold (reasoned, not a file-count rule)
+
+Consider a durable topic subfolder when several of these hold: multiple durable records already
+exist or are authorized; the topic has a stable architectural identity; the records change for
+related reasons; the topic is expected to grow beyond one work item; the containing folder is hard
+to scan; local navigation would materially improve discovery; the subject has multiple dependencies
+or sub-concepts. This is a judgment threshold, never an inflexible file count. When in doubt, stay
+flat and revisit when the records actually accumulate.
+
+### folder anti-patterns (discouraged)
+
+- one-file folders with no durable growth reason;
+- folders named after a temporary work item (a WI is authorization, not a subject);
+- folders created only for visual symmetry;
+- `misc`, `other`, `new`, `temporary`, or similarly ambiguous folders;
+- implementation-vendor folders for technology-independent doctrine;
+- unnecessary duplicate nesting (a folder that only repeats its parent's meaning);
+- excessive directory depth.
+
+### depth guidance
+
+Normal structural shape:
+
+```text
+vault area -> record category -> durable topic -> record
+```
+
+Deeper nesting is allowed only when a real, stable domain hierarchy justifies it. There is no
+arbitrary universal maximum, but unusual depth requires explicit justification in the governing
+work item.
+
+### topic versus record-type grouping
+
+- Architecture and doctrine **may** be grouped by durable topic (topic subfolders under
+  `02 Platform/architecture/`).
+- Work items remain grouped under the canonical work-item location
+  (`02 Platform/system-development/work-items/`), never scattered by topic.
+- Plans, reports, and handoffs **may** remain grouped by record type under `06 Execution/`.
+- One logical knowledge module may therefore span several physical locations (its standard in
+  architecture/system-development, its WI under work-items, its plan/report under 06 Execution) --
+  this is expected, and navigation (MOC/map/links), not physical colocation, ties the module
+  together.
+
+### local map or MOC trigger
+
+A durable topic folder receives a local map only when it contains multiple durable record types,
+discovery through the parent MOC is insufficient, the subject has multiple dependencies or
+subtopics, or bounded agent context assembly materially benefits. Not every folder gets a map.
+
+### structural change discipline
+
+Moving or regrouping existing records is itself a governed change and requires: a governed work
+item; an exact path-impact declaration; link updates (body links, `related`, MOC/map entries);
+MOC and map updates; validation; preserved Git history where practical (`git mv`, not
+delete+create); explicit supersession or compatibility treatment when a stable path changes; and
+**no cosmetic-only mass movement**. Regrouping for visual tidiness alone is disallowed.
+
 ## wi-0031 pilot assessment (embedded)
 
 WI-0031 (Model-Assisted Capability Recommendation and Tool Selection) is the first evidence-backed
@@ -269,12 +345,14 @@ are **not** treated as core OKF requirements.
 
 ## documentation-slice impact declaration (mandatory, prospective)
 
-Before writing, a future vault-writing slice declares: affected knowledge area; affected knowledge
-module; governing work item; records created; records modified; record profiles; MOCs/maps
-affected; relationships added/removed; supersession impact; versioning impact; validation required;
-exact allowlisted paths. If a proposed document has no obvious area, module, record profile, or
-authority role, stop for a documentation-architecture decision rather than placing it in a
-convenient folder.
+Before writing, a future vault-writing slice declares: affected knowledge **area**; affected
+knowledge **module**; governing **work item**; records **created**; records **modified**; record
+**profiles**; **target directory** for each record; **whether a new subfolder is proposed** and, if
+so, **why it is justified** against the topic-folder threshold; **folder-depth impact**; MOCs/maps
+affected; relationships added/removed; **paths moved (if any)**; supersession impact; versioning
+impact; validation required; exact **allowlisted paths**. If a proposed document has no obvious
+area, module, record profile, authority role, or target directory, stop for a
+documentation-architecture decision rather than placing it in a convenient folder.
 
 ## change flow
 

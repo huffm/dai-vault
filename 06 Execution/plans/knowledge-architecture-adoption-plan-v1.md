@@ -38,6 +38,23 @@ standard) is done.
 Included: slice objectives, boundaries, dependencies, and promotion criteria for prospective
 adoption. Excluded: any tooling, validator, manifest, migration, or WI-0031 Slice 1 work.
 
+## physical-structure adoption
+
+The standard's binding **physical filesystem structure** rules (canonical hierarchy, topic-folder
+creation threshold, folder anti-patterns, depth guidance, topic-vs-record-type grouping, local-map
+trigger, and structural-change discipline) apply prospectively to new durable records and to any
+proposed folder change. The documentation-slice impact declaration now requires each writing slice
+to name its target directory, whether a new subfolder is proposed (and why, against the threshold),
+and its folder-depth impact. Existing folders are not reorganized under this posture; moving or
+regrouping records is itself a governed change (WI + path-impact declaration + link/MOC/map updates
++ preserved Git history + supersession/compatibility), never cosmetic mass movement.
+
+Structural observation from the WI-0031 pilot (recorded, not actioned): the `02 Platform/architecture/`
+corpus is currently flat-plus-a-few-topic-subfolders; if the platform architecture corpus grows a
+cohesive agent-orchestration cluster (multiple durable records changing for related reasons), a
+future `02 Platform/architecture/agent-orchestration/` topic subfolder could become justified under
+the threshold. It is neither created nor migrated here.
+
 ## adoption principle
 
 Apply the standard to new durable knowledge and when a module is substantively changed. Do not
