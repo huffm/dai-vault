@@ -146,7 +146,22 @@ boundary. Full slice definitions live in the implementation plan.
   byte-identical serialization + capture/screening not authorized; deterministic order). dai commit
   `5def141` core + `69cee8b` review correction (key selection by (capability,tool); additive;
   DevCore.Domain builds 0 warnings; full DevCore.Api.Tests 1286 passed / 0 failed).
-- Slice 2: tenant-scoped capability and tool registry resolution (accessible + shadow catalogs).
+- Slice 2: tenant-scoped capability and tool registry resolution (accessible + shadow catalogs)
+  -- DELIVERED 2026-07-18 (dai commit `b31cc69`). Authority decision: the resolver **consumes** the
+  canonical policy seams (`IProtocolToolAccessPolicy.IsAllowed`, `IToolRegistry.TryGet`), never
+  re-implements them (IsAllowed is non-trivial: station cards + stage sentinels + AllowedProtocolNodes),
+  and creates no second permission authority. Pure resolver + contracts in `DevCore.Domain`
+  (`CapabilityToolResolver.cs`: CapabilityRecommendationInput/CapabilityRegistration/ToolDefinitionFacts/
+  CandidateAccessFacts/ResolutionContext/ResolvedCandidate/ResolutionResult + deterministic `Resolve` +
+  `ToToolCandidateInputs` Slice-1 projection). Thin adapter in `DevCore.Api`
+  (`CapabilityResolutionGatewayAdapter.cs`) projects the real registry/policy into the resolver's
+  supplied facts. Tenant/role/side-effect/cost/rate/modality/schema access are SUPPLIED FACTS (gateway
+  v1 enforces only AllowedProtocolNodes; the rest are declarative/deferred per doctrine), so the
+  resolver never invents them. 21 tests (19 resolver + 2 adapter): registration one/many, shared tool
+  across capabilities, tenant/role/node/side-effect/cost/rate denials -> shadow, config/operational
+  unavailable, unmapped, missing-definition, duplicate/blank/non-finite handling, determinism, catalog
+  exclusivity, tenant isolation (2 contexts), Slice-1 composition (denied candidate never selectable),
+  empty result. Full DevCore.Api.Tests **1307 passed / 0 failed**; additive (no project-file change).
 - Slice 3: model-assisted ingredient and capability recommender (strict schema, versioned prompt, metering).
 - Slice 4: deterministic eligibility, ranking, and recipe compiler (hard gates, contextual scoring, tie-breaks).
 - Slice 5: execution telemetry and offline evaluation (trace persistence, labels, gap metrics; no online self-modification).

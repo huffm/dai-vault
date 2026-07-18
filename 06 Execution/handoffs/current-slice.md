@@ -15258,3 +15258,51 @@ dai csproj 63ef2488); classified, not clean.
 **WI-0031 status:** remains `in-progress` (Slice 1 implementation-complete + integrated; Slices 2-6
 pending). **Exact next authorization:** WI-0031 Slice 2 (tenant-scoped capability and tool registry
 resolution). Exact-prefix protocol preserved.
+
+## 2026-07-18 — WI-0031 Slice 2: Tenant-Scoped Capability/Tool Registry Resolution (code+tests, coordinated branches, local, NOT pushed)
+
+Second WI-0031 implementation slice. Deterministic offline resolution of capability recommendations to
+tool implementations. NO model call / persistence / endpoint / DI wiring / live tool execution /
+network.
+
+**Policy-authority decision:** the canonical enforced seam is `IProtocolToolAccessPolicy.IsAllowed`
+(non-trivial: station cards + stage sentinels + AllowedProtocolNodes) + `IToolRegistry.TryGet`. The
+resolver CONSUMES these via a thin adapter and never re-implements them (no second permission
+authority). `DevCore.Domain` is pure, so access-policy results are SUPPLIED FACTS; tenant/role/
+side-effect/cost/rate/modality/schema are declarative/deferred in gateway v1 and stay at allowed
+defaults in the adapter until a canonical seam exists.
+
+**Branches (coordinated, local, NOT pushed):** dai `wi/0031-capability-tool-registry-resolution` from
+`69cee8b` (commit `b31cc69`); vault same-named branch from `c6e881d`.
+
+**What shipped (dai, additive, 4 files):** Domain
+`CapabilityToolResolver.cs` (CapabilityRecommendationInput/CapabilityRegistration/ToolDefinitionFacts/
+CandidateAccessFacts/ResolutionContext/ResolvedCandidate/ResolutionResult + pure `Resolve` +
+`ToToolCandidateInputs` Slice-1 projection); Api `CapabilityResolutionGatewayAdapter.cs` (projects
+`IProtocolToolAccessPolicy`/`IToolRegistry` into the resolver's supplied facts); + 2 test files
+(19 resolver + 2 adapter). Vault: WI-0031 Slice-2 disposition; closeout
+`06 Execution/reports/capability-tool-registry-resolution-slice-2-closeout-2026-07-18-v1.md`; this append.
+
+**Invariants proven:** consume-not-duplicate; fixed-precedence denials -> shadow (tenant/role/node/
+side-effect/cost/rate/modality/schema); no score rescues a denial; accessible/shadow mutually
+exclusive; capability!=tool identity, shared tool across capabilities; deterministic regardless of
+input order; blank/non-finite rejected, duplicate/unmapped/missing-definition handled explicitly;
+tenant isolation (2 contexts); Slice-1 composition (denied candidate never selectable, capture/
+screening false).
+
+**Verification:** DevCore.Domain builds 0 warnings; full DevCore.Api.Tests **1307 passed / 0 failed /
+0 skipped** (1286 prior + 21). Additive (no existing source or project-file change; csproj phantom
+untouched).
+
+**Security:** no cross-tenant accessible leakage; caller cannot self-grant permission (access is a
+supplied fact); no secret/transport/tenant payload in output (domain projection carries only id +
+existence/config/operational booleans + reason codes).
+
+**Ledger:** 0 model/paid/source-readiness calls; 0 services; 0 DB reads/writes; 0 app-data writes; 0
+network; 0 live tool calls; 0 gateway execution/permission/endpoint/DI/persistence/schema changes; 0
+pushes/merges. dai csproj phantom byte-identical.
+
+**Next:** review + integrate the dai + vault Slice-2 branches (separate gated step), then WI-0031
+Slice 3 (model-assisted ingredient and capability recommender) under separate authorization. WI-0031
+status in-progress (Slice 2 implementation complete / merge ready / not integrated). Exact-prefix
+protocol preserved.
