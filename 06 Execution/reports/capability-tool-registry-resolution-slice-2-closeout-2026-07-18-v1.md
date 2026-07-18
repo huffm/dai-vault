@@ -43,14 +43,21 @@ Re-implementing it would create a second, divergent permission authority, so the
 `DevCore.Domain` is pure (no `DevCore.Api` reference), so the resolver takes access-policy results
 as supplied facts; the `DevCore.Api` adapter projects the real seams into those facts.
 Tenant/role/side-effect/cost/rate/modality/schema enforcement is declarative/deferred in gateway v1
-(only `AllowedProtocolNodes` is enforced; tool-gateway doctrine), so those facts stay at their
-allowed defaults in the adapter until a canonical seam exists -- the resolver never invents them.
-`ARCHITECTURE_BLOCKED:*` not triggered: a canonical seam exists and no project-file change was
-needed.
+(only `AllowedProtocolNodes` is enforced; tool-gateway doctrine). **Review correction (dai commit
+`b1c068a`): NOT EVALUATED != ALLOWED.** Access facts are now an explicit per-dimension
+`AccessEvaluation` (`NotApplicable`/`NotEvaluated`/`Allowed`/`Denied`), all defaulting to
+`NotEvaluated`; the adapter sets only the protocol node (Allowed/Denied) and leaves deferred
+dimensions `NotEvaluated`. A candidate is `AccessibleUnderEvaluatedChecks` (bounded terminology,
+NOT a runtime execution authorization) only when nothing was denied and the enforceable dimension
+(protocol node) was evaluated-allowed; a `NotEvaluated` protocol node fails closed to shadow; the
+deferred dimensions that were not evaluated are surfaced on the candidate's `UnevaluatedDimensions`.
+Invalid states are unrepresentable: `ResolvedCandidate` is constructed only via `MakeAccessible`
+(disposition null) / `MakeShadow` (disposition set). `ARCHITECTURE_BLOCKED:*` not triggered: a
+canonical seam exists and no project-file change was needed.
 
 ## scope
 
-Included: the pure Domain resolver + contracts + Slice-1 projection; the thin gateway adapter; 21
+Included: the pure Domain resolver + contracts + Slice-1 projection; the thin gateway adapter; 20
 tests; the WI-0031 Slice-2 disposition; this closeout; the current-slice append. Excluded: model
 recommendation (Slice 3), hard gates + ranking + recipe (Slice 4), telemetry persistence (Slice 5),
 pilot integration (Slice 6); registry persistence, endpoints, DI wiring, live tool execution,
@@ -89,14 +96,15 @@ ordinal reason otherwise), `ResolutionResult` (accessible + shadow catalogs + de
 
 ## evidence
 
-- files (dai, additive; branch `wi/0031-capability-tool-registry-resolution`, commit `b31cc69`):
+- files (dai, additive; branch `wi/0031-capability-tool-registry-resolution`, tip `b1c068a` =
+  `b31cc69` implementation + `b1c068a` review correction):
   `platform/dotnet/DevCore.Domain/CapabilitySelection/CapabilityToolResolver.cs` (new),
   `platform/dotnet/DevCore.Api/CapabilitySelection/CapabilityResolutionGatewayAdapter.cs` (new),
   `platform/dotnet/DevCore.Api.Tests/CapabilitySelection/CapabilityToolResolverTests.cs` (new),
   `platform/dotnet/DevCore.Api.Tests/CapabilitySelection/CapabilityResolutionGatewayAdapterTests.cs`
   (new). No existing source modified; no `.csproj`/`.slnx` change; csproj phantom untouched.
-- build/tests: `DevCore.Domain` builds 0 warnings; full `DevCore.Api.Tests` **1307 passed / 0
-  failed / 0 skipped** (1286 prior + 21 new).
+- build/tests: `DevCore.Domain` builds 0 warnings; full `DevCore.Api.Tests` **1306 passed / 0
+  failed / 0 skipped** (1286 prior + 20 new: 18 resolver + 2 adapter).
 - pre-write gate: dai `69cee8b` 0/0, vault `c6e881d` 0/0; drift classified + disjoint; strict
   snapshot exit 0 / 0 warnings; branches created before first write from the verified heads.
 

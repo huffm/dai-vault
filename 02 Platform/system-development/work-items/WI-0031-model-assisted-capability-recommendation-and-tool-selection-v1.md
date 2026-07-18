@@ -157,11 +157,15 @@ boundary. Full slice definitions live in the implementation plan.
   (`CapabilityResolutionGatewayAdapter.cs`) projects the real registry/policy into the resolver's
   supplied facts. Tenant/role/side-effect/cost/rate/modality/schema access are SUPPLIED FACTS (gateway
   v1 enforces only AllowedProtocolNodes; the rest are declarative/deferred per doctrine), so the
-  resolver never invents them. 21 tests (19 resolver + 2 adapter): registration one/many, shared tool
+  resolver never invents them. Review correction (dai `b1c068a`): access is an explicit per-dimension
+  `AccessEvaluation` (NOT EVALUATED != ALLOWED); a candidate is `AccessibleUnderEvaluatedChecks`
+  (not runtime authorization) only when nothing is denied and the protocol node is evaluated-allowed
+  (unevaluated node fails closed); deferred dimensions are surfaced; invalid accessible/disposition
+  combos are unrepresentable. 20 tests (18 resolver + 2 adapter): registration one/many, shared tool
   across capabilities, tenant/role/node/side-effect/cost/rate denials -> shadow, config/operational
   unavailable, unmapped, missing-definition, duplicate/blank/non-finite handling, determinism, catalog
   exclusivity, tenant isolation (2 contexts), Slice-1 composition (denied candidate never selectable),
-  empty result. Full DevCore.Api.Tests **1307 passed / 0 failed**; additive (no project-file change).
+  empty result. Full DevCore.Api.Tests **1306 passed / 0 failed**; additive (no project-file change).
 - Slice 3: model-assisted ingredient and capability recommender (strict schema, versioned prompt, metering).
 - Slice 4: deterministic eligibility, ranking, and recipe compiler (hard gates, contextual scoring, tie-breaks).
 - Slice 5: execution telemetry and offline evaluation (trace persistence, labels, gap metrics; no online self-modification).
