@@ -15093,3 +15093,49 @@ under the prospective migration posture; not part of WI-0032.
 authorization; WI-0031 Slice 1 remains sequenced AFTER this standard is dispositioned. WI-0032 status
 in-progress (planning complete; runtime/tooling not started; not integrated). Exact-prefix protocol
 preserved.
+
+## 2026-07-18 — WI-0032 Knowledge Architecture Standard Integration (reviewed + corrected, fast-forward, pushed)
+
+Independent review + integration of the WI-0032 planning branch. The read-only review found the
+normative standard MATERIALLY INCOMPLETE on binding physical-filesystem-structure rules (per the
+review's section 5), so a focused correction was made ON THE BRANCH before integration; the
+planning closeout is NOT rewritten.
+
+**Review result:** PASS after one correction. Knowledge-architecture boundaries verified
+(vocabulary complete; physical/logical/navigational answer different questions and don't conflict;
+logical modules don't require physical module folders; MOC/map = navigation only; WI =
+authorization; standard/doctrine = normative; plan grants no authority; handoff never supersedes a
+standard). Record profiles valid (no forced universal dialect). Manifest/OKF: no bundle/module/
+README requirement, evidence-driven manifests, no implicit authority inheritance, OKF as
+interoperability influence, no forced physical bundle. WI-0031 remains a valid pilot (one logical
+module across multiple physical record-type locations; not relocated).
+
+**Correction (commit `eaee94c`, WI: WI-0032):** added a binding `## physical filesystem structure`
+section to the standard (canonical hierarchy: numbered areas -> record-category folders -> durable
+topic subfolders -> flat default; reasoned topic-folder creation threshold; folder anti-patterns
+incl. one-file/temp-WI/symmetry/misc/vendor/duplicate-nesting/excessive-depth; depth guidance
+area->category->topic->record with justification for unusual depth; topic-vs-record-type grouping
+with one logical module spanning several physical locations; local-map trigger; structural-change
+discipline requiring a WI + path-impact + link/MOC/map updates + preserved git history +
+supersession, no cosmetic mass movement) and extended the documentation-slice impact declaration
+with target directory / new-subfolder-proposed + justification / folder-depth impact / paths-moved.
+Adoption plan gained a physical-structure adoption note + the recorded (not actioned) observation
+that a future `02 Platform/architecture/agent-orchestration/` topic subfolder could become
+justified as that corpus grows.
+
+**Integration:** branch `wi/0032-dai-knowledge-architecture-and-writing-standard` tip
+`eaee94c4b572525622eb35a4fb48200c0cf4160c` pushed to origin, then vault main advanced
+`220f8f03428e5a51cd2545e47fc27b03926cb9ab` -> `eaee94c4b572525622eb35a4fb48200c0cf4160c` by
+fast-forward only (no merge commit, no conflict). Records integrated: the standard (as corrected),
+WI-0032 spec, adoption plan (as corrected), planning closeout, MOC registration, current-slice.
+DAI unchanged at `c6166e2`; no DAI branch/commit.
+
+**Activity:** 0 runtime/tooling/manifest/migration; 0 model/service/database/application-data
+activity; 0 files moved/renamed; 0 skills; 0 validation tooling. Protected/classified drift
+preserved untouched (.obsidian/graph.json, CLAUDE.md BOM-only, Welcome.md deleted, 2 untracked);
+classified, not clean.
+
+**WI-0032 status:** remains `in-progress` (standard + pilot + adoption plan integrated; no tooling/
+migration). **Next:** WI-0032 Slice 2 (documentation-impact declaration + authoring checklist,
+existing mechanisms only) under separate authorization; WI-0031 Slice 1 remains sequenced AFTER
+this standard is dispositioned. Exact-prefix protocol preserved.
