@@ -133,7 +133,9 @@ not invalid for predating the standard.
 ## decomposition
 
 Slice 1: this standard + pilot disposition. Slice 2: documentation-impact declaration + authoring
-checklist (existing mechanisms, no tooling). Slice 3: record-profile validation gap assessment.
+checklist (existing mechanisms, no tooling) -- DELIVERED 2026-07-18 as
+`06 Execution/patterns/documentation-slice-impact-declaration-v1.md`. Slice 3: record-profile
+validation gap assessment.
 Slice 4: optional lightweight validator improvements (separate authorization; proven gaps only).
 Slice 5: prospective adoption in a second knowledge module (generalization test). Promote a slice
 to a child WI only on an independent authority/tooling/rollback boundary.
@@ -183,7 +185,8 @@ machinery; retroactive misreading -- each mitigated by an explicit rule in the s
 - commits: — (recorded in closeout at slice close)
 - tests: none (docs-only planning)
 - verification notes: see the planning closeout and current-slice handoff
-- docs updated: standard, adoption plan, MOC, closeout, current-slice
+- docs updated: standard, adoption plan, MOC, closeout, current-slice; Slice 2 added
+  `06 Execution/patterns/documentation-slice-impact-declaration-v1.md` + its closeout
 - lessons: separate physical/logical/navigational organization; keep authority explicit and out of
   links/inheritance; make manifests/maps evidence-driven, not elegant-by-default
 

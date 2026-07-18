@@ -15139,3 +15139,30 @@ classified, not clean.
 migration). **Next:** WI-0032 Slice 2 (documentation-impact declaration + authoring checklist,
 existing mechanisms only) under separate authorization; WI-0031 Slice 1 remains sequenced AFTER
 this standard is dispositioned. Exact-prefix protocol preserved.
+
+## 2026-07-18 — WI-0032 Slice 2: Documentation-Impact Declaration + Authoring Checklist (docs, vault-only branch, local, NOT pushed)
+
+Slice 2 of WI-0032 (same parent WI; not a new WI). Operationalizes the knowledge-architecture
+standard as a copy-usable pattern using EXISTING documentation mechanisms only — NO tooling/hook/
+CI/validator/manifest/schema; no new folder or metadata field; no file move.
+
+**Branch (vault-only):** `wi/0032-documentation-impact-declaration-checklist` from vault main
+`885f284` (verified origin). DAI untouched `c6166e2`. Pre-write gate: paths resolved; repos verified;
+drift classified+disjoint; strict snapshot exit 0 / 21 WIs / 0 warnings; branch before first write.
+
+**What shipped (4 vault records):** created pattern
+`06 Execution/patterns/documentation-slice-impact-declaration-v1.md` (fill-before-writing impact
+declaration with the binding physical fields — target directory / new-subfolder-proposed +
+justification / folder-depth impact / paths-moved — plus authoring + reviewer checklists, validation-
+level mapping, lightweight-path exemption, and a dogfooded example); created closeout
+`06 Execution/reports/documentation-slice-impact-declaration-checklist-closeout-2026-07-18-v1.md`;
+additively updated the WI-0032 spec (Slice 2 DELIVERED + links); this append.
+
+**Ledger:** 0 model/paid/source-readiness calls; 0 services; 0 DB reads/writes; 0 app-data writes; 0
+runtime changes; 0 files moved/renamed; 0 manifests; 0 tooling; 0 skills; 0 pushes/merges. Protected
+baselines byte-identical open/close (graph.json b3d68588, CLAUDE.md 9127e464, manifest 68948ebd,
+synopsis 25835e6c, dai csproj 63ef2488).
+
+**Next:** WI-0032 Slice 3 (record-profile validation gap assessment) under separate authorization;
+WI-0031 Slice 1 remains sequenced after the knowledge-architecture standard is dispositioned. WI-0032
+status in-progress. Local branch + commits only; not pushed/integrated. Exact-prefix protocol preserved.
