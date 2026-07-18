@@ -14956,3 +14956,52 @@ selection + signed authorization remain required for Gate 1 (still unexecuted). 
 development review = DAI Daily Evidence Planner Stage 0 (revised proposal + authorization),
 NOT executed here.** Exact-prefix protocol: baseline 1407192 bytes, sha256
 585461C5D02708E06F2C2E324ED16C7BCA6CE233DA9A8DB3CDD2F36A2839C677 preserved as prefix.
+
+## 2026-07-18 — WI-0031 Model-Assisted Capability Recommendation and Tool Selection v1 (planning + docs, vault-only branch, local, NOT pushed)
+
+Governed documentation-first planning slice. Category: platform architecture + orchestration
+contract + observability planning. NO runtime implemented; no model/registry/resolver/gate/
+recipe/telemetry/schema/CLI/API/scheduler/dashboard code; no Daily Evidence Planner integration.
+
+**Branch (vault-only, docs-only WI):** `wi/0031-model-assisted-capability-recommendation-and-tool-selection`
+from vault main `ffa9e0e` (verified origin). DAI untouched at `c6166e2` (csproj phantom only);
+no DAI branch created. Vault-only topology is doctrine-consistent (work-item-traceability
+per-artifact naming + established vault-only-branch precedent).
+
+**Pre-write gate:** paths resolved; both repos fetched/verified (dai c6166e2 0/0, vault ffa9e0e
+0/0, readiness tip 9af32bd contained); drift classified + disjoint (graph.json generated /
+CLAUDE.md BOM-only / Welcome.md deleted-operator-dispositioned / 2 untracked); strict snapshot
+exit 0, 19 WIs, 0 warnings, 0 continuations; WI-0031 = first free id after registered
+(0001-0013, 0020-0025) + reserved (0014-0019, 0026-0030); branch created BEFORE first write.
+
+**What shipped (6 vault artifacts):** created WI-0031 parent spec
+(`02 Platform/system-development/work-items/`), normative standard
+`02 Platform/architecture/capability-recommendation-and-tool-selection-standard-v1.md`,
+implementation plan `06 Execution/plans/capability-recommendation-and-tool-selection-implementation-plan-v1.md`,
+this planning closeout `06 Execution/reports/capability-recommendation-and-tool-selection-standard-planning-closeout-2026-07-18-v1.md`;
+modified the system-development MOC (register WI-0031); this append.
+
+**Normative decisions:** model is a semantic recommender, Tool Gateway is the execution
+authority (reuse `ToolGateway`/`IProtocolToolAccessPolicy`/`AllowedProtocolNodes`/`ToolDefinition`,
+never fork); capability != tool implementation; every recommendation gets a measurable
+disposition; relevant-but-inaccessible recommendations retained as capability-gap telemetry;
+hard gates != contextual weights (no score rescues an ineligible tool); versioned selection
+trace mirrors ADR 0007 provenance dialect + adds permission/tenant/side-effect/cost/availability/
+rate-limit controls; offline governed learning only (no online self-modification); platform vs
+niche boundary preserved (Daily Evidence Planner = candidate future pilot, no sports logic in
+core); no separate architecture note (folded into the standard). Six-slice decomposition:
+1 domain contracts+trace / 2 registry resolution / 3 model recommender / 4 gates+ranking+recipe /
+5 telemetry+offline eval / 6 governed pilot.
+
+**Ledger:** 0 model/paid/source-readiness calls; 0 services; 0 DB reads/writes; 0 app-data
+writes; 0 runs/reconciliations/settlements; 0 runtime/source changes; 0 skills; 0 schedules; 0
+pushes/merges. Protected baselines byte-identical open/close (graph.json b3d68588, CLAUDE.md
+9127e464, manifest 68948ebd, synopsis 25835e6c, dai csproj 63ef2488).
+
+**Follow-up (recorded, not actioned):** the MOC registry stops at WI-0023; WI-0024/0025 are
+integrated but not MOC-registered — pre-existing gap, out of scope for WI-0031.
+
+**Next:** WI-0031 Slice 1 (domain contracts + offline selection trace) under separate
+authorization; repository-backed language/policy-authority decision first, then fixtures before
+code. WI-0031 status in-progress (planning complete; runtime not started; not integrated). This
+append follows the exact-prefix protocol (baseline recorded in the closeout).

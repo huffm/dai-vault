@@ -185,6 +185,17 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   disposition records; vault `6036897`; branches pushed + retained; PH-06 Green subset
   CLOSED, Amber unpulled; WIP freed; zero spend/writes)
 
+- [[WI-0031-model-assisted-capability-recommendation-and-tool-selection-v1]] — Model-Assisted
+  Capability Recommendation and Tool Selection v1 (platform architecture + orchestration
+  contract + observability planning): governing parent for a model-assisted capability
+  recommendation and deterministic tool-selection feedback loop. Normative standard
+  ([[capability-recommendation-and-tool-selection-standard-v1]]) plus a six-slice
+  implementation plan; the model is a semantic recommender, the Tool Gateway remains the
+  execution authority, and relevant-but-inaccessible recommendations are retained as
+  capability-gap telemetry. **in-progress** (planning + documentation only 2026-07-18;
+  runtime not started; local vault-only branch + commits; not integrated). Reuses the Tool
+  Gateway doctrine and the prompt-selection provenance dialect (ADR 0007) rather than forking.
+
 ## scope boundary of this registry
 
 `WI-####` items cover qualifying slices per the WI-0007 qualification rule (canonical
