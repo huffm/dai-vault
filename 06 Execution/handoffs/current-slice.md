@@ -15511,3 +15511,55 @@ no ADO mutation authorized). Original branch retained at `5db7e20` for provenanc
 delete it later under separate housekeeping. **Next:** WI-0031 Slice 4 — Deterministic
 Eligible-Candidate Ranking and Bounded Recipe Planning, under separate authorization.
 Exact-prefix protocol preserved.
+
+## 2026-07-19 — WI-0034 Daily Evidence Planner Stage 0, Slice 1: Offline Deterministic Core (code+tests, coordinated branches, local, NOT pushed)
+
+New parent WI-0034 minted (first free id after WI-0033; reserved 0026-0030 respected) under the
+Stage 0 r3 authorization with the corrected exclusive-writer gate (runner held the sole write
+lease; the prior CONCURRENCY_BLOCKED run was a verified safe no-op). NO screening/capture/
+execution/model/gateway/persistence/CLI/endpoint authority — pure offline core only.
+
+**Branches (matching, local, NOT pushed):** dai + vault `wi/0034-daily-evidence-planner-stage-0`
+from verified mains (dai `ac634b5`, vault `e5d90e9`).
+
+**Language/policy-authority decision:** Python in `services/agent-service`. Canonical
+evidence-sufficiency authority = `pooled_calibration` (`discrimination_hybrid_v1`:
+conclusionsAllowed + failingReasons); the planner CONSUMES the verdict as normalized input and
+never recomputes sufficiency or copies thresholds (single authority; no exposure refactor
+needed). Niche logic stays out of the C# platform core; planner/WI-0031 separation preserved via
+implementation-independent missing-capability records (never a tool id).
+
+**What shipped:** dai (additive, 2 files)
+`app/services/daily_evidence_planner.py` (typed offline inputs incl. EvidencePolicyVerdict/
+CandidateInput/PlannerRequest; evidence-need, cohort-worthiness, input- and slate-addressability
+contracts with closed status vocabularies; two-level identity semantics; eligibility ->
+lexicographic ranking of eligible only -> deterministic disjoint primary/reserve allocation;
+closed six-outcome Daily Evidence Board [COHORT_PROPOSED_FOR_OPERATOR_REVIEW /
+NO_ADDITIONAL_EVIDENCE_WARRANTED / EVIDENCE_NEEDED_INPUT_TYPES_NOT_ADDRESSABLE /
+VALIDATED_SLATE_NO_ELIGIBLE_CANDIDATES / DIAGNOSTIC_REQUIRED_BEFORE_TRUSTWORTHY_DECISION /
+NARROW_OPERATOR_DECISION_REQUIRED with typed decision object]; stable ordered reason records +
+deterministic rendering; structured PlannerErrors incl. terminal UNRESOLVED_IDENTITY /
+POLICY_VERSION_MISMATCH / STALE_EVIDENCE_STATE / INCONSISTENT_NORMALIZED_STATE; canonical
+byte-deterministic JSON; deterministic Markdown projection) +
+`tests/test_daily_evidence_planner.py` (19 tests = the 14 required fixtures + invariants).
+Vault: WI-0034 parent spec; architecture record `04 Products/sports-v1/
+daily-evidence-acquisition-orchestrator-v1.md` (topic-doc profile, flat — subfolder threshold not
+met; devtooling placement considered and rejected as niche-in-platform); MOC registration; Slice-1
+closeout; this append.
+
+**Invariants proven:** slate_evaluated=false => NOT_EVALUATED + null eligible count (never zero);
+zero-eligible only after an evaluated slate; schedule presence never implies need/worthiness/
+addressability/market; eligibility before ranking; rank cannot rescue exclusion; unknown never
+favorable; pools disjoint/eligible-only/limit-bounded; candidate-level vs terminal identity;
+byte-identical canonical JSON regardless of candidate order; every outcome carries zero granted
+authority.
+
+**Verification:** targeted 19/19; full agent-service pytest **494 passed / 0 failed** (475+19);
+strict snapshot exit 0 / 22 WIs / 0 warnings at open; protected/classified fingerprints
+byte-identical (dai csproj 63ef2488; vault b3d68588/9127e464/68948ebd/25835e6c; Welcome.md
+deleted); no network beyond two authorized fetches; 0 Azure DevOps activity.
+
+**Next:** independent review + integration of both `wi/0034-daily-evidence-planner-stage-0`
+branches (separate gated step). Then, under separate authorizations only: planner Slice 2 (CLI)
+and WI-0031 Slice 4 informed by this real consumer. WI-0034 status in-progress (Slice 1
+implementation complete / merge ready / not integrated). Exact-prefix protocol preserved.

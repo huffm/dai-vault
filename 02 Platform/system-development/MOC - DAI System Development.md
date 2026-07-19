@@ -220,6 +220,17 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   migration all deferred. **complete** (2026-07-19; docs-only; local vault-only branch +
   commit; not integrated; zero Azure DevOps mutations).
 
+- [[WI-0034-daily-evidence-planner-stage-0]] — Daily Evidence Planner Stage 0 (niche/domain
+  evidence-operations decision system; Stage 0 of the Daily Evidence Acquisition Orchestrator,
+  architecture record [[daily-evidence-acquisition-orchestrator-v1]] in 04 Products/sports-v1):
+  Slice 1 delivered the offline deterministic planner core in `services/agent-service`
+  (consumes the canonical `pooled_calibration` sufficiency verdict, never recomputes policy;
+  closed six-outcome Daily Evidence Board; missing-capability records for the future WI-0031
+  seam; 19 fixture/invariant tests; canonical byte-deterministic JSON + Markdown projection).
+  Slices 2-4 (CLI, schedule adapter/wrapper, operating integration) deferred and separately
+  gated. **in-progress** (Slice 1 implementation complete 2026-07-19; local matching branches;
+  not pushed; not integrated; zero screening/capture/execution authority).
+
 ## scope boundary of this registry
 
 `WI-####` items cover qualifying slices per the WI-0007 qualification rule (canonical
