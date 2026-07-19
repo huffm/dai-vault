@@ -159,11 +159,17 @@ boundary).
 - branch: `wi/0034-daily-evidence-planner-stage-0` (dai + dai-vault, matching, from ac634b5 / e5d90e9)
 - pr: - (not pushed / not merged this slice)
 - commits: recorded in the Slice-1 closeout at close
-- tests: `services/agent-service/tests/test_daily_evidence_planner.py` (19)
-- verification notes: Slice-1 closeout + current-slice handoff
+- tests: `services/agent-service/tests/test_daily_evidence_planner.py` (25 after review)
+- verification notes: Slice-1 closeout (incl. independent review corrections section) +
+  current-slice handoff
 - docs updated: this WI; orchestrator architecture record; MOC; closeout; current-slice
 - lessons: consume the canonical policy verdict instead of recomputing it; encode the
-  slate-not-evaluated vs zero-eligible distinction in the type contract
+  slate-not-evaluated vs zero-eligible distinction in the type contract; independent review
+  corrections (2026-07-19): unrecognized failing-reason codes route to a diagnostic (never a
+  generic objective); identity is provider-scoped and an all-broken-identity slate is
+  terminal; missing start time / team identity excludes (unknown never ranks favorably);
+  negative pool limits fail validation; operator actions are outcome-specific and
+  authority-free
 
 ## final handoff requirements
 

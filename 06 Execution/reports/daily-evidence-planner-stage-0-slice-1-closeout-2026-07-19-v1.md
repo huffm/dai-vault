@@ -72,7 +72,7 @@ location also fit.
 
 ## behavior highlights (test-proven)
 
-Evidence need is consumed from the canonical verdict (sufficiency met -> 
+Evidence need is consumed from the canonical verdict (sufficiency met ->
 `NO_ADDITIONAL_EVIDENCE_WARRANTED`, no manufactured pool); competing objectives raise
 `NARROW_OPERATOR_DECISION_REQUIRED` with a typed decision object; deficits not closable by
 capture (discrimination inversion) raise `DIAGNOSTIC_REQUIRED_BEFORE_TRUSTWORTHY_DECISION`;
@@ -101,6 +101,34 @@ the handoff. dai csproj phantom untouched (63ef2488...); vault protected set byt
 0 services/endpoints/schedulers/persistence/schema/migrations/UI; 0 Tool Gateway or WI-0031
 runtime integration; 0 CandidateAccessFacts; 0 concrete tool selection; 0 Azure DevOps
 reads/writes; 0 pushes/merges/PRs; 0 file moves.
+
+## independent review corrections (2026-07-19)
+
+An independent Slice-1 review (separately authorized) found and corrected, in a new commit on
+the same branch (no history rewrite):
+
+1. **policy evolution:** an unrecognized failing-reason code no longer becomes a generic
+   `evidence.deficit.<code>` objective (which could have driven a cohort past the version
+   gate); it now routes to `DIAGNOSTIC_REQUIRED_BEFORE_TRUSTWORTHY_DECISION` with diagnostic
+   code `unrecognized_deficit_code`.
+2. **identity scope:** candidate identity is provider-scoped (`source_provider`,
+   `external_event_id`), so equal event ids from different providers are not conflicts; and a
+   slate whose identities are ALL untrustworthy is terminal `UNRESOLVED_IDENTITY`, never a
+   "validated zero-eligible" slate.
+3. **unknown values:** a missing start time or missing team identity excludes the candidate
+   (an empty string previously ranked FIRST in the lexicographic order).
+4. **limits:** negative pool limits fail validation (`MISSING_REQUIRED_INPUT`) instead of
+   being silently clamped while the board reported the negative value.
+5. **operator actions:** `allowed_operator_actions` is outcome-specific and authority-free
+   (the previous static list included `authorize_screening_separately` on every outcome).
+6. **projection:** markdown/JSON equivalence is now verified semantically against the parsed
+   board, not by token presence alone.
+
+**Superseded claim:** this closeout's original statement that `git diff --check` was clean in
+both repos is superseded — the vault branch diff had trailing whitespace at line 75 of this
+file (the check had been run against the empty working tree, not the branch range). Fixed in
+the correction commit. Test counts after corrections: targeted 25/25; full agent-service suite
+**500 passed / 0 failed**.
 
 ## next step
 

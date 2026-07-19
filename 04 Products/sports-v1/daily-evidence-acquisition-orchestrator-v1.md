@@ -93,6 +93,16 @@ grants any authority.
 - `06 Execution/reports/gate4-discrimination-sufficiency-criterion-2026-07-05-v1.md`
 - `04 Products/sports-v1/calibration/` (settled evidence corpus doctrine)
 
+## review-corrected contracts (2026-07-19)
+
+The independent Slice-1 review tightened four contracts recorded here: candidate identity is
+provider-scoped (`source_provider` + `external_event_id`); an unrecognized failing-reason code
+from the canonical criterion routes to `DIAGNOSTIC_REQUIRED_BEFORE_TRUSTWORTHY_DECISION`
+(`unrecognized_deficit_code`) instead of becoming a generic objective; missing start time or
+team identity excludes a candidate (unknown values never rank favorably); and
+`allowed_operator_actions` is outcome-specific and never authority-bearing. Details in the
+Slice-1 closeout's review-corrections section.
+
 ## recommended next slice
 
 Independent review + integration of the WI-0034 Slice-1 branches; afterwards, separate
