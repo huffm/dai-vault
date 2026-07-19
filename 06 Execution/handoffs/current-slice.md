@@ -15346,3 +15346,49 @@ synopsis 25835e6c, dai csproj 63ef2488); classified, not clean.
 **WI-0031 status:** remains `in-progress` (Slice 2 implementation-complete + integrated; Slices 3-6
 pending). **Exact next authorization:** WI-0031 Slice 3 (model-assisted ingredient and capability
 recommender). Exact-prefix protocol preserved.
+
+## 2026-07-19 — WI-0031 Slice 3: Model-Assisted Ingredient and Capability Recommender (code+tests, coordinated branches, local, NOT pushed)
+
+Third WI-0031 implementation slice: the semantic recommendation stage behind a strict trust
+boundary. NO live/paid/network model call anywhere in verification; NO endpoint/persistence/
+execution authority; fake model ports only.
+
+**Model-call authority decision:** Python `services/agent-service` owns external model calls
+(AsyncOpenAI `_get_client()` in sports_analyzer; C# `DevCore.AiClient` is only an HTTP client to
+FastAPI). Recommender therefore lives at that boundary; provider-neutral `ModelPort` whose
+production adapter reuses the AsyncOpenAI seam (no second provider stack, no new prompt-provenance
+dialect); metering via existing `model_metering.estimate_cost`. Execution authority + resolution
+contracts stay in .NET; strict language-neutral JSON contract `capability-recommendation/1.0`
+bridges the two; receiving projection tested with fixtures (no cross-service runtime connection).
+
+**Branches (coordinated, local, NOT pushed):** dai `wi/0031-model-assisted-capability-recommender`
+from `b1c068a` (commit `cb5396b`); vault same-named branch from `f608329`.
+
+**What shipped (dai, additive, 4 files):** python
+`app/services/capability_recommender.py` (bounded SignalEnvelope + versioned CapabilityOntology +
+RecommendationContext; versioned prompt `capability-recommender.v1` with injection-resistant
+binding rules; strict untrusted-output pipeline parse->schema->semantic->normalize with
+forbidden-key fail-closed scan [tool/access/permission/execution/recipe]; duplicates reject the
+full response; statuses completed/completed_with_uncertainties/no_applicable_capability/
+invalid_model_output/model_timeout/model_refusal/model_unavailable; metering + provenance retained
+on failure; canonical byte-identical projection json) + `tests/test_capability_recommender.py`
+(11 tests incl. prompt-injection boundary and request-never-sent input-bound proof); .NET
+`DevCore.Domain/CapabilitySelection/RecommendationProjection.cs` (independent re-validation;
+schema/ontology mismatch fail-closed; unmapped never projects; failures project no candidates) +
+`RecommendationProjectionTests.cs` (6 tests incl. Slice 1-3 offline composition: policy-denied
+candidate stays shadow, capture/screening false). Vault: WI-0031 Slice-3 disposition; closeout
+`06 Execution/reports/capability-recommender-slice-3-closeout-2026-07-19-v1.md`; this append.
+
+**Verification:** DevCore.Domain builds 0 warnings; full DevCore.Api.Tests **1312 passed / 0
+failed / 0 skipped** (1306 prior + 6); full agent-service pytest **470 passed** (459 prior + 11).
+Additive only (no existing source, csproj/slnx, or package change; csproj phantom untouched).
+
+**Ledger:** 0 live/paid model calls; 0 network/tool calls; 0 services; 0 DB reads/writes; 0
+app-data writes; 0 endpoint/DI/persistence/schema/migration changes; 0 provider-stack additions;
+0 production prompt-routing changes; 0 pushes/merges. Protected baselines byte-identical
+(graph.json b3d68588, CLAUDE.md 9127e464, manifest 68948ebd, synopsis 25835e6c, dai csproj 63ef2488).
+
+**Next:** independent Slice 3 review + integration (separate gated step), then WI-0031 Slice 4
+(deterministic eligibility, ranking, and recipe compiler) under separate authorization. WI-0031
+status in-progress (Slice 3 implementation complete / merge ready / not integrated). Exact-prefix
+protocol preserved.

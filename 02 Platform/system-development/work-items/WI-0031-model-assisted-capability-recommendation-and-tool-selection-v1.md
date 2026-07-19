@@ -166,7 +166,22 @@ boundary. Full slice definitions live in the implementation plan.
   unavailable, unmapped, missing-definition, duplicate/blank/non-finite handling, determinism, catalog
   exclusivity, tenant isolation (2 contexts), Slice-1 composition (denied candidate never selectable),
   empty result. Full DevCore.Api.Tests **1306 passed / 0 failed**; additive (no project-file change).
-- Slice 3: model-assisted ingredient and capability recommender (strict schema, versioned prompt, metering).
+- Slice 3: model-assisted ingredient and capability recommender (strict schema, versioned prompt, metering)
+  -- DELIVERED 2026-07-19 (dai commit `cb5396b`). Model-call authority decision: **Python
+  `services/agent-service` owns external model calls** (`AsyncOpenAI` `_get_client()` in
+  sports_analyzer; `DevCore.AiClient` is only an HTTP client to FastAPI) -- so the recommender lives at
+  that boundary (`app/services/capability_recommender.py`: provider-neutral `ModelPort`, versioned
+  prompt `capability-recommender.v1`, schema `capability-recommendation/1.0`, bounded signal envelopes
+  + versioned capability ontology, strict untrusted-output pipeline parse->schema->semantic->normalize,
+  forbidden-key fail-closed scan for tool/access/permission/execution/recipe, duplicates reject the
+  full response, metering via existing `model_metering.estimate_cost`); the receiving projection lives
+  beside the Slice 1-2 contracts (`DevCore.Domain/CapabilitySelection/RecommendationProjection.cs`:
+  independent re-validation, ontology/schema mismatch fail-closed, unmapped never projects, failures
+  project no candidates) -- strict language-neutral JSON contract, NO endpoint or cross-service
+  runtime connection, no second provider stack, no new prompt-provenance dialect. Tests: 11 python
+  (fake ports, incl. prompt-injection boundary) + 6 C# (incl. Slice 1-3 offline composition proving a
+  policy-denied candidate stays shadow, capture/screening false). Full suites: DevCore.Api.Tests
+  **1312 passed / 0 failed**; agent-service pytest **470 passed** -- zero live/network model calls.
 - Slice 4: deterministic eligibility, ranking, and recipe compiler (hard gates, contextual scoring, tie-breaks).
 - Slice 5: execution telemetry and offline evaluation (trace persistence, labels, gap metrics; no online self-modification).
 - Slice 6: governed pilot integration (one narrow consumer; Daily Evidence Planner is a candidate; niche logic stays outside core).
