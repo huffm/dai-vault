@@ -178,10 +178,15 @@ boundary. Full slice definitions live in the implementation plan.
   beside the Slice 1-2 contracts (`DevCore.Domain/CapabilitySelection/RecommendationProjection.cs`:
   independent re-validation, ontology/schema mismatch fail-closed, unmapped never projects, failures
   project no candidates) -- strict language-neutral JSON contract, NO endpoint or cross-service
-  runtime connection, no second provider stack, no new prompt-provenance dialect. Tests: 11 python
-  (fake ports, incl. prompt-injection boundary) + 6 C# (incl. Slice 1-3 offline composition proving a
-  policy-denied candidate stays shadow, capture/screening false). Full suites: DevCore.Api.Tests
-  **1312 passed / 0 failed**; agent-service pytest **470 passed** -- zero live/network model calls.
+  runtime connection, no second provider stack, no new prompt-provenance dialect. Review correction
+  (dai `ac634b5`): aggregate signal/ontology/prompt request budgets rejected before any port call;
+  strict json rejects NaN/Infinity + duplicate keys; prompt template sha256-fingerprinted in
+  provenance; shared canonical cross-language contract vectors embedded in both suites (python
+  `to_projection_json` = producing authority); forbidden-key scan proven prose-safe. Tests: 16
+  python (fake ports, incl. prompt-injection boundary) + 8 C# (incl. contract vectors and Slice 1-3
+  offline composition proving a policy-denied candidate stays shadow, capture/screening false).
+  Full suites: DevCore.Api.Tests **1314 passed / 0 failed**; agent-service pytest **475 passed** --
+  zero live/network model calls.
 - Slice 4 (renamed at Slice-3 review): **Deterministic Eligible-Candidate Ranking and Bounded Recipe
   Planning** -- versioned contextual weight profiles over eligible candidates only, deterministic
   tie-breaking, bounded recipe PLAN. Must not invent/duplicate missing canonical policy seams; never
