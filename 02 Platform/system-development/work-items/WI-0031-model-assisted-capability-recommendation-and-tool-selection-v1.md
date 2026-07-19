@@ -182,7 +182,11 @@ boundary. Full slice definitions live in the implementation plan.
   (fake ports, incl. prompt-injection boundary) + 6 C# (incl. Slice 1-3 offline composition proving a
   policy-denied candidate stays shadow, capture/screening false). Full suites: DevCore.Api.Tests
   **1312 passed / 0 failed**; agent-service pytest **470 passed** -- zero live/network model calls.
-- Slice 4: deterministic eligibility, ranking, and recipe compiler (hard gates, contextual scoring, tie-breaks).
+- Slice 4 (renamed at Slice-3 review): **Deterministic Eligible-Candidate Ranking and Bounded Recipe
+  Planning** -- versioned contextual weight profiles over eligible candidates only, deterministic
+  tie-breaking, bounded recipe PLAN. Must not invent/duplicate missing canonical policy seams; never
+  treats `NotEvaluated` as `Allowed`; recipes produced before all required execution policies are
+  evaluated are authorization-pending / non-executable.
 - Slice 5: execution telemetry and offline evaluation (trace persistence, labels, gap metrics; no online self-modification).
 - Slice 6: governed pilot integration (one narrow consumer; Daily Evidence Planner is a candidate; niche logic stays outside core).
 

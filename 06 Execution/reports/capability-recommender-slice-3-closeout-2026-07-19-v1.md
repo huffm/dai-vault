@@ -123,8 +123,31 @@ application-data writes; 0 endpoint/controller/DI wiring; 0 persistence; 0 schem
 project/package changes; 0 production prompt-routing changes (the existing sports prompt path is
 untouched); 0 pushes/merges. The recommender and projection are unwired library code.
 
+## review correction (2026-07-19, dai commit `ac634b5`, WI: WI-0031)
+
+The independent Slice 3 review found and corrected, on the branch before integration:
+(1) **aggregate request budgets** -- per-item bounds alone did not bound the complete request; added
+deterministic character budgets (total signal content 48k, ontology entries 128 / text 16k, final
+serialized prompt 60k) rejected BEFORE any ModelPort call (`not_sent`, zero port calls; documented
+as conservative character budgets, no tokenizer or network dependency); (2) **strict json** --
+python's default `json.loads` accepts `NaN`/`Infinity` constants and silently keeps the last of
+duplicate object keys; both now reject as `malformed_json` (`parse_constant` + `object_pairs_hook`);
+(3) **prompt fingerprint** -- the static instruction template is sha256-fingerprinted
+(`PROMPT_FINGERPRINT`) and carried in provenance so the version label cannot silently refer to
+different rule text; (4) **cross-language contract vectors** -- python `to_projection_json` is the
+producing authority for `capability-recommendation/1.0`; the exact canonical valid vector (and a
+poisoned `tool_id` variant) is now embedded by value in BOTH suites with a documented
+update-together ownership rule; (5) **forbidden-key scan proven prose-safe** -- field names only;
+tool/permission/execution words inside bounded description values are accepted. Updated totals:
+python 16 tests / full suite **475 passed**; C# 8 projection tests / full suite **1314 passed / 0
+failed**. Sensitivity classification remains descriptive metadata, not enforced redaction.
+
 ## next step
 
-Independent Slice 3 review + integration (separate gated step, mirroring Slices 1-2), then
-WI-0031 Slice 4 (deterministic eligibility, ranking, and recipe compiler) under separate
-authorization. A recommendation is not an authorization.
+Independent Slice 3 integration (this review), then **WI-0031 Slice 4 -- Deterministic
+Eligible-Candidate Ranking and Bounded Recipe Planning** under separate authorization: versioned
+contextual weight profiles over ELIGIBLE candidates only, deterministic tie-breaking, and a bounded
+recipe PLAN. Slice 4 must not invent or duplicate missing canonical policy seams, must never treat
+`NotEvaluated` as `Allowed`, and any recipe produced before all required execution policies are
+evaluated is marked authorization-pending / non-executable (fail-closed per the canonical
+contract). A recommendation is not an authorization.
