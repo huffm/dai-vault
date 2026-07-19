@@ -15480,3 +15480,34 @@ docs-only commit, NOT integrated.
 **Next:** publisher dry-run specification against ADR 0010 (zero writes), then a separately
 authorized single-Issue live canary. WI-0033 status complete (docs-only; integration = separate
 gated step). Exact-prefix protocol preserved.
+
+## 2026-07-19 — WI-0033 Reconciliation + Integration (replayed onto corrected main, fast-forward, pushed)
+
+The operator's WI-0033 branch (`wi/0033-azure-devops-publication-contract`, tip
+`5db7e20ace3ac5a1bc35d8f9c2b81807e95934c0`, single commit, WI: WI-0033) was stacked on the
+pre-correction WI-0031 Slice-3 tip `098ed3f` and no longer fast-forward eligible. Reconciled per
+authorization: the original branch left UNTOUCHED as immutable source evidence; its single owned
+commit (exactly 5 paths: ADR 0010, WI-0033 spec, closeout, MOC registration, this handoff's
+WI-0033 append — zero WI-0031/slice-3 record overlap) was cherry-picked onto a fresh branch
+`wi/0033-azure-devops-publication-contract-reconciled` from main `12256e1`, preserving huffm
+authorship + trailer as `9bf888110ecade2b19bc729e033b074f0ad4c1c5`. The only conflict
+(append-only current-slice) was resolved by keeping main's canonical bytes as an exact prefix and
+appending the byte-exact extracted WI-0033 entry (no historical entry rewritten; no stale
+pre-correction slice-3 text reintroduced; corrected slice-3 conclusions remain canonical).
+
+**Review (content):** PASS, no blocking defects — ADR 0010 is a create-only projection CONTRACT
+(documentation-only; discovery = evidence, not authorization; zero Azure DevOps mutations; no
+credentials/tokens/URLs; org/project identifiers are the intentional subject); WI-0033 spec +
+closeout OKF-valid with resolving links (incl. WI-0032 standard + impact-declaration pattern);
+MOC registered exactly once with WI-0031/0032 entries unregressed.
+
+**Integration:** reconciled branch pushed; vault main advanced `12256e1` -> `9bf8881...` by
+fast-forward only. Strict snapshot on the reconciled state: exit 0 / 22 WIs / 0 warnings / 0
+continuations. DAI untouched at `ac634b5` (csproj phantom only). 0 Azure DevOps reads/writes this
+slice; 0 model/service/db/app-data activity. Protected drift byte-identical; classified, not clean.
+
+**State:** WI-0033 complete + integrated (docs-only; publisher/adapter/update-workflow deferred;
+no ADO mutation authorized). Original branch retained at `5db7e20` for provenance; operator may
+delete it later under separate housekeeping. **Next:** WI-0031 Slice 4 — Deterministic
+Eligible-Candidate Ranking and Bounded Recipe Planning, under separate authorization.
+Exact-prefix protocol preserved.
