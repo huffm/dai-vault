@@ -15392,3 +15392,49 @@ app-data writes; 0 endpoint/DI/persistence/schema/migration changes; 0 provider-
 (deterministic eligibility, ranking, and recipe compiler) under separate authorization. WI-0031
 status in-progress (Slice 3 implementation complete / merge ready / not integrated). Exact-prefix
 protocol preserved.
+
+## 2026-07-19 — WI-0031 Slice 3 Integration (reviewed + corrected, fast-forward, pushed, both repos)
+
+Independent review + integration of the Slice 3 recommender. Planning entry above NOT rewritten.
+Review found FOUR binding gaps and corrected them on the branches before integration; the model
+authority/coupling review PASSED as built.
+
+**Review verdict:** APPROVE after corrections. Passed as built: canonical model authority reuse
+(python AsyncOpenAI seam; recommender imports only stdlib + neutral model_metering — the
+sports_analyzer mention is a docstring pointer, NOT an import; provider-neutral ModelPort; fake
+ports only); untrusted-output trust boundary; capabilities-not-tools ontology; unmapped never
+projects; failures fabricate nothing; Slice 1-3 composition (policy-denied stays shadow; capture/
+screening false); security items (no credentials in requests; output never policy; diagnostics
+carry codes not bodies).
+
+**Corrections (dai `ac634b5`; vault `35fee6a`+`3e0aadc`; WI: WI-0031):** (1) aggregate request
+budgets — total signal 48k / ontology 128 entries + 16k text / final prompt 60k chars, all rejected
+BEFORE any ModelPort call (not_sent, zero port calls; documented conservative character budgets);
+(2) strict json — NaN/Infinity constants and duplicate object keys now reject as malformed_json
+(python default would accept both); (3) prompt template sha256 fingerprint carried in provenance
+(version label cannot silently refer to different rule text); (4) shared cross-language contract
+vectors — the exact canonical valid vector + poisoned tool_id variant embedded by value in BOTH
+suites (python to_projection_json = producing authority; update-together rule documented);
+(5) forbidden-key scan proven prose-safe (field names only). Slice 4 renamed/bounded in WI +
+closeout: "Deterministic Eligible-Candidate Ranking and Bounded Recipe Planning" — no invented
+policy seams, NotEvaluated never Allowed, recipes authorization-pending/non-executable until all
+required execution policies are evaluated.
+
+**Integration:** dai branch tip `ac634b5` + vault tip `3e0aadc` pushed; both mains advanced
+fast-forward only: dai `b1c068a` -> `ac634b5`; vault `f608329` -> `3e0aadc`. dai delta = only the 4
+additive Slice-3 files (no endpoint/config/package/project/gateway/persistence change). Suites on
+integrated mains: DevCore.Api.Tests **1314 passed / 0 failed**; agent-service pytest **475 passed**;
+zero live/paid/network model calls throughout.
+
+**External-work flag (not touched by this slice):** operator branch
+`wi/0033-azure-devops-publication-contract` (`5db7e20`, ADR 0010 + WI-0033 + closeout + MOC edit) is
+STACKED on the pre-correction Slice-3 vault tip `098ed3f`. After this integration it is no longer
+fast-forward-eligible from vault main and contains the pre-correction Slice-3 record text; it needs
+rebase/reconciliation in its own governed review before integration. Out of scope here.
+
+**Ledger:** 0 live/paid/network/tool calls; 0 services; 0 db r/w; 0 app-data writes; 0 endpoint/
+persistence/gateway/permission/schema/project changes. Protected drift byte-identical (graph.json
+b3d68588, CLAUDE.md 9127e464, manifest 68948ebd, synopsis 25835e6c, dai csproj 63ef2488);
+classified, not clean. **WI-0031 remains in-progress** (Slices 1-3 integrated; 4-6 pending).
+**Next:** WI-0031 Slice 4 — Deterministic Eligible-Candidate Ranking and Bounded Recipe Planning.
+Exact-prefix protocol preserved.
