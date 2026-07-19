@@ -15563,3 +15563,33 @@ deleted); no network beyond two authorized fetches; 0 Azure DevOps activity.
 branches (separate gated step). Then, under separate authorizations only: planner Slice 2 (CLI)
 and WI-0031 Slice 4 informed by this real consumer. WI-0034 status in-progress (Slice 1
 implementation complete / merge ready / not integrated). Exact-prefix protocol preserved.
+
+---
+
+## 2026-07-19 -- WI-0034 Slice 1 independent review + integration disposition
+
+- reviewed branch: `wi/0034-daily-evidence-planner-stage-0` (both repos); original commits
+  preserved (dai `ff55398`, vault `d5943a2`); corrections in new commits (dai `e3ef9a5`,
+  vault `47ff379`); no amend/rebase/rewrite.
+- independent review findings (all corrected + regression-tested): (1) unrecognized
+  failing-reason codes routed to a generic objective instead of a diagnostic; (2) identity
+  was globally scoped by external_event_id (now provider-scoped) and an all-broken-identity
+  slate misreported as validated zero-eligible (now terminal UNRESOLVED_IDENTITY);
+  (3) missing start time ranked first via empty-string sort and missing teams could be
+  eligible (both now exclude); (4) negative pool limits silently clamped (now fail
+  validation); (5) allowed_operator_actions was one static authority-implying list (now
+  outcome-specific, authority-free); (6) markdown equivalence was token-presence only (now
+  semantic vs the parsed board). plus the known closeout trailing-whitespace fix (line 75).
+- superseded claim: the Slice-1 report's "git diff --check clean in both repos" was wrong
+  for the vault branch range (trailing whitespace); recorded in the closeout and fixed.
+- verification: targeted 25/25; full agent-service suite 500 passed / 0 failed;
+  cross-process determinism proven in two fresh python processes, canonical JSON sha-256
+  `2a012163eaef888647f1af8c7882c22b8277d946028ab18a9a08b1bbcf042d38` equal both runs;
+  independent json parse ok; strict snapshot 23 WIs / 0 warnings; scans clean.
+- integration: dai main fast-forwarded `ac634b5..e3ef9a5` and pushed; main == origin ==
+  reviewed tip verified post-push. vault branch to be pushed and fast-forwarded after this
+  append (recorded in the final report).
+- deferred: Slice 2 (portable CLI + atomic publication), Slice 3 (schedule adapter),
+  Slice 4 (operating integration); WI-0031 Slice 4 untouched.
+- no real game was screened, selected, captured, scheduled, or executed in this review or
+  integration; no model/paid/odds/db calls; network = attributable git fetch/push only.
