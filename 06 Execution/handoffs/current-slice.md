@@ -15593,3 +15593,49 @@ implementation complete / merge ready / not integrated). Exact-prefix protocol p
   Slice 4 (operating integration); WI-0031 Slice 4 untouched.
 - no real game was screened, selected, captured, scheduled, or executed in this review or
   integration; no model/paid/odds/db calls; network = attributable git fetch/push only.
+
+---
+
+## 2026-07-19 -- WI-0034 Slice 2: portable offline CLI + atomic publication (local commits)
+
+- branches: `wi/0034-daily-evidence-planner-cli` in BOTH repos, created from the freshly
+  integrated exact mains (dai `e3ef9a5`, vault `6e5c99d`) before the first Phase B write.
+- dai commit `3ab9568` (WI: WI-0034), additive 2 files:
+  `services/agent-service/app/services/daily_evidence_planner_cli.py` +
+  `services/agent-service/tests/test_daily_evidence_planner_cli.py`. NOT pushed / NOT merged.
+- cli contract: plan / validate / version; strict closed-schema request boundary (duplicate
+  keys, NaN/Infinity, unknown/misspelled fields, null-vs-missing-vs-empty, explicit-utc
+  timestamps, non-negative limits); exit classes 0/2/3/4/5/6/7/8/9; structured stderr, no
+  stack traces; no clock/network/ambient/repo-discovery/authority inference.
+- publication: staged `.staging` + fsync + independent re-parse + atomic per-file
+  os.replace; markdown first, canonical json LAST as the commit marker (pair not claimed
+  atomic; recovery = trust only a parsing .json); fail-closed collisions; --overwrite is
+  the explicit replacement path; deterministic artifact names from explicit inputs.
+- verification: cli 29/29; full agent-service suite 529 passed / 0 failed; subprocess
+  byte-determinism + candidate reordering + out-of-repo cwd proven; diff --check clean;
+  snapshot 23 WIs / 0 warnings; scans clean; protected drift byte-identical.
+- real-MLB-shape smoke: date re-derived 2026-07-22; one authorized read-only statsapi
+  request (15 games observed / 15 accepted / 0 excluded, all Scheduled, identities clean);
+  controlled offline verdict fixture; exit 0; outcome
+  EVIDENCE_NEEDED_INPUT_TYPES_NOT_ADDRESSABLE (missing input.market_divergence_screen);
+  slate NOT evaluated; safety ledger all false; board sha-256
+  2cf5cc88167d1096377a620b9bd91d1f9106a0cea7f47f4f85ce4a24e0de04cb; scratch request and
+  artifacts NOT committed. no game screened/selected/captured/scheduled/executed.
+- wi-0031 seam: consumer-constraints section recorded in the Slice-2 closeout; no runtime
+  dependency on WI-0031 types; NotEvaluated != Allowed; valid cli output authorizes nothing.
+- open findings: none unresolved.
+- next governed authorization: independent review + integration of the local
+  `wi/0034-daily-evidence-planner-cli` branches (both repos). Slice 3 deferred until Slice 2
+  integrates; Slice 4 deferred until one reviewed manual use of the stable CLI.
+
+### Slice Synopsis
+
+**Change:** WI-0034 Slice 1 independently reviewed (6 corrections), integrated to both
+mains; Slice 2 portable offline CLI with atomic artifact publication delivered locally.
+**Reason:** planner core needed truthful review + integration; operators need a governed,
+non-interactive entry point that grants no authority.
+**Proof:** 529/529 agent-service tests; subprocess byte-determinism; real-MLB-shape smoke
+exit 0 with honest NOT_ADDRESSABLE outcome; mains == origin (dai e3ef9a5, vault 6e5c99d).
+**State:** Slice-1 branches integrated + pushed; Slice-2 branches local-only (dai 3ab9568);
+posture no-spend; nothing commercial authorized.
+**Next:** independent review + integration of wi/0034-daily-evidence-planner-cli.

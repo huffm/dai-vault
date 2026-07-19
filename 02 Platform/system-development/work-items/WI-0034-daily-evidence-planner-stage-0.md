@@ -135,10 +135,16 @@ reason rendering + JSON/Markdown equivalence, rank-cannot-rescue/unknown-not-fav
 
 ## decomposition
 
-- **Slice 1 (this slice, authorized): offline deterministic planner core** -- contracts, decision
-  flow, board, errors, canonical JSON, Markdown projection, 19 tests. Local commits only.
-- **Slice 2 (deferred, not authorized): portable CLI + atomic artifact publication** -- reuses
-  Slice 1; no duplicate planner policy.
+- **Slice 1 (delivered + reviewed + integrated 2026-07-19): offline deterministic planner core**
+  -- contracts, decision flow, board, errors, canonical JSON, Markdown projection; 25 tests after
+  the independent review corrections; dai main `e3ef9a5`, vault main `6e5c99d` (ff-only, pushed).
+- **Slice 2 (delivered 2026-07-19, local commits only): portable CLI + atomic artifact
+  publication** -- `plan`/`validate`/`version` on branch `wi/0034-daily-evidence-planner-cli`;
+  strict closed-schema request boundary, stable exit-code classes, staged+fsync+os.replace
+  publication with canonical json as the commit marker, 29 tests; real-MLB-shape smoke
+  (2026-07-22 slate, controlled offline verdict) exited 0 with the honest
+  `EVIDENCE_NEEDED_INPUT_TYPES_NOT_ADDRESSABLE`; reuses Slice 1; no duplicate planner policy.
+  NOT pushed / NOT merged; next governed action = independent review + integration.
 - **Slice 3 (deferred, not authorized): bounded free schedule adapter + optional Windows wrapper.**
 - **Slice 4 (deferred, not authorized): operating/skill integration** -- only after a stable CLI
   and one clean manual operator use.
@@ -156,10 +162,14 @@ boundary).
 ## links  <!-- LITE -->
 
 - work item: WI-0034 (ADO: AB#- when wired; no ADO item created)
-- branch: `wi/0034-daily-evidence-planner-stage-0` (dai + dai-vault, matching, from ac634b5 / e5d90e9)
-- pr: - (not pushed / not merged this slice)
+- branch: `wi/0034-daily-evidence-planner-stage-0` (dai + dai-vault, matching, from ac634b5 /
+  e5d90e9; reviewed, pushed, ff-integrated 2026-07-19 -> dai main `e3ef9a5`, vault main `6e5c99d`);
+  `wi/0034-daily-evidence-planner-cli` (dai + dai-vault, matching, from e3ef9a5 / 6e5c99d;
+  local only, not pushed / not merged)
+- pr: - (Slice 2 not pushed / not merged this slice)
 - commits: recorded in the Slice-1 closeout at close
-- tests: `services/agent-service/tests/test_daily_evidence_planner.py` (25 after review)
+- tests: `services/agent-service/tests/test_daily_evidence_planner.py` (25 after review);
+  `services/agent-service/tests/test_daily_evidence_planner_cli.py` (29, Slice 2)
 - verification notes: Slice-1 closeout (incl. independent review corrections section) +
   current-slice handoff
 - docs updated: this WI; orchestrator architecture record; MOC; closeout; current-slice
