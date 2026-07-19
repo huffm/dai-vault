@@ -15438,3 +15438,45 @@ b3d68588, CLAUDE.md 9127e464, manifest 68948ebd, synopsis 25835e6c, dai csproj 6
 classified, not clean. **WI-0031 remains in-progress** (Slices 1-3 integrated; 4-6 pending).
 **Next:** WI-0031 Slice 4 — Deterministic Eligible-Candidate Ranking and Bounded Recipe Planning.
 Exact-prefix protocol preserved.
+
+## 2026-07-19 — WI-0033 Azure DevOps Publication Contract v1 (docs-only, local vault branch, not integrated)
+
+Governed documentation slice establishing the binding contract for projecting approved vault work
+items into Azure DevOps (org `jera-technologies`, project `dai`), following the same-day read-only
+publication-target discovery (`ADO_PUBLICATION_TARGET_DISCOVERY_COMPLETE`; Basic process;
+Epic/Issue/Task only; zero existing items; zero tag collisions; no delete tool; default interactive
+auth). Discovery treated as evidence, not authorization.
+
+**Records:** created WI-0033 spec (work-items/), ADR 0010 (decisions/ — the contract), closeout
+report (reports/); modified MOC - DAI System Development (registry entry) + this handoff (append).
+Exactly the five allowlisted paths from the pre-write impact declaration; no other path touched.
+
+**Contract core (ADR 0010):** vault canonical for definition/approval; Azure DevOps owns
+post-publication operational state (assignee/sprint/board/links) and is a projection target, not a
+second authoring system. Approved WI -> one Issue (Epic = approved initiative parent only; Task =
+explicit child only; never inferred from prose). Identity = normalized `vault-wi-####` tag with
+WIQL pre-check (0 -> may create, 1 -> resolve, >1 -> fail closed). Routing: area `dai`, backlog
+root iteration, AssignedTo unset, state To Do, publisher never moves board state. Create-only v1;
+projection-hash drift returns a result and requires a separate operator-authorized update workflow.
+Governed description sections carry acceptance criteria (no ADO field exists); provenance tag
+`vault-managed`. Explicit bounded batches, per-item resumable progression, dry-run (zero writes)
+vs single-Issue canary distinction, closed prohibited-behavior list, transport-independent adapter
+boundary (MCP vs REST deferred). Reference capture reuses the links-block `AB#` convention — no
+new frontmatter field. Deferred: process migration, adapter selection, update workflow, dependency
+links, iteration cadence, canary authorization.
+
+**Verification:** strict planning snapshot baseline exit 0 / 21 WIs / 0 warnings; post-edit
+snapshot exit 0 / 22 WIs / 0 warnings; git diff --check clean; new links resolve; this append is
+append-only. Pre-existing drift preserved byte-identical (vault graph.json 49dd63dc, CLAUDE.md
+b7911527, Welcome.md deletion, untracked manifest fa6a1ff4 + synopsis 007e4b62; dai csproj
+285dd5ef); drift has evolved since the WI-0031 slice-2 hashes and remains uncommitted operator
+state.
+
+**Ledger:** 0 Azure DevOps mutations (no mutating MCP tool invoked); 0 dai changes/branches/
+commits; 0 pushes/merges/remote changes; 0 model/paid calls; 0 secrets or auth artifacts recorded.
+Vault branch `wi/0033-azure-devops-publication-contract` (from main tip f608329), one local
+docs-only commit, NOT integrated.
+
+**Next:** publisher dry-run specification against ADR 0010 (zero writes), then a separately
+authorized single-Issue live canary. WI-0033 status complete (docs-only; integration = separate
+gated step). Exact-prefix protocol preserved.

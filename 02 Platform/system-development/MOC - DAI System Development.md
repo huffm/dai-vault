@@ -208,6 +208,18 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   2026-07-18; prospective adoption; no broad migration; no tooling; local vault-only branch +
   commits; not integrated).
 
+- [[WI-0033-azure-devops-publication-contract-v1]] — Azure DevOps Publication Contract v1
+  (workflow-governance, docs-only): binding create-only contract (ADR 0010) for projecting
+  approved vault work items into Azure DevOps org `jera-technologies` / project `dai` (Basic
+  process; Epic/Issue/Task). Vault stays canonical for definition/approval; Azure DevOps owns
+  post-publication operational state; identity via normalized `vault-wi-####` tag with WIQL
+  pre-check fail-closed on collision; routing to area `dai` + backlog root (never sprints);
+  governed description sections carry acceptance criteria (`vault-managed` provenance tag);
+  explicit bounded batches, dry-run vs single-Issue canary distinction, and a closed
+  prohibited-behavior list. Publisher, adapter selection, update workflow, and process
+  migration all deferred. **complete** (2026-07-19; docs-only; local vault-only branch +
+  commit; not integrated; zero Azure DevOps mutations).
+
 ## scope boundary of this registry
 
 `WI-####` items cover qualifying slices per the WI-0007 qualification rule (canonical
