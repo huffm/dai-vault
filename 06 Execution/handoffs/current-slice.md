@@ -15838,3 +15838,52 @@ fail-closed joins, and the 2-writer publication race all fixture-proven; no live
 - integration: branches to be pushed and ff-only merged per the authorization after this
   append; no partial integration.
 - external calls so far: attributable git fetches only.
+
+---
+
+## 2026-07-20 -- WI-0035 Slice 3: one governed live market-contrast screen 2026-07-22
+
+- authorization: ONE Odds /odds request (tenant 1, baseball_mlb, us, h2h,spreads, <=2
+  credits, zero retries, 5-min freshness) for 2026-07-22; all generation/capture/
+  settlement/write authority withheld. no code changed (live execution of the integrated
+  slice-2 surface); integrated ancestry dai 8e044a4 / vault ad57f26 verified.
+- evidence-need grounded canonically (pooled_calibration conclusionsAllowed=false,
+  insufficient_market_disagreement; provenance hash 378bf637...9b3b matched). frozen
+  pass-1 request 0fccafb1...6899 (board content 3da03021...156b / file bytes 6548cf09...
+  116f). tenant scope 1 verified without printing tenant data.
+- prep: one schedule/hydrate request; slate accepted all 15 authorized gamePks (none
+  added; source a45832cd...1f4a, slate 37ee908b...651f). preflight exit 0
+  completed_preflight_no_paid_call (bundle c6850cc0...54f3; 0 odds, db reads 1/writes 0,
+  11 screenable, 4 starter-TBD preblocks); admission checks all pass; secret absent.
+- paid attempt exit 0, terminal completed (bundle 1e85c71f...3ed9; attempt 19c4b6c62249):
+  exactly 1 odds request; quota last/used/remaining 0/282/218; CREDITS CHARGED 0; db
+  reads 1/writes 0; no timeouts. no candidate includable -- truthful no-cohort screen
+  (11 source_unavailable via no_market_match on the ~2-day-forward bracket; 4
+  market_not_evaluated). authority booleans all false.
+- pass-2 replay run twice byte-identical (request 32bb0851...fefc); plan twice
+  byte-identical (board dfb09b2a...ecf4); both validate; outcome
+  EVIDENCE_NEEDED_INPUT_TYPES_NOT_ADDRESSABLE, empty pools, eligible null, safety all
+  false; input.market_contrast_screen aggregates NOT_EVALUATED.
+- verification: pre-source 1363 C# + 562 python; post-run 49 C# market-contrast + 87
+  planner/cli; two-parser json; deterministic hashes equal; artifact scans clean (no
+  secret/machine-path-in-json/nan/stale-schema/authority-true/tenant-in-slate); artifact
+  dir outside both repos. protected drift byte-identical; 0 db/application writes.
+- artifacts uncommitted under <DAI_WORKSPACE_ROOT>/screen-2026-07-22/; durable report
+  market-contrast-live-screen-2026-07-22-v1. WI-0035 stays in-progress; Slice 3 complete;
+  Slice 4 deferred.
+- next: a separately authorized re-run of the same one-request screen nearer the 07-22
+  pregame window (odds posted); no generation/capture implied.
+
+### Slice Synopsis
+
+**Change:** executed one governed live market-contrast screen for MLB 2026-07-22 (one Odds
+request, 0 credits) and a deterministic planner pass-2 replay; no code changed.
+**Reason:** Slice 3 requires one governed live screen + replay to exercise the integrated
+default-off paid surface end to end.
+**Proof:** paid bundle 1e85c71f...3ed9 (1 odds request, authority all false, 0 db/app
+writes); replay+board byte-identical across repeats; pass-2 EVIDENCE_NEEDED_INPUT_TYPES_
+NOT_ADDRESSABLE; 1363 C# + 562 python pre-source, clean scans.
+**State:** vault-only branch wi/0035-market-contrast-live-screen-2026-07-22 (local, not
+pushed); mains unchanged (dai 8e044a4 / vault ad57f26); artifacts uncommitted outside
+repos; posture no further spend.
+**Next:** separately authorized re-run nearer the pregame window; Slice 4 deferred.

@@ -112,9 +112,17 @@ capture; the classifier core performs no source access.
   population only), one tenant-scoped batch active-run read, canonical screen bundle
   market-contrast-screen-bundle/1.0 with atomic exclusive-create publication. 17 fixture
   tests; no live call occurred. NOT pushed / NOT merged.
-- **Slice 3 (deferred, not authorized): one governed live screening + planner replay** --
-  named MLB date/games, paid-screening authorization + caps, frozen results, envelopes,
-  planner rerun; no generation unless separately authorized.
+- **Slice 3 (complete 2026-07-20): one governed live screening + planner replay** --
+  executed for MLB 2026-07-22 under a dedicated operator authorization (see
+  [[market-contrast-live-screen-2026-07-22-v1]]): ONE Odds `/odds` request (tenant 1, us,
+  h2h,spreads, 0 credits charged, zero retries); truthful terminal bundle
+  `market-contrast-screen-bundle/1.1` with NO eligible cohort (the ~2-day-forward bracket
+  returned no priced events -> all candidates blocked `source_unavailable` /
+  `market_not_evaluated`); deterministic pass-2 replay (run twice, byte-identical) ->
+  `EVIDENCE_NEEDED_INPUT_TYPES_NOT_ADDRESSABLE`, empty pools. Every authority boolean
+  false; zero db/application writes; zero generation/capture; no code changed (live
+  execution of the integrated Slice-2 surface). A separately authorized re-run nearer the
+  pregame window is the natural next step.
 - **Slice 4 (deferred, justify first): operating integration** -- only after one reviewed
   live screen; no autonomous scheduling or capture.
 
