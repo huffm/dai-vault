@@ -74,11 +74,47 @@ are embedded verbatim in BOTH suites -- `MarketContrastScreenTests.CrossLanguage
 consumer) -- under an update-together ownership rule, each side asserting byte equality /
 end-to-end flow.
 
+## join diagnostics (2026-07-20, source adapter market-contrast-source/1.2)
+
+The source adapter's cross-provider join emits per-attempt diagnostics that explain WHY an
+Odds response did or did not match each authoritative candidate, without changing the
+matching rule. A pure deterministic helper (`MarketJoinDiagnostics`) classifies the
+returned events for one candidate using EXACTLY the existing exact-match predicate (exact
+normalized home ref, exact normalized away ref, correct orientation, exact UTC start,
+exactly one event). Closed status vocabulary (deterministic precedence, most specific
+first): `duplicate_exact_match` > `matched` > `start_instant_mismatch` >
+`orientation_mismatch` > `team_pair_not_found` > `no_events_returned`; plus the context
+statuses `not_attempted` / `source_failed` / `skipped_preblocked`. Meaning:
+
+- `no_events_returned` -- response parsed, zero events;
+- `team_pair_not_found` -- events returned, none with the exact home/away pair;
+- `orientation_mismatch` -- teams appeared only reversed (a reversed event NEVER matches);
+- `start_instant_mismatch` -- exact team pair existed but not at the exact UTC start;
+- `matched` -- exactly one event matched teams, orientation, and start;
+- `duplicate_exact_match` -- more than one exact match (fails closed).
+
+Bundle schema `market-contrast-screen-bundle/1.2` adds response-level facts
+(`events_received`, `exact_matches_total`, `response_parsed`) and per-candidate diagnostics
+(status, same-/reversed-orientation counts, exact-match count, signed nearest start delta
+among same-orientation team pairs, odds event id when the rule allows, human explanation).
+**Matching did not become more permissive:** aliases, short names, containment similarity,
+reversed orientation, and any nonzero start delta are diagnostic-only and never a match.
+The diagnostics grant no authority and do not affect market availability, blocking,
+classification, tier, priority, readiness, planner eligibility, source-call count, or the
+paid-call lease; every authority boolean stays false. Planner CLI 2.4 accepts the additive
+1.2 bundle while keeping 1.1 explicitly replayable (the additive fields never enter the
+replay envelopes, so both versions yield the same pass-2 request and board). The first
+live attempt's 1.1 bundle remains valid and hash-preserving on replay; its unrecorded Odds
+response count cannot be reconstructed from these later diagnostics, and no team-matching
+defect is declared without provider evidence.
+
 ## future paid-source boundary
 
 Slice 2 (source adapter) and Slice 3 (one governed live screen) are separate
 authorizations with explicit paid-call bounds; the classifier core never gains source
-access. Nothing in this record authorizes screening, capture, or generation.
+access. The July 22 free `/events` cross-provider identity/readiness check remains a
+separate, time-gated action. Nothing in this record authorizes screening, capture, or
+generation.
 
 ## related docs
 

@@ -126,6 +126,20 @@ capture; the classifier core performs no source access.
   persisted, so "returned no priced events" is withdrawn and no production defect is
   declared. The next paid attempt must be preceded by a free cross-provider
   identity/readiness gate (see [[market-contrast-live-screen-2026-07-22-v1]]).
+- **Join-diagnostics hardening (complete 2026-07-20, local commits): explain no-match
+  causes** -- offline, no source calls (see
+  [[market-contrast-join-diagnostics-2026-07-20-v1]]): a pure `MarketJoinDiagnostics`
+  helper classifies each candidate's Odds match attempt into a closed status vocabulary
+  (`no_events_returned` / `team_pair_not_found` / `orientation_mismatch` /
+  `start_instant_mismatch` / `matched` / `duplicate_exact_match` + context statuses)
+  using EXACTLY the existing exact-match predicate; bundle
+  `market-contrast-screen-bundle/1.2` and adapter `market-contrast-source/1.2` add
+  response-level (`events_received`, `exact_matches_total`, `response_parsed`) and
+  per-candidate diagnostics; planner CLI 2.4 accepts 1.2 while keeping 1.1 explicitly
+  replayable (hash-preserving). Matching did NOT become more permissive; no
+  classification/tier/priority/readiness/eligibility/authority change; the attempt-1 1.1
+  bundle is unchanged and no team-matching defect is declared without provider evidence.
+  Branch `wi/0035-market-contrast-join-diagnostics`; NOT pushed / NOT merged.
 - **Slice 4 (deferred, justify first): operating integration** -- only after one reviewed
   live screen; no autonomous scheduling or capture.
 

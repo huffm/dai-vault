@@ -15918,3 +15918,51 @@ Correction commit on the existing branch wi/0035-market-contrast-live-screen-202
 (703b8388 preserved, not amended); same three governed paths; terminal outcome unchanged.
 Next gate recorded: free cross-provider identity/readiness gate (one zero-quota /events
 request, persist event count, compare identities+start) before any second /odds attempt.
+
+---
+
+## 2026-07-20 -- WI-0035 join-diagnostics hardening (offline, local commits only)
+
+- limitation: the attempt-1 bundle reported 11 generic no_market_match candidates without
+  distinguishing zero-events / no-markets / team-ref mismatch / start mismatch / reversed
+  / duplicate. reproduced first at the helper boundary (5 previously-indistinct
+  situations -> 5 distinct closed statuses).
+- change (dai `0aae858`, branch wi/0035-market-contrast-join-diagnostics, NOT pushed):
+  new pure MarketJoinDiagnostics helper (closed status vocab with deterministic
+  precedence; exact-match predicate UNCHANGED -- exact normalized home+away refs, correct
+  orientation, exact utc start, exactly one event); bundle
+  market-contrast-screen-bundle/1.2 + adapter market-contrast-source/1.2 emit response-
+  level (events_received, exact_matches_total, response_parsed) and per-candidate
+  diagnostics (status, same/reversed counts, exact count, signed nearest start delta,
+  odds event id when allowed, explanation); planner cli 2.4 accepts 1.2 and keeps 1.1
+  replayable.
+- semantics unchanged: no availability/blocking/classification/tier/priority/readiness/
+  eligibility/source-call/lease/authority change; reversed + alias/short-name + nonzero
+  delta are diagnostic-only, never a match; every authority boolean false.
+- verification: diagnostics+adapter 43/43; DevCore.Api.Tests 1388/1388 (+25);
+  planner+cli 88/88 (+1); agent-service 563/563 (+1); zero new warnings (NU1903
+  pre-existing, 0 csproj changes); diff --check clean; scans clean. historical attempt-1
+  1.1 bundle replay hash-preserving (pass-2 32bb0851...fefc unchanged); 1.1-vs-1.2 replay
+  equivalence proven (additive fields never change pass-2 request or board).
+- vault docs (branch wi/0035-market-contrast-join-diagnostics): architecture record
+  join-diagnostics section; WI entry; new closeout
+  market-contrast-join-diagnostics-2026-07-20-v1; this handoff. MOC unchanged (WI already
+  registered).
+- next: independent review + integration of both wi/0035-market-contrast-join-diagnostics
+  branches; the July 22 free /events identity/readiness gate stays a separate time-gated
+  action; any later paid attempt keeps the one-request/zero-retry/<=2-credit/authority-
+  false contract.
+
+### Slice Synopsis
+
+**Change:** added offline join diagnostics that distinguish why an Odds response did or did
+not match each candidate, in additive bundle 1.2 / adapter 1.2 / planner cli 2.4, without
+changing the matching rule or any authority.
+**Reason:** the attempt-1 evidence could not tell zero-events from team/start/orientation
+mismatch, an evidence gap flagged in the r5 correction.
+**Proof:** 1388 C# + 563 python green; helper distinguishes all 21 cases; attempt-1 1.1
+replay hash unchanged (32bb0851...); 1.1-vs-1.2 replay equivalence; no permissiveness or
+authority change.
+**State:** local branches wi/0035-market-contrast-join-diagnostics (dai 0aae858), NOT
+pushed; mains unchanged (dai 8e044a4 / vault 48e998e); posture no-spend.
+**Next:** independent review + integration of both diagnostics branches.
