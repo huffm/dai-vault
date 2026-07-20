@@ -16170,3 +16170,78 @@ observation the platform did not yet have an operator for.
 209d485/52e1924; NOT pushed / NOT merged; protected files byte-identical; offline no-spend.
 **Next:** Independent review + integration of both events-gate branches, then a time-gated
 (>= 2026-07-22T12:00:00Z) free preflight + one zero-quota `/events` observation; no `/odds`.
+
+---
+
+## WI-0035 Slice 3 r7A -- Events-Gate Screenability, Freshness, and Strict-Boundary Correction (2026-07-20)
+
+**Objective.** Pre-integration correction of the local r7 events-gate: a resolved authoritative
+identity is not the same as a screenable candidate. Offline implementation and testing only; no
+live StatsAPI / Odds `/events` / Odds `/odds` / database / model / generation / capture /
+execution / settlement / scheduling call; no push, no merge. Both r7 commits preserved as
+ancestors; correction in NEW commits.
+
+**Outcome.** The gate calls a provider exact match
+`exact_match_ready_for_separate_operator_decision` only when it belongs to a candidate still
+screenable at the frozen gate observation start -- `preblock_reason` null, canonical
+scheduled/pregame state, start inside the target dst-aware Eastern day `[start, end)`, canonical
+minimum decision margin still satisfied -- AND the preflight bundle is fresh (<= 5 min old) and
+strictly valid. Non-screenable candidates are retained as `skipped_preblocked` (zero counts,
+never matched, never ready); zero screenable candidates reject before any call with the new
+closed status `no_screenable_candidates`. Added: bounded freshness contract; strict closed
+input validation (schema/mode/terminal/target-date/candidate-count/unique gamePks + external
+ids each == gamePk / 64-lowercase-hex pass-1 / closed all-false authority ledger); missing-or-
+blank API key rejected before the claim and any request; strict provider-response validation
+(json array; non-blank id/home/away; explicit-UTC commence proven from text; no duplicate
+ids/keys); strengthened publication/recovery (no post-claim path leaves an unexplained claim;
+fallible attempt-id creation before the claim); a real command/DI/named-client seam test (the
+command now resolves an optional injected clock via DI, defaulting to utc now in production).
+
+**Defects reproduced first (executable RED against committed r7 gate).** A resolved-but-
+preblocked -> ready; B stale accepted; C incomplete/empty authority ledger accepted; D
+missing/blank key reaching the call boundary; E timezone-less timestamp; F blank provider
+identity. All six failed against r7, pass against the correction.
+
+**Repo state.** dai branch `wi/0035-market-contrast-events-gate` (new commit atop e4b0196; NOT
+pushed). vault branch `wi/0035-market-contrast-events-gate` (new commit atop 6f76cde; NOT
+pushed). No protected file touched (DevCore.Data.csproj 63ef2488; vault graph.json/CLAUDE.md/
+preflight manifest/synopsis unchanged; Welcome.md remains deleted).
+
+**Files.** dai: `MarketContrastEventsGate.cs` (screenability/freshness/strict boundary/strict
+response/claim invariants), `MarketContrastEventsGateCommand.cs` (optional DI clock),
+`MarketContrastEventsGateTests.cs` (33 retained + 27 new = 60 fixtures). Producer bundle 1.3 /
+adapter 1.3 / planner CLI 2.5 UNCHANGED this round. vault: r7 closeout superseding addendum,
+WI-0035 events-gate entry, market-contrast product record, this append.
+
+**Verification.** events-gate 60/60; full DevCore.Api.Tests 1476/1476 (was 1449); full pytest
+564/564; 0 new build warnings; git diff --check + secret/machine-path/authority-grant scans
+clean; determinism (candidate/event reorder + byte-identical repeat) green; protected drift
+byte-identical open to close.
+
+**External-call ledger.** model 0; StatsAPI 0; Odds /events 0; Odds /odds 0; db 0; generation/
+capture/screening/settlement/scheduling 0; push/merge 0. Fixtures use an injected handler and a
+non-secret sentinel key.
+
+**Next.** Independent review + integration of both local events-gate branches only. After
+integration and no earlier than 2026-07-22T12:00:00Z: one refreshed free preflight + exactly
+one zero-quota `/events` observation (no `/odds`). A paid `/odds` attempt is a separate
+authorization requiring at least one exact current identity/start join from a screenable
+candidate.
+
+### Slice Synopsis
+
+**Change:** Corrected the local (unintegrated) events-gate so an exact provider match is "ready"
+only for a still-screenable candidate from a fresh, strictly-validated preflight bundle; added
+strict input/response boundaries, a missing-key pre-claim reject, strengthened claim/recovery
+invariants, and a real command/DI seam test.
+**Reason:** The r7 operator over-counted resolved-but-preblocked candidates ("resolved identity"
+!= "screenable") and accepted stale bundles, incomplete authority ledgers, a missing key at the
+call boundary, and lax provider timestamps/identities.
+**Proof:** six defects reproduced as executable RED against the committed r7 gate; events-gate
+60/60; DevCore.Api.Tests 1476/1476; pytest 564; 0 new warnings; scans + diff --check clean; no
+live source call.
+**State:** New commits on `wi/0035-market-contrast-events-gate` in both repos atop e4b0196/
+6f76cde (preserved ancestors); NOT pushed / NOT merged; protected files byte-identical; offline
+no-spend.
+**Next:** Independent review + integration of both events-gate branches only; then a time-gated
+(>= 2026-07-22T12:00:00Z) free preflight + one zero-quota `/events` observation; no `/odds`.

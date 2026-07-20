@@ -156,6 +156,16 @@ observation-only and never match), never makes an `/odds` request, and emits a
 false. No gate status authorizes screening, generation, capture, an `/odds` request, or a
 paid attempt.
 
+r7A correction (pre-integration, 2026-07-20): a resolved authoritative identity is not the
+same as a screenable candidate. The gate calls a match "ready" only when it belongs to a
+candidate still screenable at the gate observation start -- `preblock_reason` null, canonical
+scheduled/pregame state, scheduled start inside the target dst-aware Eastern day, and the
+canonical minimum decision margin still satisfied -- and the preflight bundle is fresh (no
+more than five minutes old at that instant) and strictly valid. Preblocked candidates are
+retained only for explanation (`skipped_preblocked`, zero counts, never ready); zero
+screenable candidates reject before any call as `no_screenable_candidates`. Only screenable
+exact matches can support a later paid-attempt proposal, and even that grants no authority.
+
 ## recommended next slice
 
 Current state (2026-07-20): WI-0035 Slice 1 classifier, Slice 2 source adapter, the first

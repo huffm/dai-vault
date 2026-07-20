@@ -178,6 +178,26 @@ capture; the classifier core performs no source access.
   `OddsApiEvent` DTO, GameIdentityDerivation.NormalizeTeamRef, MarketJoinDiagnostics,
   ScreenBundlePublisher) -- no second client/normalizer/bracket/publisher. Branch
   `wi/0035-market-contrast-events-gate`; local commits only, NOT pushed / NOT merged.
+  **r7A pre-integration correction (2026-07-20, new commit; original r7 preserved as an
+  ancestor; see the superseding addendum in
+  [[market-contrast-events-gate-slice-3-2026-07-20-v1]]):** the r7 operator over-counted
+  resolved-but-preblocked candidates -- a resolved identity is NOT the same as a screenable
+  candidate. A match is `exact_match_ready_for_separate_operator_decision` only when it belongs
+  to a candidate still screenable at the gate observation start (preblock_reason null, canonical
+  scheduled/pregame state, start inside the target dst-aware Eastern day `[start, end)`, and the
+  canonical minimum decision margin still satisfied) AND the preflight bundle is fresh (<= 5
+  minutes old) and strictly valid. Non-screenable candidates are retained as `skipped_preblocked`
+  (zero counts, never matched, never ready); zero screenable candidates reject before any call
+  with the new closed status `no_screenable_candidates`. Added: bounded freshness contract;
+  strict closed input validation (schema/mode/terminal/target-date/candidate-count/unique
+  gamePks+external ids each == gamePk/64-lowercase-hex pass1/closed all-false authority ledger);
+  missing-or-blank API key rejected before claim and call; strict provider-response validation
+  (json array; non-blank id/home/away; explicit-UTC commence proven from text; no duplicate
+  ids/keys); strengthened publication/recovery so no post-claim path leaves an unexplained
+  claim; a real command/DI/named-client seam test. Version set unchanged (bundle/adapter 1.3,
+  operator/artifact 1.0, CLI 2.5). 60 offline fixtures (33 retained + 27); the six defects were
+  reproduced as executable RED failures against the committed r7 gate before correcting. Still
+  local commits only, NOT pushed / NOT merged; no live source call.
 - **Slice 4 (deferred, justify first): operating integration** -- only after one reviewed
   live screen; no autonomous scheduling or capture.
 

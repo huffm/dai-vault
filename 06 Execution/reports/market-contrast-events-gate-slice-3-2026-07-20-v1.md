@@ -150,3 +150,66 @@ integration and no earlier than 2026-07-22T12:00:00Z, one refreshed free preflig
 exactly one zero-quota `/events` gate observation (no `/odds` request in that authorization). A
 paid `/odds` attempt is proposed separately only when a current exact identity/start join
 exists. No selection plan, events-gate artifact, or planner board grants execution authority.
+
+## superseding correction addendum -- r7A (2026-07-20)
+
+This is a pre-integration correction to the original local r7 events-gate contract above. The
+r7 operator, which was never integrated and has produced no live artifact, was corrected in a
+new commit on the same branch (original r7 preserved as an ancestor). The r7 sections above
+are retained as written; this addendum is the authoritative current contract where they
+differ.
+
+Plainly:
+
+- The original local r7 operator over-counted resolved candidates: a candidate with a resolved
+  authoritative identity but a non-null `preblock_reason` could produce
+  `exact_match_ready_for_separate_operator_decision`. **A resolved identity is not the same as
+  a screenable candidate.**
+- **Screenable** (all required, at the gate observation start): resolved+unique authoritative
+  identity; `preblock_reason` null; canonical scheduled/pregame state; scheduled start inside
+  the target dst-aware Eastern day under the existing `EasternDayBracket`, half-open
+  `[start, end)`; and the existing canonical minimum decision margin
+  (`MarketContrastPolicy.MinStartMarginMinutes`) still satisfied. Non-screenable resolved
+  candidates are retained for explanation only: join status `skipped_preblocked`, exact-match
+  count zero, never matched, never counted, never "ready". Zero screenable candidates reject
+  before any claim or call with the new closed status `no_screenable_candidates`.
+- **Fresh** means the preflight bundle's `operation.completed_as_of_utc` is present, explicitly
+  UTC, not in the gate observation's future, no more than **five minutes** old at the frozen
+  observation start, and not before `operation.started_at_utc`. Stale/future/missing/non-UTC
+  reject before any call.
+- The input boundary is now strict on every relied-on field: schema exactly
+  `market-contrast-screen-bundle/1.3`; preflight mode + completed-preflight terminal status;
+  zero odds requests + attempted=false; exact target-date agreement + valid date; positive
+  tenant key; pass-1 hash of exactly 64 lowercase hex; declared candidate count == array
+  length; unique positive gamePks; unique authoritative external event ids, each equal to its
+  gamePk; complete home/away identities; explicit-UTC scheduled starts inside the target
+  bracket; and the exact closed producer authority-ledger field set, every value false
+  (missing/extra/non-boolean/true/`{}` all fail). A missing or blank configured Odds API key is
+  rejected before the destination claim and before any request.
+- The provider response is strictly validated: a json array only; each event has a non-blank
+  id, non-blank home and away, and a commence time carrying an explicit-UTC designator proven
+  from the original text (not an environment-local default); duplicate event ids and duplicate
+  object keys are rejected; any violation is `source_parse_failed` with `events_received=null`,
+  never an empty parsed array.
+- **Only screenable exact matches can support a later paid-attempt proposal**, and even a
+  "ready" result grants no authority (the output authority ledger is booleans only, every one
+  false; a later `/odds` attempt is a separate operator authorization).
+- Publication/recovery invariants were strengthened: after this process owns the destination
+  claim, every terminal path publishes, preserves a reported recovery artifact, or safely
+  releases only its own unconverted claim; no post-claim path leaves an unexplained claim file;
+  the fallible attempt-id creation happens before the claim.
+- Version set is unchanged (bundle 1.3, adapter 1.3, events-gate operator/artifact 1.0, planner
+  CLI 2.5); this is a pre-integration correction to the local r7 shape, not a memorialized
+  bump. Historical bundle 1.1/1.2 replay behavior is unchanged; screenability/diagnostic fields
+  remain replay-inert.
+
+Verification (r7A): events-gate fixtures **60/60** (33 original retained + 27 screenability/
+freshness/strict-boundary/command-seam/disposal/post-claim fixtures); full DevCore.Api.Tests
+**1476 passed / 0 failed** (was 1449); full agent-service pytest **564 passed**; 0 new build
+warnings; `git diff --check`, secret, machine-path, and authority-grant scans clean;
+protected/classified drift byte-identical open to close. **No live StatsAPI, Odds `/events`,
+Odds `/odds`, database, model, generation, capture, execution, settlement, or scheduling call
+occurred during this correction; no push, no merge.** The six confirmed defects (A resolved-but-
+preblocked ready; B stale accepted; C incomplete authority ledger accepted; D key reaching the
+call boundary; E timezone-less timestamp; F blank provider identity) were reproduced as
+executable RED failures against the committed r7 gate before correcting.
