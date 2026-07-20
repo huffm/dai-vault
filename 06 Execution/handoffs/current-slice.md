@@ -16245,3 +16245,52 @@ live source call.
 no-spend.
 **Next:** Independent review + integration of both events-gate branches only; then a time-gated
 (>= 2026-07-22T12:00:00Z) free preflight + one zero-quota `/events` observation; no `/odds`.
+
+---
+
+## WI-0035 Slice 3 r7B -- Independent Events-Gate Semantic Review + Integration (2026-07-20)
+
+**Objective.** Independently review the r7A events-gate correction (dai `aea9465`, vault
+`6e746c5`) without trusting its report, using adversarial executable fixtures; correct confirmed
+defects in new commits; then fast-forward integrate both mains. Offline only; no source calls,
+no spend.
+
+**Outcome.** No production defect confirmed. Ten adversarial probes (all-unresolved -> no
+claim/call; duplicate authority-ledger key; non-boolean authority value; numeric external id;
+lowercase-`z` start rejected; millisecond-UTC still matches; screenable duplicate exact ->
+blocked; nonzero quota fails closed over a match; duplicate key in a provider event object;
+preblocked matching candidate skipped + excluded) all passed, confirming the r7A screenability,
+freshness, strict-input, strict-response, ready, and claim/recovery semantics. Probes retained
+as a tests-only commit; no production code changed. See
+[[market-contrast-events-gate-review-2026-07-20-v1]] for the 18-question findings.
+
+**Repo state.** dai review commit atop aea9465; vault review-report commit atop 6e746c5;
+original r7 (`e4b0196`/`6f76cde`) and r7A commits preserved as ancestors. Then fast-forward
+integrated into both mains and pushed. No protected file touched (csproj 63ef2488; vault
+graph/CLAUDE/manifest/synopsis unchanged; Welcome deleted).
+
+**Verification.** events-gate 70/70 (60 + 10 probes); full DevCore.Api.Tests 1486/1486 (was
+1476); adjacent market-contrast 72/72; full pytest 564/564; replay 1.1/1.2/1.3 inert; 0 new
+warnings; diff --check + secret/authority/machine-path scans clean; snapshot 24/0; protected
+drift byte-identical open to close.
+
+**External-call ledger.** model 0; StatsAPI 0; Odds /events 0; Odds /odds 0; db 0; generation/
+capture/screening/settlement/scheduling 0. Fixtures use an injected handler + non-secret
+sentinel.
+
+**Next.** A separately authorized, time-gated (>= 2026-07-22T12:00:00Z) refreshed free preflight
+followed by at most one zero-quota `/events` observation. No `/odds` call is authorized.
+
+### Slice Synopsis
+
+**Change:** Independently reviewed the r7A events-gate correction with 10 adversarial executable
+probes across all 18 review questions, confirmed no defect, retained the probes, and
+fast-forward integrated both mains.
+**Reason:** The correction had to be independently proven -- not accepted on its own report --
+before integration, especially that a resolved identity is never treated as screenable.
+**Proof:** events-gate 70/70; DevCore.Api.Tests 1486/1486; pytest 564; replay-inert; scans +
+diff --check clean; no live source call.
+**State:** Reviewed feature branches pushed and fast-forward merged into both mains; mains ==
+origin == reviewed tips; original r7/r7A commits preserved; offline no-spend.
+**Next:** A separately authorized, time-gated (>= 2026-07-22T12:00:00Z) free preflight + one
+zero-quota `/events` observation; no `/odds`.
