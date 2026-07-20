@@ -134,7 +134,9 @@ capture; the classifier core performs no source access.
   `start_instant_mismatch` / `matched` / `duplicate_exact_match` + context statuses)
   using EXACTLY the existing exact-match predicate; bundle
   `market-contrast-screen-bundle/1.2` and adapter `market-contrast-source/1.2` add
-  response-level (`events_received`, `exact_matches_total`, `response_parsed`) and
+  response-level (`events_received`, `evaluated_candidate_exact_match_count`,
+  `response_parsed`; r6a-review corrected: parsed-only counts, null on failure, evaluated-
+  only total, replay option B) and
   per-candidate diagnostics; planner CLI 2.4 accepts 1.2 while keeping 1.1 explicitly
   replayable (hash-preserving). Matching did NOT become more permissive; no
   classification/tier/priority/readiness/eligibility/authority change; the attempt-1 1.1

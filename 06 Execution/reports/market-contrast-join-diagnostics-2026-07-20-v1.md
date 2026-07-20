@@ -46,16 +46,43 @@ production-visible verdict, and are now five distinct closed statuses.
   match). The exact-match set is the identical predicate the adapter already used.
 - `MarketContrastSourceAdapter.cs`: the join decision now derives from the helper's
   exact-match set (behaviorally identical); the bundle
-  (`market-contrast-screen-bundle/1.2`, adapter `market-contrast-source/1.2`) gains
-  `events_received`, `exact_matches_total`, `response_parsed`, and a per-candidate
-  `market_join_diagnostic` block.
+  (`market-contrast-screen-bundle/1.2`, adapter `market-contrast-source/1.2`) gains, under
+  `source_calls.odds_api`, `events_received`, `evaluated_candidate_exact_match_count`,
+  `response_parsed`, and a per-candidate `market_join_diagnostic` block.
 - `daily_evidence_planner_cli.py`: CLI 2.4 accepts the additive 1.2 bundle in the replay
   seam and keeps 1.1 supported.
 - tests: `MarketJoinDiagnosticsTests.cs` (helper + all 21 required cases + the limitation
-  reproduction + determinism/authority invariants), adapter integration tests (bundle
-  carries diagnostics; start-mismatch vs team-mismatch distinguishable; decision
-  unchanged), and a python replay-equivalence test (1.1 and 1.2 bundles differing only in
-  diagnostics produce byte-identical pass-2 request and board).
+  reproduction + determinism/authority invariants + a fixed-seed 600-fixture
+  predicate-equivalence corpus), adapter integration tests (bundle carries diagnostics;
+  response-ledger zero-vs-unparsed; evaluated-count reconciliation; commence-time boundary
+  shapes; start-mismatch vs team-mismatch distinguishable; decision unchanged), and a
+  real-shape python replay test (1.1 and 1.2 -- including a mutated diagnostic -- produce
+  byte-identical pass-2 request and board).
+
+## r6a review corrections (2026-07-20)
+
+An independent review corrected four semantic/testing defects in a new commit (dai
+`5e81b83`; original `0aae858` preserved):
+
+1. **zero really means zero (RQ1):** `events_received` was 0 on every attempted response
+   including failures; now it is a count ONLY on a parsed event array (a parsed empty array
+   is 0) and `null` otherwise. `response_parsed` is true only on a parsed array. A JSON
+   `null` body is `source_failed` (the `/odds` array contract never returns `null`), never
+   `no_events_returned`.
+2. **truthful total name (RQ2):** `exact_matches_total` -> `evaluated_candidate_exact_match_count`,
+   documented as evaluated-candidates-only (preblocked/source-failed/not-attempted never
+   contribute) and proven to reconcile with the per-candidate diagnostics; preblocked
+   candidates are not inspected to inflate it.
+3. **real replay shape + boundary (RQ3):** the equivalence test now uses the production
+   shape (`source_calls.odds_api` + per-candidate `market_join`/`market_join_diagnostic`).
+   The replay-validation boundary is **option B**: replay verifies version, target date,
+   candidate identities, and envelopes only, not the diagnostic section; a mutated
+   diagnostic cannot change the pass-2 request or board; the CLI never claims full bundle
+   validation (documented in the seam).
+4. **matching-unchanged proof + honest start coverage (RQ4/RQ5):** a fixed-seed
+   600-fixture corpus proves the helper's exact-match set equals the original inline
+   predicate; `commence_time` shapes (null/malformed -> `source_failed`; valid explicit-utc
+   -> parsed) are tested at the HTTP/JSON boundary, distinct from a valid large start delta.
 
 ## closed status vocabulary and precedence
 
@@ -84,8 +111,8 @@ and does not gain diagnostic evidence; it remains explicitly replayable.
 
 ## verification
 
-Targeted diagnostics + adapter 43/43; full DevCore.Api.Tests **1388 / 0** (was 1363, +25);
-planner + cli 88/88 (+1); full agent-service **563 / 0** (was 562, +1). Only build
+Targeted diagnostics + adapter 49/49; full DevCore.Api.Tests **1394 / 0** (was 1363, +31
+after the r6a-review tests); planner + cli 88/88; full agent-service **563 / 0**. Only build
 warnings are the pre-existing NU1903 package advisory (0 csproj changes on the branch).
 `git diff --check` clean; secret / machine-path / authority scans clean. Historical
 attempt-1 1.1 bundle replay proven hash-preserving (pass-2 request sha-256

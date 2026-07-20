@@ -93,17 +93,34 @@ statuses `not_attempted` / `source_failed` / `skipped_preblocked`. Meaning:
 - `matched` -- exactly one event matched teams, orientation, and start;
 - `duplicate_exact_match` -- more than one exact match (fails closed).
 
-Bundle schema `market-contrast-screen-bundle/1.2` adds response-level facts
-(`events_received`, `exact_matches_total`, `response_parsed`) and per-candidate diagnostics
-(status, same-/reversed-orientation counts, exact-match count, signed nearest start delta
-among same-orientation team pairs, odds event id when the rule allows, human explanation).
+Bundle schema `market-contrast-screen-bundle/1.2` adds response-level facts under
+`source_calls.odds_api` (`events_received`, `evaluated_candidate_exact_match_count`,
+`response_parsed`) and per-candidate diagnostics (status, same-/reversed-orientation
+counts, exact-match count, signed nearest start delta among same-orientation team pairs,
+odds event id when the rule allows, human explanation).
+
+Response-ledger meanings are literal: `response_parsed=true` and `events_received=<count>`
+ONLY when the body was successfully parsed as the expected event array (a parsed empty
+array is `events_received=0`); every transport/http/quota/parse failure -- and a JSON
+`null` body, which the Odds `/odds` array contract never returns -- is `source_failed`
+with `events_received=null`, never `no_events_returned`.
+`evaluated_candidate_exact_match_count` sums exact matches for EVALUATED candidates only;
+preblocked, source-failed, and not-attempted candidates never contribute (their market
+status stays `not_evaluated`) and it reconciles with the per-candidate diagnostics.
+
 **Matching did not become more permissive:** aliases, short names, containment similarity,
-reversed orientation, and any nonzero start delta are diagnostic-only and never a match.
-The diagnostics grant no authority and do not affect market availability, blocking,
-classification, tier, priority, readiness, planner eligibility, source-call count, or the
-paid-call lease; every authority boolean stays false. Planner CLI 2.4 accepts the additive
-1.2 bundle while keeping 1.1 explicitly replayable (the additive fields never enter the
-replay envelopes, so both versions yield the same pass-2 request and board). The first
+reversed orientation, and any nonzero start delta are diagnostic-only and never a match (a
+fixed-seed corpus proves the extracted helper's exact-match set equals the original inline
+predicate -- counts and selected event id). The diagnostics grant no authority and do not
+affect market availability, blocking, classification, tier, priority, readiness, planner
+eligibility, source-call count, or the paid-call lease; every authority boolean stays
+false. Planner CLI 2.4 accepts the additive 1.2 bundle while keeping 1.1 explicitly
+replayable. Replay-validation boundary = **option B**: replay verifies the supported
+bundle version, target date, candidate identities, and planner envelopes only, not the
+diagnostic section (whose integrity belongs to the C# producer and its tests); the
+additive fields never enter the replay envelopes, so a 1.1 and a 1.2 bundle differing only
+in diagnostics -- even a mutated diagnostic -- yield the byte-identical pass-2 request and
+board, and the CLI never claims full bundle validation. The first
 live attempt's 1.1 bundle remains valid and hash-preserving on replay; its unrecorded Odds
 response count cannot be reconstructed from these later diagnostics, and no team-matching
 defect is declared without provider evidence.

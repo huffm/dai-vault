@@ -15966,3 +15966,50 @@ authority change.
 **State:** local branches wi/0035-market-contrast-join-diagnostics (dai 0aae858), NOT
 pushed; mains unchanged (dai 8e044a4 / vault 48e998e); posture no-spend.
 **Next:** independent review + integration of both diagnostics branches.
+
+---
+
+## 2026-07-20 -- WI-0035 join-diagnostics r6a review corrections (offline, local commits)
+
+Independent review of the local join-diagnostics implementation; four defects corrected in
+a new commit (dai `5e81b83`; original `0aae858` preserved):
+- RQ1 zero-means-zero: events_received is a count only on a successfully parsed event array
+  (parsed empty -> 0) and null on every transport/http/quota/parse failure; response_parsed
+  true only on a parsed array; json null body -> source_failed (odds /odds contract returns
+  an array, never null), never no_events_returned. adapter-level tests added.
+- RQ2 truthful total: exact_matches_total -> evaluated_candidate_exact_match_count
+  (evaluated candidates only; preblocked/source-failed/not-attempted never contribute;
+  reconciles with per-candidate diagnostics; no preblocked inspection to inflate).
+- RQ3 real replay shape + boundary: equivalence test uses production shape
+  (source_calls.odds_api + per-candidate market_join/market_join_diagnostic); replay-
+  validation OPTION B recorded (version/target-date/identities/envelopes only, not the
+  diagnostic section; mutated diagnostic can't change pass-2 request/board; cli never
+  claims full bundle validation, documented in the seam).
+- RQ4/RQ5: fixed-seed 600-fixture corpus proves the helper exact-match set == original
+  inline predicate (counts + selected id); commence_time boundary shapes tested through
+  http/json (null/malformed -> source_failed; valid explicit-utc -> parsed), distinct from
+  a valid large delta. lowercase-ascii comment sweep on new comments.
+- unchanged: matching permissiveness, readiness, classification, tier, priority, paid
+  admission, every authority boolean false; attempt-1 evidence untouched.
+- verification: diagnostics+adapter 49/49; DevCore.Api.Tests 1394/1394 (+31 vs main);
+  planner+cli 88/88; agent-service 563/563; zero new warnings (NU1903 pre-existing, 0
+  csproj changes); diff --check clean; scans clean; historical attempt-1 1.1 replay hash
+  unchanged (32bb0851...fefc).
+- integration: both wi/0035-market-contrast-join-diagnostics feature branches pushed and
+  fast-forward merged into their mains (recorded in the terminal report).
+
+### Slice Synopsis
+
+**Change:** corrected four join-diagnostic semantic/testing defects (zero-vs-null event
+count, evaluated-only total naming, real-shape replay + option-B boundary, matching-
+unchanged corpus proof) and integrated both repos.
+**Reason:** an independent review found the response ledger reported failures as zero
+events, an ambiguously named total, an unreal replay-test shape, and unproven matching
+equivalence.
+**Proof:** 1394 C# + 563 python green; parsed-only counts + null-on-failure tested at the
+json boundary; 600-fixture predicate equivalence; historical 1.1 replay unchanged
+(32bb0851...); no permissiveness/authority change.
+**State:** feature branches integrated to mains and pushed; attempt-1 evidence untouched;
+posture no-spend.
+**Next:** the time-gated 2026-07-22 free /events identity/readiness gate remains a separate
+action before any second paid attempt.
