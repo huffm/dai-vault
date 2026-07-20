@@ -115,14 +115,17 @@ capture; the classifier core performs no source access.
 - **Slice 3 (complete 2026-07-20): one governed live screening + planner replay** --
   executed for MLB 2026-07-22 under a dedicated operator authorization (see
   [[market-contrast-live-screen-2026-07-22-v1]]): ONE Odds `/odds` request (tenant 1, us,
-  h2h,spreads, 0 credits charged, zero retries); truthful terminal bundle
-  `market-contrast-screen-bundle/1.1` with NO eligible cohort (the ~2-day-forward bracket
-  returned no priced events -> all candidates blocked `source_unavailable` /
-  `market_not_evaluated`); deterministic pass-2 replay (run twice, byte-identical) ->
-  `EVIDENCE_NEEDED_INPUT_TYPES_NOT_ADDRESSABLE`, empty pools. Every authority boolean
-  false; zero db/application writes; zero generation/capture; no code changed (live
-  execution of the integrated Slice-2 surface). A separately authorized re-run nearer the
-  pregame window is the natural next step.
+  h2h,spreads, `x-requests-last="0"`, zero retries); truthful terminal bundle
+  `market-contrast-screen-bundle/1.1` with NO eligible cohort (all candidates blocked
+  `source_unavailable` / `market_not_evaluated`); deterministic pass-2 replay (run twice,
+  byte-identical) -> `EVIDENCE_NEEDED_INPUT_TYPES_NOT_ADDRESSABLE`, empty pools. Every
+  authority boolean false; zero db/application writes; zero generation/capture; no code
+  changed (live execution of the integrated Slice-2 surface). r5 correction: proven only
+  that no returned Odds event exact-joined any screenable candidate on both team refs AND
+  the exact start instant; the returned event count and precise no-match cause were not
+  persisted, so "returned no priced events" is withdrawn and no production defect is
+  declared. The next paid attempt must be preceded by a free cross-provider
+  identity/readiness gate (see [[market-contrast-live-screen-2026-07-22-v1]]).
 - **Slice 4 (deferred, justify first): operating integration** -- only after one reviewed
   live screen; no autonomous scheduling or capture.
 

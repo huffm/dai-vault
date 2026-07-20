@@ -100,13 +100,37 @@ within the 2-credit ceiling; a zero-cost response remains terminal and is not re
 
 No candidate reached an includable classification -- a truthful terminal screen with no
 eligible cohort. Every candidate is `blocked` (tier none): 4 `market_not_evaluated`
-(the free-preblocked starter-TBD games, market skipped) and 11 `source_unavailable` --
-the Odds `/odds` response for the 2026-07-22 eastern bracket contained no event matching
-the authoritative provider teams AND scheduled-start instant (`no_market_match`), which
-under classifier 1.2 projects the real source condition (unavailable), never a derived
-readiness reason. Zero credits were charged, consistent with the provider returning no
-priced events in the requested future bracket. Actual DAI/market disagreement remains
+(the free-preblocked starter-TBD games, market skipped) and 11 `source_unavailable`
+(`no_market_match`), which under classifier 1.2 projects the real source condition
+(unavailable), never a derived readiness reason. Actual DAI/market disagreement remains
 `unknown_until_generation`; decision-time market baseline `unknown_until_generation_capture`.
+
+### what the evidence proves, infers, and leaves unknown (r5 correction)
+
+An independent review found the durable evidence overstated the cause. The bundle does not
+persist the number of Odds events returned, nor near-match diagnostics, so it cannot
+distinguish among: zero events returned; events returned without the requested markets; a
+team-reference mismatch; a scheduled-start mismatch; or another exact-join mismatch. The
+earlier phrasing "returned no priced events" is therefore not supported and is withdrawn.
+
+- **Proven:** no returned Odds event exact-joined to any of the eleven screenable
+  authoritative candidates using BOTH provider-team identities AND the exact scheduled-
+  start instant (the integrated join requires exact normalized home-team ref, exact
+  normalized away-team ref, and exact UTC start equality).
+- **Proven:** the single Odds request received `x-requests-last="0"`
+  (`used="282"`, `remaining="218"`).
+- **Inference only:** a zero charge is consistent with an empty result or a result with no
+  priced market -- but it does not establish which, and it is not proof the provider
+  returned nothing.
+- **Unknown (not persisted):** the response event count and the precise no-match cause.
+- No production defect is declared solely from this observation. The integrated exact
+  join preserves provider orientation, identity uniqueness, and anti-misjoin protections;
+  its behavior must not be broadened without executable evidence that preserves those
+  protections. (Review note: current adapter join tests exercise only synthetically exact
+  provider identities; they do not yet cover realistic cross-provider team aliases or
+  minute-level start deltas -- a coverage gap to close under a separate authorization, not
+  a defect established here.)
+- The pass-2 no-cohort result below remains truthful and unchanged.
 
 ## deterministic pass-2 replay (schema-1.1 terminal bundle)
 
@@ -166,12 +190,26 @@ Nothing in this run authorized model generation, capture, execution, or settleme
 screen produced no eligible cohort; even had it, a valid screen bundle and pass-2 board
 authorize none of those.
 
-## next operator decision
+## next operator decision (separately governed; not executed here)
 
-Because the paid Odds observation for a ~2-day-forward date returned no priced events (no
-market match; 0 credits) and the pass-2 board is truthfully non-addressable, the natural
-next governed step is a separately authorized re-run of this same one-request screen
-closer to the 2026-07-22 pregame window (when h2h/spreads are posted), reusing the frozen
-pass-1 and the same bounded contract. That is a new authorization, not implied here. Slice
-4 (operating integration) remains deferred until a stable CLI has completed at least one
-reviewed manual use with a grounded cohort.
+Because no returned Odds event exact-joined to any screenable candidate and the precise
+cause was not persisted, and the pass-2 board is truthfully non-addressable, the next
+governed gate is a NEW authorization with a free cross-provider identity/readiness gate
+BEFORE any second paid attempt:
+
+- run no earlier than 2026-07-22T12:00:00Z;
+- refresh the authoritative StatsAPI slate; run the free preflight;
+- make at most one zero-quota Odds `/events` request; persist the provider event count
+  outside both repositories;
+- compare every authorized candidate against provider home/away identities and the exact
+  UTC start, recording safe identity references and start deltas;
+- if no exact join exists but an apparent alias or start-time mismatch exists, STOP for
+  code correction and executable fixtures -- do not spend;
+- a second `/odds` request may be separately proposed only if at least one screenable
+  candidate passes the exact current identity/start join;
+- any later paid attempt uses a new no-overwrite evidence destination and retains the same
+  one-request, zero-retry, <=2-credit, all-authority-false contract.
+
+That is a new operator authorization, not implied here. Slice 4 (operating integration)
+remains deferred until a stable CLI has completed at least one reviewed manual use with a
+grounded cohort.

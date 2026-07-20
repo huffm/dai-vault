@@ -15887,3 +15887,34 @@ NOT_ADDRESSABLE; 1363 C# + 562 python pre-source, clean scans.
 pushed); mains unchanged (dai 8e044a4 / vault ad57f26); artifacts uncommitted outside
 repos; posture no further spend.
 **Next:** separately authorized re-run nearer the pregame window; Slice 4 deferred.
+
+---
+
+## 2026-07-20 -- WI-0035 Slice 3 attempt-1 evidence correction (r5, no source calls)
+
+Independent review of the frozen 2026-07-22 attempt-1 artifacts (all four hashes
+reverified: pass1 0fccafb1...6899, screen-bundle 1e85c71f...3ed9, pass2-request
+32bb0851...fefc, pass2-board dfb09b2a...ecf4; 1 odds request, 0 retries, quota
+0/282/218; 4 preblocked + 11 no_market_match; authority all false; 0 db/app writes;
+pass-2 non-addressable). The screen bundle does NOT persist the returned Odds event count
+or near-match diagnostics, so it cannot distinguish zero-events / no-markets / team-ref
+mismatch / start mismatch. The earlier "returned no priced events" phrasing is therefore
+WITHDRAWN across the three governed docs and replaced with proven/inference/unknown
+framing:
+- proven: no returned event exact-joined any of the 11 screenable candidates on both
+  provider team refs AND the exact start instant (integrated join requires exact
+  normalized home ref + away ref + UTC start equality);
+- proven: the request received x-requests-last="0";
+- inference only: a zero charge is consistent with an empty/no-priced-market result, not
+  proof of it;
+- unknown: response event count and precise no-match cause (not persisted);
+- no production defect declared from this observation; join behavior must not broaden
+  without executable evidence preserving orientation/uniqueness/anti-misjoin.
+Review note (recorded, not fixed here): the adapter join tests use synthetically exact
+provider identities only -- no realistic cross-provider aliases (e.g. StatsAPI
+"Athletics" vs "Oakland Athletics") or minute-level start deltas -- a coverage gap to
+close under a separate authorization.
+Correction commit on the existing branch wi/0035-market-contrast-live-screen-2026-07-22
+(703b8388 preserved, not amended); same three governed paths; terminal outcome unchanged.
+Next gate recorded: free cross-provider identity/readiness gate (one zero-quota /events
+request, persist event count, compare identities+start) before any second /odds attempt.
