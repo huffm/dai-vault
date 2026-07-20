@@ -142,6 +142,38 @@ git fetch/push + exactly one read-only statsapi schedule request; 0 database rea
 0 services/endpoints/schedulers/persistence/schema/UI; 0 Tool Gateway or WI-0031 runtime
 integration; 0 Azure DevOps reads/writes; Slice-2 branches NOT pushed / NOT merged.
 
+## slice-2 contract-integrity review corrections (2026-07-19, superseding addendum)
+
+A separately authorized contract-integrity review reproduced a **blocker** in the
+contracts this closeout originally described, and corrected it in a new commit
+(dai `9147549`) before integration:
+
+1. **Input authority (blocker, reproduced):** under the 1.0 contract, asserting
+   `input.market_divergence_screen` (or `input.market_snapshot`) with schedule-only
+   candidates produced `COHORT_PROPOSED_FOR_OPERATOR_REVIEW`. Corrected: availability is
+   derived only from typed input-evidence envelopes; schedule-only input can never produce
+   a market-objective cohort. Contracts bumped to 2.0 (see the orchestrator architecture
+   record). The retired divergence-screen id is rejected, never silently remapped.
+2. **Superseded claim -- `validate --board`:** this closeout described board validation;
+   in fact the 1.0 validator accepted an incomplete invented object (schema + outcome +
+   nonempty all-false ledger). Corrected: the validator checks the core-owned closed key
+   set and exact ledger keys, and truthfully reports `kind: board_envelope` with the exact
+   checks performed; it does not certify full planner policy.
+3. **Superseded claim -- usage errors:** "structured single-line json errors on stderr"
+   did not hold for usage failures (multiline argparse text). Corrected: usage errors now
+   emit the same single-line structured contract (`USAGE_ERROR`, exit 2).
+4. **Superseded claim -- staging safety:** the shared `<dest>.staging` path allowed one
+   process to truncate/publish another's staging bytes, and no-overwrite admission was a
+   racy check-then-replace. Corrected: writer-unique exclusively created
+   `<dest>.staging-<pid>` files, atomic no-overwrite admission via exclusive-create
+   claims (raced from two real processes in tests: exactly one writer admitted), alias
+   preflight, and documented+tested overwrite failure semantics (old json survives beside
+   newer markdown; json is authoritative; markdown is a disposable projection).
+
+Test counts after review: core 35, cli 43, full agent-service suite **553 passed / 0
+failed**. Cross-process canonical-json sha-256 (two fresh processes, 2.0 board):
+`d4218b2889ca8687e9735cee680b057469026a8a79c1d8524bb841cc07ed1df7`.
+
 ## next step
 
 Independent review + integration of the local `wi/0034-daily-evidence-planner-cli`

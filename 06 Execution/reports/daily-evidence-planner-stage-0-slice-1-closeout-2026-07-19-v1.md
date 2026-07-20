@@ -130,6 +130,17 @@ file (the check had been run against the empty working tree, not the branch rang
 the correction commit. Test counts after corrections: targeted 25/25; full agent-service suite
 **500 passed / 0 failed**.
 
+## superseded note (2026-07-19, slice-2 contract-integrity review)
+
+The 1.0 addressability contract described in this closeout (capability availability taken
+from a caller-supplied `available_input_capabilities` list) was found to be an input-
+authority defect: an asserted capability string could substitute for missing evidence and
+let schedule-only candidates reach a market-objective cohort. Superseded by the 2.0 typed
+input-evidence-envelope contract recorded in
+`04 Products/sports-v1/daily-evidence-acquisition-orchestrator-v1.md`. The capability id
+`input.market_divergence_screen` named here is retired in favor of
+`input.market_contrast_screen`.
+
 ## next step
 
 Independent review + integration of the local `wi/0034-daily-evidence-planner-stage-0` branches

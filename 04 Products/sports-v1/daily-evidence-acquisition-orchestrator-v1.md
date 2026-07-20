@@ -93,6 +93,47 @@ grants any authority.
 - `06 Execution/reports/gate4-discrimination-sufficiency-criterion-2026-07-05-v1.md`
 - `04 Products/sports-v1/calibration/` (settled evidence corpus doctrine)
 
+## typed input-authority contract (2.0, slice-2 review correction, 2026-07-19)
+
+**Corrected defect (blocker):** the 1.0 contract derived input addressability from
+caller-declared capability identifier strings. A caller asserting
+`input.market_divergence_screen` while supplying only schedule candidates obtained
+`COHORT_PROPOSED_FOR_OPERATOR_REVIEW` (reproduced before correction, both market paths).
+A capability identifier asserted by a caller is not evidence that the capability was
+evaluated.
+
+**Contract:** capability availability is now derived entirely from typed input-evidence
+envelopes (`input-evidence-envelope/1.0`): capability id; envelope schema version;
+policy/classifier version; closed evaluation status (`evaluated | not_evaluated |
+unavailable | stale | invalid` -- NotEvaluated never equals Available); observation
+timestamp; source provenance; target date; provider-scoped candidate identity
+(`source_provider` + `external_event_id`) for candidate-scoped capabilities; stable
+producer reason codes; and a normalized result (`classification: includable | excluded`
+for screens). The planner rejects or excludes: wrong-candidate evidence (orphans),
+wrong-target-date, stale, duplicate/conflicting records, incompatible versions, records
+missing provenance or observation timestamps, and evaluated screens without an explicit
+result. Global availability never implies per-candidate coverage: partial coverage is
+explicit, ungrounded candidates are excluded, and a proposed pool contains only candidates
+with every required typed input satisfied. Producers own screen thresholds; the planner
+consumes verdicts and reasons only.
+
+**Semantic migration:** actual dai-versus-market disagreement exists only after a dai
+directional decision and a decision-time market baseline; no pre-generation input can
+observe it (every board carries `dai_market_disagreement: unknown_until_generation`). The
+pre-generation input is a market-contrast candidate screen. The overloaded id
+`input.market_divergence_screen` is therefore RETIRED and replaced by
+`input.market_contrast_screen`; the retired id in an envelope is rejected with
+`retired_capability_id`, never silently remapped. `input.market_coverage` keeps
+`input.market_snapshot` (decision-time market-observation coverage), now candidate-scoped
+and envelope-grounded.
+
+**Versions:** request `daily-evidence-planner-request/2.0`, board `daily-evidence-board/2.0`,
+planner `daily-evidence-planner/2.0`, cli `daily-evidence-planner-cli/2.0`. 1.0 requests
+and boards remain parseable but are rejected as version mismatches (exit 5); no silent
+migration -- producers re-emit under 2.0. Version ownership: envelope schema and board
+contract are owned here (planner core); classifier versions are owned by the screen
+producer; the policy criterion remains owned by pooled_calibration.
+
 ## review-corrected contracts (2026-07-19)
 
 The independent Slice-1 review tightened four contracts recorded here: candidate identity is
