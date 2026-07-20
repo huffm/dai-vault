@@ -426,26 +426,45 @@ recommendation is never authority.
 
 The deterministic decision layer between resolved recommendations and any future execution
 is implemented as a pure domain component (`DeterministicPlanBuilder`; see the closeout
-[[capability-selection-deterministic-plan-building-slice-4-2026-07-20-v1]]). Normative
-semantics now fixed:
+[[capability-selection-deterministic-plan-building-slice-4-2026-07-20-v1]] and the r2
+contract review [[capability-selection-plan-contract-review-2026-07-20-v1]]). The delivered
+artifact is a **ranked, bounded, NON-EXECUTABLE selection plan** (Stage E ranking partially
+delivered); **Stage F recipe compilation** (dependency/input/output/retry/ceiling/stop/
+fallback/idempotency) remains deferred. Normative semantics (r2-corrected):
 
 - **hard rule vs score:** a hard rule is yes/no; a failure is never rescued by a score. A
   shadow candidate is `blocked`; an accessible candidate with any unevaluated required
   dimension is `authorization_pending` (fail closed, `NotEvaluated != Allowed`) and is
-  never scored; only fully-evaluated accessible candidates are scored.
-- **weight profile:** a named, versioned profile weights a closed set of known
-  score-component names over eligible candidates only; duplicate, unknown, missing-required,
-  and non-finite weights are rejected; absent facts contribute the unfavorable floor and
-  unknown components are ignored (never favorable); the profile name/version is in the
-  trace. One fixture-backed profile (`deterministic-plan-ranking/1.0`) is delivered.
+  never scored; only fully-evaluated accessible candidates are scored. (Given today's
+  single enforceable dimension, a real Slice-3->resolver->builder composition truthfully
+  ends `authorization_pending` until more canonical seams exist.)
+- **context binding:** the `ResolutionResult` owns the immutable `ResolutionContext`; the
+  builder takes no separate context, so a plan's tenant/role/node/versions are derived only
+  from the result and cannot be relabeled by a caller. The full context is serialized.
+- **weight profile:** a named, versioned profile is factory-created and immutable (no
+  public-constructor validation bypass; a defensive ordered copy no caller can mutate). It
+  weights a closed set of known score-component names over eligible candidates only;
+  blank/duplicate/unknown/missing-required/non-finite/**negative** weights are rejected
+  (zero is valid); absent facts contribute the unfavorable floor and unknown components are
+  ignored (never favorable). The plan records the exact ordered weights and a deterministic
+  **content SHA-256**, so the same name/version with different weights is distinguishable.
+  The delivered `deterministic-plan-ranking/1.0` is a **test fixture, not a production
+  profile**; governed production weight values remain deferred.
+- **candidate score integrity:** blank, duplicate, the reserved `semantic_relevance`, and
+  out-of-[0,1] known-favorable score components are rejected deterministically at the
+  resolver boundary (no last-write-wins; the canonical semantic-relevance field can never be
+  overwritten by a component).
+- **explainable scoring:** each eligible candidate records score contributions (component,
+  normalized value, weight, weighted contribution) that reconcile with the final score at
+  the rounding precision; blocked and authorization-pending candidates have none.
 - **bounded plan:** ordered by score desc then stable identity (capability, tool); max
   steps >= 0 (0 = honest empty plan; negative rejected); no duplicate tool step; blocked
   and inaccessible candidates stay in the trace but outside the plan.
-- **no authority:** plan status is `planned_not_authorized` / `authorization_pending` /
-  `blocked` (never approved/authorized/executable/ready_to_run); steps carry no
-  credential/payload/argument/callback/endpoint; the authority ledger is all-false; the
-  **Tool Gateway remains the runtime permission authority** and is re-checked at any future
-  execution.
+- **no authority:** plan schema `capability-selection-plan/1.0`; status is
+  `planned_not_authorized` / `authorization_pending` / `blocked` (never approved/authorized/
+  executable/ready_to_run); steps carry no credential/payload/argument/callback/endpoint;
+  the authority ledger is all-false; the **Tool Gateway remains the runtime permission
+  authority** and is re-checked at any future execution.
 
 ## deferred decisions
 

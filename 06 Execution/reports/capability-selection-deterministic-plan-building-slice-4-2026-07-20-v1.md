@@ -111,3 +111,42 @@ byte-identical.
 Independent review + integration of the local `wi/0031-deterministic-ranking-and-plan-building`
 branches. WI-0031 Slice 5 (execution telemetry / offline evaluation) and Slice 6 (governed
 pilot) remain deferred. A proposed plan authorizes no execution, capture, or screening.
+
+## r2 contract-review corrections (2026-07-20, superseding addendum)
+
+An independent review reproduced and corrected confirmed contract defects in a new commit
+(dai `209d485`; original `f926484` preserved). The original claims above are corrected as
+follows (the historical text is retained, not erased):
+
+- **tenant isolation was not proven by the original tests.** The original test passed two
+  separate contexts to `Build` but never exercised a result/context mismatch; the
+  relabeling seam existed. Corrected: `ResolutionResult` now owns the immutable
+  `ResolutionContext`, `Build` takes no separate context, and a plan's tenant/role/node/
+  versions are derived only from the result (the full context is serialized and proven to
+  survive; a foreign context cannot be supplied).
+- **profile validation was bypassable.** The original `WeightProfile` had a public record
+  constructor that skipped validation and stored the caller's mutable dictionary. Corrected:
+  factory-only (`TryCreate`) and immutable, with a defensive ordered copy; mutating caller
+  collections cannot alter a created profile; negative weights are now rejected (zero valid).
+- **profile name/version alone did not make the result reproducible.** Corrected: the plan
+  records the exact ordered component weights and a deterministic content SHA-256, so the
+  same name/version with different weights is distinguishable in the trace.
+- **weighted score contributions were not present.** Corrected: each eligible candidate
+  records score contributions (component, normalized value, weight, weighted contribution)
+  that reconcile with the final score at the rounding precision; blocked and
+  authorization-pending candidates carry none.
+- **candidate score integrity.** Blank, duplicate, the reserved `semantic_relevance`, and
+  out-of-[0,1] known-favorable score components are now rejected deterministically at the
+  resolver boundary (no last-write-wins; the canonical semantic-relevance field can never be
+  overwritten by a component).
+- **deterministic ranking/selection is NOT Stage F recipe compilation.** The delivered
+  artifact is a ranked, bounded, non-executable selection plan (Stage E partial), with a
+  plan schema `capability-selection-plan/1.0`. Stage F compilation remains deferred.
+- **`deterministic-plan-ranking/1.0` was a test fixture, not a production profile.**
+  Governed production weight values remain deferred.
+- **WI-0031 Slice 5 (telemetry) and Slice 6 (pilot) remain deferred.**
+
+Test totals after r2: DevCore.Api.Tests **1416 passed / 0 failed** (was 1409); DevCore.Domain
+0 warnings; the same real Slice-3->resolver->builder composition honestly ends
+`authorization_pending` (fail-closed, since only the protocol-node dimension is enforceable
+today); fresh-process determinism reconfirmed.

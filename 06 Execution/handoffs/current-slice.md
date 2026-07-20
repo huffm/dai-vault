@@ -16057,3 +16057,52 @@ Gateway remains the runtime authority.
 **State:** local branches wi/0031-deterministic-ranking-and-plan-building (dai f926484),
 NOT pushed; mains unchanged (dai 5e81b83 / vault f7d0d18); posture offline no-spend.
 **Next:** independent review + integration of both Slice-4 branches.
+
+---
+
+## 2026-07-20 -- WI-0031 Slice 4 r2: selection-plan contract correction, review, integration
+
+- reproduced (failed against original f926484 for the stated reason): A context relabeling
+  (Build took a separate ResolutionContext); B public-ctor validation bypass + mutable
+  source dict; C name/version-only audit (no ordered weights/content hash, no weighted
+  contributions); D duplicate-component last-write-wins (order changes score); E
+  semantic_relevance component overwrites canonical relevance; F isolation test never
+  tested a result/context mismatch; G docs overstated recipe planning + a test fixture as
+  a production profile.
+- corrections (dai `209d485`, new commit; original f926484 preserved): ResolutionResult
+  owns the immutable ResolutionContext (Build drops the separate context; full context
+  serialized; no relabeling); WeightProfile factory-only + immutable + content SHA-256 +
+  ordered weights + negative-weight rejection; resolver-boundary candidate-score validation
+  (blank/duplicate/reserved semantic_relevance/out-of-[0,1] rejected; no last-write-wins;
+  canonical relevance never overwritten); per-eligible-candidate ScoreContribution records
+  reconciling with the final score; plan schema capability-selection-plan/1.0; ranked,
+  bounded, NON-EXECUTABLE selection plan (Stage E partial; Stage F recipe compilation
+  deferred); all-false authority ledger; Tool Gateway remains runtime authority; unused
+  code/params removed; lowercase-ascii comments.
+- verification: capability-selection 57/57; DevCore.Api.Tests 1416/1416; DevCore.Domain 0
+  warnings (NU1903 pre-existing, 0 csproj changes); real Slice-3->resolver->builder
+  composition deterministic + honestly authorization_pending (fail-closed end to end);
+  fresh-process determinism across two processes; corpus now includes context +
+  score-component reorder; diff --check clean; scans clean; snapshot 24 WIs / 0 warnings;
+  protected drift byte-identical; attempt-scope limited to 3 of the 5 allowlisted dai paths.
+- docs corrected in place (standard, WI, impl plan), closeout addendum (original claims
+  retained), new review report capability-selection-plan-contract-review-2026-07-20-v1;
+  WI-0032/0034/0035 untouched. prompt-ledger pre-execution record written outside repos.
+- integration: both feature branches pushed + fast-forward merged into their mains (proof
+  in the terminal report); f926484 / 6e6b6e7 preserved as ancestors.
+
+### Slice Synopsis
+
+**Change:** corrected the WI-0031 Slice 4 selection-plan contract (result-owned immutable
+context; factory-only immutable weight profile with content hash; resolver-boundary
+score-component validation; explainable weighted contributions; plan schema; honest
+non-executable-selection-plan semantics) and integrated both repos.
+**Reason:** an independent review reproduced context relabeling, a validation-bypass
+profile ctor, non-reproducible/unexplainable scoring, duplicate last-write-wins, canonical-
+relevance overwrite, and overstated docs.
+**Proof:** 1416/1416 DevCore.Api.Tests; every defect reproduced then fixed; content-hash
+distinguishability; contribution reconciliation; fresh-process determinism; all-false
+authority; Stage F deferred.
+**State:** feature branches integrated to mains and pushed; originals preserved as
+ancestors; posture offline no-spend.
+**Next:** WI-0031 Slice 5 (telemetry) and Slice 6 (pilot) remain deferred.

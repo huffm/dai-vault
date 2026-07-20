@@ -81,15 +81,26 @@ tenant-security, or rollback boundary.
   model_call_metering, recommended_capabilities (population), confidence/uncertainty.
 - Dependency: Slices 1-2 contracts and catalogs.
 
-### Slice 4 -- deterministic eligibility, ranking, and recipe compiler
+### Slice 4 -- deterministic eligibility, ranking, and bounded selection plan
 - Objective: hard gates; contextual scoring with versioned weight profiles; deterministic
-  tie-breaking; bounded recipe compilation; no permission bypass.
-- Boundary: gates are hard constraints, never soft weights; no model-generated free-form recipe
-  executes without compilation/validation.
-- Trace fields owned: selection_policy_version, weight_profile_version, capability_ontology_version,
-  hard_gate_results (population), score_components (population), final_score, selected_tools
-  (population), compiled_recipe (population).
+  tie-breaking; a bounded, non-executable selection plan; no permission bypass.
+- Boundary: gates are hard constraints, never soft weights; the output is a ranked, bounded
+  selection plan for review, NOT a Stage F recipe compiler.
+- Trace fields owned: plan_schema_version, selection_policy_version, weight_profile_version,
+  weight_profile_content_sha256, weight_profile_ordered_weights, resolution_context,
+  capability_ontology_version, hard_gate_results (population), score_contributions
+  (population; component/normalized value/weight/weighted contribution), final_score,
+  proposed_steps (population).
 - Dependency: Slices 1-3; the Tool Gateway policy layer.
+- **Delivered 2026-07-20 (local, r2-corrected; see the closeout and
+  [[capability-selection-plan-contract-review-2026-07-20-v1]]):** Stage E ranking + bounded
+  plan delivered as `DeterministicPlanBuilder`; result-owned immutable context (no
+  relabeling); factory-only immutable weight profile with content hash; resolver-boundary
+  candidate-score validation; explainable per-candidate contributions; plan schema
+  `capability-selection-plan/1.0`; all-false authority ledger; Tool Gateway stays the
+  runtime authority. **Stage F recipe compilation** (dependency/input/output/retry/ceiling/
+  stop/fallback/idempotency) remains DEFERRED; `deterministic-plan-ranking/1.0` is a test
+  fixture, not a production profile.
 
 ### Slice 5 -- execution telemetry and offline evaluation
 - Objective: selection-trace persistence; outcome labels; override capture; capability-gap

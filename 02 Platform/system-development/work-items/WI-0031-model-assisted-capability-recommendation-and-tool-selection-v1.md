@@ -204,7 +204,19 @@ boundary. Full slice definitions live in the implementation plan.
   ready_to_run); proposed steps carry no credential/payload/argument/callback/endpoint and an all-false
   authority ledger; the Tool Gateway remains the runtime authority (documented, not held). 20 required
   invariants + a fixed-seed 400-iteration corpus; DevCore.Api.Tests 1409/1409; DevCore.Domain 0
-  warnings. NOT pushed / NOT merged. WI-0031 Slice 5 (telemetry) and Slice 6 (pilot) remain deferred.
+  warnings. **r2 contract corrections (2026-07-20, see
+  [[capability-selection-plan-contract-review-2026-07-20-v1]]):** the ResolutionResult now owns the
+  immutable ResolutionContext (no caller relabeling; the original tenant-isolation test did not prove
+  this); WeightProfile is factory-only + immutable (the original public constructor bypassed
+  validation); the plan records ordered weights + a content SHA-256 (name/version alone did not make a
+  result reproducible) and per-eligible-candidate weighted score contributions (previously absent);
+  blank/duplicate/reserved(semantic_relevance)/out-of-range candidate score components are rejected at
+  the resolver boundary (no last-write-wins; canonical relevance never overwritten); negative weights
+  rejected; plan schema `capability-selection-plan/1.0` added. The output is a ranked, bounded,
+  NON-EXECUTABLE selection plan (Stage E partial), NOT a Stage F recipe compiler;
+  `deterministic-plan-ranking/1.0` is a TEST FIXTURE, not a production profile. DevCore.Api.Tests
+  1416/1416. NOT pushed / NOT merged until integration. WI-0031 Slice 5 (telemetry) and Slice 6
+  (pilot) remain deferred.
 - Slice 5: execution telemetry and offline evaluation (trace persistence, labels, gap metrics; no online self-modification).
 - Slice 6: governed pilot integration (one narrow consumer; Daily Evidence Planner is a candidate; niche logic stays outside core).
 
