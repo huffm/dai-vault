@@ -102,10 +102,16 @@ capture; the classifier core performs no source access.
 - **Slice 1 (this slice, delivered): offline deterministic classifier core** -- policy
   profile, normalized facts, classification, reasons, priority, envelope projection,
   consumer compatibility, cross-language vectors. local commits only.
-- **Slice 2 (deferred, not authorized): bounded source adapter** -- project existing
-  source-readiness + market-depth output into classifier facts; no duplicate provider
-  client; explicit paid-call bounds; freshness + source-failure handling; atomic screen-
-  artifact publication; no model generation.
+- **Slice 2 (delivered 2026-07-20, local commits only): bounded default-off source
+  adapter** -- process-gated batch adapter on branch `wi/0035-market-contrast-source-adapter`
+  (dai `a05b63b`): ONE odds request per slate (h2h,spreads x us = 2 credits, zero
+  retries, usage headers audited, key never recorded), ONE statsapi schedule/hydrate
+  request (new batch path preserving generation semantics; pitcher reads deduped),
+  fail-closed cross-provider identity join (teams-in-orientation AND start instant),
+  freshness policy market-contrast-source/1.0 (5-minute quote age; fresh paired
+  population only), one tenant-scoped batch active-run read, canonical screen bundle
+  market-contrast-screen-bundle/1.0 with atomic exclusive-create publication. 17 fixture
+  tests; no live call occurred. NOT pushed / NOT merged.
 - **Slice 3 (deferred, not authorized): one governed live screening + planner replay** --
   named MLB date/games, paid-screening authorization + caps, frozen results, envelopes,
   planner rerun; no generation unless separately authorized.

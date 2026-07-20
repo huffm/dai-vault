@@ -15764,3 +15764,45 @@ no-spend; nothing screened or authorized.
   pushed, ff-only merged, and both mains pushed + re-verified per the authorization.
 - external calls so far: attributable git fetches only. no odds/statsapi/model/db/
   screening/capture calls.
+
+---
+
+## 2026-07-20 -- WI-0035 Slice 2: bounded default-off source adapter (local commits)
+
+- phase a first: slice-1 review corrections integrated (dai main `ecd0ddb`, vault main
+  `9125ef2`, both == origin verified). phase b branches
+  `wi/0035-market-contrast-source-adapter` created from those exact mains.
+- dai commit `a05b63b` (WI: WI-0035): MarketContrastSourceAdapter.cs + 17-test file;
+  bounded refactors only (MlbStarterClient batch path via extracted shared grounding;
+  OddsMarketClient.BuildBookReadings internal + BookmakerKey; JsonString passthrough).
+  no controllers/DI/clients/persistence/config touched. NOT pushed / NOT merged.
+- contract: default-off process gate (no endpoint, no persistent enablement, no request
+  boolean); hard limits in market-contrast-source/1.0 (mlb, one date, <=20 candidates,
+  ONE odds call = 2 credits expected, zero retries, one schedule call, deduped pitcher
+  reads, one batch active-run read, zero writes, zero model calls); usage headers audited
+  without the key; fail-closed identity join (orientation+instant, doubleheader-safe);
+  5-minute quote freshness (readiness sees full observation, screen depth fresh pairs
+  only); canonical bundle = commit marker with all-false authority +
+  screening-is-not-a-baseline; atomic exclusive-create publication (2-writer race test:
+  exactly one admitted).
+- verification: adapter 17/17; DevCore.Api.Tests 1362/1362; agent-service 560/560; zero
+  new warnings; diff --check clean; snapshot 24 WIs / 0 warnings; drift byte-identical;
+  NO live source/db/model call anywhere in the slice (fakes + injected clock only).
+- next governed authorization: independent review + integration of the local
+  wi/0035-market-contrast-source-adapter branches; only under a separately explicit
+  paid-source approval afterwards: one bounded 2026-07-22 mlb screen + planner pass-2
+  replay (date, caps, one request, 2-credit ceiling, zero retries, enable/restore,
+  frozen artifacts, no generation, no capture).
+
+### Slice Synopsis
+
+**Change:** WI-0035 Slice 1 review corrections integrated to both mains; Slice 2
+delivered the bounded default-off mlb source adapter with canonical screen bundle and
+atomic publication, locally.
+**Reason:** the screen needs a governed, auditable, spend-capped path from a frozen slate
+to grounded planner envelopes.
+**Proof:** 1362/1362 C# + 560/560 python; one-request budgets, default-off zero-calls,
+fail-closed joins, and the 2-writer publication race all fixture-proven; no live call.
+**State:** mains dai ecd0ddb / vault 9125ef2 == origin; slice-2 branches local-only
+(dai a05b63b); no-spend.
+**Next:** independent review + integration of wi/0035-market-contrast-source-adapter.
