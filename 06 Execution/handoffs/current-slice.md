@@ -16013,3 +16013,47 @@ json boundary; 600-fixture predicate equivalence; historical 1.1 replay unchange
 posture no-spend.
 **Next:** the time-gated 2026-07-22 free /events identity/readiness gate remains a separate
 action before any second paid attempt.
+
+---
+
+## 2026-07-20 -- WI-0031 Slice 4: deterministic ranking and bounded plan building (offline, local)
+
+- built the pure domain decision layer DevCore.Domain/CapabilitySelection/
+  DeterministicPlanBuilder.cs consuming the Slice-2/3 ResolutionResult:
+  shadow -> blocked (hard-rule failure, never scored); accessible + any unevaluated
+  required dimension -> authorization_pending (fail closed, NotEvaluated != Allowed, never
+  scored/planned); accessible fully-evaluated -> scored against a named/versioned
+  WeightProfile (closed known-component set; duplicate/unknown/missing/non-finite weights
+  rejected; absent facts -> unfavorable floor; unknown components ignored), ranked by score
+  desc then stable identity (capability, tool), bounded (max >= 0; 0 = honest empty plan;
+  negative rejected; no duplicate tool step).
+- plan status planned_not_authorized / authorization_pending / blocked (never approved/
+  authorized/executable/ready_to_run); proposed steps carry no credential/payload/argument/
+  callback/endpoint; all-false authority ledger; runtimePermissionAuthority documents the
+  Tool Gateway as the runtime authority (not held). every candidate stays in the trace.
+- no sports/market logic; no gateway/di/endpoint/cli/model/persistence/execution; no
+  runtime link to WI-0034/WI-0035; WI-0034/WI-0035 untouched.
+- verification: 20 required invariants + a fixed-seed 400-iteration corpus (reorder
+  determinism + all invariants); DevCore.Api.Tests 1409/1409; DevCore.Domain 0 warnings;
+  fresh-process determinism across two independent test processes; diff --check clean; 0
+  csproj changes; scans clean; snapshot 24 WIs / 0 warnings; protected drift byte-identical.
+- dai commit f926484 on branch wi/0031-deterministic-ranking-and-plan-building; NOT
+  pushed / NOT merged. vault docs (branch same name): WI-0031 Slice-4 entry, standard-doc
+  delivered-semantics section, new closeout, this handoff.
+- next: independent review + integration of both wi/0031-deterministic-ranking-and-plan-
+  building branches; WI-0031 Slice 5 (telemetry) and Slice 6 (pilot) deferred.
+
+### Slice Synopsis
+
+**Change:** delivered WI-0031 Slice 4 -- the pure offline layer that ranks
+hard-rule-passing tool candidates against a versioned weight profile and emits a bounded
+proposed plan that executes nothing and grants no permission.
+**Reason:** the deterministic decision seam between model-independent recommendations and
+any future execution was the remaining core gap; hard rules must never be rescued by a
+score and unevaluated checks must fail closed.
+**Proof:** 1409/1409 DevCore.Api.Tests + a 400-iteration corpus; DevCore.Domain 0 warnings;
+byte-identical canonical json across fresh processes; all-false authority ledger; Tool
+Gateway remains the runtime authority.
+**State:** local branches wi/0031-deterministic-ranking-and-plan-building (dai f926484),
+NOT pushed; mains unchanged (dai 5e81b83 / vault f7d0d18); posture offline no-spend.
+**Next:** independent review + integration of both Slice-4 branches.

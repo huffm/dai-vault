@@ -422,9 +422,34 @@ recommendation is never authority.
 - Over-claiming enforcement (citing deferred gateway controls as live) -> mitigated by the
   current-vs-deferred framing inherited from the Tool Gateway doctrine.
 
+## slice 4 delivered semantics (2026-07-20, deterministic ranking + bounded plan)
+
+The deterministic decision layer between resolved recommendations and any future execution
+is implemented as a pure domain component (`DeterministicPlanBuilder`; see the closeout
+[[capability-selection-deterministic-plan-building-slice-4-2026-07-20-v1]]). Normative
+semantics now fixed:
+
+- **hard rule vs score:** a hard rule is yes/no; a failure is never rescued by a score. A
+  shadow candidate is `blocked`; an accessible candidate with any unevaluated required
+  dimension is `authorization_pending` (fail closed, `NotEvaluated != Allowed`) and is
+  never scored; only fully-evaluated accessible candidates are scored.
+- **weight profile:** a named, versioned profile weights a closed set of known
+  score-component names over eligible candidates only; duplicate, unknown, missing-required,
+  and non-finite weights are rejected; absent facts contribute the unfavorable floor and
+  unknown components are ignored (never favorable); the profile name/version is in the
+  trace. One fixture-backed profile (`deterministic-plan-ranking/1.0`) is delivered.
+- **bounded plan:** ordered by score desc then stable identity (capability, tool); max
+  steps >= 0 (0 = honest empty plan; negative rejected); no duplicate tool step; blocked
+  and inaccessible candidates stay in the trace but outside the plan.
+- **no authority:** plan status is `planned_not_authorized` / `authorization_pending` /
+  `blocked` (never approved/authorized/executable/ready_to_run); steps carry no
+  credential/payload/argument/callback/endpoint; the authority ledger is all-false; the
+  **Tool Gateway remains the runtime permission authority** and is re-checked at any future
+  execution.
+
 ## deferred decisions
 
-- Concrete production weight values and initial weight profiles (Slice 4/5).
+- Concrete production weight VALUES beyond the delivered fixture profile (Slice 5 tuning).
 - Selection-trace persistence store, retention, and redaction implementation (Slice 5).
 - Learned reranker/classifier/bandit choice and any fine-tuning (post-telemetry).
 - The first pilot consumer and its niche adapter (Slice 6; Daily Evidence Planner is a

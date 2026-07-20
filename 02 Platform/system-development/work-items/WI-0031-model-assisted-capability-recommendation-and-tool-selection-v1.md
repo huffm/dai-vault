@@ -192,6 +192,19 @@ boundary. Full slice definitions live in the implementation plan.
   tie-breaking, bounded recipe PLAN. Must not invent/duplicate missing canonical policy seams; never
   treats `NotEvaluated` as `Allowed`; recipes produced before all required execution policies are
   evaluated are authorization-pending / non-executable.
+  **Delivered 2026-07-20 (local commits; see [[capability-selection-deterministic-plan-building-slice-4-2026-07-20-v1]]):**
+  `DevCore.Domain/CapabilitySelection/DeterministicPlanBuilder.cs` -- pure offline layer consuming the
+  Slice-2/3 `ResolutionResult`: shadow -> `blocked`; accessible-with-unevaluated-required-dimension ->
+  `authorization_pending` (fail closed, never scored); accessible-fully-evaluated -> scored against a
+  named/versioned `WeightProfile` (closed known-component set; duplicate/unknown/missing/non-finite
+  weights rejected; absent facts contribute the unfavorable floor; unknown components ignored), ranked
+  by score desc then stable identity (capability, tool), bounded (max >= 0; 0 = honest empty plan;
+  negative rejected; no duplicate tool step). Every candidate stays in the trace; plan status is
+  `planned_not_authorized` / `authorization_pending` / `blocked` (never approved/authorized/executable/
+  ready_to_run); proposed steps carry no credential/payload/argument/callback/endpoint and an all-false
+  authority ledger; the Tool Gateway remains the runtime authority (documented, not held). 20 required
+  invariants + a fixed-seed 400-iteration corpus; DevCore.Api.Tests 1409/1409; DevCore.Domain 0
+  warnings. NOT pushed / NOT merged. WI-0031 Slice 5 (telemetry) and Slice 6 (pilot) remain deferred.
 - Slice 5: execution telemetry and offline evaluation (trace persistence, labels, gap metrics; no online self-modification).
 - Slice 6: governed pilot integration (one narrow consumer; Daily Evidence Planner is a candidate; niche logic stays outside core).
 
