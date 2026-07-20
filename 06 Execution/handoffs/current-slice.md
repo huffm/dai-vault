@@ -15639,3 +15639,45 @@ exit 0 with honest NOT_ADDRESSABLE outcome; mains == origin (dai e3ef9a5, vault 
 **State:** Slice-1 branches integrated + pushed; Slice-2 branches local-only (dai 3ab9568);
 posture no-spend; nothing commercial authorized.
 **Next:** independent review + integration of wi/0034-daily-evidence-planner-cli.
+
+---
+
+## 2026-07-19 -- WI-0034 Slice 2 contract-integrity review + integration disposition
+
+- BLOCKER reproduced before correction: under the 1.0 contract, asserting
+  input.market_divergence_screen (or input.market_snapshot) with schedule-only candidates
+  produced COHORT_PROPOSED_FOR_OPERATOR_REVIEW in both the core and the cli. a caller-
+  declared capability string substituted for the missing evidence product.
+- correction (dai `9147549`, new commit, no history rewrite): capability availability now
+  derives ONLY from typed input-evidence envelopes (schema/classifier versions, closed
+  evaluation statuses with NotEvaluated != Available, observation timestamp, source
+  provenance, target date, provider-scoped candidate identity, stable producer reasons,
+  normalized screen classification). wrong-identity/wrong-date/stale/duplicate/conflicting/
+  version-mismatched/provenance-less records are excluded or orphaned; partial coverage is
+  explicit; pools contain only fully grounded candidates; rank never rescues.
+- semantic migration: input.market_divergence_screen RETIRED (pre-generation input is a
+  market-contrast candidate screen) -> input.market_contrast_screen; dai-market
+  disagreement stays unknown_until_generation on every board. explicit rejection of the
+  retired id; no silent remap.
+- versions bumped, no silent migration: request/board/planner/cli all 2.0; envelope schema
+  input-evidence-envelope/1.0; 1.0 request/board files parseable but rejected (exit 5).
+- secondary cli corrections: board validator now checks the core-owned closed key set +
+  exact ledger and reports kind=board_envelope with named checks (incomplete invented
+  objects rejected); usage errors emit the structured single-line stderr contract; staging
+  is writer-unique and exclusively created; no-overwrite admission is atomic via
+  exclusive-create claims (2-process race test: exactly one admitted); alias preflight;
+  overwrite md/json failure semantics documented + tested (old json authoritative).
+- superseded claims recorded in both closeouts (slice-1 addressability contract; slice-2
+  validate/usage/staging claims).
+- verification: core 35/35, cli 43/43, full agent-service suite 553 passed / 0 failed;
+  cross-process 2.0 board sha-256
+  d4218b2889ca8687e9735cee680b057469026a8a79c1d8524bb841cc07ed1df7 equal in two fresh
+  processes; git diff --check clean (branch ranges); snapshot 23 WIs / 0 warnings; scans
+  clean; protected drift byte-identical.
+- integration: dai branch pushed (tip 9147549 verified remote-equal), dai main
+  fast-forwarded e3ef9a5..9147549 and pushed, main == origin == reviewed tip re-verified.
+  vault branch to be pushed and fast-forwarded after this append.
+- external calls: attributable git fetches/pushes only so far this authorization; the
+  bounded read-only mlb schedule observation for the readiness packet happens ONLY after
+  both mains verify. no model/paid/odds/capture/db calls; no AgentRun; nothing committed
+  from scratch.
