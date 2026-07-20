@@ -129,3 +129,57 @@ Independent review + integration of the local `wi/0035-market-contrast-source-ad
 branches (both repos). Only after that, and only under a separately explicit paid-source
 approval, may one bounded 2026-07-22 MLB screen and planner pass-2 replay be executed.
 A recommendation is not an authorization.
+
+## independent operational-integrity review corrections (2026-07-20 r3, superseding addendum)
+
+A separately authorized review reproduced and corrected, in a new commit (dai `8e044a4`;
+originals preserved):
+
+1. **superseded claim -- "default-off process gate":** one `EnableForThisProcess` call
+   admitted UNLIMITED sequential and concurrent runs (reproduced: 4 completed runs, 4
+   odds calls, accumulated instance counters). replaced by an atomic single-use run lease
+   (one admission = at most one source operation; losers make zero source/db calls;
+   per-operation ledgers).
+2. **superseded claim -- "one odds request per slate":** the odds call was not paid-last
+   (reproduced: odds called with an empty schedule and zero resolvable candidates). the
+   corrected order is validate -> claim destination -> authoritative statsapi -> readiness
+   -> active-run read -> free pre-elimination -> no-paid-call terminal bundle when zero
+   candidates remain screenable.
+3. **authoritative facts:** caller-supplied teams/start/state were eligibility facts; they
+   are now blocking cross-checks against the one statsapi response, and the tenant key was
+   removed from the untrusted slate (constructor-bound).
+4. **superseded claim -- "generation-readiness parity":** the adapter fabricated a
+   BaseballMarketContext with empty spread strings; h2h-only data reached
+   `backed_depth`/target regime (reproduced) although the generation path would return no
+   market context. readiness now flows through the extracted single normalization
+   `OddsMarketClient.TryNormalizeSpread`.
+5. **superseded claim -- "eastern date bracket":** `BaseUtcOffset` put july at -05:00.
+   the dst-aware `EasternDayBracket` is now the single bracketing authority (july -04:00 /
+   january -05:00, both endpoints tested); bounded no-retry timeouts and the exact
+   schedule/pitcher/db/odds ledgers (incl. failed-pitcher operation memoization) were
+   added; all three quota headers are validated as finite nonnegative numerics with exact
+   received values preserved.
+6. **source-failure semantics:** classifier 1.2 puts market-observation blockers before
+   readiness-regime blockers, so a real outage projects `unavailable` instead of a
+   derived readiness reason (cross-language vectors regenerated in both suites).
+7. **audited publication:** execution and publication are one operation; every paid
+   attempt yields a terminal attempt bundle (incl. quota violations, transport failures,
+   malformed responses); staging is writer-unique per attempt (pid alone was
+   insufficient); a failed final publication preserves the writer-owned recovery
+   artifact; the authority ledger carries booleans only (the not-a-baseline note moved
+   out). bundle schema `market-contrast-screen-bundle/1.1`, adapter
+   `market-contrast-source/1.1`.
+8. **pass-2 replay seam:** planner cli 2.3 gained the deterministic `replay` operation
+   (pass-1 request + reviewed bundle -> canonical pass-2 request; strict validation, hash
+   preservation, reorder determinism, cross-date/cross-request rejection; no
+   hand-composed capability evidence).
+9. **executable one-shot operator surface:** `market-contrast-screen` process command
+   mode (Program.cs dispatch before the web host; host DI, secrets, db context; one
+   attempt; structured status; finally restores default-off; structurally separate free
+   `--preflight` whose code path cannot reach the odds call site; no http endpoint).
+
+verification after corrections: adapter 18/18; DevCore.Api.Tests **1363/0**;
+agent-service **562/0**; the only two build warnings are the NU1903 package advisory
+proven pre-existing (zero csproj changes on the branch); cross-process board sha
+`2403c51079eb84cc423acc364c94b1af35ad96a6d14244abf1da4e0ca36fc315`; all six vectors
+byte-identical across suites.

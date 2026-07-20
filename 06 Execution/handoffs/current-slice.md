@@ -15806,3 +15806,35 @@ fail-closed joins, and the 2-writer publication race all fixture-proven; no live
 **State:** mains dai ecd0ddb / vault 9125ef2 == origin; slice-2 branches local-only
 (dai a05b63b); no-spend.
 **Next:** independent review + integration of wi/0035-market-contrast-source-adapter.
+
+---
+
+## 2026-07-20 -- WI-0035 Slice 2 r3 operational-integrity review + integration disposition
+
+- reproduced blockers: reusable gate admitted 4 runs/4 odds calls from one enable with
+  accumulated counters; odds called with zero resolvable candidates (paid not last);
+  h2h-only odds data reached generation target regime via a fabricated spread context;
+  july eastern bracket at -05:00 (BaseUtcOffset); caller-asserted facts drove
+  eligibility; tenant selectable via request json; quota-violation attempts returned no
+  bundle; shared pid staging; authority ledger carried a non-boolean note.
+- corrections (dai `8e044a4`, new commit): single-use atomic run lease; paid-last
+  ordering with free pre-elimination and no-paid-call terminal bundles; authoritative
+  statsapi facts with blocking caller cross-checks; constructor-bound tenant;
+  generation-parity via OddsMarketClient.TryNormalizeSpread; dst-aware EasternDayBracket;
+  bounded no-retry timeouts + exact call ledgers + failed-pitcher memo; three-header
+  numeric quota validation with exact values preserved; classifier 1.2 root-cause
+  ordering (vectors regenerated both suites); bound execute+publish with terminal
+  attempt bundles, writer-unique staging, preserved recovery artifacts, booleans-only
+  authority ledger; planner cli 2.3 deterministic pass-2 replay (bundle schema 1.1);
+  one-shot operator command mode with structurally separate free preflight.
+- versions: adapter market-contrast-source/1.1; bundle market-contrast-screen-bundle/1.1;
+  classifier market-contrast-screen/1.2; planner cli 2.3. request/board/planner/envelope
+  contracts unchanged (no shape change).
+- verification: adapter 18/18; DevCore.Api.Tests 1363/1363; agent-service 562/562; zero
+  new warnings (NU1903 proven pre-existing: no csproj change on branch); diff --check
+  clean (worktrees + ranges); snapshot 24 WIs / 0 warnings; drift byte-identical;
+  cross-process sha 2403c51079eb84cc423acc364c94b1af35ad96a6d14244abf1da4e0ca36fc315;
+  six vectors byte-identical.
+- integration: branches to be pushed and ff-only merged per the authorization after this
+  append; no partial integration.
+- external calls so far: attributable git fetches only.
