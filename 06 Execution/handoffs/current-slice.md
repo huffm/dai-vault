@@ -15732,3 +15732,35 @@ cross-process board sha 756288cb...524b equal.
 **State:** local matching branches from dai 9147549 / vault 83a055f; NOT pushed/merged;
 no-spend; nothing screened or authorized.
 **Next:** independent review + integration of wi/0035-market-contrast-candidate-screen.
+
+---
+
+## 2026-07-20 -- WI-0035 Slice 1 contract-integrity review + integration disposition
+
+- reproduced BEFORE correction (finding a/b): evaluated+includable envelope with null or
+  missing screen_tier -> eligible, tier rank 0 (primary), pooled primary; negative
+  disagreement_range (-5) -> best-possible rank component 5.0. classified correctness and
+  input-authority blockers.
+- corrections (dai `ecd0ddb`, new commit; vault addendum this commit): centralized
+  capability-specific screen-result validation (missing tier never primary; malformed
+  priority facts never rank; snapshot semantics separate); standards-correct escaping
+  json writer (+ escaping/non-ascii vector, 6 vectors byte-identical both suites);
+  temporal/provenance integrity under market-contrast-screen/1.1 (real market ts+prov
+  required, readiness/active-run checked-at+prov required, no future evidence, negative
+  active-run counts invalid, blocked projections never invent an observation; original
+  vectors' as-of-before-evidence ordering fixed); paired-h2h facts from ONE deduplicated
+  valid-pair population (additive H2hPaired* + BookmakerKey; legacy semantics preserved);
+  boards 2.2 with decision_time_market_baseline: unknown_until_generation_capture
+  (request stays 2.1); validator reports interior_validated: false; lowercase comment
+  sweep done.
+- superseded slice-1 claims recorded in the closeout ("canonical json", "unknown/null
+  never favorable", "same paired population", generic market_availability).
+- verification: DevCore.Api.Tests 1345/1345 (60 targeted market-contrast/depth/trace);
+  agent-service 560/560; zero new build warnings (pre-existing NU1903 only); cross-process
+  2.2 board sha-256 2403c51079eb84cc423acc364c94b1af35ad96a6d14244abf1da4e0ca36fc315
+  equal in two fresh processes; diff --check clean (worktrees + ranges); snapshot 24 WIs /
+  0 warnings; scans clean; protected drift byte-identical.
+- integration: this disposition committed on the feature branch; both branches to be
+  pushed, ff-only merged, and both mains pushed + re-verified per the authorization.
+- external calls so far: attributable git fetches only. no odds/statsapi/model/db/
+  screening/capture calls.

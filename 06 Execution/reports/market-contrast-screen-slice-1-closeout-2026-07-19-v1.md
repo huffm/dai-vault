@@ -92,6 +92,47 @@ settlement/scheduling/tuning, 0 DI/controller/persistence/migration/prompt/confi
 changes, 0 pushes/merges. WI-0034 Slices 3-4 and WI-0031 Slice 4/pilot untouched. The
 classifier's result and envelope authorize nothing.
 
+## independent review corrections (2026-07-20, superseding addendum)
+
+A separately authorized contract-integrity review reproduced and corrected, in a new
+commit on the same branch (dai `ecd0ddb`; originals preserved):
+
+1. **missing-tier blocker (reproduced):** an evaluated includable envelope with a null or
+   missing screen_tier stayed eligible, took tier rank 0 (primary), and entered the
+   primary pool; a negative disagreement_range (-5) produced the best possible rank.
+   Corrected via centralized capability-specific semantic validation (includable requires
+   a real tier; excluded requires none; priority facts must be a real boolean plus a
+   finite 0..1 number or null; market-snapshot semantics kept separate).
+2. **superseded claim -- "canonical json":** the projector concatenated unescaped strings;
+   quotes/backslashes/non-ascii in provider data could corrupt or inject. Replaced with a
+   standards-correct deterministic ascii escaping writer; an escaping/non-ascii vector was
+   added to both suites.
+3. **superseded claim -- "unknown/null facts are never favorable":** the 1.0 classifier
+   substituted readiness/as-of timestamps and a generic provenance for missing market
+   observation facts, accepted future-dated evidence, and treated negative active-run
+   counts as countable. Corrected under market-contrast-screen/1.1: evaluated market
+   evidence requires its real timestamp + provenance; readiness and active-run checks
+   require checked-at + provenance; evidence never postdates as-of; negative counts are
+   invalid; blocked projections carry the screen's own evaluation instant and the
+   classifier as producer (never an invented market observation). The original vectors'
+   temporal ordering (as-of before its own evidence) was itself wrong and is fixed.
+4. **superseded claim -- "same paired population":** H2hBookCount counted paired books
+   while medians/disagreement still used the mixed one-sided non-deduped population.
+   Corrected: additive H2hPairedHomeMedian / H2hPairedAwayMedian /
+   H2hPairedDisagreementRange derive from exactly the deduplicated valid-pair set that
+   grounds the count (BookmakerKey dedupe, title fallback; zero/non-finite/one-sided/
+   duplicate records never contribute); legacy BookCount and legacy medians unchanged.
+5. **board truthfulness:** an evaluated screen no longer sits under the generic
+   `market_availability: unknown_until_paid_screening`; boards now carry
+   `decision_time_market_baseline: unknown_until_generation_capture` (board/planner/cli
+   2.2; request unchanged at 2.1) -- a screening-time observation is never a decision-time
+   baseline. The cli board validator additionally reports `interior_validated: false`.
+
+Test counts after review: DevCore.Api.Tests **1345 / 0**; agent-service **560 / 0**;
+cross-process 2.2 board sha-256
+`2403c51079eb84cc423acc364c94b1af35ad96a6d14244abf1da4e0ca36fc315`; all six vectors
+byte-identical across suites.
+
 ## next step
 
 Independent review + integration of the local `wi/0035-market-contrast-candidate-screen`
