@@ -215,7 +215,11 @@ boundary. Full slice definitions live in the implementation plan.
   rejected; plan schema `capability-selection-plan/1.0` added. The output is a ranked, bounded,
   NON-EXECUTABLE selection plan (Stage E partial), NOT a Stage F recipe compiler;
   `deterministic-plan-ranking/1.0` is a TEST FIXTURE, not a production profile. DevCore.Api.Tests
-  1416/1416. NOT pushed / NOT merged until integration. WI-0031 Slice 5 (telemetry) and Slice 6
+  1416/1416. **Current state (2026-07-20, superseding the original "NOT pushed / NOT merged"):
+  INTEGRATED** -- confirmed against git, dai `main` contains `f926484` (Slice 4) and `209d485`
+  (r2 corrections), vault `main` the matching docs commit; production weight values, execution
+  telemetry (Slice 5), and the governed pilot (Slice 6) remain separately deferred and are NOT
+  prerequisites for the WI-0035 2026-07-22 evidence loop. WI-0031 Slice 5 (telemetry) and Slice 6
   (pilot) remain deferred.
 - Slice 5: execution telemetry and offline evaluation (trace persistence, labels, gap metrics; no online self-modification).
 - Slice 6: governed pilot integration (one narrow consumer; Daily Evidence Planner is a candidate; niche logic stays outside core).

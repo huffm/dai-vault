@@ -16106,3 +16106,67 @@ authority; Stage F deferred.
 **State:** feature branches integrated to mains and pushed; originals preserved as
 ancestors; posture offline no-spend.
 **Next:** WI-0031 Slice 5 (telemetry) and Slice 6 (pilot) remain deferred.
+
+---
+
+## WI-0035 Slice 3 r7 -- Zero-Quota Cross-Provider Events Gate Operator (2026-07-20)
+
+**Objective.** Deliver the missing local-only operator for the time-gated 2026-07-22 `/events`
+cross-provider identity/readiness gate. Offline implementation and testing only; no StatsAPI,
+Odds `/events` or `/odds`, database, model, Tool Gateway, or application call; no push, no
+merge.
+
+**Outcome.** `WI0035_EVENTS_GATE_OPERATOR_COMPLETE_LOCAL_COMMITS`. A one-shot command mode
+`market-contrast-events-gate --preflight-bundle <f> --out <f> [--target-date <d>]` observes the
+provider's ZERO-QUOTA `/events` endpoint at most once (never `/odds`) and joins the returned
+events against the authoritative statsapi identities carried by a freshly generated
+market-contrast preflight bundle -- with no statsapi/db/model path of its own. Producer parity:
+the preflight bundle bumped to `market-contrast-screen-bundle/1.3` / adapter
+`market-contrast-source/1.3` (additive per-candidate `authoritative_identity`); planner CLI 2.5
+accepts 1.3 (replay-inert). The exact-match predicate is the integrated `MarketJoinDiagnostics`
+predicate verbatim; aliases/shortened names/reversed orientation/nonzero start deltas are
+observation-only and never match. Artifact `market-contrast-events-gate/1.0`, authority ledger
+booleans-only all false, zero-quota audit requiring `x-requests-last` exactly 0, no api key, no
+tenant data, no planner envelope.
+
+**Repo state.** dai branch `wi/0035-market-contrast-events-gate` from `209d485` (local commit
+this slice; NOT pushed). vault branch `wi/0035-market-contrast-events-gate` from `52e1924`
+(local docs commit this slice; NOT pushed). No protected file touched (DevCore.Data.csproj
+byte-identical at 63ef2488; vault graph.json/CLAUDE.md/preflight manifest/synopsis unchanged).
+
+**Files.** dai: `MarketContrastEventsGate.cs` (new), `MarketContrastEventsGateCommand.cs`
+(new), `MarketContrastEventsGateTests.cs` (new, 33 fixtures), `Program.cs` (dispatch),
+`MarketContrastSourceAdapter.cs` (bundle 1.3), `MarketContrastSourceAdapterTests.cs` (1.3
+assertions), `daily_evidence_planner_cli.py` (CLI 2.5 + 1.3), `test_daily_evidence_planner_cli.py`
+(1.3 replay-equivalence). vault: WI-0035 + WI-0031 current-state reconciliation,
+market-contrast architecture record, orchestrator recommended-next, new events-gate closeout
+`market-contrast-events-gate-slice-3-2026-07-20-v1.md`, this append.
+
+**Verification.** events-gate 33/33; full DevCore.Api.Tests 1449/1449 (was 1416); full pytest
+564 passed; 0 new build warnings (only pre-existing NU1903; 0 csproj changes on branch); diff
+--check clean; secret/machine-path/authority-true scans clean; fixed-seed exact-match
+equivalence corpus green; byte-identical artifact hashing under injected attempt/time.
+
+**External-call ledger.** model 0; StatsAPI 0; Odds /events 0; Odds /odds 0; db 0; Tool Gateway
+0; generation/capture/screening/settlement/scheduling 0; push/merge 0.
+
+**Next.** Independent review + integration of both local events-gate branches; then, only after
+integration and no earlier than 2026-07-22T12:00:00Z, one refreshed free preflight plus exactly
+one zero-quota `/events` gate observation (no `/odds` request). A paid `/odds` attempt is a
+separate authorization requiring at least one exact current identity/start join.
+
+### Slice Synopsis
+
+**Change:** Delivered the offline zero-quota cross-provider `/events` events-gate operator
+(artifact `market-contrast-events-gate/1.0`) plus the producer bundle 1.3 / adapter 1.3 /
+planner CLI 2.5 `authoritative_identity` parity it consumes, and reconciled stale
+"not integrated" current-state records in WI-0035, WI-0031, and the orchestrator.
+**Reason:** The first live screen could not distinguish identity/orientation/start-time
+mismatch causes, and the next paid attempt must be preceded by a zero-quota identity
+observation the platform did not yet have an operator for.
+**Proof:** events-gate 33/33; DevCore.Api.Tests 1449/1449; pytest 564; 0 new warnings; diff
+--check + secret/authority scans clean; fixed-seed exact-match equivalence corpus green.
+**State:** Local commits on `wi/0035-market-contrast-events-gate` in both repos from
+209d485/52e1924; NOT pushed / NOT merged; protected files byte-identical; offline no-spend.
+**Next:** Independent review + integration of both events-gate branches, then a time-gated
+(>= 2026-07-22T12:00:00Z) free preflight + one zero-quota `/events` observation; no `/odds`.

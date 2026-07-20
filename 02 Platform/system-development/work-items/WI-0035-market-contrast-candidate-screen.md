@@ -99,6 +99,22 @@ capture; the classifier core performs no source access.
 
 ## decomposition
 
+> **Current integration state (2026-07-20, superseding the inline "NOT pushed / NOT
+> merged" / "local only" flags below).** Confirmed against git: dai `main` contains every
+> WI-0035 commit -- Slice-1 core `a6e213b`+`ecd0ddb`, Slice-2 source adapter `a05b63b`,
+> r3 corrections `8e044a4`, join diagnostics `0aae858`, r6a-review corrections `5e81b83`
+> -- and both WI-0031 Slice-4 commits `f926484`+`209d485`. The Slice-1/Slice-2/diagnostics
+> branches are integrated, not local-only. Reconciled sequencing: (1) WI-0031 Slice 4 is
+> integrated; production weights, telemetry (Slice 5), and pilot (Slice 6) remain
+> separately deferred. (2) The WI-0035 source adapter, the first live `/odds` attempt, and
+> join diagnostics are integrated. (3) The next time-sensitive gate is the zero-quota
+> 2026-07-22 `/events` cross-provider identity observation (events-gate operator below,
+> delivered locally this slice). (4) A later `/odds` attempt needs a separate authorization
+> AND at least one exact current identity/start join. (5) WI-0031 Slice 5 telemetry is not a
+> prerequisite for the 2026-07-22 evidence loop. (6) No selection plan, events-gate
+> artifact, or planner board grants execution authority. The historical bullets are
+> preserved as written; this note is the authoritative current state.
+
 - **Slice 1 (this slice, delivered): offline deterministic classifier core** -- policy
   profile, normalized facts, classification, reasons, priority, envelope projection,
   consumer compatibility, cross-language vectors. local commits only.
@@ -142,6 +158,26 @@ capture; the classifier core performs no source access.
   classification/tier/priority/readiness/eligibility/authority change; the attempt-1 1.1
   bundle is unchanged and no team-matching defect is declared without provider evidence.
   Branch `wi/0035-market-contrast-join-diagnostics`; NOT pushed / NOT merged.
+- **Events-gate operator (delivered 2026-07-20, local commits): zero-quota cross-provider
+  `/events` identity observation** -- offline implementation and testing only, no source
+  call (see [[market-contrast-events-gate-slice-3-2026-07-20-v1]]). A local-only one-shot
+  command `market-contrast-events-gate --preflight-bundle <f> --out <f> [--target-date <d>]`
+  that observes the provider's ZERO-QUOTA `/events` endpoint once (never `/odds`), and joins
+  the returned events against the authoritative statsapi identities carried by a freshly
+  generated preflight bundle -- with NO statsapi, database, model, or application path of its
+  own. Producer parity: the market-contrast preflight bundle bumps to
+  `market-contrast-screen-bundle/1.3` / adapter `market-contrast-source/1.3`, additively
+  emitting a per-candidate `authoritative_identity` (normalized home/away refs, exact
+  scheduled utc, schedule state); planner CLI 2.5 accepts 1.3 (1.1/1.2/1.3 replay-identical,
+  authoritative_identity is replay-inert). The exact-match predicate is the integrated
+  `MarketJoinDiagnostics` predicate verbatim -- aliases, shortened names, reversed
+  orientation, and nonzero start deltas are observation-only and never match. Artifact
+  `market-contrast-events-gate/1.0` (canonical json, authority ledger booleans-only all
+  false, zero-quota audit requiring `x-requests-last` exactly 0, no api key, no tenant data,
+  no planner envelope). 33 offline fixtures; reused authorities only (EasternDayBracket, the
+  `OddsApiEvent` DTO, GameIdentityDerivation.NormalizeTeamRef, MarketJoinDiagnostics,
+  ScreenBundlePublisher) -- no second client/normalizer/bracket/publisher. Branch
+  `wi/0035-market-contrast-events-gate`; local commits only, NOT pushed / NOT merged.
 - **Slice 4 (deferred, justify first): operating integration** -- only after one reviewed
   live screen; no autonomous scheduling or capture.
 
@@ -169,6 +205,12 @@ adapter re-implementing market math (bounded by the recorded reuse decisions).
 ## final handoff requirements
 
 Slice handoff appended to `06 Execution/handoffs/current-slice.md`; status stays
-`in-progress` (Slices 2-4 deferred); disposition: Slice 1 implementation complete / merge
-ready / not integrated; next governed action = independent review + integration of the
-market-contrast offline core before any source adapter or paid screen.
+`in-progress` (operating-integration Slice 4 deferred). Current disposition (2026-07-20):
+Slice 1 core, Slice 2 source adapter, the first live `/odds` screen, and join diagnostics
+are all integrated on dai `main`; the events-gate operator is implementation complete /
+merge ready / NOT integrated (local branch `wi/0035-market-contrast-events-gate`). Next
+governed action = independent review + integration of both local events-gate branches, then
+-- only after integration and no earlier than 2026-07-22T12:00:00Z -- one refreshed free
+preflight plus exactly one zero-quota `/events` gate observation (no `/odds` request in that
+authorization). A paid `/odds` attempt is proposed separately only when a current exact
+identity/start join exists.

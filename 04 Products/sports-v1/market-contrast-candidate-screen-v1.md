@@ -139,8 +139,28 @@ generation.
 - `04 Products/sports-v1/daily-evidence-acquisition-orchestrator-v1.md`
 - `06 Execution/patterns/cohort-selection-and-run-discipline-v1.md`
 
+## events gate (zero-quota cross-provider identity observation)
+
+Delivered locally 2026-07-20 (offline; see
+[[market-contrast-events-gate-slice-3-2026-07-20-v1]]). Before another paid `/odds` attempt
+is considered, a separate one-shot operator observes the provider's ZERO-QUOTA `/events`
+endpoint once and explains whether the currently listed provider events exact-join the
+authoritative statsapi candidates. To make the gate consumable with no statsapi/db path of
+its own, the preflight bundle bumped to `market-contrast-screen-bundle/1.3` (adapter
+`market-contrast-source/1.3`), additively emitting a per-candidate `authoritative_identity`
+(normalized home/away refs, exact scheduled utc, schedule state); planner CLI 2.5 accepts
+1.3 and the field is replay-inert. The gate reuses the integrated exact-match predicate
+verbatim (aliases / shortened names / reversed orientation / nonzero start deltas are
+observation-only and never match), never makes an `/odds` request, and emits a
+`market-contrast-events-gate/1.0` artifact whose authority ledger is booleans-only, all
+false. No gate status authorizes screening, generation, capture, an `/odds` request, or a
+paid attempt.
+
 ## recommended next slice
 
-Independent review + integration of the WI-0035 Slice-1 branches; afterwards a separate
-authorization may consider the bounded source adapter. A recommendation is not an
-authorization.
+Current state (2026-07-20): WI-0035 Slice 1 classifier, Slice 2 source adapter, the first
+live `/odds` screen, and join diagnostics are integrated; the events-gate operator is
+delivered locally. The next step is independent review + integration of the events-gate
+branches, then -- no earlier than 2026-07-22T12:00:00Z -- one refreshed free preflight plus
+exactly one zero-quota `/events` gate observation (no `/odds` request). A recommendation is
+not an authorization.
