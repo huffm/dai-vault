@@ -126,3 +126,26 @@ or partial integration.
 The next action is NOT a paid attempt. It is a separately authorized, time-gated 2026-07-22
 refreshed free preflight followed by at most one zero-quota `/events` observation. No `/odds`
 call is authorized by this review.
+
+## superseding correction addendum -- r7C (2026-07-20)
+
+This addendum qualifies the "no production defect was confirmed" conclusion above. That
+conclusion was correct FOR THE TEN PROBES r7B ran, but the r7B probe set was incomplete: it did
+not exercise a MISSING `preblock_reason` property (as opposed to a present explicit null) or a
+MISSING/malformed `operation.started_at_utc`. r7C (see
+[[market-contrast-events-gate-boundary-completion-2026-07-20-v1]]) reproduced both as executable
+RED failures against the integrated r7B gate and corrected them:
+
+- a missing `preblock_reason` property is malformed input and is rejected before any claim or
+  call (never silently treated as null, which could otherwise turn malformed input into a
+  screenable candidate); a blank/whitespace preblock string is likewise rejected; a present
+  explicit null remains the evaluated "no preblock" case; a present nonblank string remains a
+  skip reason.
+- `operation.started_at_utc` is required present, an explicit-utc string, and no later than
+  completion; missing/null/malformed/timezone-less/nonzero-offset all fail closed before any
+  call.
+
+Operator version bumped `market-contrast-events-gate-operator/1.1`; the artifact schema stays
+`market-contrast-events-gate/1.0` (output shape unchanged); no new capability or authority. The
+r7B integration proof and the ten probe findings remain valid as written; this addendum records
+that the "no defect" claim was scoped to the probes actually run.

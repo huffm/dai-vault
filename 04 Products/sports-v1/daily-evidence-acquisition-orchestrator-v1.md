@@ -162,12 +162,13 @@ screen tiers).
 
 Current state (2026-07-20, superseding the earlier "integrate WI-0034 Slice-1" pointer):
 WI-0034 Slice 1 core and Slice 2 CLI are integrated (dai `main` `ff55398`..`9147549`);
-WI-0035 Slice 1 classifier, Slice 2 source adapter, the first live `/odds` screen, and join
-diagnostics are integrated; WI-0031 Slice 4 (deterministic ranking + bounded plan) is
-integrated. The next time-sensitive step is the WI-0035 zero-quota 2026-07-22 `/events`
-cross-provider identity observation: independent review + integration of the local
-events-gate branches, then -- no earlier than 2026-07-22T12:00:00Z -- one refreshed free
-preflight plus exactly one `/events` gate observation (no `/odds` request). A later paid
-`/odds` attempt is a separate authorization requiring at least one exact current
-identity/start join. WI-0031 Slice 5 telemetry is deferred and is not a prerequisite for
-this loop. Nothing further is authorized by this record.
+WI-0035 Slice 1 classifier, Slice 2 source adapter, the first live `/odds` screen, join
+diagnostics, AND the events-gate operator (r7A->r7B->r7C, operator 1.1) are all integrated on
+both mains; WI-0031 Slice 4 (deterministic ranking + bounded plan) is integrated. The next
+time-sensitive step (superseding the earlier "review + integration of the local events-gate
+branches" pointer) is a separately authorized, time-gated action no earlier than
+2026-07-22T12:00:00Z: one refreshed free preflight plus exactly one zero-quota `/events` gate
+observation (no `/odds` request). A later paid `/odds` attempt is a separate authorization
+requiring at least one exact current identity/start join from a screenable candidate. WI-0031
+Slice 5 telemetry is deferred and is not a prerequisite for this loop. Nothing further is
+authorized by this record.

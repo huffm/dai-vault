@@ -196,8 +196,23 @@ capture; the classifier core performs no source access.
   ids/keys); strengthened publication/recovery so no post-claim path leaves an unexplained
   claim; a real command/DI/named-client seam test. Version set unchanged (bundle/adapter 1.3,
   operator/artifact 1.0, CLI 2.5). 60 offline fixtures (33 retained + 27); the six defects were
-  reproduced as executable RED failures against the committed r7 gate before correcting. Still
-  local commits only, NOT pushed / NOT merged; no live source call.
+  reproduced as executable RED failures against the committed r7 gate before correcting.
+  **r7B independent review + INTEGRATION (2026-07-20; see
+  [[market-contrast-events-gate-review-2026-07-20-v1]]):** the r7A correction was independently
+  reviewed with ten adversarial probes across all 18 review questions; the reviewed feature
+  branches were fast-forward integrated into both mains (dai `c7d4a79`, vault `32a1d99`) and
+  pushed. The events-gate operator is INTEGRATED as of r7B (superseding the r7/r7A "NOT pushed /
+  NOT merged" flags above).
+  **r7C fail-closed boundary completion (2026-07-20; see
+  [[market-contrast-events-gate-boundary-completion-2026-07-20-v1]]):** r7B correctly reviewed
+  its listed probes but omitted two malformed-input cases. r7C corrects them: a MISSING
+  `preblock_reason` property (distinct from a present explicit null) and a blank/whitespace
+  preblock string are now rejected before any claim or call, and `operation.started_at_utc` is
+  now required present, an explicit-utc string, and no later than completion (missing/malformed/
+  timezone-less/nonzero-offset all fail closed). Operator version bumped
+  `market-contrast-events-gate-operator/1.0` -> `1.1` (artifact schema stays 1.0; the output
+  shape is unchanged; no new capability or authority). Integrated fast-forward into both mains.
+  WI-0035 remains in progress; operating-integration Slice 4 remains deferred.
 - **Slice 4 (deferred, justify first): operating integration** -- only after one reviewed
   live screen; no autonomous scheduling or capture.
 
@@ -225,12 +240,12 @@ adapter re-implementing market math (bounded by the recorded reuse decisions).
 ## final handoff requirements
 
 Slice handoff appended to `06 Execution/handoffs/current-slice.md`; status stays
-`in-progress` (operating-integration Slice 4 deferred). Current disposition (2026-07-20):
-Slice 1 core, Slice 2 source adapter, the first live `/odds` screen, and join diagnostics
-are all integrated on dai `main`; the events-gate operator is implementation complete /
-merge ready / NOT integrated (local branch `wi/0035-market-contrast-events-gate`). Next
-governed action = independent review + integration of both local events-gate branches, then
--- only after integration and no earlier than 2026-07-22T12:00:00Z -- one refreshed free
-preflight plus exactly one zero-quota `/events` gate observation (no `/odds` request in that
-authorization). A paid `/odds` attempt is proposed separately only when a current exact
-identity/start join exists.
+`in-progress` (operating-integration Slice 4 deferred). Current disposition (2026-07-20,
+superseding the earlier "events-gate NOT integrated" line): Slice 1 core, Slice 2 source
+adapter, the first live `/odds` screen, join diagnostics, AND the events-gate operator
+(r7A correction -> r7B review+integration -> r7C fail-closed boundary completion, operator
+1.1) are all INTEGRATED on both mains (dai `main`, vault `main`). Next governed action =
+a separately authorized, time-gated action no earlier than 2026-07-22T12:00:00Z: one
+refreshed free preflight plus exactly one zero-quota `/events` gate observation (no `/odds`
+request in that authorization). A paid `/odds` attempt is proposed separately only when a
+current exact identity/start join from a screenable candidate exists.

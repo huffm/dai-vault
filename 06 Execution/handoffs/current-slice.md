@@ -16294,3 +16294,70 @@ diff --check clean; no live source call.
 origin == reviewed tips; original r7/r7A commits preserved; offline no-spend.
 **Next:** A separately authorized, time-gated (>= 2026-07-22T12:00:00Z) free preflight + one
 zero-quota `/events` observation; no `/odds`.
+
+---
+
+## WI-0035 Slice 3 r7C -- Events-Gate Fail-Closed Boundary Completion + Integration (2026-07-20)
+
+**Objective.** Correct two remaining fail-closed input-validation defects in the integrated
+events-gate operator, reconcile stale current-state, bump operator 1.0->1.1, and fast-forward
+integrate both mains. Offline only; no source calls, no spend.
+
+**Outcome.** Both defects reproduced RED against integrated r7B (`c7d4a79`), then corrected:
+(A) a MISSING `preblock_reason` property is now rejected before any claim/call (distinct from a
+present explicit null, which stays the evaluated "no preblock"); blank/whitespace preblock
+strings reject too. (B) `operation.started_at_utc` is now required present, explicit-utc, and
+`<=` completion; missing/null/malformed/timezone-less/nonzero-offset all fail closed. Operator
+bumped to `market-contrast-events-gate-operator/1.1`; artifact schema stays 1.0 (output shape
+unchanged); no new capability/authority. All other semantics (matching, screenability, margin,
+bracket, 5-min freshness, quota, publication/recovery, replay, bundle/adapter/CLI versions,
+all-false authority) unchanged. See
+[[market-contrast-events-gate-boundary-completion-2026-07-20-v1]].
+
+**Skills invoked (native).** dai-slice-runner, dai-skill-router (7-section gate, PROCEED),
+dai-system-development (integration continuation; no new WI), superpowers:systematic-debugging
+(root-caused both defects by inspection + RED), superpowers:test-driven-development (RED-first,
+9 failing -> 18 green), dai-test-discipline (bounded ladder), dai-grill-with-vault (4
+current-truth conflicts found), dai-docs-architect (OKF reconciliation + new report),
+dai-code-reviewer (DAI CODE REVIEW: approve, no blocking), superpowers:verification-before-
+completion (final suites), dai-agent-handoff (this), dai-token-tight (terminal report). Prompt
+Ledger Hook: one pre-execution record created outside both repos.
+
+**Repo state.** dai/vault correction commits on branch `wi/0035-events-gate-boundary-completion`
+from c7d4a79/32a1d99; r7/r7A/r7B commits preserved as ancestors. Then fast-forward integrated
+into both mains and pushed. No protected file touched (csproj 63ef2488; vault graph/CLAUDE/
+manifest/synopsis unchanged; Welcome deleted).
+
+**Files.** dai: `MarketContrastEventsGate.cs` (3 edits: operator 1.1; started_at required;
+preblock missing!=null), `MarketContrastEventsGateTests.cs` (+18 r7C fixtures). vault: WI-0035
+r7C block + disposition, product record, orchestrator, r7B review addendum, new r7C report, this
+append.
+
+**Verification.** RED->GREEN (9->0 failing); events-gate class 88/88; full DevCore.Api.Tests
+1504/1504 (was 1486); adjacent 72/72; full pytest 564/564; replay 1.1/1.2/1.3 inert; 0 new
+warnings; diff --check + secret/machine-path/authority scans clean; snapshot 24/0; protected
+drift byte-identical open to close.
+
+**External-call ledger.** model 0; StatsAPI 0; Odds /events 0; Odds /odds 0; db 0; generation/
+capture/screening/settlement/scheduling 0. Injected handler + non-secret sentinel only.
+
+**Next.** A separately authorized, time-gated action no earlier than 2026-07-22T12:00:00Z: one
+refreshed free preflight + at most one zero-quota `/events` observation. No `/odds`; no paid
+attempt.
+
+### Slice Synopsis
+
+**Change:** Tightened the integrated events-gate admission so a MISSING `preblock_reason`
+(distinct from explicit null) and a missing/malformed `operation.started_at_utc` fail closed
+before any claim/call; bumped operator 1.0->1.1; reconciled stale current-state; fast-forward
+integrated both mains.
+**Reason:** r7B correctly reviewed its ten probes but omitted these two malformed-input cases,
+which could turn malformed input into a screenable candidate or silently ignore an invalid
+start timestamp.
+**Proof:** 9 fixtures RED against r7B then GREEN; events-gate 88/88; DevCore.Api.Tests
+1504/1504; pytest 564; replay-inert; code review approve; scans + diff --check clean; no live
+call.
+**State:** Correction branches pushed and fast-forward merged into both mains; mains == origin
+== reviewed tips; r7/r7A/r7B preserved as ancestors; offline no-spend.
+**Next:** A separately authorized, time-gated (>= 2026-07-22T12:00:00Z) free preflight + one
+zero-quota `/events` observation; no `/odds`.

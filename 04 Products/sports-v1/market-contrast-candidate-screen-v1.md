@@ -156,7 +156,7 @@ observation-only and never match), never makes an `/odds` request, and emits a
 false. No gate status authorizes screening, generation, capture, an `/odds` request, or a
 paid attempt.
 
-r7A correction (pre-integration, 2026-07-20): a resolved authoritative identity is not the
+r7A correction (2026-07-20): a resolved authoritative identity is not the
 same as a screenable candidate. The gate calls a match "ready" only when it belongs to a
 candidate still screenable at the gate observation start -- `preblock_reason` null, canonical
 scheduled/pregame state, scheduled start inside the target dst-aware Eastern day, and the
@@ -166,11 +166,20 @@ retained only for explanation (`skipped_preblocked`, zero counts, never ready); 
 screenable candidates reject before any call as `no_screenable_candidates`. Only screenable
 exact matches can support a later paid-attempt proposal, and even that grants no authority.
 
+Current integration state (2026-07-20, superseding "delivered locally"): the events-gate
+operator is INTEGRATED on both mains -- r7A correction, r7B independent review + fast-forward
+integration, and r7C fail-closed boundary completion (operator
+`market-contrast-events-gate-operator/1.1`). r7C fixes two malformed-input cases r7B omitted:
+a MISSING `preblock_reason` property (distinct from a present explicit null, which is an
+evaluated "no preblock") and a blank/whitespace preblock string are rejected before any claim
+or call, and `operation.started_at_utc` is required present, explicit-utc, and no later than
+completion. The artifact schema stays `market-contrast-events-gate/1.0` (output shape
+unchanged); operator 1.1 grants no new capability or authority.
+
 ## recommended next slice
 
 Current state (2026-07-20): WI-0035 Slice 1 classifier, Slice 2 source adapter, the first
-live `/odds` screen, and join diagnostics are integrated; the events-gate operator is
-delivered locally. The next step is independent review + integration of the events-gate
-branches, then -- no earlier than 2026-07-22T12:00:00Z -- one refreshed free preflight plus
-exactly one zero-quota `/events` gate observation (no `/odds` request). A recommendation is
-not an authorization.
+live `/odds` screen, join diagnostics, and the events-gate operator (operator 1.1) are all
+integrated on both mains. The next step is a separately authorized, time-gated action no
+earlier than 2026-07-22T12:00:00Z: one refreshed free preflight plus exactly one zero-quota
+`/events` gate observation (no `/odds` request). A recommendation is not an authorization.
