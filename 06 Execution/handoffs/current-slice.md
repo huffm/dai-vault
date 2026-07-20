@@ -15681,3 +15681,54 @@ posture no-spend; nothing commercial authorized.
   bounded read-only mlb schedule observation for the readiness packet happens ONLY after
   both mains verify. no model/paid/odds/capture/db calls; no AgentRun; nothing committed
   from scratch.
+
+---
+
+## 2026-07-19 -- WI-0035 Slice 1: market-contrast screen offline core (local commits)
+
+- WI-0035 allocated (first free id after live collision/reserved-band/MOC/filename/branch
+  checks); matching branches `wi/0035-market-contrast-candidate-screen` in BOTH repos from
+  the exact integrated mains (dai `9147549`, vault `83a055f`) before the first write.
+- dai commit `a6e213b` (WI: WI-0035): C# classifier core
+  `platform/dotnet/DevCore.Api/AgentRuns/MarketContrastScreen.cs` + 53-assert test file;
+  MarketDepth.DevigPair extracted as the single de-vig authority (prompt-trace delegates,
+  suite green); additive MarketDepthSummary.H2hBookCount (BookCount NOT redefined);
+  python consumer at contracts 2.1 / envelope 1.1 (tier + priority facts; tier-aware
+  deterministic ordering; boards expose screen_tier). NOT pushed / NOT merged.
+- policy: market-contrast-screen/1.0 in ONE policy class from cohort-selection doctrine
+  (gap <=0.10 primary / <=0.15 secondary / >0.15 excluded with 12-decimal boundary
+  rounding; >=5 distinct two-sided h2h books; >=60 min margin; zero active runs; target
+  regime + generation-eligible; market evaluated-and-fresh via explicit normalized status
+  -- no invented freshness duration, the live adapter owns that later).
+- blocker vs exclusion honored end to end: blockers (identity/readiness/market/depth/
+  duplication/inconsistency) project to non-grounding envelope states; exclusions are
+  valid screen decisions; rank can never rescue either.
+- cross-language vectors (5) embedded verbatim in both suites, update-together rule, C#
+  producing authority; proven C# -> envelope json -> strict parser -> planner -> tiered
+  deterministic cohort (primary before earlier-starting secondary).
+- verification: DevCore.Api.Tests 1338/1338; agent-service 555/555; zero new build
+  warnings (only pre-existing NU1903 advisory); cross-process 2.1 board sha-256
+  756288cb8f7a39e2641b5b24babd030a1fefb7cf8b3a2b54e7aa2c99096e524b equal in two fresh
+  processes; diff --check clean; snapshot 24 WIs / 0 warnings; scans clean; protected
+  drift byte-identical.
+- external calls: attributable git fetches only. 0 providers/model/odds/statsapi/db/
+  gateway/AgentRun/capture. WI-0034 Slices 3-4, WI-0031 Slice 4/pilot untouched.
+- vault: WI-0035 spec; architecture record market-contrast-candidate-screen-v1 (04
+  Products/sports-v1, flat, topic-doc); MOC registration (one); orchestrator record
+  two-pass-loop section; WI-0034 producer-dependency link; this closeout + handoff.
+- next governed authorization: independent review + integration of the local
+  wi/0035-market-contrast-candidate-screen branches (both repos) before any source
+  adapter or paid screen.
+
+### Slice Synopsis
+
+**Change:** WI-0035 Slice 1 delivered the offline deterministic market-contrast classifier
+(C#, policy market-contrast-screen/1.0), single de-vig authority extraction, canonical h2h
+book count, envelope 1.1 projection, and tier-aware planner consumption at contracts 2.1.
+**Reason:** the corrected planner refuses market cohorts without grounded screen evidence
+and no producer existed.
+**Proof:** 1338/1338 C# + 555/555 python; byte-exact cross-language vectors both suites;
+cross-process board sha 756288cb...524b equal.
+**State:** local matching branches from dai 9147549 / vault 83a055f; NOT pushed/merged;
+no-spend; nothing screened or authorized.
+**Next:** independent review + integration of wi/0035-market-contrast-candidate-screen.

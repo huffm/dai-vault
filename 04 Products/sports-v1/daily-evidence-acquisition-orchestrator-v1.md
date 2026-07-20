@@ -144,6 +144,20 @@ team identity excludes a candidate (unknown values never rank favorably); and
 `allowed_operator_actions` is outcome-specific and never authority-bearing. Details in the
 Slice-1 closeout's review-corrections section.
 
+## two-pass operating loop (wi-0035, 2026-07-19)
+
+The producer/consumer pair operates as an explicit two-pass loop: canonical calibration
+verdict -> planner pass 1 -> missing `input.market_contrast_screen` -> operator separately
+authorizes bounded source screening -> source adapter retrieves normalized
+market/readiness facts -> offline market-contrast classifier
+([[market-contrast-candidate-screen-v1]], WI-0035) emits typed evidence envelopes ->
+planner pass 2 consumes them -> proposed primary/reserve cohort for operator review ->
+separate capture authorization -> generation -> settlement -> calibration feedback.
+Neither planner pass authorizes screening or capture; the classifier core performs no
+source access. Screen envelopes are `input-evidence-envelope/1.1` (tier + priority facts);
+planner contracts are 2.1 (tier-aware deterministic ordering; boards expose candidate
+screen tiers).
+
 ## recommended next slice
 
 Independent review + integration of the WI-0034 Slice-1 branches; afterwards, separate

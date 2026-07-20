@@ -177,6 +177,9 @@ boundary).
 - verification notes: Slice-1 closeout (incl. independent review corrections section) +
   current-slice handoff
 - docs updated: this WI; orchestrator architecture record; MOC; closeout; current-slice
+- producer dependency: `input.market_contrast_screen` evidence is produced by WI-0035
+  (market-contrast candidate screen); planner contracts moved to 2.1 with envelope 1.1
+  (tier + priority facts) in the WI-0035 Slice-1 change
 - lessons: consume the canonical policy verdict instead of recomputing it; encode the
   slate-not-evaluated vs zero-eligible distinction in the type contract; independent review
   corrections (2026-07-19): unrecognized failing-reason codes route to a diagnostic (never a

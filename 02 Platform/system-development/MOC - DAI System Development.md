@@ -231,6 +231,19 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   gated. **in-progress** (Slice 1 implementation complete 2026-07-19; local matching branches;
   not pushed; not integrated; zero screening/capture/execution authority).
 
+- [[WI-0035-market-contrast-candidate-screen]] — Market-Contrast Candidate Screen v1 (the
+  niche/domain producer for the planner capability `input.market_contrast_screen`;
+  architecture record [[market-contrast-candidate-screen-v1]] in 04 Products/sports-v1):
+  Slice 1 delivered the offline deterministic C# classifier core beside the existing market
+  authorities (policy profile `market-contrast-screen/1.0` from the cohort-selection
+  doctrine; blocker-vs-exclusion semantics; single de-vig authority `MarketDepth.DevigPair`;
+  additive `H2hBookCount`; canonical envelope projection `input-evidence-envelope/1.1`;
+  planner tier-aware ordering at contracts 2.1; cross-language vectors in both suites).
+  Slices 2-4 (bounded source adapter, one governed live screen, operating integration)
+  deferred and separately gated. **in-progress** (Slice 1 implementation complete
+  2026-07-19; local matching branches; not pushed; not integrated; result authorizes
+  nothing; dai-market disagreement stays unknown until generation).
+
 ## scope boundary of this registry
 
 `WI-####` items cover qualifying slices per the WI-0007 qualification rule (canonical
