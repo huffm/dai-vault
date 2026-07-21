@@ -138,6 +138,45 @@ WI-0035 link, and the doctrine record).
 | 8 | remote station invocation | PASS -- same artifact/version/tenant/idempotency/permission contract as the orchestrated path; never bypasses the Tool Gateway |
 | 9 | proposal attempts to change confidence/posture/lean/history | PASS -- impossible by contract: proposal authority fields all false; protected-field guards remain authoritative |
 
+## contract correction addendum (2026-07-21, second local commit -- substitution reserve and precedence)
+
+A same-day operator correction narrowed two ambiguities left by the baseline above. The
+original scenario tables are preserved as history; rows 4 and 5 are narrowed (not
+invalidated) by this addendum: substitution now presupposes no eligible core-qualified
+reserve, and the >25 percent realized case draws from the bounded frozen substitution
+reserve. Corrected contract (canonical text in [[wildcard-evidence-discovery-loop-v1]] and
+the WI's binding-correction block):
+
+```text
+wildcard_scheduled_max = floor(total_scheduled_runs / 4)        (scheduled slots only)
+minimum_executed_core_runs = 1
+wildcard_substitution_reserve_max =
+  max(0, scheduled_core_runs - minimum_executed_core_runs)
+wildcard_plan_role = scheduled | substitution_reserve            (planned use, not a lane)
+precedence for a vacated core slot:
+  1. eligible core-qualified reserve
+  2. else eligible frozen wildcard substitution reserve
+  3. among eligible wildcards: strongest novelty (eligible wildcards only)
+  4. else fail-closed non-execution (no invented candidate, no new retrieval)
+```
+
+Corrected desk scenarios (all PASS against the written contracts):
+
+| # | scenario | verdict |
+|---|---|---|
+| C1 | 3 scheduled runs: zero initially scheduled wildcards; a bounded frozen substitution reserve (max `3 - 1 = 2`) may exist; one core unavailable + no eligible core reserve + >= 1 core remaining -> the highest-ranked eligible wildcard substitute executes one-for-one | PASS |
+| C2 | 4 scheduled = 3 core + 1 scheduled wildcard; reserve max `3 - 1 = 2`; one core unavailable + no eligible core reserve -> one frozen substitute -> realized 2 core + 2 wildcard | PASS |
+| C3 | same flight reaches 1 core + 3 wildcard only if two scheduled cores are unavailable, BOTH substitutes were frozen and explicitly authorized (within reserve max 2), and all gates pass; losing the last core hard-stops | PASS |
+| C4 | an eligible core-qualified reserve and a wildcard substitute both exist -> the core-qualified reserve wins; a wildcard never outranks it | PASS |
+| C5 | multiple eligible wildcard substitutes after core reserves are exhausted -> strongest novelty wins deterministically (closed lexicographic ordering) | PASS |
+| C6 | no qualified wildcard exists -> the substitution pool stays partially/wholly empty; never force-filled; no forced spend | PASS |
+| C7 | a candidate discovered after freeze can never substitute | PASS |
+| C8 | substitution never increases `total_scheduled_runs` or the flight's maximum paid-run count (one-for-one only) | PASS |
+
+The correction changes documentation contracts only: activation stage remains `none`; no
+runtime, retrieval, capture, spend, or July 22 authorization change; the second local
+commit's hash is recorded in the current-slice correction handoff.
+
 ## evidence
 
 - Strict planning snapshot (read-only, output to session scratchpad outside both repos):

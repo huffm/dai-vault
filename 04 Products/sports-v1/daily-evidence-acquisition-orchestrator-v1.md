@@ -173,14 +173,21 @@ loop above remains the implemented truth.
   candidate conditions are available before paid execution. Current implementation truth is
   unchanged: preflight today is the offline WI-0034 planner + WI-0035 screen/operators, and
   the runtime Perceive surface is the sports retrieval path.
-- **Core/wildcard flight planning (deferred Slice 2).** A future frozen flight carries core,
-  reserve where applicable, and a bounded wildcard lane: scheduled wildcards capped at
-  `floor(total_scheduled_runs / 4)` (flights under four schedule none), wildcards below core
-  in priority, safe-candidate gates identical to core, immutable freeze, and substitution
-  only by wildcards already frozen and authorized for that flight (strongest-novelty
-  ordering; label stays `wildcard`; substitution + missing-core reason recorded; at least
-  one core run must remain or the flight hard-stops). Selection **lane**
-  (core/reserve/wildcard/excluded/blocker) is distinct from the market-screen
+- **Core/wildcard flight planning (deferred Slice 2; contract corrected 2026-07-21).** A
+  future frozen flight carries core, reserve where applicable, and a bounded wildcard lane:
+  scheduled wildcards capped at `floor(total_scheduled_runs / 4)` (flights under four
+  schedule none), wildcards below core in priority, safe-candidate gates identical to core,
+  and immutable freeze. The frozen plan may also carry a substitution-only wildcard pool
+  bounded by `wildcard_substitution_reserve_max = max(0, scheduled_core_runs - 1)`,
+  distinguished by `wildcard_plan_role = scheduled | substitution_reserve` (planned use,
+  never a lane change; does not count against the scheduled cap; may exist on flights under
+  four; never force-filled). For an unavailable scheduled core slot the closed precedence
+  is core-qualified reserve first, then an eligible frozen wildcard substitution reserve
+  (strongest-novelty ordering over eligible wildcards only), else fail-closed
+  non-execution; a substitution is one-for-one (never raising the scheduled run count or
+  paid ceiling), the label stays `wildcard`, the substitution + missing-core reason are
+  recorded, and at least one core run must remain or the flight hard-stops. Selection
+  **lane** (core/reserve/wildcard/excluded/blocker) is distinct from the market-screen
   classification **tier** and is never collapsed into it.
 - **Artifact interrogation and proposal-only signal needs (deferred Slice 4).** Produced
   artifacts carry wildcard/source/signal-gap provenance so Interrogate can emit reviewable

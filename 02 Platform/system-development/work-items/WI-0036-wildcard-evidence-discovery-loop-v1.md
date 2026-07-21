@@ -141,6 +141,32 @@ loop, proposal type, wildcard planner, or service is implemented.
     the direction and changes no pricing/Stripe/entitlement/buyer claim or delivery
     authorization.
 
+### contract correction (2026-07-21, operator; binding -- narrows decisions 6-9)
+
+- **Bounded substitution reserve.** `wildcard_scheduled_max = floor(total_scheduled_runs / 4)`
+  continues to govern only initially scheduled run slots. The frozen plan may additionally
+  carry a substitution-only wildcard pool bounded by
+  `wildcard_substitution_reserve_max = max(0, scheduled_core_runs - minimum_executed_core_runs)`
+  with `minimum_executed_core_runs = 1`. A closed field
+  `wildcard_plan_role = scheduled | substitution_reserve` distinguishes planned use; role is
+  not a lane change -- every such candidate stays lane `wildcard`, passes the full wildcard
+  qualification/safety gates, is selected by the closed strongest-novelty ordering, is in the
+  immutable frozen plan, and is explicitly covered by the flight's operator authorization.
+  Substitution reserves do not count against `wildcard_scheduled_max`; the pool may be
+  partially or wholly empty (never force-filled, never forced spend); flights smaller than
+  four may carry substitution reserves even though they schedule zero wildcards.
+- **Reserve-first precedence.** For an unavailable scheduled core candidate: (1) the
+  existing deterministic eligible core-qualified reserve fills the slot; (2) only when none
+  is eligible/available, an eligible frozen wildcard substitution reserve; (3) among
+  multiple eligible wildcards, strongest novelty (ordering compares eligible wildcards
+  only -- a wildcard never outranks an eligible core-qualified reserve); (4) otherwise
+  fail-closed non-execution -- never invent a candidate or perform a new retrieval.
+- **Spend invariants.** Substitution is one-for-one for the vacated scheduled core slot and
+  never increases `total_scheduled_runs` or the flight's maximum paid-run count; no
+  post-freeze addition; the one-core hard minimum stands (zero core runs -> hard stop).
+  Realized wildcard share may exceed 25 percent only through eligible one-for-one
+  substitutions from this frozen, explicitly authorized reserve.
+
 ## architecture
 
 The full contracts live in the two canonical records this slice created (single-writer:
@@ -182,7 +208,9 @@ authorization each needs are stated inline. No slice inherits authority from thi
 - **Purpose:** offline functional core first: a versioned planner/board contract with a
   distinct wildcard pool/lane; the 25 percent cap with floor rounding; one-core minimum;
   safe-candidate gates identical to core; the closed strongest-novelty ordering;
-  deterministic allocation; immutable freeze; authorized-substitution plan.
+  deterministic allocation; immutable freeze; the bounded substitution-reserve pool
+  (`wildcard_plan_role`, `wildcard_substitution_reserve_max`) and reserve-first
+  substitution precedence per the 2026-07-21 contract correction.
 - **Input/output:** typed coverage-gap facts (settled counts by exact
   recipe/version/regime and signal-combination), frozen hypotheses, and the existing
   planner inputs in; a versioned flight plan (core/reserve/wildcard, provenance,
@@ -285,10 +313,13 @@ Slice 1 (checked at close, evidence in the closeout report):
 - WI-0036 exists, is MOC-registered, status `in-progress`, and states documentation
   Slice 1 complete / implementation not started;
 - the 20 binding operator decisions are represented without semantic drift;
-- core/wildcard scheduling, the 25 percent cap, substitution, strongest-novelty priority,
-  and the one-core hard minimum are unambiguous and desk-tested (3->0, 4->1, 8->2;
-  substitution above 25 percent realized; all-core-drop hard stop; no-qualified-wildcard
-  no-forced-spend; market-missing reachable; recapture rejected);
+- core/wildcard scheduling, the 25 percent cap, the bounded substitution reserve,
+  reserve-first precedence, strongest-novelty priority, and the one-core hard minimum are
+  unambiguous and desk-tested (3->0, 4->1, 8->2; bounded reserve on small flights;
+  core-qualified reserve outranks wildcard; substitution above 25 percent realized
+  one-for-one from the frozen reserve; all-core-drop hard stop; no-qualified-wildcard
+  no-forced-spend; post-freeze candidates never substitute; substitution never raises the
+  scheduled run count or spend ceiling; market-missing reachable; recapture rejected);
 - wildcard/core evidence stays stratified through capture and reconciliation in every
   contract statement;
 - preflight is placed as Perceive-side target architecture without misreporting current

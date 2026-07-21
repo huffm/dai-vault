@@ -114,15 +114,54 @@ make those recipes unreachable.
   immutable provenance before any paid call, per
   `06 Execution/patterns/cohort-selection-and-run-discipline-v1.md`. No new candidate may
   be introduced after freeze.
-- **Substitution.** If a scheduled core candidate becomes unavailable, a wildcard already
-  frozen AND authorized for that flight may substitute to preserve flight efficacy. The
-  substitute remains labeled `wildcard` (never relabeled core); the substitution and the
-  missing-core reason are recorded; at least **one core run** must remain in the executed
-  flight. If no core run would remain, the flight hard-stops for a new operator decision
-  rather than executing all-wildcard.
+- **Bounded substitution reserve (contract correction, 2026-07-21).** The frozen flight
+  plan may carry a substitution-only wildcard pool, distinct from the scheduled lane
+  slots:
+
+  ```text
+  wildcard_scheduled_max = floor(total_scheduled_runs / 4)
+  minimum_executed_core_runs = 1
+  wildcard_substitution_reserve_max =
+    max(0, scheduled_core_runs - minimum_executed_core_runs)
+  ```
+
+  A closed flight-plan field distinguishes planned use:
+  `wildcard_plan_role = scheduled | substitution_reserve`. A `substitution_reserve`
+  candidate retains lane `wildcard` (never relabeled `reserve` or `core`); it does not
+  occupy an initially scheduled run slot and therefore does not count against
+  `wildcard_scheduled_max`; the pool is bounded by
+  `wildcard_substitution_reserve_max` and is never an unlimited authorized set. Every
+  substitution-reserve candidate must independently pass the wildcard qualification and
+  safety gates, be selected by the closed strongest-novelty ordering, be present in the
+  immutable frozen plan, and be explicitly covered by that flight's operator
+  authorization before any paid execution. Too few qualified wildcards leave the pool
+  partially or wholly empty; it is never force-filled and never forces spend. Because the
+  scheduled cap and the substitution contingency are intentionally different controls, a
+  flight smaller than four -- which initially schedules zero wildcards -- may still carry
+  bounded substitution-reserve wildcards.
+- **Substitution and precedence (contract correction, 2026-07-21).** When a scheduled
+  core candidate becomes unavailable, the closed precedence is:
+
+  ```text
+  1. use the existing deterministic, eligible core-qualified reserve;
+  2. only when no such reserve is eligible/available, use an eligible frozen wildcard
+     substitution reserve;
+  3. when multiple wildcard substitutes are eligible, choose strongest novelty using the
+     lexicographic ordering below;
+  4. if neither class can fill the slot, preserve fail-closed non-execution; never invent
+     a candidate or perform a new retrieval.
+  ```
+
+  A substitution is one-for-one for the vacated scheduled core slot; it never increases
+  `total_scheduled_runs` or the flight's maximum paid-run count. The substitute remains
+  labeled `wildcard`; the substitution and the missing-core reason are recorded; no
+  post-freeze candidate addition is permitted; at least **one scheduled core run** must
+  remain executable and execute. If substitution would yield zero core runs, the flight
+  hard-stops for a new operator decision rather than executing all-wildcard.
 - **Realized share.** The 25 percent cap governs the initially scheduled flight. The
-  realized wildcard percentage may exceed 25 percent only because authorized wildcards
-  substituted for unavailable core candidates while the one-core minimum stayed satisfied.
+  realized wildcard percentage may exceed 25 percent only through eligible one-for-one
+  substitutions from the frozen, explicitly authorized substitution reserve while the
+  one-core minimum stays satisfied.
 - **Operator approval.** Preflight may propose a wildcard lane whenever qualified
   candidates exist; use remains explicitly operator-approved. A proposed lane authorizes
   nothing.
@@ -131,8 +170,11 @@ make those recipes unreachable.
 
 When more than one authorized wildcard can substitute, the strongest novelty is selected --
 not the candidate closest to the missing core objective, and never by unconstrained model
-ranking. The later implementation (WI-0036 Slice 2, the named authority, fixture-proven)
-must realize this as a closed lexicographic ordering over facts frozen at flight freeze:
+ranking. The ordering compares **eligible wildcards only**: it never allows a wildcard to
+outrank an eligible core-qualified reserve, which always fills a vacated core slot first
+(see the substitution precedence above). The later implementation (WI-0036 Slice 2, the
+named authority, fixture-proven) must realize this as a closed lexicographic ordering over
+facts frozen at flight freeze:
 
 1. ascending settled evidence count for the exact (expected recipe id, recipe version,
    expected data regime) triple;
@@ -154,6 +196,8 @@ Every scheduled candidate and executed flight must preserve at minimum:
 
 - stable candidate identity (provider-scoped) and target date;
 - selection lane and lane version;
+- `wildcard_plan_role` (`scheduled | substitution_reserve`) plus the flight's
+  `wildcard_scheduled_max`, `wildcard_substitution_reserve_max`, and realized pool counts;
 - scheduled position and realized position;
 - wildcard hypothesis id and hypothesis text (wildcards only);
 - novelty dimensions (recognized taxonomy values);

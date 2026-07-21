@@ -148,18 +148,35 @@ selection. No planner or capture path implements it yet, and nothing here author
    evidence count for the exact recipe/version and regime; captured-but-unsettled counts
    are visible but never settled coverage) AND a written novelty hypothesis frozen with
    the slate.
-3. **Cap and priority.** Scheduled wildcards are capped at
-   `floor(total_scheduled_runs / 4)` (a flight under four schedules none); wildcards rank
-   below core; no qualified wildcard means a core/reserve-only flight, never forced spend.
-4. **Freeze and substitution.** The frozen-slate rule (section 1, principle 2/9) applies
-   unchanged: no additions after freeze. If a scheduled core candidate becomes
-   unavailable, only a wildcard already frozen and authorized for that flight may
-   substitute; it stays labeled `wildcard`; the substitution and missing-core reason are
-   recorded; at least one core run must remain in the executed flight or the flight
-   hard-stops for a new operator decision. Realized wildcard share may exceed 25 percent
-   only through such substitutions. Among eligible substitutes, the strongest novelty is
-   selected by the closed deterministic ordering in the doctrine record -- never model
-   whim, never proximity to the missing core objective.
+3. **Cap, bounded substitution reserve, and priority (corrected 2026-07-21).** Scheduled
+   wildcards are capped at `floor(total_scheduled_runs / 4)` (a flight under four schedules
+   none); wildcards rank below core; no qualified wildcard means a core/reserve-only
+   flight, never forced spend. The frozen plan may additionally carry a substitution-only
+   wildcard pool bounded by
+   `wildcard_substitution_reserve_max = max(0, scheduled_core_runs - 1)`, distinguished by
+   the closed field `wildcard_plan_role = scheduled | substitution_reserve` (a planned-use
+   role, never a lane change). Substitution reserves do not occupy scheduled run slots and
+   do not count against the scheduled cap; each must independently pass the full wildcard
+   qualification and safety gates, be in the immutable frozen plan, and be explicitly
+   covered by the flight's operator authorization. Because the scheduled cap and the
+   substitution contingency are different controls, a flight under four may still carry
+   bounded substitution reserves.
+4. **Freeze, precedence, and substitution (corrected 2026-07-21).** The frozen-slate rule
+   (section 1, principle 2/9) applies unchanged: no additions after freeze; a candidate
+   discovered after freeze can never substitute. For an unavailable scheduled core
+   candidate the closed precedence is: (1) the existing deterministic eligible
+   core-qualified reserve; (2) only when none is eligible/available, an eligible frozen
+   wildcard substitution reserve; (3) among multiple eligible wildcards, the strongest
+   novelty by the closed deterministic ordering in the doctrine record (comparing eligible
+   wildcards only -- a wildcard never outranks an eligible core-qualified reserve; never
+   model whim, never proximity to the missing core objective); (4) otherwise fail-closed
+   non-execution -- never invent a candidate or perform a new retrieval. A substitution is
+   one-for-one for the vacated slot; it stays labeled `wildcard`; the substitution and
+   missing-core reason are recorded; it never increases the scheduled run count or the
+   flight's maximum paid-run count; at least one core run must remain in the executed
+   flight or the flight hard-stops for a new operator decision. Realized wildcard share
+   may exceed 25 percent only through such one-for-one substitutions from the frozen,
+   explicitly authorized reserve.
 5. **Evidence separation.** Core and wildcard runs stay stratified through capture,
    settlement, and reconciliation; calibration reads must be able to separate the strata.
    Selection lane is distinct from the market-screen classification tier.

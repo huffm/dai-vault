@@ -16431,3 +16431,62 @@ scenarios PASS; scans + diff --check clean.
 pushed/merged; dai unchanged; no-spend posture intact.
 **Next:** Operator review; July 22 events-gate observation stays separately governed; Slice 2
 requires new authorization.
+
+---
+
+## WI-0036 Slice 1 Correction -- Wildcard Substitution Reserve and Precedence (2026-07-21)
+
+**Objective.** Operator-authorized docs-only correction to the unintegrated WI-0036 Slice 1
+commit (9a2606a): bound the frozen wildcard substitution-reserve pool that makes realized
+share above 25 percent possible, and state deterministic reserve-first precedence. No Slice 2
+implementation; no runtime/activation/July-22/commercial change.
+
+**Outcome.** Contract corrected across five records: `wildcard_scheduled_max =
+floor(total_scheduled_runs / 4)` still governs scheduled slots only;
+`minimum_executed_core_runs = 1`; `wildcard_substitution_reserve_max = max(0,
+scheduled_core_runs - minimum_executed_core_runs)`; closed field `wildcard_plan_role =
+scheduled | substitution_reserve` (planned use, never a lane change -- lane stays
+`wildcard`); reserves do not count against the scheduled cap, are bounded (never unlimited),
+must pass full wildcard gates + strongest-novelty selection + immutable freeze + explicit
+flight authorization, are never force-filled, and may exist on flights under four.
+Precedence for a vacated core slot: (1) eligible core-qualified reserve; (2) else eligible
+frozen wildcard substitution reserve; (3) strongest novelty among eligible wildcards only (a
+wildcard never outranks an eligible core-qualified reserve); (4) else fail-closed
+non-execution. Substitution is one-for-one and never raises the scheduled run count or paid
+ceiling; post-freeze candidates never substitute; one-core hard minimum stands. Files:
+architecture record (bounded-reserve + precedence blocks, novelty scope note, provenance
+fields), WI-0036 (binding correction block narrowing decisions 6-9; Slice-2 purpose;
+acceptance criteria), cohort doctrine section 6 points 3-4, orchestrator wildcard section,
+planning report correction addendum with 8 desk scenarios C1-C8 all PASS. Decision 0011
+unchanged (no contradiction; loop scope).
+
+**Verification.** Strict snapshot rerun to scratch: exit 0, 0 warnings, 25 work items, 6
+timeline entries, posture unchanged. git diff --check clean; machine-path/secret/authority
+scans clean over the changed set; protected state byte-identical (dai csproj 63EF2488; vault
+graph/CLAUDE/manifest/synopsis; Welcome deleted); dai untouched on main 8369d64.
+
+**External-call ledger.** model 0; StatsAPI 0; Odds /events 0; Odds /odds 0; db 0; Tool
+Gateway 0; generation/capture/screening/settlement/scheduling 0; cost $0.
+
+**Repo state.** Second local docs commit on `wi/0036-wildcard-evidence-discovery-loop`
+(9a2606a preserved, not amended); branch two ahead of vault main a7481f8; NOT pushed / NOT
+merged.
+
+**Next.** Operator review of WI-0036 Slice 1 + this correction. The separately governed
+action stands unchanged: >= 2026-07-22T12:00:00Z one refreshed free preflight + at most one
+zero-quota /events observation; no /odds. WI-0036 implementation remains unauthorized.
+
+### Slice Synopsis
+
+**Change:** Bounded the WI-0036 wildcard substitution reserve (`max(0, scheduled_core_runs -
+1)`, `wildcard_plan_role = scheduled | substitution_reserve`) and fixed reserve-first
+precedence (core-qualified reserve, then frozen wildcard substitute by strongest novelty
+among eligible wildcards only, else fail-closed) across five Slice-1 records.
+**Reason:** The baseline left the substitute pool unbounded-by-implication and the
+core-reserve-vs-wildcard precedence unstated.
+**Proof:** Strict snapshot 25 WIs / 0 warnings; desk scenarios C1-C8 PASS; scans + diff
+--check clean; protected state byte-identical.
+**State:** Second local vault docs commit on wi/0036-wildcard-evidence-discovery-loop (two
+ahead of main); not pushed/merged; dai unchanged; no-spend posture intact.
+**Next:** Operator review; July 22 observation separately governed; implementation
+unauthorized.
