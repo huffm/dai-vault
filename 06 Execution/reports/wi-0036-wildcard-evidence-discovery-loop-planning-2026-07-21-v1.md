@@ -174,8 +174,8 @@ Corrected desk scenarios (all PASS against the written contracts):
 | C8 | substitution never increases `total_scheduled_runs` or the flight's maximum paid-run count (one-for-one only) | PASS |
 
 The correction changes documentation contracts only: activation stage remains `none`; no
-runtime, retrieval, capture, spend, or July 22 authorization change; the second local
-commit's hash is recorded in the current-slice correction handoff.
+runtime, retrieval, capture, spend, or July 22 authorization change. The correction
+commit's hash is recorded in the external prompt-ledger outcome after commit creation.
 
 ## evidence
 
