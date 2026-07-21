@@ -180,6 +180,12 @@ boundary).
 - producer dependency: `input.market_contrast_screen` evidence is produced by WI-0035
   (market-contrast candidate screen); planner contracts moved to 2.1 with envelope 1.1
   (tier + priority facts) in the WI-0035 Slice-1 change
+- wildcard seam (2026-07-21, docs-only link): WI-0036 defines a bounded wildcard candidate
+  lane and flight-plan contract as target architecture
+  ([[WI-0036-wildcard-evidence-discovery-loop-v1]]). Nothing in this planner implements a
+  wildcard lane today; whether the WI-0036 Slice-2 contract is WI-0036-owned and consumed
+  by this planner (vs changing WI-0034 ownership) is resolved at that slice's
+  authorization, not here
 - lessons: consume the canonical policy verdict instead of recomputing it; encode the
   slate-not-evaluated vs zero-eligible distinction in the type contract; independent review
   corrections (2026-07-19): unrecognized failing-reason codes route to a diagnostic (never a

@@ -236,6 +236,12 @@ adapter re-implementing market math (bounded by the recorded reuse decisions).
   (two-pass loop); WI-0034 links; MOC; closeout; current-slice
 - lessons: producers own thresholds and emit envelopes; consumers rank on producer facts;
   extract shared math before writing a second copy
+- wildcard seam (2026-07-21, docs-only link): WI-0036
+  ([[WI-0036-wildcard-evidence-discovery-loop-v1]]) defines selection LANES
+  (core/reserve/wildcard) as a flight-plan concept distinct from this screen's
+  classification TIERS (primary/secondary/excluded/blocker); the two are never collapsed.
+  WI-0036 is documentation-only as of 2026-07-21 and changes nothing in this screen or in
+  the separately governed 2026-07-22 events-gate authorization
 
 ## final handoff requirements
 

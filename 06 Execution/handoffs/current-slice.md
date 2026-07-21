@@ -16361,3 +16361,73 @@ call.
 == reviewed tips; r7/r7A/r7B preserved as ancestors; offline no-spend.
 **Next:** A separately authorized, time-gated (>= 2026-07-22T12:00:00Z) free preflight + one
 zero-quota `/events` observation; no `/odds`.
+
+---
+
+## WI-0036 Slice 1 -- Wildcard Evidence Discovery Loop Documentation Baseline (2026-07-21)
+
+**Objective.** Operator-authorized docs-only slice: define parent WI-0036 (wildcard evidence
+discovery loop), bind decision 0011 (orchestrated Question -> Probe -> authorized retrieval ->
+Perceive refresh -> Verify -> Discern loop + callable protocol-service target), create the
+focused doctrine record, and reconcile affected current-state doctrine/planning. No runtime,
+retrieval, capture, or commercial action; no July 22 gate change.
+
+**Outcome.** WI-0036 created and MOC-registered (in-progress; Slice 1 complete, Slices 2-6
+deferred and separately gated); decision 0011 accepted;
+`02 Platform/architecture/cognitive-factory/wildcard-evidence-discovery-loop-v1.md` created
+(closed lane vocabulary distinct from screen tiers; cap floor(n/4) with one-core hard minimum;
+frozen-authorized-only substitution keeping the wildcard label; closed lexicographic
+strongest-novelty ordering; settled-vs-unsettled separation; proposal-only SignalNeedProposal
+with all authority false). Source-verified current truth recorded: Probe deterministic at
+compose (`CognitiveProtocolBuilder.BuildProbe`), ProbeRequest inert with a closed 4-signal
+template set, Stage-2 endpoint audit-only under 4 config gates, probe-refresh chain dormant
+with NO `Interrogate.Verify` re-entry after Perceive intake -- gap named as ledger entry 27,
+owned by WI-0036 Slice 5. Stale claims in `phases/interrogate.md` ("Probe has no current
+field") and the recipe architecture ("question+probe live in the analyze call") reconciled by
+superseding notes; orchestrator record, cohort doctrine (new bounded wildcard lane section),
+perceive phase, probe-refresh readiness, station blueprint, ledger (entry 1 + new 27),
+delivery timeline (`wi-0036` initiative, proposed_by_system only, no invented dates, posture
+block untouched), and WI-0034/WI-0035 seam links updated.
+
+**Skills invoked (native).** dai-skill-router (7-section gate, PROCEED), dai-slice-runner,
+dai-system-development (WI-0036 minted from _template before changes), dai-docs-architect,
+dai-agent-handoff, dai-token-tight, dai-grill-with-vault (final-docs grill, no blocking
+contradiction), superpowers:verification-before-completion. No fallbacks needed. Prompt
+Ledger: pre-execution record 2026-07-21 linked with outcome (outside both repos).
+
+**Verification.** Strict planning snapshot to scratch: exit 0, 0 warnings, work items 24->25,
+timeline entries 5->6, authorization posture unchanged (no-spend, fail-closed). git diff
+--check clean; machine-path/secret/authorized-true/runtime-claim scans clean; OKF checklist
+applied; desk scenarios all PASS (3->0, 4->1, 8->2 wildcards; substitution >25 percent
+realized with one-core minimum; all-core-drop hard stop; no-qualified-wildcard no forced
+spend; market-missing reachable; recapture rejected; 9 loop-authority scenarios incl.
+fail-closed unauthorized retrieval and forbidden self-invocation).
+
+**External-call ledger.** model 0; StatsAPI 0; Odds /events 0; Odds /odds 0; db 0; Tool
+Gateway 0; generation/capture/screening/settlement/scheduling 0; cost $0.
+
+**Repo state.** dai untouched on main 8369d64 (no diff, no commit; csproj 63EF2488 protected
+hash unchanged). Vault: one docs commit on `wi/0036-wildcard-evidence-discovery-loop` from
+a7481f8; NOT pushed / NOT merged. Protected vault state byte-identical (graph.json/CLAUDE.md/
+manifest/synopsis; Welcome.md still deleted).
+
+**Next.** Operator review of this slice. The separately governed action stands unchanged:
+>= 2026-07-22T12:00:00Z one refreshed free preflight + at most one zero-quota /events
+observation; no /odds. WI-0036 Slice 2 (deterministic wildcard preflight + flight-plan
+allocation, offline fixture-only) only after that gate AND a new operator implementation
+authorization.
+
+### Slice Synopsis
+
+**Change:** Defined WI-0036 (wildcard evidence discovery loop): parent WI, decision 0011
+binding the orchestrated Question->Probe->retrieval->Perceive refresh->Verify->Discern loop,
+wildcard lane/cap/substitution/novelty doctrine, proposal-only SignalNeedProposal, and
+current-state reconciliation incl. the named dormant-chain Verify re-entry gap.
+**Reason:** Deterministic planning under-samples underrepresented recognized recipes/regimes,
+and the discovery-to-retrieval learning loop had no governed contract.
+**Proof:** Strict snapshot 25 WIs / 0 warnings; source-verified truth ledger; 18 desk
+scenarios PASS; scans + diff --check clean.
+**State:** One local vault docs commit on wi/0036-wildcard-evidence-discovery-loop; not
+pushed/merged; dai unchanged; no-spend posture intact.
+**Next:** Operator review; July 22 events-gate observation stays separately governed; Slice 2
+requires new authorization.

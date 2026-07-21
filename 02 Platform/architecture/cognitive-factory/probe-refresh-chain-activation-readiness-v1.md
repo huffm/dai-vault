@@ -12,6 +12,17 @@ The shipped chain is:
 
 The chain assembles as a dormant value-object path. It has diagnostics, audit contracts, an idempotent audit store, and a tenant-safe read surface. It is not activated in production and has no endpoint or pipeline consumer.
 
+> **Target-contract gap note (2026-07-21, WI-0036 Slice 1).** Verified in source: after
+> `ProbeRefreshPerceiveIntake`, the chain proceeds directly into
+> `ProbeRefreshDiscernReweigh` -> `ProbeRefreshDecideRecommendation` ->
+> `ProbeRefreshSynthesizePreview` with **no explicit `Interrogate.Verify` re-entry
+> step**. Decision [[0011-orchestrated-interrogate-perceive-refresh-loop-v1]] binds the
+> target loop `Question -> Probe -> authorized retrieval -> Perceive refresh -> Verify ->
+> Discern`, so this is a named target-contract gap (deferred-decisions ledger entry 27),
+> owned by WI-0036 Slice 5 -- not a claim that Verify re-entry exists today, and not a
+> defect in the dormant chain as shipped. Any future activation must close or explicitly
+> re-decide this gap first.
+
 ## Safe-by-default guarantees
 
 - `ProbeRefreshChainAssemblyOptions.Enabled` defaults to `false`.
@@ -186,3 +197,5 @@ The following are not approved:
 - `<DAI_REPO_ROOT>/platform/dotnet/DevCore.Api/Protocols/ProbeRefreshMergeAuditStore.cs`
 - `<DAI_REPO_ROOT>/platform/dotnet/DevCore.Api/Protocols/ProbeRefreshMergeAuditReadService.cs`
 - `<DAI_VAULT_ROOT>/02 Platform/architecture/cognitive-factory/deferred-runtime-decisions-ledger-v1.md`
+- `<DAI_VAULT_ROOT>/02 Platform/decisions/0011-orchestrated-interrogate-perceive-refresh-loop-v1.md`
+- `<DAI_VAULT_ROOT>/02 Platform/system-development/work-items/WI-0036-wildcard-evidence-discovery-loop-v1.md`

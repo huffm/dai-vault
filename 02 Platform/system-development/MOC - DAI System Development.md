@@ -244,6 +244,23 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   2026-07-19; local matching branches; not pushed; not integrated; result authorizes
   nothing; dai-market disagreement stays unknown until generation).
 
+- [[WI-0036-wildcard-evidence-discovery-loop-v1]] — Wildcard Evidence Discovery Loop v1
+  (evidence-operations + cognitive-factory architecture; parent for the bounded wildcard
+  candidate lane, artifact wildcard provenance, proposal-only Interrogate signal needs, and
+  the orchestrator-mediated Question -> Probe -> authorized retrieval -> Perceive refresh ->
+  Verify -> Discern loop with a future callable protocol-service seam): Slice 1 delivered the
+  documentation/contract baseline — decision [[0011-orchestrated-interrogate-perceive-refresh-loop-v1]],
+  architecture record [[wildcard-evidence-discovery-loop-v1]] (closed candidate-lane
+  vocabulary, 25-percent `floor(n/4)` cap, one-core minimum, strongest-novelty substitution
+  ordering, `SignalNeedProposal` proposal-only contract), and current-state reconciliation
+  incl. the named dormant-chain Verify re-entry gap (ledger entry 27). Slices 2-6
+  (deterministic wildcard preflight, artifact provenance, proposal projection, callable
+  service seam + re-entry, limited activation) deferred and each separately gated;
+  implementation not before the separately governed 2026-07-22 events-gate observation plus a
+  new operator authorization. **in-progress** (Slice 1 documentation complete 2026-07-21;
+  local vault-only branch + commit; not pushed; not integrated; zero runtime change, zero
+  spend, zero authority granted).
+
 ## scope boundary of this registry
 
 `WI-####` items cover qualifying slices per the WI-0007 qualification rule (canonical

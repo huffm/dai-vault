@@ -21,6 +21,26 @@ Retrieve remains a deterministic platform and pipeline concept owned by the retr
 
 ---
 
+## preflight and evidence discovery alignment (2026-07-21, wi-0036 -- target doctrine)
+
+Per decision [[0011-orchestrated-interrogate-perceive-refresh-loop-v1]], **preflight is
+conceptually part of Perceive** in target architecture: the daily evidence acquisition
+orchestrator's preflight discovers and binds what evidence and candidate conditions are
+available before paid execution -- the same "surface what is, name what is missing"
+responsibility this phase owns, applied one stage earlier than a run. A future frozen
+flight plan (core, reserve, capped wildcard lanes with immutable provenance;
+[[wildcard-evidence-discovery-loop-v1]]) is Perceive-side output.
+
+This is a target-doctrine statement, not a description of current code: today preflight is
+implemented by the offline WI-0034 planner and WI-0035 screen/operators in
+`services/agent-service` and the market-contrast operators, while this phase's implemented
+runtime surface remains the sports retrieval path below. In the target loop, an
+orchestrator-owned Perceive refresh (never a direct Interrogate self-invocation) feeds
+refreshed evidence back through `Interrogate.Verify` before Discern; nothing in this
+section is implemented or authorized by it.
+
+---
+
 ## responsibility
 
 Perceive stages grounded context for the decision. It collects and shapes the inputs that the rest of the pipeline reasons against. It does not interpret, score, or decide.

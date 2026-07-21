@@ -36,6 +36,39 @@ Today the analyze prompt emits `interrogate.balance`, `interrogate.stress`, and 
 
 Probe has no current field. Platform-side follow-up investigation today is performed deterministically by `SignalFollowUpEvaluator`. A future slice may introduce a model-emitted Probe field for cases where the model itself should request a tool-backed follow-up.
 
+> **Current-state update (2026-07-21, WI-0036 Slice 1; supersedes the "Probe has no
+> current field" line above as of the probe-refresh seam slices):** verified in source,
+> Probe now HAS a current field and it is deterministic, not model-emitted.
+> `CognitiveProtocolBuilder.BuildProbe` fills `interrogate.probe` at compose time from
+> `SignalFollowUps`, and `CognitiveProtocolBuilder.BuildProbeRequest` emits the typed
+> `ProbeRequest` proposal/handoff contract (fetches nothing, calls no Tool Gateway,
+> invokes no Perceive step, mutates no artifact; closed template set of `sharp_public`,
+> `market`, `rest_schedule`, `starting_pitching` -- unknown signals are dropped, never
+> granted retrieval authority). `Interrogate.Question` and `Interrogate.Verify` remain
+> model-emitted inside the single shared analyze call. The historical text above is
+> preserved as written for its date.
+
+---
+
+## wildcard evidence discovery loop alignment (2026-07-21, wi-0036 -- target doctrine)
+
+Decision [[0011-orchestrated-interrogate-perceive-refresh-loop-v1]] binds the governed
+refresh loop `Question -> Probe -> authorized retrieval -> Perceive refresh -> Verify ->
+Discern` as target architecture:
+
+- Interrogate remains a requester, never an execution authority; an orchestrator mediates
+  authorization and routes retrieval through platform-owned retrieval/Tool Gateway
+  boundaries; direct Interrogate-to-Perceive self-invocation remains forbidden.
+- "Question subphase" means `Interrogate.Question` -- it is not a separate standalone
+  prompt phase.
+- Refreshed Perceive evidence must re-enter `Interrogate.Verify` before Discern in the
+  target contract. The dormant probe-refresh chain does not do this today (verified in
+  source 2026-07-21); the gap is tracked as deferred-decisions ledger entry 27 and owned
+  by WI-0036 Slice 5.
+- Interrogate proposes signal needs via the proposal-only `SignalNeedProposal` concept
+  ([[wildcard-evidence-discovery-loop-v1]], not implemented); it does not add sources,
+  and `ProbeRequest` stays execution-safe and closed.
+
 ---
 
 ## responsibility

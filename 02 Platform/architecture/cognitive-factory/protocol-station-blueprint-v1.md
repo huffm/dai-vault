@@ -231,6 +231,18 @@ Called out so they cannot quietly become scope creep:
 - **no NCAAW overlay.** Out of scope until the competition exists.
 - **no MCP, Azure Functions, AKS, or multi-region work.** Deferred per `cloud-tool-runtime-plan.md`.
 
+## 16. callable protocol-service target (2026-07-21 addendum, wi-0036 -- link only)
+
+Decision [[0011-orchestrated-interrogate-perceive-refresh-loop-v1]] extends this
+blueprint's target direction: stations should eventually be invocable through the full
+orchestrated pipeline OR as independently callable governed services under the SAME
+station-card contract (bounded typed inputs/outputs; explicit tenant, run, artifact
+version, correlation, idempotency, station-card version, authority, cost, trace, and
+termination state; remote callability never bypassing the Tool Gateway or station
+permissions). Target architecture only -- no endpoint, no analyze-call split, and no
+registry/runtime change is made or authorized by that decision; the migration path in
+sections 4 and 13 is unchanged.
+
 ## references
 
 - `02 Platform/architecture/cognitive-factory/cognitive-protocol-runtime.md`

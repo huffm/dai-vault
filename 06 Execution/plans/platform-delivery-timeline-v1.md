@@ -179,6 +179,36 @@ related_work_items:
   - WI-0009
 ```
 
+### wildcard evidence discovery loop (wi-0036)
+
+```yaml
+initiative_id: wi-0036-wildcard-evidence-discovery-loop
+title: WI-0036 wildcard evidence discovery loop (documentation Slice 1 complete; implementation separately gated)
+status: in-progress
+priority: medium
+desired_by:
+due_by:
+not_before: completion of the separately governed 2026-07-22T12:00:00Z events-gate observation AND a new operator implementation authorization
+proposed_by_system: Slice 2 (deterministic wildcard preflight and flight-plan allocation) as the first implementation slice once the not_before conditions hold
+date_source: none
+date_confidence: high
+aliases:
+  - wildcard
+  - wildcard evidence discovery
+  - signal-need proposal
+depends_on:
+blocks:
+economic_reason: widens safe evidence acquisition toward underrepresented recognized recipes/regimes/signal combinations and turns artifact interrogation into proposal-only retrieval inputs; no spend authority of its own -- paid model calls and sports capture remain fail-closed per the authorization block above
+operator_intent: operator decision 2026-07-21 -- WI-0036 documentation Slice 1 authorized and completed; implementation is NOT before the July 22 events-gate observation and requires a separate implementation authorization; wildcard use in any future flight remains explicitly operator-approved
+replan_triggers:
+  - the 2026-07-22 events-gate observation completes
+  - an operator implementation authorization for WI-0036 Slice 2 is issued
+related_work_items:
+  - WI-0034
+  - WI-0035
+  - WI-0036
+```
+
 ## deferred decisions
 
 - calibration volume expansion: not currently justified (Gate 4 posture; v2 cadence closed
@@ -188,6 +218,12 @@ related_work_items:
 
 ## change log
 
+- 2026-07-21 (WI-0036 Slice 1, operator-authorized): wi-0036-wildcard-evidence-discovery-loop
+  added. Records the operator sequencing decision that WI-0036 implementation is not before
+  the separately governed 2026-07-22 events-gate observation plus a new implementation
+  authorization. No desired_by/due_by invented; system suggestion confined to
+  proposed_by_system; the authorization posture block is unchanged (paid model calls and
+  sports capture remain fail-closed / not-authorized).
 - 2026-07-13 (WI-0010): doubleheader-capture-operation added as an operational-gated
   initiative (identity metadata for the WI-0009 deferred bullet; never a ranked candidate).
 - 2026-07-13 (WI-0010, operator-authorized manual correction): gamepk-propagation marked

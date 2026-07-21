@@ -90,6 +90,8 @@ grants any authority.
 
 - `02 Platform/system-development/work-items/WI-0034-daily-evidence-planner-stage-0.md`
 - `02 Platform/system-development/work-items/WI-0031-model-assisted-capability-recommendation-and-tool-selection-v1.md`
+- `02 Platform/system-development/work-items/WI-0036-wildcard-evidence-discovery-loop-v1.md`
+- `02 Platform/architecture/cognitive-factory/wildcard-evidence-discovery-loop-v1.md`
 - `06 Execution/reports/gate4-discrimination-sufficiency-criterion-2026-07-05-v1.md`
 - `04 Products/sports-v1/calibration/` (settled evidence corpus doctrine)
 
@@ -157,6 +159,42 @@ Neither planner pass authorizes screening or capture; the classifier core perfor
 source access. Screen envelopes are `input-evidence-envelope/1.1` (tier + priority facts);
 planner contracts are 2.1 (tier-aware deterministic ordering; boards expose candidate
 screen tiers).
+
+## wildcard evidence discovery loop (wi-0036, 2026-07-21 -- documented target, not implemented)
+
+WI-0036 ([[WI-0036-wildcard-evidence-discovery-loop-v1]]; decision
+[[0011-orchestrated-interrogate-perceive-refresh-loop-v1]]; doctrine
+[[wildcard-evidence-discovery-loop-v1]]) extends this orchestrator's target architecture.
+None of it is implemented in the planner, screen, or runtime as of 2026-07-21; the two-pass
+loop above remains the implemented truth.
+
+- **Preflight is Perceive-side (target doctrine).** The preflight/planning activity of this
+  orchestrator conceptually belongs to Perceive: it discovers and binds what evidence and
+  candidate conditions are available before paid execution. Current implementation truth is
+  unchanged: preflight today is the offline WI-0034 planner + WI-0035 screen/operators, and
+  the runtime Perceive surface is the sports retrieval path.
+- **Core/wildcard flight planning (deferred Slice 2).** A future frozen flight carries core,
+  reserve where applicable, and a bounded wildcard lane: scheduled wildcards capped at
+  `floor(total_scheduled_runs / 4)` (flights under four schedule none), wildcards below core
+  in priority, safe-candidate gates identical to core, immutable freeze, and substitution
+  only by wildcards already frozen and authorized for that flight (strongest-novelty
+  ordering; label stays `wildcard`; substitution + missing-core reason recorded; at least
+  one core run must remain or the flight hard-stops). Selection **lane**
+  (core/reserve/wildcard/excluded/blocker) is distinct from the market-screen
+  classification **tier** and is never collapsed into it.
+- **Artifact interrogation and proposal-only signal needs (deferred Slice 4).** Produced
+  artifacts carry wildcard/source/signal-gap provenance so Interrogate can emit reviewable
+  `SignalNeedProposal` records (proposal-only; every execution/retrieval/mutation/
+  confidence/posture/lean authority false). Interrogate proposes signal needs; it never
+  adds sources; source/retrieval additions are separately reviewed work items.
+- **Reconciliation-driven promotion.** Wildcard and core evidence stay stratified through
+  capture, settlement, and reconciliation; promotion of a wildcard target into ordinary
+  selection is owned by a later reconciliation-backed decision, never by one wildcard
+  result.
+
+Nothing in this section authorizes screening, capture, retrieval, spend, or
+implementation; WI-0036 implementation is sequenced after the separately governed
+2026-07-22 events-gate observation under a new operator authorization.
 
 ## recommended next slice
 

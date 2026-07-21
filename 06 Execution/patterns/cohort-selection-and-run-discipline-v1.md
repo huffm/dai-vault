@@ -14,6 +14,8 @@ related:
   - "06 Execution/reports/backed-depth-divergence-capture-2026-07-06-v2.md"
   - "06 Execution/reports/backed-depth-divergence-cohort-integrity-qa-2026-07-06-v1.md"
   - "06 Execution/patterns/frozen-cohort-slate-template-v1.md"
+  - "02 Platform/system-development/work-items/WI-0036-wildcard-evidence-discovery-loop-v1.md"
+  - "02 Platform/architecture/cognitive-factory/wildcard-evidence-discovery-loop-v1.md"
 ---
 
 # Cohort Selection and Run Discipline v1
@@ -131,3 +133,36 @@ Every capture produces, in `06 Execution/reports/`:
   drift, identities do not.
 - **Backfilling non-decision-time market data.** Fabricates a baseline that did not exist
   at decision time; rejected permanently (2026-07-05 diagnostic).
+
+## 6. bounded wildcard lane (wi-0036, 2026-07-21 -- doctrine; scheduling implementation deferred)
+
+Defined by [[WI-0036-wildcard-evidence-discovery-loop-v1]] and
+[[wildcard-evidence-discovery-loop-v1]]; recorded here because it bounds future cohort
+selection. No planner or capture path implements it yet, and nothing here authorizes spend.
+
+1. **A wildcard widens the objective, never the safety envelope.** A wildcard is a safe
+   candidate targeting an underrepresented or unusual **recognized** prompt
+   recipe/version, data regime, or signal combination. It passes every identity,
+   readiness, and blocker gate in sections 1-2 unchanged; a Blocker is never a wildcard.
+2. **Qualification.** A wildcard requires a measurable evidence-coverage gap (settled
+   evidence count for the exact recipe/version and regime; captured-but-unsettled counts
+   are visible but never settled coverage) AND a written novelty hypothesis frozen with
+   the slate.
+3. **Cap and priority.** Scheduled wildcards are capped at
+   `floor(total_scheduled_runs / 4)` (a flight under four schedules none); wildcards rank
+   below core; no qualified wildcard means a core/reserve-only flight, never forced spend.
+4. **Freeze and substitution.** The frozen-slate rule (section 1, principle 2/9) applies
+   unchanged: no additions after freeze. If a scheduled core candidate becomes
+   unavailable, only a wildcard already frozen and authorized for that flight may
+   substitute; it stays labeled `wildcard`; the substitution and missing-core reason are
+   recorded; at least one core run must remain in the executed flight or the flight
+   hard-stops for a new operator decision. Realized wildcard share may exceed 25 percent
+   only through such substitutions. Among eligible substitutes, the strongest novelty is
+   selected by the closed deterministic ordering in the doctrine record -- never model
+   whim, never proximity to the missing core objective.
+5. **Evidence separation.** Core and wildcard runs stay stratified through capture,
+   settlement, and reconciliation; calibration reads must be able to separate the strata.
+   Selection lane is distinct from the market-screen classification tier.
+6. **No self-promotion; no recapture.** Promotion of a wildcard target into ordinary
+   selection is a later reconciliation-backed decision; historical-identity recapture
+   stays prohibited by default.

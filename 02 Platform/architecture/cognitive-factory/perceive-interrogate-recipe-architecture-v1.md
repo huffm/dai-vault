@@ -290,6 +290,18 @@ settle -> learn
 - **interrogate** tests source/prose/reasoning integrity via role recipes (section 4);
   today: question+probe live in the analyze call, verify exists as the two deterministic
   guards; this architecture grows verify by recipe, mostly read-side.
+  *(current-truth correction, 2026-07-21, WI-0036 Slice 1 -- verified in source: the line
+  above misstates the split. `interrogate.question` and `interrogate.verify` are the
+  model-emitted fields inside the shared analyze call; `interrogate.probe` is
+  deterministic at compose time via `CognitiveProtocolBuilder.BuildProbe` over
+  `SignalFollowUps` and is NOT part of the analyze call. The two deterministic guards
+  (direction-integrity, market-attribution fidelity) are additional verify-class checks
+  beside the model-emitted verify field, exactly the growth path this section proposes.
+  The original text is preserved for its date. See decision
+  [[0011-orchestrated-interrogate-perceive-refresh-loop-v1]] for the governed
+  Question -> Probe -> authorized retrieval -> Perceive refresh -> Verify -> Discern
+  target loop and [[wildcard-evidence-discovery-loop-v1]] for the proposal-only
+  `SignalNeedProposal` contract that carries interrogation-discovered signal needs.)*
 - **discern** weighs signals (unchanged; model-owned).
 - **decide** chooses stance (unchanged; posture vocabulary intact).
 - **synthesize** writes buyer-safe output (unchanged; claim discipline enforced).
