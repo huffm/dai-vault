@@ -36,6 +36,32 @@ operator authorization. WI-0036 implementation is sequenced NOT BEFORE the separ
 governed 2026-07-22T12:00:00Z events-gate observation completes AND a separate
 implementation authorization is issued (operator decision, 2026-07-21).
 
+> **Operator sequencing override (2026-07-21, after Slice 1 integration).** A new operator
+> decision authorized proceeding with the offline/default-off implementation NOW: Slice 2
+> plus the minimum Slice-3 provenance seam. This supersedes ONLY the earlier statement
+> that WI-0036 implementation must wait for the July 22 events-gate observation; that
+> observation remains a separate, still-unexecuted, separately governed action and is no
+> longer a precondition for this offline implementation. Paid use of the new capability
+> still requires a future explicit flight authorization.
+>
+> **Disposition after that slice (2026-07-21):** Slice 2 (deterministic wildcard
+> flight-plan core + portable CLI) and the MINIMUM Slice-3 provenance seam are
+> IMPLEMENTED on local review branches `wi/0036-wildcard-capture-flight-plan` (dai +
+> dai-vault, matching), NOT pushed / NOT merged / NOT integrated; default off; zero
+> granted authority. Delivered contracts: request `wildcard-flight-plan-request/1.0`,
+> plan `wildcard-flight-plan/1.0`, planner `wildcard-flight-planner/1.0`, realization
+> `wildcard-flight-realization/1.0`, provenance `flight-selection-provenance/1.0`, lane
+> vocabulary `wi0036-candidate-lane/1.0`, registries `wi0036-signal-combinations/1.0` +
+> `wi0036-novelty-dimensions/1.0`, CLI `wildcard-flight-plan-cli/1.0`. Files: dai
+> `services/agent-service/app/services/wildcard_flight_plan.py` + `wildcard_flight_plan_cli.py`
+> (+ two pytest suites, 70 tests) and the platform seam
+> `platform/dotnet/DevCore.Api/AgentRuns/FlightSelectionProvenance.cs` + additive optional
+> `CompetitionMatchupInput.FlightSelection` / `AgentRunExecutionResult.FlightSelection` /
+> `AgentRunArtifactDto.FlightSelection` threading (+12 xunit tests incl. buyer-boundary
+> sentinel). The REST of Slice 3 and Slices 4-6 remain deferred and unauthorized. Next
+> governed action for this code: independent review + coordinated integration of the two
+> local branches -- NOT the July 22 observation and NOT a paid wildcard run.
+
 ## problem  <!-- LITE -->
 
 Three currently separate concerns do not close a learning loop:
@@ -203,7 +229,19 @@ authorization each needs are stated inline. No slice inherits authority from thi
 - **Separate authorization:** the operator-sent WI-0036 documentation prompt (prompt
   ledger record 2026-07-21).
 
-### Slice 2 -- deterministic wildcard preflight and flight-plan allocation (deferred)
+### Slice 2 -- deterministic wildcard preflight and flight-plan allocation (IMPLEMENTED 2026-07-21, local branches; review + integration pending)
+
+> Delivered under the operator sequencing override as a WI-0036-OWNED contract that
+> CONSUMES the WI-0034 board (`daily-evidence-board/2.2` embedded and strictly validated:
+> closed keys, cohort-proposed outcome, all-false ledger, matching target date) and
+> reuses the board ledger's safety evaluations rather than re-implementing them. WI-0034
+> board/request/planner versions are UNCHANGED (2.2/2.1/2.2). Acceptance evidence: 56
+> core fixtures + 14 CLI fixtures GREEN (RED-first), full agent-service pytest 634/634;
+> cap arithmetic 1/3/4/7/8, C1-C8, tie-breakers + permutation invariance,
+> settled-vs-unsettled separation, market-missing reachability without unknown-favorable,
+> recapture rejection, default-disabled mode, tamper/fingerprint rejection, byte
+> determinism, always-false ledgers. Rollback: revert the dai commit (pure additive
+> module + CLI + tests; nothing else references them).
 
 - **Purpose:** offline functional core first: a versioned planner/board contract with a
   distinct wildcard pool/lane; the 25 percent cap with floor rounding; one-core minimum;
@@ -228,7 +266,21 @@ authorization each needs are stated inline. No slice inherits authority from thi
 - **Separate authorization:** a new operator implementation authorization (explicitly not
   granted by Slice 1).
 
-### Slice 3 -- wildcard provenance through production artifacts (deferred)
+### Slice 3 -- wildcard provenance through production artifacts (MINIMUM SEAM IMPLEMENTED 2026-07-21; remainder deferred)
+
+> The minimum seam shipped with Slice 2: additive default-null null-suppressed
+> `CompetitionMatchupInput.FlightSelection` (`flight-selection-provenance/1.0`; the
+> WI-0009 GamePk pattern), fail-closed trust-boundary validation (schema, closed
+> lanes/roles, target-date + gamePk identity consistency, mandatory all-false authority
+> attestation) BEFORE the run row is written, threading through `SportsRunArtifact` into
+> `AgentRunExecutionResult` on success AND analyze-failure composition (the SourceDepth
+> pattern), persistence via existing InputJson/OutputJson (no migration, no column, no
+> endpoint), read-only projection on `AgentRunArtifactDto` beside the observed
+> `PromptRouteProvenance` (expected-vs-actual at the inspection boundary), and buyer
+> exclusion guarded by the buyer-projection sentinel test. Legacy byte-identity and
+> FastAPI request-byte invariance are test-pinned (12 xunit tests; full suite
+> 1516/1516). Everything else in this slice (settlement/reconciliation stratum reads,
+> realized-position writeback) remains deferred.
 
 - **Purpose:** carry selection lane, hypothesis, expected/actual recipe/regime/signals,
   substitution facts, and evidence counts through the existing artifact without altering
@@ -394,8 +446,11 @@ prove the contracts; documentation drift claiming target capabilities as impleme
 ## links  <!-- LITE; all 8 required at close, per work-item-traceability -->
 
 - work item: WI-0036 (ADO: AB#- when wired; no ADO item created)
-- branch: `wi/0036-wildcard-evidence-discovery-loop` (dai-vault only; dai remains
-  read-only on `main` at `8369d64a2b4ed29ab1c6297de81270d2f9dd8a46`)
+- branch: `wi/0036-wildcard-evidence-discovery-loop` (dai-vault only; dai remained
+  read-only on `main` at `8369d64a2b4ed29ab1c6297de81270d2f9dd8a46` for Slice 1;
+  INTEGRATED to vault main `b04e6421` 2026-07-21); implementation branches
+  `wi/0036-wildcard-capture-flight-plan` (dai + dai-vault, matching, from
+  8369d64 / b04e6421; local only, NOT pushed / NOT merged)
 - pr: - (not pushed / not merged this slice)
 - commits: recorded in the Slice-1 closeout at close (single local vault docs commit)
 - tests: none this slice (docs-only); future slices per test plan

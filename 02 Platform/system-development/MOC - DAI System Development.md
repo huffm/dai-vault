@@ -259,7 +259,17 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   implementation not before the separately governed 2026-07-22 events-gate observation plus a
   new operator authorization. **in-progress** (Slice 1 documentation complete 2026-07-21;
   local vault-only branch + commit; not pushed; not integrated; zero runtime change, zero
-  spend, zero authority granted).
+  spend, zero authority granted). Slice 1 (+ substitution-contract correction + provenance
+  fix) INTEGRATED to vault main `b04e6421` and pushed 2026-07-21. Then, under a same-day
+  operator sequencing override (offline implementation no longer gated on the July 22
+  observation), Slice 2 (deterministic wildcard flight-plan core + CLI,
+  `wildcard-flight-plan/1.0`, WI-0036-owned, consuming the unchanged WI-0034 board 2.2)
+  and the MINIMUM Slice-3 provenance seam (`flight-selection-provenance/1.0`, additive
+  null-suppressed `CompetitionMatchupInput.FlightSelection` -> artifact -> internal
+  inspection only) were implemented TDD (70 pytest + 12 xunit new; suites 634/634 +
+  1516/1516) on matching local branches `wi/0036-wildcard-capture-flight-plan`; NOT
+  pushed / NOT merged / NOT integrated; default off; zero authority; paid use separately
+  gated. Slices 4-6 remain deferred.
 
 ## scope boundary of this registry
 

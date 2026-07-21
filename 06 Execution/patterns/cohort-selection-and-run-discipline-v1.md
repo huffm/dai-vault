@@ -139,6 +139,11 @@ Every capture produces, in `06 Execution/reports/`:
 Defined by [[WI-0036-wildcard-evidence-discovery-loop-v1]] and
 [[wildcard-evidence-discovery-loop-v1]]; recorded here because it bounds future cohort
 selection. No planner or capture path implements it yet, and nothing here authorizes spend.
+*(update 2026-07-21: the offline deterministic implementation now EXISTS -- the WI-0036
+wildcard flight-plan core/CLI on local review branches, default off, fixture-proven,
+authority ledgers all false. It changes nothing here: paid use of any flight plan remains
+a separate explicit operator flight authorization, and this section's rules are the
+contract it implements.)*
 
 1. **A wildcard widens the objective, never the safety envelope.** A wildcard is a safe
    candidate targeting an underrepresented or unusual **recognized** prompt

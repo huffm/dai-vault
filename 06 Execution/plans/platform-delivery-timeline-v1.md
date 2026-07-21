@@ -188,8 +188,8 @@ status: in-progress
 priority: medium
 desired_by:
 due_by:
-not_before: completion of the separately governed 2026-07-22T12:00:00Z events-gate observation AND a new operator implementation authorization
-proposed_by_system: Slice 2 (deterministic wildcard preflight and flight-plan allocation) as the first implementation slice once the not_before conditions hold
+not_before: PAID wildcard use requires a future explicit operator flight authorization; the separately governed 2026-07-22T12:00:00Z events-gate observation remains its own ungated action (2026-07-21 operator sequencing override -- offline implementation is no longer gated on it)
+proposed_by_system: independent review + coordinated integration of the local wi/0036-wildcard-capture-flight-plan branches (dai + dai-vault) as the next step
 date_source: none
 date_confidence: high
 aliases:
@@ -199,7 +199,7 @@ aliases:
 depends_on:
 blocks:
 economic_reason: widens safe evidence acquisition toward underrepresented recognized recipes/regimes/signal combinations and turns artifact interrogation into proposal-only retrieval inputs; no spend authority of its own -- paid model calls and sports capture remain fail-closed per the authorization block above
-operator_intent: operator decision 2026-07-21 -- WI-0036 documentation Slice 1 authorized and completed; implementation is NOT before the July 22 events-gate observation and requires a separate implementation authorization; wildcard use in any future flight remains explicitly operator-approved
+operator_intent: operator decisions 2026-07-21 -- Slice 1 docs authorized/completed/integrated; then a sequencing override authorized the offline/default-off implementation NOW (Slice 2 + minimum Slice-3 seam, delivered on local branches). The July 22 observation is a separate still-unexecuted action; wildcard use in any future PAID flight remains explicitly operator-approved
 replan_triggers:
   - the 2026-07-22 events-gate observation completes
   - an operator implementation authorization for WI-0036 Slice 2 is issued
@@ -218,6 +218,12 @@ related_work_items:
 
 ## change log
 
+- 2026-07-21 (WI-0036 Slice 2, operator-authorized sequencing override): the offline
+  wildcard flight-plan implementation was un-gated from the July 22 observation and
+  delivered on local branches; the wi-0036 initiative's not_before/proposed_by_system/
+  operator_intent updated accordingly. The authorization posture block is UNCHANGED
+  (paid model calls and sports capture remain fail-closed / not-authorized); no
+  desired_by/due_by invented.
 - 2026-07-21 (WI-0036 Slice 1, operator-authorized): wi-0036-wildcard-evidence-discovery-loop
   added. Records the operator sequencing decision that WI-0036 implementation is not before
   the separately governed 2026-07-22 events-gate observation plus a new implementation

@@ -16490,3 +16490,69 @@ core-reserve-vs-wildcard precedence unstated.
 ahead of main); not pushed/merged; dai unchanged; no-spend posture intact.
 **Next:** Operator review; July 22 observation separately governed; implementation
 unauthorized.
+
+---
+
+## WI-0036 Slice 2 Vertical -- Wildcard Flight Plan + Capture Provenance (2026-07-21)
+
+**Objective.** Under the 2026-07-21 operator sequencing override (offline implementation
+un-gated from the July 22 observation, which stays a separate unexecuted action), implement
+WI-0036 Slice 2 (deterministic wildcard flight-plan core + portable CLI) plus the MINIMUM
+Slice-3 provenance seam. Default off; zero authority; no paid/source/model/DB call.
+
+**Outcome.** Delivered TDD on matching local branches `wi/0036-wildcard-capture-flight-plan`
+(dai from 8369d64, vault from b04e6421): WI-0036-OWNED contract consuming the UNCHANGED
+WI-0034 board 2.2 (ownership resolved; tier never overloaded as lane). Python core
+`app/services/wildcard_flight_plan.py` + `wildcard_flight_plan_cli.py`: request
+wildcard-flight-plan-request/1.0, plan wildcard-flight-plan/1.0, realization
+wildcard-flight-realization/1.0, provenance flight-selection-provenance/1.0, lane vocab
+wi0036-candidate-lane/1.0, NET-NEW closed registries wi0036-signal-combinations/1.0 +
+wi0036-novelty-dimensions/1.0, cli wildcard-flight-plan-cli/1.0. Exact formulas
+floor(n/4) / min-core 1 / reserve max(0, core-1); closed plan roles; reserve-first
+precedence with strongest-novelty over eligible wildcards only; freeze fingerprint
+(sha-256) with tamper rejection; market-missing reachable, unknown never favorable;
+recapture rejected by default; wildcard_mode default disabled. Platform seam:
+`FlightSelectionProvenance.cs` + additive null-suppressed
+CompetitionMatchupInput.FlightSelection (GamePk pattern) -> fail-closed trust-boundary
+validation before the run row -> Compose AND ComposeFailedRun copy (SourceDepth pattern)
+-> InputJson/OutputJson only (no migration/column/endpoint) -> AgentRunArtifactDto beside
+observed PromptRouteProvenance -> buyer excluded (sentinel test). Legacy byte-identity +
+FastAPI request-byte invariance test-pinned.
+
+**Verification.** RED first (ModuleNotFoundError x2; CS0246 x4), then GREEN: 82 new tests
+(56 core + 14 cli + 12 xunit); full agent-service pytest 634/634; DevCore.Api.Tests
+1516/1516 (was 1504); zero warnings from changed files; C1-C8 + cap arithmetic
+(1,3,4,7,8) + tie-breakers/permutation-invariance + settled-vs-unsettled +
+fail-closed matrix as executable fixtures; strict snapshot 25 WIs / 6 timeline / 0
+warnings; git diff --check clean both repos; scans clean; no-network proof (imports
+json/hashlib/dataclasses/argparse/os/sys only); protected state byte-identical.
+
+**External-call ledger.** model 0; StatsAPI 0; Odds /events 0; Odds /odds 0; db 0; Tool
+Gateway 0; generation/AgentRun/capture/screening/settlement/scheduling 0; cost $0.
+
+**Docs.** WI-0036 (override + delivered dispositions + links), architecture record
+current-state update, orchestrator + cohort doctrine notes, WI-0034 seam RESOLVED note,
+MOC, timeline (initiative fields + changelog; posture block untouched), closeout report
+`wi-0036-wildcard-capture-flight-plan-implementation-2026-07-21-v1`, this append.
+
+**Repo state.** One local commit per repo on `wi/0036-wildcard-capture-flight-plan`; NOT
+pushed / NOT merged / NOT integrated; protected files byte-identical; mains untouched.
+
+**Next.** Independent review + coordinated integration of the two local branches. NOT the
+July 22 observation; NOT a paid wildcard run; wildcard capture remains default off and
+separately authorized.
+
+### Slice Synopsis
+
+**Change:** Implemented WI-0036 Slice 2 + the minimum Slice-3 seam: deterministic wildcard
+flight-plan core/CLI (floor(n/4) cap, one-core minimum, bounded substitution reserve,
+strongest-novelty precedence, freeze fingerprint) and the additive flight-selection
+provenance block threaded request->artifact->internal inspection.
+**Reason:** A future separately authorized paid flight must be able to include wildcards
+safely and keep their frozen selection identity through the artifact.
+**Proof:** RED->GREEN; 82 new tests; pytest 634/634; DevCore.Api.Tests 1516/1516; snapshot
+25/0; scans + diff --check clean; ledgers all-false.
+**State:** Local commits on wi/0036-wildcard-capture-flight-plan in both repos; not
+pushed/merged; default off; $0; no-spend posture intact.
+**Next:** Independent review + coordinated integration; paid wildcard use stays separately
+authorized; July 22 observation separately governed.

@@ -173,7 +173,9 @@ loop above remains the implemented truth.
   candidate conditions are available before paid execution. Current implementation truth is
   unchanged: preflight today is the offline WI-0034 planner + WI-0035 screen/operators, and
   the runtime Perceive surface is the sports retrieval path.
-- **Core/wildcard flight planning (deferred Slice 2; contract corrected 2026-07-21).** A
+- **Core/wildcard flight planning (Slice 2 IMPLEMENTED offline/default-off 2026-07-21
+  under the operator sequencing override; local branches, not integrated; paid use stays
+  separately authorized).** A
   future frozen flight carries core, reserve where applicable, and a bounded wildcard lane:
   scheduled wildcards capped at `floor(total_scheduled_runs / 4)` (flights under four
   schedule none), wildcards below core in priority, safe-candidate gates identical to core,

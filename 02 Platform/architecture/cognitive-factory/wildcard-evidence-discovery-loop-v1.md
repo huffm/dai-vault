@@ -73,6 +73,19 @@ coverage gaps (settled evidence, by exact recipe/version/regime/signal-combinati
 - Not implemented. No wildcard planner, no proposal type, no service seam, no loop runtime
   exists as of 2026-07-21; the current planner (WI-0034) has no wildcard lane and the
   current Probe path is the closed deterministic template set verified in source.
+  *(current-state update, 2026-07-21, WI-0036 Slice 2 under the operator sequencing
+  override -- supersedes the first sentence for the PLANNER and PROVENANCE layers only:
+  the offline deterministic wildcard flight-plan core + CLI
+  (`services/agent-service/app/services/wildcard_flight_plan.py` / `_cli.py`; request
+  `wildcard-flight-plan-request/1.0`, plan `wildcard-flight-plan/1.0`, realization
+  `wildcard-flight-realization/1.0`, CLI `wildcard-flight-plan-cli/1.0`) and the minimum
+  run-provenance seam (`flight-selection-provenance/1.0`;
+  `DevCore.Api/AgentRuns/FlightSelectionProvenance.cs` + optional
+  `CompetitionMatchupInput.FlightSelection` threading into the artifact on success and
+  failure paths, internal inspection only) are IMPLEMENTED on local review branches,
+  default off, all-false ledgers, not integrated. The `SignalNeedProposal` type, the
+  callable service seam, the refresh-loop runtime, and every activation remain
+  NOT implemented and separately gated.)*
 - Not an authorization: nothing here authorizes model calls, source retrieval, capture,
   settlement, spend, endpoint creation, or activation of the dormant probe-refresh chain.
 - Not a relaxation of `ProbeRequest`, station permissions, or Tool Gateway permissions.
@@ -370,7 +383,9 @@ The coherent governed refresh loop is:
 
 ## recommended next slice
 
-WI-0036 Slice 2 (deterministic wildcard preflight and flight-plan allocation), proposed
-only -- explicitly dependent on review of this documentation slice, completion of the
-separately governed 2026-07-22 events-gate observation, fresh live-state verification, and
-a new operator implementation authorization.
+Superseded 2026-07-21: the operator sequencing override authorized and delivered Slice 2
+plus the minimum Slice-3 seam offline/default-off (local branches
+`wi/0036-wildcard-capture-flight-plan`). The next governed action is independent review +
+coordinated integration of those branches; the separately governed July 22 events-gate
+observation stays its own action; any paid wildcard flight requires a future explicit
+flight authorization. Slices 4-6 remain deferred.
