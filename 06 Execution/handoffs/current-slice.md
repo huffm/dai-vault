@@ -17107,3 +17107,47 @@ Odds `/events` 1 (zero quota); Odds `/odds` **0**; StatsAPI schedule 1; DB reads
 **Proof:** Bundle age 15.3 min forced replacement; replacement bundle 13s old at the boundary; `x-requests-last` exactly `"0"` with quota counters unchanged; exact join count 1 versus a threshold of 4; every cell identical to attempt 1; $0 with zero `/odds`, zero DB writes, zero AgentRuns.
 **State:** Local commit on `ops/2026-07-22-planner-pass1-free-preflight` above `ceb6b961`, NOT pushed; both mains unmoved; `9ef41c9` and `ceb6b961` preserved; migration still unapplied.
 **Next:** No paid screen today. The productive follow-up is an offline, separately authorized decision on whether the stable `+60s` population is a real identity-join defect worth a designed fix, using the two captured observations.
+
+---
+
+## 2026-07-22 -- Exact-identity core canary: migration, paid screen, one-core freeze, one capture
+
+**Slice type:** conditional bounded capture (WI-0034/0035/0036 composition). No new WI.
+**Repos:** dai source UNCHANGED (local database schema advanced by the one authorized migration). dai-vault docs only on `ops/2026-07-22-planner-pass1-free-preflight`, NOT pushed.
+**Objective override:** a one-run TECHNICAL CORE CANARY. It is not a measurement-grade cohort, not a wildcard test, and not evidence that the four-run gate passed -- that gate remains NO-GO at `exact_current_screenable_join_count = 1 < 4`.
+
+### Phase A -- migration (only authorized durable schema change)
+
+Pre: 23 migrations, target unapplied, AgentRuns 302, flight columns 0, zero runs for 823438. Shape re-verified: 9 add / 9 drop / 9 nullable, zero defaults, zero raw SQL, zero data ops, zero destructive ops, only `AgentRuns` touched; exactly one migration pending and it was the authorized one. Applied `20260722100648_AddAgentRunFlightSelectionWriteback`. Post: 24 migrations, AgentRuns still **302**, 9 nullable columns present, **0 backfilled values**, still zero runs for 823438.
+
+### Phase B -- one paid screen (2 credits)
+
+One `/odds` request, `h2h,spreads`, `us`, zero retries. `usage_last=2`, used 282->284, remaining 218->216. DB reads 1 / writes 0, authority all false. 823438 re-verified in the FRESH paid response: no preblock, `includable`, tier `primary`, join `matched` with `teams+start exact; books=9; fresh=9`, provider event exactly `111a9557...`, exact_match_count 1, delta 0, reversed 0, and **same_orientation_team_pair_count = 1** (mandatory multiplicity gate satisfied). It was the only matched candidate in the slate.
+
+### Phase C -- Pass 2 and one-core freeze
+
+`replay` derived the Pass-2 request from the frozen Pass-1 request + canonical paid bundle. Board `COHORT_PROPOSED_FOR_OPERATOR_REVIEW`, primary pool `[823438]` (planner-selected, not hand-promoted), reserve empty, authority all false. Flight frozen: total 1 / core 1 / **wildcard 0** / `wildcard_scheduled_max = floor(1/4) = 0` / mode `disabled` / reserves empty; fingerprint `0d44530e...`. Plan validated as exact re-production; all-available realization gave `realized_via=scheduled`, lane core, no `substituted_for`, 0 substitutions, 0 unfilled, validated as canonically identical re-derivation. Provenance exported: lane core, role null, sched 1, realized 1, via scheduled, substitutedFor null, substitutionEligible false, 8/8 authority false.
+
+### Phase D -- exactly one AgentRun
+
+Run `a9b0433e-f36b-1410-8191-00373db4b724`, status `completed`, tenant 1, lean away, confidence 0.75, posture monitor, 10.7s. AgentRuns **302 -> 303 (+1 exactly)**; 1 row for 823438; **zero** other rows carry any flight value. Writeback equals exported provenance field-for-field. Market snapshot linked with provider event `111a9557...` -- identical to the exact join, so market and candidate identity are separately correct and consistent.
+
+### Ledger vs ceilings
+
+AgentRuns 1/1 | model calls 1/1 | model spend **$0.0007176** / $0.01 (`gpt-4o-mini`, 2936 in / 462 out) | Odds screen 2 credits + run retrieval 3 credits (`h2h,spreads,totals` x `us`) = **5 / 5** | `/events` 0 | migrations 1/1 | settlement 0 (not authorized). The run's 3 credits are a derivation from markets x regions, not an observed header -- reading the header would itself have cost a credit.
+
+### Non-occurrences
+
+Zero wildcards, zero substitutions, zero added candidates, no reserve promotion, no non-exact or duplicate-pair binding, no tolerance/prompt/routing/confidence/lean/posture/buyer/matching/recipe change, no retry, no settlement or reconciliation, no source/test change, no remote mutation. Protected files byte-identical; dai worktree clean. Services started in order and all stopped at close; Docker engine and `devcore-sql` restored to their stopped opening state; no configuration persisted.
+
+### Settlement status
+
+The run MAY enter later settlement/reconciliation under separate authorization. It is NOT settled evidence now and does not contribute to calibration until governed settlement occurs.
+
+### Slice Synopsis
+
+**Change:** Executed the authorized one-run technical core canary end to end -- applied the WI-0036 writeback migration, ran one 2-credit paid screen, derived Planner Pass 2, froze a one-core zero-wildcard flight, and captured exactly one AgentRun with realized-position writeback.
+**Reason:** The four-run measurement gate was NO-GO, but the operator authorized a narrowly bounded technical canary to prove the integrated vertical works on the single exactly-identified candidate.
+**Proof:** Migration additive-only with AgentRuns 302->302 and zero backfill; paid screen exactly 2 credits with 823438 `includable` and `same_orientation_team_pair_count=1`; board `COHORT_PROPOSED_FOR_OPERATOR_REVIEW` with primary `[823438]`; plan and realization both validated as exact producer re-production; AgentRuns 302->303 with writeback matching provenance field-for-field; model $0.0007176 and total Odds credits 5/5.
+**State:** Local documentation commit on `ops/2026-07-22-planner-pass1-free-preflight`, NOT pushed; both mains unmoved; dai source unchanged; migration retained as the authorized durable change; all services stopped.
+**Next:** Settlement of this run and the `+60s` identity-join decision are separate, unauthorized decisions.
