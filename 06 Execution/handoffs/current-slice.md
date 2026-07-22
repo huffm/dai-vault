@@ -17352,3 +17352,78 @@ Zero StatsAPI, `/events`, `/odds`, model, Tool Gateway, or network calls. Zero d
 **Proof:** Eight pre-existing tests failed exactly at the conflation seam and were corrected; a truth table whose rows disagree by construction now pins the three counts; 1608/1608 .NET, 617/617 pytest, snapshot 25/6/0, diff --check and vocabulary scans clean, protected hash unchanged.
 **State:** dai `54873b3` and this vault commit on local `wi/0035-provider-event-binding`, NOT pushed; both mains unmoved; findings A and E still open, execution still unbound.
 **Next:** Pass 2 -- emit the binding block on both artifacts and pin its fingerprint. Not Slice B, not planner propagation, not execution correction.
+
+---
+
+## 2026-07-22 -- WI-0035 Slice-A correction Pass 2 (original findings A and E): binding wire, fingerprint, closed eight-key ledger
+
+### Objective
+
+Close the two remaining **original producer findings**: A (neither producer emitted the canonical `provider_event_binding` block) and E (the fingerprint was absent from every wire and the nested binding authority ledger was an incomplete four-key subset). Producer-side only.
+
+### Terminology correction (binding for active readers)
+
+The Pass-1B entry above calls finding E "execution-path correction". **That label was wrong.** It is preserved unedited as historical evidence under the append-only rule; this entry is the active disposition.
+
+- original **Finding A** = missing producer binding wire -- **closed locally by Pass 2**.
+- original **Finding E** = missing wire fingerprint plus the incomplete four-key nested ledger -- **closed locally by Pass 2**.
+- **execution retrieval** (team/date fallback, doubleheader mis-binding, missing `MarketSpreadInput` binding member, no by-ID re-verification) is a **separate open downstream gap and is NOT finding E**. Its four characterization tests remain green and explicitly unresolved.
+
+### Outcome
+
+Implemented on `wi/0035-provider-event-binding`. dai local commits `4702b51` (production + tests) then `4f4e726` (pinned-wire test); vault local commit recorded alongside. Findings A and E are closed at the producer boundary. Slice B is not started; execution is still unbound.
+
+### Repo state
+
+**Before** -- dai `54873b3`, vault `961a87a`, both on `wi/0035-provider-event-binding`, dai clean, dai main `48a2931`, vault main `3a82af0`, 0 remote refs for the branch in both repos.
+**After** -- dai `4f4e726`, vault this commit, same branches, both mains unmoved, nothing pushed.
+
+### Work performed
+
+1. **Content / fingerprint / wire split.** `CanonicalJson` became `CanonicalContentJson` (the closed facts **without** the fingerprint). New `ComputeFingerprint` hashes exactly those UTF-8 bytes; new `CanonicalWireJson` emits the same facts plus `binding_fingerprint_sha256`. The fingerprint field never participates in its own hash, so the calculation is not recursive; both key orders are hand-written, so ordering is not serializer-dependent. `binding_fingerprint_sha256` sorts between `authority_ledger` and `binding_schema_version`, making the wire order the content order with exactly one insertion.
+2. **Closed eight-key ledger.** The four-key subset (`capture`/`execution`/`mutation`/`screening`) was replaced by the closed WI-0036 vocabulary -- `capture_authorized`, `concrete_tool_selection`, `execution_authorized`, `mutation_authorized`, `scheduling_authorized`, `screening_authorized`, `settlement_authorized`, `tuning_authorized` -- all eight always present, every value the JSON boolean `false`, covered by the fingerprint. Same canonical key set as `FlightSelectionProvenance.LedgerKeys`, so there is no second authority dialect. The enclosing screen (six-key) and events-gate (eight-key, different) operation ledgers are untouched and remain separately versioned.
+3. **Independent wire validator.** New `ProviderEventBindingWire.Validate` reads a wire **as data** -- it never calls the emitter and never compares against a re-rendered string. It rejects every missing, extra, duplicate, renamed, string-valued, null, or true ledger entry **even when the content hash has been recomputed over the mutation**, plus absent/uppercase/short fingerprints and any top-level key drift.
+4. **Shared producer emission.** Both candidate writers emit exactly one key, `provider_event_binding`, taken verbatim from `ProviderEventBinding.EmittedWireJson`. Neither hand-composes the block or reserializes it through a second serializer. The complete object is emitted only when `QualifiedBindingCount == 1`, `Binding` is non-null, and exactly one admitted event is stated consistently by both the count and the admitted-event list; every other case, including an internally inconsistent one, emits explicit JSON `null` and never a partial or repaired block.
+5. **Versions finalized, not re-bumped.** Live inspection found no contract reason the corrected wire cannot honestly be the shape the already-announced, never-integrated versions always intended to carry. `provider-event-binding/1.0`, `provider-event-binding-policy/1.0`, `market-contrast-screen-bundle/1.4`, `market-contrast-source/1.4`, `market-contrast-events-gate/1.1`, `market-contrast-events-gate-operator/1.2`, and the required preflight bundle `1.4` are pinned as final. One stale comment claiming the events-gate "artifact schema stays 1.0" was corrected against a constant already reading `1.1`.
+
+### Files changed
+
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/ProviderEventBinding.cs` -- content/fingerprint/wire split, `ClosedAuthorityKeys`, `EmittedWireJson`, new `ProviderEventBindingWire` validator.
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/MarketContrastSourceAdapter.cs` -- paid `provider_event_binding` emission; 1.4 comment finalized.
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/MarketContrastEventsGate.cs` -- free-gate `provider_event_binding` emission; stale schema comment corrected.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/ProviderEventBindingWireTests.cs` -- **new**, 22 tests.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/ProviderEventBindingProducerWireTests.cs` -- **new**, 34 tests.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/{ProviderEventBindingTests,ProviderEventAccountingTests,ProviderEventTrustedContextTests}.cs` -- renamed serializer call, eight-key ledger assertion.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/MarketContrastSourceAdapterTests.cs` -- joined to the non-parallel single-use-run-lease collection.
+
+### Validation proof
+
+Binding-wire suite 22/22; producer-wire suite 34/34; focused binding/join/contrast suites 294/294; full `DevCore.Api.Tests` **1664/1664** (1608 baseline + 56 new); four execution-gap tests 4/4 green and still unresolved; agent-service pytest **617/617** (Python untouched); strict planning snapshot 25 work items / 6 timeline entries / **0 warnings**; `git diff --check` clean in both repos; `DevCore.Data.csproj` protected hash `63EF2488...` unchanged; `provider_event_binding` and `binding_fingerprint_sha256` appear in **no** buyer, envelope, planner, flight, controller, Python, or Angular file; no `*_authorized: true` on any added production line.
+
+Fingerprint stability is proven across processes, not merely self-consistently: the exact (`b0b6f275...`) and bounded `+60s` (`8911c44b...`) wires are pinned byte for byte against fingerprints computed **outside** the test process, and both producers are asserted against the same literal.
+
+RED evidence: the acceptance suite failed to **compile** against `54873b3` -- `CanonicalContentJson`, `ComputeFingerprint`, `CanonicalWireJson`, `EmittedWireJson`, and `ProviderEventBindingWire` did not exist. A second, unplanned red caught a **real defect**: the byte-parity and exact-start producer tests passed alone but failed alongside the adapter suite, because `MarketContrastSourceGate` holds the paid single-use run lease in process-wide static state while xUnit parallelizes across classes -- one class was consuming another's lease and turning a real paid path into a spurious `lease_unavailable`. Both classes are now in one non-parallel collection.
+
+### DB writes / external side effects / cost
+
+None. Zero paid calls. **$0.**
+
+### What did not change
+
+Prompts, routing, confidence logic, buyer copy, migrations/schema, and runtime behavior: unchanged. `input-evidence-envelope/1.1` and `ProjectToPlannerEnvelopeJson` are byte-identical and carry no binding. No planner, flight, provenance, controller, Tool Gateway, `MarketSpreadInput`, `SportsRetriever`, `OddsMarketClient`, or `MarketSnapshot` change. The Python replay validator still pins `market-contrast-screen-bundle/1.1|1.2|1.3`, so the `1.4` bundle stays mechanically unusable at Planner Pass 2 -- the correct fail-closed posture for an unfinished vertical.
+
+### Open issues
+
+Execution retrieval remains a separate open downstream gap: team/date fallback, doubleheader mis-binding, no by-ID re-verification, and no `MarketSpreadInput` binding member. Slice B propagation is not started. Slice A producer work is locally complete but **unintegrated and unavailable to live workflow**.
+
+### Posture
+
+Zero StatsAPI, `/events`, `/odds`, model, Tool Gateway, or network calls. Zero database access, migration operation, service start, AgentRun, capture, settlement, reconciliation, scheduling, or activation. No integration, push, PR, remote branch, or history rewrite. $0. The gamePk 823438 canary remains untouched historical non-wildcard, non-settled, pre-binding evidence.
+
+### Slice Synopsis
+
+**Change:** Both producers now emit one shared canonical `provider_event_binding` wire with the fingerprint on it, over separated content/fingerprint/wire algorithms, and the nested ledger is the closed WI-0036 eight-key all-false set guarded by an independent validator.
+**Reason:** Original finding A left the binding computed but never published, and original finding E left the fingerprint off every wire behind an incomplete four-key ledger that read as "unstated" rather than "explicitly denied".
+**Proof:** The suite failed to compile against `54873b3`; a second red exposed a real cross-class lease race; 1664/1664 .NET, 617/617 pytest, 294/294 focused, snapshot 25/6/0, byte-identical producer parity, externally computed fingerprints pinned, rehashed ledger mutations all rejected, protected hash unchanged.
+**State:** dai `4f4e726` and this vault commit on local `wi/0035-provider-event-binding`, NOT pushed; both mains unmoved; A and E closed, execution retrieval still a separate open gap.
+**Next:** Slice B -- carry the binding through `input-evidence-envelope` into the Planner Pass 2 board with producer replay. Not execution correction, not flight propagation.

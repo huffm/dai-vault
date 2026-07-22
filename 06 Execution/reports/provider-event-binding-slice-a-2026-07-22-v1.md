@@ -2,11 +2,11 @@
 title: "Provider-Event Binding Slice A -- Canonical Qualification Producer 2026-07-22 v1"
 type: "evidence-report"
 date: "2026-07-22"
-status: "Slice A implemented locally through correction Pass 1B (findings B, C, D, F); findings A and E open for Pass 2; vertical still in progress; execution remains unsafe for bound flights"
+status: "Slice A producer work locally complete through correction Pass 2 (original findings A, B, C, D, E, F all closed at the producer boundary); UNINTEGRATED and unavailable to live workflow; execution retrieval remains a separate open downstream gap; vertical still in progress"
 project: "DAI"
-slice: "WI-0035 provider-event binding vertical, Slice A + corrections Pass 1A/1B"
+slice: "WI-0035 provider-event binding vertical, Slice A + corrections Pass 1A/1B/2"
 repos:
-  dai: "local branch wi/0035-provider-event-binding, commit 54873b3 (Pass 1B); NOT pushed"
+  dai: "local branch wi/0035-provider-event-binding, commit 4f4e726 (Pass 2); NOT pushed"
   dai-vault: "local branch wi/0035-provider-event-binding; NOT pushed"
 tags:
   - evidence-operations
@@ -268,3 +268,206 @@ pre-binding evidence.
 fingerprint, then Slice B carries it through input-evidence into the Planner Pass 2 board.
 Execution correction stays gated behind those. Nothing here authorizes a paid call, a
 wildcard flight, or any live operator action.
+
+---
+
+## addendum 2026-07-22 -- correction pass 2 (original findings A and E)
+
+Pass 2 closes the two remaining **original producer findings**. It is a producer-side
+correction only: **no planner propagation exists, no flight or provenance carries a
+binding, and execution is still unbound.**
+
+### terminology correction (binding for all active readers)
+
+Earlier Pass-1B wording in the appended handoff called finding E "execution-path
+correction". **That label was wrong and is corrected here.** The earlier text is preserved
+unedited as historical evidence under the append-only rule; this addendum is the active
+disposition.
+
+| label | what it actually is | status |
+|---|---|---|
+| original **Finding A** | neither versioned producer candidate wire emitted the canonical `provider_event_binding` block | **closed locally by Pass 2** |
+| original **Finding E** | the binding fingerprint was not on any wire, and the nested binding authority ledger was an incomplete four-key subset with no pinned closed contract | **closed locally by Pass 2** |
+| execution retrieval | team/date fallback, doubleheader mis-binding, missing `MarketSpreadInput` binding member, no by-ID re-verification | **separate, open, downstream — NOT finding E** |
+
+The four execution-gap characterization tests remain **green and explicitly unresolved**.
+Renaming that gap as finding E would have implied Pass 2 addressed it. It did not.
+
+### the three concepts are now separate in code
+
+| concept | method | what it is |
+|---|---|---|
+| canonical **content** | `ProviderEventBinding.CanonicalContentJson` | the complete closed binding facts **without** the fingerprint |
+| content **fingerprint** | `ProviderEventBinding.ComputeFingerprint` | lowercase 64-hex SHA-256 over the UTF-8 bytes of exactly that content |
+| canonical **wire** | `ProviderEventBinding.CanonicalWireJson` | the same facts **plus** `binding_fingerprint_sha256` |
+
+The fingerprint field never participates in its own hash, so the calculation is not
+recursive. Both key orders are written by hand rather than delegated to a serializer, so
+ordering is not serializer-dependent. `binding_fingerprint_sha256` sorts between
+`authority_ledger` and `binding_schema_version`, making the wire order the content order
+with exactly one insertion.
+
+### the emitted wire, pinned
+
+Exact-start case (sanitized fixture; fingerprint computed **outside** the test process and
+asserted byte for byte against both producers):
+
+```json
+{"admitted_event_count":1,"admitted_max_abs_start_delta_seconds":60,"authority_ledger":{"capture_authorized":false,"concrete_tool_selection":false,"execution_authorized":false,"mutation_authorized":false,"scheduling_authorized":false,"screening_authorized":false,"settlement_authorized":false,"tuning_authorized":false},"binding_fingerprint_sha256":"b0b6f2753f02f7b83deaeb7f3586c806657d2662fc9b5a31fc3608d219111d77","binding_schema_version":"provider-event-binding/1.0","bracket_from_utc":"2026-07-22T04:00:00Z","bracket_to_utc":"2026-07-23T04:00:00Z","candidate_away_team_ref":"away-824001","candidate_home_team_ref":"home-824001","candidate_scheduled_start_utc":"2026-07-22T23:10:00Z","external_game_id":"824001","match_method":"exact_start","observed_at_utc":"2026-07-22T14:30:00Z","policy_version":"provider-event-binding-policy/1.0","provider_commence_time_utc":"2026-07-22T23:10:00Z","provider_event_id":"odds-evt-0","provider_name":"odds_api","same_orientation_team_pair_count":1,"source_provider":"mlb_statsapi","start_delta_seconds":0,"target_date":"2026-07-22"}
+```
+
+Bounded `+60s` case differs in exactly three fields and therefore in the fingerprint:
+`"match_method":"bounded_start_tolerance"`,
+`"provider_commence_time_utc":"2026-07-22T23:11:00Z"`, `"start_delta_seconds":60`,
+fingerprint `8911c44be22fa20a339990a80d808360e7f6af11df04e9c5f669dc257b6b118c`. A bounded
+binding still reports the **literal** `exact_start_match_count` of `0`.
+
+Null case (every non-qualifying candidate):
+
+```json
+"provider_event_binding": null
+```
+
+### finding E -- the closed eight-key ledger
+
+The four-key subset (`capture` / `execution` / `mutation` / `screening`) is replaced by the
+closed WI-0036 vocabulary, all eight keys always present, every value the JSON boolean
+`false`:
+
+```text
+capture_authorized      concrete_tool_selection  execution_authorized  mutation_authorized
+scheduling_authorized   screening_authorized     settlement_authorized tuning_authorized
+```
+
+This is the same canonical key set the WI-0034/WI-0036 safety ledgers use
+(`FlightSelectionProvenance.LedgerKeys`), so a reader never has to learn a second authority
+dialect. The incomplete subset was the real defect: it let a reader infer that an unlisted
+authority was merely *unstated* rather than *explicitly denied*.
+
+The fingerprint covers the complete nested eight-key ledger.
+
+**The enclosing operation ledgers are untouched and remain separately versioned.** The
+screen bundle keeps its own six-key ledger; the events-gate artifact keeps its own eight-key
+(different) ledger. The nested binding ledger does not silently replace either, and both are
+asserted explicitly.
+
+### the independent wire validator
+
+`ProviderEventBindingWire.Validate` reads an emitted wire **as data**. It never calls the
+emitter and never compares against a re-rendered expected string, so it detects mutations a
+producer-side round trip would hide. Ledger mutation matrix, each **rehashed** so the
+attacker's fingerprint is internally consistent:
+
+| mutation | verdict |
+|---|---|
+| a key missing | rejected |
+| an extra key outside the closed set | rejected |
+| a duplicate key | rejected (strict parse; no last-value collapse) |
+| a renamed key | rejected |
+| a string-valued entry (`"false"`) | rejected |
+| a null entry | rejected |
+| `execution_authorized: true` | rejected |
+| absent / uppercase / short fingerprint | rejected |
+| an extra or missing top-level wire key | rejected |
+
+**A recomputed fingerprint is integrity evidence, never authority and never producer
+authenticity.** Authority is decided by the closed vocabulary and the all-false rule, never
+by hash agreement.
+
+### finding A -- one shared wire from both producers
+
+Both candidate writers emit exactly one key, `provider_event_binding`, whose value comes
+**verbatim** from the shared `ProviderEventBinding.EmittedWireJson`. Neither writer
+hand-composes the block, adds a field of its own, or parses and reserializes it through a
+second serializer.
+
+The complete object is emitted **only** when every internal invariant agrees:
+`QualifiedBindingCount == 1`, a non-null `Binding`, and exactly one admitted event stated
+consistently by *both* the count and the admitted-event list. Everything else emits explicit
+JSON `null`: unqualified, ambiguous, outside-window, reversed, invalid-identity,
+bracket-rejected, non-whole-second, preblocked, not-attempted, source-failed — and, notably,
+an internally inconsistent state, which **fails closed rather than emitting either a
+plausible block or a caller-invented repair**.
+
+Under identical frozen binding inputs the paid screen and the free events gate emit
+**byte-identical** binding objects, proven on exact, `+60s`, and `-60s` cases.
+
+### versions -- finalized, not re-bumped
+
+Live source inspection found no contract reason the corrected wire cannot honestly be the
+shape these already-announced, never-integrated versions always intended to carry, so they
+are **pinned as the final Slice-A versions** rather than bumped again:
+
+| contract | final Slice-A version |
+|---|---|
+| provider-event binding schema | `provider-event-binding/1.0` |
+| provider-event binding policy | `provider-event-binding-policy/1.0` |
+| market-contrast screen bundle | `market-contrast-screen-bundle/1.4` |
+| market-contrast source adapter | `market-contrast-source/1.4` |
+| events-gate artifact | `market-contrast-events-gate/1.1` |
+| events-gate operator | `market-contrast-events-gate-operator/1.2` |
+| events-gate required preflight bundle | `market-contrast-screen-bundle/1.4` |
+
+One stale comment was corrected: the events-gate profile still claimed its "artifact schema
+stays 1.0" while the constant already read `1.1`. Historical integrated 1.3/1.0 artifacts
+remain history and were not rewritten.
+
+### verification
+
+| gate | result |
+|---|---|
+| new binding-wire suite (`ProviderEventBindingWireTests`) | **22/22** |
+| new producer-wire suite (`ProviderEventBindingProducerWireTests`) | **34/34** |
+| focused binding/join/contrast suites | **294/294** |
+| full `DevCore.Api.Tests` | **1664/1664** (1608 baseline + 56 new) |
+| four execution-gap tests | **4/4 green, explicitly unresolved** |
+| full agent-service pytest (Python untouched) | **617/617** |
+| fingerprint stability across a fresh process | pinned bytes computed outside the test process match both producers |
+| strict planning snapshot | 25 work items / 6 timeline entries / **0 warnings** |
+| `git diff --check` both repos | clean |
+| protected hash `DevCore.Data.csproj` | `63EF2488...` unchanged |
+| binding-token containment | `provider_event_binding` / `binding_fingerprint_sha256` appear in **no** buyer, envelope, planner, flight, controller, Python, or Angular file |
+| authority-grant scan | no `*_authorized: true` on any added production line; the only `true` values are inside two negative tests that assert rejection |
+| added-line scans | no machine paths, secrets, or live-call surfaces |
+
+**RED evidence.** The acceptance suite failed to **compile** against `54873b3`:
+`CanonicalContentJson`, `ComputeFingerprint`, `CanonicalWireJson`, `EmittedWireJson`, and
+`ProviderEventBindingWire` did not exist. A second, unplanned red then caught a **real
+defect**: the byte-parity and exact-start producer tests passed alone but failed when run
+alongside the adapter suite, because `MarketContrastSourceGate` holds the paid single-use
+run lease in process-wide static state and xUnit parallelizes across classes. One class was
+consuming another's lease and turning a real paid path into a spurious `lease_unavailable`.
+Both classes are now joined into one non-parallel collection.
+
+### what remains unsafe and unfinished
+
+Execution retrieval is **untouched** and remains a separate open downstream gap:
+
+- market identity is still rebuilt from team names and date;
+- `FirstOrDefault` still selects across **either** orientation, so a doubleheader can bind
+  the wrong game;
+- an id-supplied retrieval still performs no independent re-verification;
+- `MarketSpreadInput` still has no member capable of carrying a binding.
+
+The `1.4` bundle also remains **mechanically unusable** at Planner Pass 2: the Python replay
+validator still accepts only `market-contrast-screen-bundle/1.1`, `/1.2`, and `/1.3`. A
+bundle from the new producer is refused, which is the correct fail-closed posture for an
+unfinished vertical.
+
+### posture
+
+No StatsAPI, Odds `/events`, Odds `/odds`, model, Tool Gateway, or other network call. No
+paid call, AgentRun, capture, flight freeze, settlement, reconciliation, scheduling, or
+activation. No database read or write, migration operation, or service start. No
+integration, push, PR, remote branch, or history rewrite. **$0.**
+
+Slice A producer work is **locally complete**, but remains **unintegrated and unavailable to
+live workflow**. The persisted gamePk `823438` canary remains historical non-wildcard,
+non-settled, pre-binding evidence.
+
+### next
+
+**Slice B** carries the binding through `input-evidence-envelope` into the Planner Pass 2
+board with producer replay. Slices C-D then reach flight provenance and finally enforce the
+binding at execution retrieval. No paid flight, wildcard capture, settlement, or runtime use
+is authorized by Pass 2.
