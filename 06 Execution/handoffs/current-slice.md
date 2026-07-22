@@ -16940,3 +16940,45 @@ Active fields now distinguish the integrated vault IMPLEMENTATION commit `fa31a3
 ### Preserved and unchanged
 
 WI-0036 Slices 1-3 remain verified and integrated; `flight-selection-provenance/1.0` and `wi0036-candidate-lane/1.0` unchanged; both operator-accepted semantics remain binding; migration `20260722100648_AddAgentRunFlightSelectionWriteback` remains generated but UNAPPLIED; no runtime or commercial authority; Slices 4-6 and paid wildcard use remain separately governed. No historical evidence was rewritten and no prior commit was altered.
+
+---
+
+## 2026-07-22 -- WI-0035 July 22 zero-quota events-gate observation (executed)
+
+**Slice type:** evidence observation (continues WI-0035) preceded by a WI-0036 documentation correction (Phase A, separately committed and published).
+**Repos:** dai read-only/unchanged; dai-vault Phase-A correction published to main, then this observation branch `wi/0035-events-gate-observation-2026-07-22` (local, NOT pushed).
+**Authorization:** 2026-07-22 canonical operator prompt, Phase B. Explicitly NOT authorized: `/odds`, migration application, database writes, AgentRun creation, activation, model/gateway calls, capture, screening spend, scheduling, settlement, reconciliation, Slices 4-6, paid wildcard flight.
+
+### Live clocks (captured, not assumed from the architecture timestamp)
+
+Gate entry `2026-07-22T12:22:49Z` (08:22:49 EDT) -- after the 12:00:00Z not-before, inside the preferred 08:00-11:30 EDT window, ~252 min below the 16:35:00Z ceiling. Preflight 12:36:58Z -> 12:37:01Z. `/events` 12:38:37Z (bundle age ~96s, inside the 5-minute freshness limit).
+
+### Gates passed before any source call
+
+Frozen inputs verified by hash (`slate.json` 37EE908B..., `pass1-request.json` 0FCCAFB1...), target date 2026-07-22, exactly 15 distinct authorized gamePks, no composition. Attempt uniqueness: no prior `/events` attempt; the pre-existing `screen-2026-07-22/` ledger records one **`/odds`** call from **2026-07-20** under a different authorization. Destination `events-gate-2026-07-22/attempt-1/` did not exist and was claimed exclusively before the call. Operator versions confirmed from integrated dai main (bundle schema 1.3, events operator 1.1, retries 0, timeout 20s, freshness 5 min, closed all-false authority ledger). No-restore build clean; focused market-contrast tests 144/144.
+
+### Schema compatibility under the unapplied migration
+
+Re-proven from source and then observed live: the narrow active-run read emitted `SELECT [ExternalGameId], COUNT(*) ... WHERE TenantKey/SourceProvider/ExternalGameId/ExclusionReason ... GROUP BY [ExternalGameId]` -- none of the nine unmigrated flight-selection columns is referenced, and no write occurs. Migration `20260722100648_AddAgentRunFlightSelectionWriteback` remains generated and UNAPPLIED.
+
+### Dependency handling
+
+Opening state recorded: Docker Desktop not running, `devcore-sql` exited, no Windows SQL service. Only that existing dependency was started (engine + `devcore-sql`); the web application was never started. Opening state restored at close.
+
+### Result
+
+One preflight (`completed_preflight_no_paid_call`, 0 Odds requests, 1 DB read, 0 writes, 8/8 authority false) then exactly one `/v4/sports/baseball_mlb/events` request, 0 retries. Terminal status **`exact_match_ready_for_separate_operator_decision`**. Zero-quota audit PASSED: `x-requests-last` exactly `"0"`, used 282 / remaining 218 -- unchanged from the 2026-07-20 paid screen, independently corroborating zero credit consumption. 17 provider events; 13 screenable; **1 exact match** (gamePk 823438 Dodgers@Phillies, delta 0s, provider event 111a9557...); 12 start-instant mismatches (+60s x11, -240s x1); 0 reversed orientation; 0 unresolved; 2 preblocked skips (823518 caller_start_mismatch, 824732 starters_not_announced).
+
+Observed vs inferred is kept separate in the report: identity/orientation resolve cleanly (fact); the +60s offset looks systematic rather than random (inference); whether it is stable across dates is unknown from one observation. No tolerance change was made -- widening the exact-match predicate is an identity-join correctness decision needing its own authorization and fixtures.
+
+### Ledger
+
+Odds `/events` 1; Odds `/odds` **0**; StatsAPI 1 schedule + 22 bounded starter attempts, 0 failures; DB reads 1, writes 0; model/gateway/AgentRun/capture/screening/scheduling/settlement/reconciliation/tuning **0**; migration applications **0**; paid cost **$0**. Artifacts and logs live outside both repositories under `<DAI_WORKSPACE_ROOT>/events-gate-2026-07-22/attempt-1/`; no credential, secret-bearing header, raw provider payload, or tenant data was persisted in either repo.
+
+### Slice Synopsis
+
+**Change:** Corrected the WI-0036 reconciliation-tip wording and published it, then executed the authorized July 22 evidence observation: one refreshed free preflight and exactly one zero-quota `/events` request.
+**Reason:** Active records falsely claimed the vault implementation commit was still `origin/main`, and the July 22 cross-provider identity question had to be answered before any later paid screen could even be proposed.
+**Proof:** Phase A published as `e112731` with vault main == origin/main; live clocks captured independently; frozen input hashes matched; no prior `/events` attempt; narrow DB read proven schema-safe in source and in emitted SQL; preflight `completed_preflight_no_paid_call` with 0 Odds requests; `/events` returned 17 events with `x-requests-last` exactly `"0"`; 1 exact match, 12 start-instant mismatches; $0.
+**State:** Phase-A correction published on vault main; observation evidence committed on the local branch `wi/0035-events-gate-observation-2026-07-22`, NOT pushed or merged; dai unchanged; migration still unapplied; dependency state restored.
+**Next:** Offline fixture-backed characterization of the +60s start-instant offset (proposal only). A paid `/odds` screen, migration application, Slices 4-6, and any paid wildcard flight all remain separately authorized.

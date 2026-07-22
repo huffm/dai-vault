@@ -115,6 +115,33 @@ capture; the classifier core performs no source access.
 > artifact, or planner board grants execution authority. The historical bullets are
 > preserved as written; this note is the authoritative current state.
 
+> **Current disposition (2026-07-22, after the executed events-gate observation).** The
+> zero-quota `/events` cross-provider identity observation named in item (3) above is
+> **EXECUTED and COMPLETE**. Under the operator's later explicit return to the July 22
+> action, one refreshed free preflight (`completed_preflight_no_paid_call`; 0 Odds
+> requests, 1 DB read, 0 writes) was followed by exactly one
+> `/v4/sports/baseball_mlb/events` request, zero retries. Terminal status:
+> **`exact_match_ready_for_separate_operator_decision`**. Zero-quota audit PASSED
+> (`x-requests-last` exactly `"0"`; used/remaining unchanged from the 2026-07-20 paid
+> screen). Result: 17 provider events; 13 screenable candidates; **1 exact match**
+> (gamePk 823438, Dodgers@Phillies, start delta 0s); 12 start-instant mismatches
+> (+60s x11, -240s x1); 0 reversed orientation; 0 unresolved; 2 preblocked skips. Team
+> identity and orientation resolve cleanly -- the exact-match predicate is limited by the
+> start instant, not by aliasing. Full evidence:
+> [[market-contrast-events-gate-observation-2026-07-22-v1]]. Paid cost $0; no `/odds`, no
+> AgentRun, no database write, no capture, no activation.
+>
+> **Condition (4) is now partially satisfied:** at least one exact current identity/start
+> join exists. A later `/odds` attempt still requires its own separate authorization and is
+> NOT granted by this observation.
+>
+> **Next operator decision (proposal only):** an offline, fixture-backed investigation of
+> the start-instant offset -- characterize whether the +60s delta is systematic across
+> dates from already-captured artifacts, then decide deliberately whether the exact-match
+> predicate should admit a bounded start tolerance. That is an identity-join correctness
+> change requiring its own authorization and regression fixtures; it needs no provider
+> call to begin.
+
 - **Slice 1 (this slice, delivered): offline deterministic classifier core** -- policy
   profile, normalized facts, classification, reasons, priority, envelope projection,
   consumer compatibility, cross-language vectors. local commits only.
