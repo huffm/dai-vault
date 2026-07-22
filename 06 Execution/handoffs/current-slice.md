@@ -16982,3 +16982,42 @@ Odds `/events` 1; Odds `/odds` **0**; StatsAPI 1 schedule + 22 bounded starter a
 **Proof:** Phase A published as `e112731` with vault main == origin/main; live clocks captured independently; frozen input hashes matched; no prior `/events` attempt; narrow DB read proven schema-safe in source and in emitted SQL; preflight `completed_preflight_no_paid_call` with 0 Odds requests; `/events` returned 17 events with `x-requests-last` exactly `"0"`; 1 exact match, 12 start-instant mismatches; $0.
 **State:** Phase-A correction published on vault main; observation evidence committed on the local branch `wi/0035-events-gate-observation-2026-07-22`, NOT pushed or merged; dai unchanged; migration still unapplied; dependency state restored.
 **Next:** Offline fixture-backed characterization of the +60s start-instant offset (proposal only). A paid `/odds` screen, migration application, Slices 4-6, and any paid wildcard flight all remain separately authorized.
+
+---
+
+## 2026-07-22 -- WI-0035 events-gate observation integrated + start-instant analysis (offline)
+
+**Slice type:** integration continuation (Phase A) + offline evidence analysis (Phase B). Continues WI-0035; no new WI.
+**Repos:** dai UNCHANGED (no commit, no code/test/fixture edit). dai-vault: Phase A published to main; Phase B on local branch `wi/0035-start-instant-normalization-analysis`, NOT pushed.
+**Authorization:** 2026-07-22 operator prompt. No provider, model, Tool Gateway, database, capture, screening, settlement, scheduling, or paid call; migration NOT applied.
+
+### Phase A -- observation integrated
+
+Independently re-verified the local observation commit before integrating: parent == vault main, exactly 1 ahead / 0 behind, trailer `WI: WI-0035`, never pushed, range `diff --check` clean, protected hashes byte-identical, external artifacts intact. Re-derived the report's headline claims from `events-gate-artifact.json` rather than trusting the prior write-up -- 17 provider events, 13 screenable, 1 exact match, 0 reversed, 0 unresolved, 2 skipped, quota `x-requests-last` exactly `"0"` (used 282 / remaining 218), terminal `exact_match_ready_for_separate_operator_decision`. All reconciled. Fast-forward `e112731..3a82af0 main -> main`, ordinary push; vault main == origin/main == `3a82af0`.
+
+### Phase B -- start-instant characterization: NO PREDICATE CHANGE
+
+The rounding-equivalence hypothesis is **REFUTED**. A provider rounding convention must be a function of the scheduled instant, yet the captured slate contains two scheduled instants each shared by two candidates whose provider instants disagree:
+
+- `22:40:00Z` -> 823438 LAD@PHI **+0s** vs 824408 MIN@CLE **+60s**
+- `00:10:00Z` -> 824166 MIA@HOU **+60s** vs 824650 DET@CHC **-240s**
+
+Two counterexamples suffice: the same input cannot deterministically yield two outputs, so the +60s offset is per-event data difference (schedule movement / provider sourcing), not a normalizable equivalence. Delta histogram: `-240s x1`, `+0s x2`, `+60s x12`.
+
+The July-20 capture cannot corroborate -- its `market-contrast-screen-bundle/1.1` adapter recorded join outcomes only, with no provider `commence_time` or `odds_event_id` in any of its ten JSON artifacts. That leaves exactly ONE observation of provider instants, which is structurally insufficient to separate a stable convention from movement. Corroborating detail: 823438 did NOT match on July 20 but matched exactly on July 22.
+
+Duplicate/ambiguity findings: two provider team-pairs are duplicated in the bracket (doubleheaders) -- PIT@NYY `17:06Z`/`23:05Z` and BAL@BOS `17:36Z`/`23:10Z`. Team-pair-only joins are ambiguous there; the exact-start predicate disambiguates correctly today. Reversed orientation 0; unresolved 0.
+
+**Actionable finding:** gamePk 824732 (BAL@BOS) already agrees with the provider exactly (`23:10:00Z` both sides, delta 0s) and failed only on the upstream `starters_not_announced` preblock -- a freshness condition. The route to more exact matches is a fresher preflight under the unchanged predicate, not a looser tolerance.
+
+**Therefore nothing was implemented:** no change to the join predicate, events gate, source adapter, any operator/artifact contract version, any fixture, or any test. No contract was versioned because no semantics changed. The -240s case stays blocked; the +60s population stays unmatched. Executable evidence is a deterministic offline script (sha-256 `aa9440a9...`) re-deriving every table from the artifact (sha-256 `26cdf20c...`); it lives outside both repos because it is analysis scaffolding, not a production fixture.
+
+Evidence bar recorded for any future revisit: at least two independent observations of the same events at different times showing per-event stability, plus proof that identical scheduled instants never map to differing provider instants. This dataset fails that bar on its own terms.
+
+### Slice Synopsis
+
+**Change:** Integrated the July 22 events-gate observation to vault main, then completed an offline characterization of the start-instant join discrepancy which concluded that NO production predicate change is warranted.
+**Reason:** The observation matched only 1 of 13 candidates with 11 same-orientation candidates off by exactly +60s, and the operator required proof of rounding equivalence before any tolerance could be considered.
+**Proof:** Observation claims re-derived from the artifact and reconciled before integration (ff `e112731..3a82af0`, main == origin); the rounding hypothesis refuted by two identical-input/different-output counterexamples (`22:40:00Z` -> +0s/+60s; `00:10:00Z` -> +60s/-240s); July-20 artifacts shown to contain no provider instants; deterministic re-derivation script sha-256 `aa9440a9...`; zero provider/model/database/paid calls; migration unapplied.
+**State:** Vault main == origin/main == `3a82af0`; analysis docs on local branch `wi/0035-start-instant-normalization-analysis`, NOT pushed; dai untouched at `48a2931`.
+**Next:** A separately authorized fresh-preflight re-observation after starters are announced, under the unchanged predicate; only then might a bounded `/odds` screen be proposed.

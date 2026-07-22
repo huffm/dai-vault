@@ -141,6 +141,31 @@ capture; the classifier core performs no source access.
 > predicate should admit a bounded start tolerance. That is an identity-join correctness
 > change requiring its own authorization and regression fixtures; it needs no provider
 > call to begin.
+>
+> **RESOLVED 2026-07-22 (offline analysis; observation INTEGRATED to vault main
+> `3a82af0`).** The start-instant investigation is complete and the answer is **NO
+> predicate change**. The rounding-equivalence hypothesis is REFUTED by the captured
+> evidence: two scheduled instants are each shared by two candidates, and in both cases the
+> provider instants disagree -- `22:40:00Z` maps to +0s (823438) and +60s (824408), and
+> `00:10:00Z` maps to +60s (824166) and -240s (824650). A provider rounding convention is a
+> function of the scheduled instant and cannot map one input to two outputs, so the +60s
+> offset is per-event data difference (schedule movement / provider sourcing), not a
+> normalizable equivalence. The July-20 capture cannot corroborate: its
+> `market-contrast-screen-bundle/1.1` adapter recorded join outcomes only, with no provider
+> `commence_time` in any artifact, leaving exactly ONE observation of provider instants.
+> The -240s case (824650 DET@CHC) remains blocked. Two provider team-pairs are duplicated
+> (doubleheaders: PIT@NYY `17:06Z`/`23:05Z`, BAL@BOS `17:36Z`/`23:10Z`), which the
+> exact-start predicate disambiguates correctly today. Identity and orientation resolve
+> cleanly everywhere (0 reversed, 0 unresolved). **No code, test, fixture, contract
+> version, or predicate was changed.** Full evidence:
+> [[market-contrast-start-instant-normalization-analysis-2026-07-22-v1]].
+>
+> **Actionable finding:** gamePk 824732 (BAL@BOS) ALREADY agrees with the provider exactly
+> (`23:10:00Z` both sides, delta 0s) and produced no match only because it was preblocked
+> for `starters_not_announced` -- a freshness condition, not an identity or start problem.
+> The path to more exact matches is therefore a FRESHER PREFLIGHT after starters are
+> announced, under the unchanged predicate; not a looser tolerance. Any later bounded
+> `/odds` screen still requires its own separate authorization.
 
 - **Slice 1 (this slice, delivered): offline deterministic classifier core** -- policy
   profile, normalized facts, classification, reasons, priority, envelope projection,
