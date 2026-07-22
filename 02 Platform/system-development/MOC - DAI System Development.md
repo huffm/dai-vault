@@ -342,7 +342,10 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   cross-runtime consumer tolerance all re-derived from source). **INTEGRATION EXECUTED**
   by coordinated fast-forward with ordinary non-force pushes: dai main
   `ce34a9e7 -> 48a29313988beac34cb8dad388371c472ff21d73` and dai-vault main
-  `6e667b5c -> fa31a3e91a09753602e34ca8cee3d38e059d9dd0`, each == `origin/main`. Two
+  `6e667b5c -> fa31a3e91a09753602e34ca8cee3d38e059d9dd0`. dai main remains `48a2931` ==
+  `origin/main`; the vault implementation commit `fa31a3e` is an ANCESTOR of vault main,
+  which has since advanced with post-integration reconciliation/correction commits whose
+  final tip is recorded in the external prompt-ledger outcome. Two
   operator-accepted semantics are binding and closed: an AgentRun IS an executed
   realization (so run-creation provenance must carry `realizedPosition`/`realizedVia`; an
   endpoint-context requirement, not a 1.0 contract change), and scheduled-mode projection

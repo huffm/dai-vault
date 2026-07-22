@@ -224,7 +224,9 @@ related_work_items:
 - 2026-07-22 (WI-0036 Slice-3 remainder verified, integrated, and reconciled): independent
   verification of the Slice-3 remainder PASSED against live repository state with no
   correction commit required, and coordinated fast-forward integration published dai main
-  `48a2931` and dai-vault main `fa31a3e`, each == origin/main. The wi-0036 initiative's
+  `48a2931` and dai-vault `fa31a3e`, each == origin/main AS OF THAT ENTRY (vault main has
+  since advanced past `fa31a3e` with later reconciliation/correction commits). The
+  wi-0036 initiative's
   `title`, `proposed_by_system`, `operator_intent`, and `replan_triggers` now describe
   Slices 1-3 as complete and integrated and record the two operator-accepted semantics
   (an AgentRun is an executed realization; scheduled-mode projection coverage is
@@ -247,7 +249,8 @@ related_work_items:
 - 2026-07-22 (WI-0036 post-integration state reconciliation, docs-only): the wi-0036
   initiative's `title`, `proposed_by_system`, `operator_intent`, and `replan_triggers` now
   describe the INTEGRATED state -- Slice 2 + the minimum Slice-3 seam are published on both
-  mains (dai `ce34a9e7`, dai-vault `2cdb275b`, each == origin/main), and the proposed next
+  mains (dai `ce34a9e7`, dai-vault `2cdb275b`, each == origin/main AS OF THAT ENTRY; both
+  have since been superseded by later commits), and the proposed next
   step is the Slice-3 remainder (proposal only, separately authorized). The fulfilled
   Slice-2 implementation-authorization trigger is retained but marked fulfilled. No
   `desired_by`/`due_by`/activation date invented; `not_before` is UNCHANGED (paid wildcard

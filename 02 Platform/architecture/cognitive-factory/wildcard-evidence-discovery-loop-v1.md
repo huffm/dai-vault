@@ -5,7 +5,10 @@
 **scope:** the governed vertical discovery loop that widens safe evidence acquisition (wildcard candidate lane in preflight), preserves selection provenance through production artifacts, and turns artifact interrogation into proposal-only signal-need inputs for later retrieval work.
 
 > **Current state (2026-07-22).** WI-0036 Slices 1-3 are independently VERIFIED and
-> INTEGRATED on both published mains (dai `48a2931`, dai-vault `fa31a3e`). Slice 3 is
+> INTEGRATED on both published mains via dai `48a2931` (== `origin/main`) and the dai-vault
+> implementation commit `fa31a3e`, which vault main has since advanced past with
+> post-integration reconciliation/correction commits (`fa31a3e` is an ancestor of vault
+> main, not its current tip). Slice 3 is
 > complete: the minimum provenance seam plus the remainder. The run row now persists the
 > already producer-derived realized slot facts, and the existing settlement-joined read
 > exposes them with an explicit `core | wildcard | unclassified` evidence stratum.

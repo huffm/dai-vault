@@ -7,7 +7,7 @@ project: "DAI"
 slice: "WI-0036 Slices 1-3 verified and integrated 2026-07-22 (Slices 4-6 deferred)"
 repos:
   dai: "code+tests+migration integrated to main 48a29313988beac34cb8dad388371c472ff21d73 (migration generated, NOT applied)"
-  dai-vault: "docs integrated to main fa31a3e91a09753602e34ca8cee3d38e059d9dd0"
+  dai-vault: "docs integrated via implementation commit fa31a3e91a09753602e34ca8cee3d38e059d9dd0; vault main has since advanced with later post-integration reconciliation/correction commits"
 tags:
   - system-development
   - work-item
@@ -32,11 +32,16 @@ Verify -> Discern` loop with a callable protocol-service seam.
 
 **Current disposition (2026-07-22): Slices 1, 2, and 3 are independently VERIFIED and
 INTEGRATED.** Slice 3 is complete: the minimum provenance seam plus the remainder
-(realized-position writeback and settlement/reconciliation read strata). Integrated tips:
-dai main `48a29313988beac34cb8dad388371c472ff21d73` and dai-vault main
-`fa31a3e91a09753602e34ca8cee3d38e059d9dd0`, each equal to its `origin/main` after
-fast-forward-only coordinated publication (no amend, squash, rebase, merge commit, or
-history rewrite).
+(realized-position writeback and settlement/reconciliation read strata). Integrated
+implementation commits: dai `48a29313988beac34cb8dad388371c472ff21d73` and dai-vault
+`fa31a3e91a09753602e34ca8cee3d38e059d9dd0`, both published by fast-forward-only
+coordinated publication (no amend, squash, rebase, merge commit, or history rewrite).
+
+dai main is `48a29313988beac34cb8dad388371c472ff21d73` and equals its `origin/main`. The
+vault implementation commit `fa31a3e` is integrated, but vault main has SINCE ADVANCED
+with later post-integration reconciliation/correction commits: `fa31a3e` is an ANCESTOR of
+vault main, not the current tip. The current vault main tip is recorded in the external
+prompt-ledger outcome after commit creation.
 
 The integrated behavior adds nullable realized-selection writeback columns on `AgentRun`,
 a direct projection from already validated provenance, and additive settlement/
@@ -478,7 +483,8 @@ authorization each needs are stated inline. No slice inherits authority from thi
 > 1516/1516).
 >
 > **Remainder implementation (2026-07-22; VERIFIED AND INTEGRATED -- dai
-> `48a2931`, dai-vault `fa31a3e`, both == origin/main).** A nullable, migration-backed
+> `48a2931` (== origin/main), dai-vault implementation commit `fa31a3e`, since succeeded on
+> vault main by later reconciliation/correction commits).** A nullable, migration-backed
 > `AgentRun` writeback now copies `flightId`, freeze fingerprint, lane/plan role,
 > scheduled and realized positions, `realizedVia`, and the optional provider-scoped
 > substituted-for identity directly from the already validated provenance before the
@@ -666,14 +672,18 @@ prove the contracts; documentation drift claiming target capabilities as impleme
   read-only on `main` at `8369d64a2b4ed29ab1c6297de81270d2f9dd8a46` for Slice 1;
   INTEGRATED to vault main `b04e6421` 2026-07-21); implementation branches
   `wi/0036-wildcard-capture-flight-plan` (dai + dai-vault, matching, from
-  8369d64 / b04e6421) -- INTEGRATED 2026-07-22 by coordinated fast-forward: dai main
-  `ce34a9e74659b42c71317267c64901a24ceb7091`, dai-vault main
-  `2cdb275b85229c6ee11a7b2930dc50d847ae8240`, both == `origin/main`
+  8369d64 / b04e6421) -- INTEGRATED 2026-07-22 by coordinated fast-forward to dai
+  `ce34a9e74659b42c71317267c64901a24ceb7091` and dai-vault
+  `2cdb275b85229c6ee11a7b2930dc50d847ae8240` (each was its repo's main tip AT THAT TIME;
+  both have since been superseded by later commits)
 - Slice-3 remainder branches: `wi/0036-wildcard-settlement-strata-writeback` in both
   repos, from dai `ce34a9e7` and dai-vault `6e667b5c` -- INTEGRATED 2026-07-22 by
-  coordinated fast-forward after an independent verification PASS: dai main
-  `48a29313988beac34cb8dad388371c472ff21d73`, dai-vault main
-  `fa31a3e91a09753602e34ca8cee3d38e059d9dd0`, both == `origin/main`
+  coordinated fast-forward after an independent verification PASS to dai
+  `48a29313988beac34cb8dad388371c472ff21d73` and dai-vault
+  `fa31a3e91a09753602e34ca8cee3d38e059d9dd0`. dai main remains `48a2931` == `origin/main`;
+  the vault implementation commit `fa31a3e` is an ANCESTOR of vault main, which has since
+  advanced with post-integration reconciliation/correction commits whose final tip is
+  recorded in the external prompt-ledger outcome after commit creation
 - pr: - (no PR; direct fast-forward publication of both mains 2026-07-22)
 - commits: Slice-1 docs `b04e6421` (vault); Slice-2 chain dai
   `e64baab -> b0ff396 -> 994b0c1 -> 1c556f4 -> ce34a9e` and vault
@@ -709,8 +719,10 @@ being independent review and -- only on a pass -- separately authorized coordina
 integration. That review PASSED and the integration executed on 2026-07-22.)*
 
 **Current (2026-07-22):** Slices 1, 2, and 3 are independently verified, INTEGRATED, and
-published (dai `48a2931`, dai-vault `fa31a3e`, both == `origin/main`). Slices 4-6 remain
-deferred and separately gated. The migration is generated but NOT applied. Next governed
+published via dai `48a2931` and the dai-vault implementation commit `fa31a3e`. dai main
+== `origin/main` == `48a2931`; vault main has since advanced past `fa31a3e` with
+post-integration reconciliation/correction commits, so `fa31a3e` is an ancestor of vault
+main rather than its tip. Slices 4-6 remain deferred and separately gated. The migration is generated but NOT applied. Next governed
 action = a separately authorized Slice-4 decision, or migration application under its own
 explicit authorization -- neither is granted here. The 2026-07-22 events-gate observation
 and any paid wildcard flight remain separately governed; nothing here authorizes

@@ -16913,3 +16913,30 @@ Migration `20260722100648_AddAgentRunFlightSelectionWriteback` generated but **N
 **Proof:** Opening gates matched exactly with no remote drift; range `diff --check` clean; prohibited-scope allowlist empty; migration 9/9 symmetric; contracts and producer vectors unchanged; focused 53/53, .NET 1536/1536, pytest 617/617, snapshot 25/6/0; both mains == origin == verified tips; protected state byte-identical; migration unapplied; $0.
 **State:** dai main `48a2931` and dai-vault main at the reconciliation tip, with `fa31a3e` as its direct integrated ancestor; WI-0036 Slices 1-3 complete, WI still in-progress.
 **Next:** None authorized. Applying the migration and any Slice-4 decision each require their own explicit operator authorization; the July 22 observation and paid wildcard flights remain separately governed.
+
+---
+
+## 2026-07-22 -- WI-0036 reconciliation-tip wording correction (docs-only, Phase A)
+
+**Slice type:** narrow documentation correction (continues WI-0036; not a new WI).
+**Repos:** dai-vault only. dai untouched and uncommitted.
+**Authorization:** 2026-07-22 canonical operator prompt, Phase A. No runtime, migration, database, retrieval, model, capture, or spend authority.
+
+### Defect
+
+The Slice-3 integration published dai main `48a2931` and vault implementation commit `fa31a3e`. A later post-integration reconciliation commit advanced vault main past `fa31a3e`. Several ACTIVE current-state records nevertheless still asserted `fa31a3e == origin/main` or "both == origin/main", which became false the moment vault main advanced. dai's claim was and remains true; only the vault side was wrong.
+
+### Corrected locations
+
+- `WI-0036-wildcard-evidence-discovery-loop-v1.md`: frontmatter `repos.dai-vault`; current disposition; Slice-3 remainder block header; links block (Slice-2 and Slice-3 branch entries); final-handoff "Current" paragraph.
+- `wildcard-evidence-discovery-loop-v1.md`: leading current-state block.
+- `MOC - DAI System Development.md`: Slice-3 integration entry.
+- `wi-0036-settlement-strata-writeback-implementation-2026-07-22-v1.md`: frontmatter `status` and `repos.dai-vault`; addendum-1 post-fetch proof (now time-qualified); Slice Synopsis State line.
+
+### Correction shape
+
+Active fields now distinguish the integrated vault IMPLEMENTATION commit `fa31a3e` from the current vault main tip, stating that `fa31a3e` is an ANCESTOR of vault main and that the current tip is recorded in the external prompt-ledger outcome after commit creation. The correction commit does not contain its own SHA. Statements describing the pre-reconciliation moment are retained only where explicitly time-qualified. dai main `48a2931 == origin/main` is unchanged because it remains true.
+
+### Preserved and unchanged
+
+WI-0036 Slices 1-3 remain verified and integrated; `flight-selection-provenance/1.0` and `wi0036-candidate-lane/1.0` unchanged; both operator-accepted semantics remain binding; migration `20260722100648_AddAgentRunFlightSelectionWriteback` remains generated but UNAPPLIED; no runtime or commercial authority; Slices 4-6 and paid wildcard use remain separately governed. No historical evidence was rewritten and no prior commit was altered.

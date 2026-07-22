@@ -2,12 +2,12 @@
 title: "WI-0036 Settlement Strata and Realized-Position Writeback Implementation v1"
 type: "evidence-report"
 date: "2026-07-22"
-status: "complete, independently verified, and INTEGRATED 2026-07-22 (dai main 48a2931, dai-vault main fa31a3e, each == origin/main; migration generated but NOT applied)"
+status: "complete, independently verified, and INTEGRATED 2026-07-22 (dai main 48a2931 == origin/main; dai-vault implementation commit fa31a3e now an ancestor of vault main, which has since advanced with post-integration reconciliation/correction commits; migration generated but NOT applied)"
 project: "DAI"
 slice: "WI-0036 Slice 3 remainder"
 repos:
   dai: "code+tests+migration INTEGRATED to main 48a29313988beac34cb8dad388371c472ff21d73 (migration generated, NOT applied)"
-  dai-vault: "docs INTEGRATED to main fa31a3e91a09753602e34ca8cee3d38e059d9dd0"
+  dai-vault: "docs INTEGRATED via implementation commit fa31a3e91a09753602e34ca8cee3d38e059d9dd0; vault main has since advanced with later post-integration reconciliation/correction commits"
 tags:
   - system-development
   - evidence-operations
@@ -216,7 +216,12 @@ pushes, no merge commit and no history rewrite:
 - dai: `ce34a9e7 -> 48a29313988beac34cb8dad388371c472ff21d73` (`main -> main`)
 - dai-vault: `6e667b5c -> fa31a3e91a09753602e34ca8cee3d38e059d9dd0` (`main -> main`)
 
-Post-fetch proof: local `main` == `origin/main` == the verified tip in both repositories.
+Post-fetch proof AT THAT MOMENT (2026-07-22, immediately after publication and before any
+later commit): local `main` == `origin/main` == the verified tip in both repositories. That
+equality still holds for dai main `48a2931`. It no longer holds for the vault: vault main
+has since advanced with post-integration reconciliation/correction commits, so `fa31a3e` is
+an ANCESTOR of vault main rather than its tip; the current tip is recorded in the external
+prompt-ledger outcome after commit creation.
 Both pushes succeeded on first attempt; no asymmetric published state occurred. Protected
 state byte-identical throughout. The migration
 `20260722100648_AddAgentRunFlightSelectionWriteback` remains **generated but NOT applied**;
@@ -238,7 +243,9 @@ pooling wildcard evidence with core evidence.
 **Proof:** RED-first seam, focused 37/37, full .NET 1536/1536, pytest 617/617, unchanged
 1.0 contracts and producer vectors, migration unapplied, $0.
 **State:** Independently verified (PASS, no correction commit) and INTEGRATED by
-coordinated fast-forward -- dai main `48a2931`, dai-vault main `fa31a3e`, each ==
-origin/main; migration generated but NOT applied; nothing activated.
+coordinated fast-forward -- dai main `48a2931` == origin/main; dai-vault implementation
+commit `fa31a3e` integrated and now an ancestor of vault main, which has since advanced
+with post-integration reconciliation/correction commits; migration generated but NOT
+applied; nothing activated.
 **Next:** None authorized. Applying the migration and any Slice-4 decision each require
 their own explicit operator authorization.
