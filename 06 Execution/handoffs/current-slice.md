@@ -17241,3 +17241,49 @@ Zero network, paid, model, gateway, AgentRun, capture, freeze, settlement, recon
 **Proof:** 23/23 Slice-A acceptance tests including the doubleheader, ambiguity, bracket, and no-global-rule fixtures; full .NET 1567/1567; pytest 617/617 no-drift; determinism identical across fresh processes; snapshot 25/6/0; four execution-gap tests still green and unresolved.
 **State:** dai `2e24782` and this vault commit on local `wi/0035-provider-event-binding` branches, NOT pushed; both mains unmoved; propagation deliberately stops before the unchanged envelope, and the 1.4 bundle is not planner-replay-eligible until Slice B.
 **Next:** Slice B -- binding propagation through input-evidence into the Planner Pass 2 board with producer replay. Not execution activation; no paid use authorized.
+
+---
+
+## 2026-07-22 -- WI-0035 Slice-A correction Pass 1A: trusted context and authorized bracket
+
+**Slice type:** offline correction (continues WI-0035, WI-0036 seam awareness). No new WI.
+**Repos:** dai branch `wi/0035-provider-event-binding` commit `6480a94`; dai-vault same branch. Neither pushed.
+**Scope:** findings B and F ONLY. C/D deferred to Pass 1B; A/E deferred to Pass 2.
+
+### B -- trusted context is now required
+
+`MarketJoinDiagnostics.Analyze` takes ONE required `ProviderEventQualificationContext`. Reflection proves a single overload, one non-optional parameter, and no defaulted constructor member. Eliminated: the default `mlb_statsapi` source, the `externalGameId ?? ""` blank-id fallback, the candidate-derived bracket, and the candidate-start observation fallback.
+
+Both real producers now state every fact explicitly:
+- source provider `mlb_statsapi`; authoritative gamePk (`c.GamePk` / `gamePkText`), never caller free text
+- candidate normalized home/away refs and scheduled start
+- the operator-authorized target date and the exact bracket used for the request
+- **the real provider response receipt time**: `EventsBatch.ReceivedAtUtc` (gate), `OddsBatch.ReceivedAtUtc` (paid adapter) -- not operation start, not candidate start, not a later clock read
+
+For preflight / preblocked / not-attempted / source-failed paths the contextual fail-closed status is preserved and no binding is produced; the no-call `OddsBatch.NotAttempted` carries the authorized bracket for the request target date and an honest operation timestamp that is never claimed to be a provider observation.
+
+### F -- one DST-aware bracket authority, reused not duplicated
+
+Deleted the fixed-24-hour `MarketJoinDiagnostics.EasternBracketFor`. The existing single authority `OddsMarketClient.EasternDayBracket(DateOnly)` -- which resolves both local midnights independently -- is reused, and each producer threads the EXACT `ProviderEventBracket` it built for its own outgoing request into qualification via the new internal `AuthorizedBracket` member on `EventsBatch`/`OddsBatch` (non-wire; no artifact schema change in this pass). Request bounds and binding bounds cannot diverge because only one value is constructed.
+
+### Evidence
+
+13 new acceptance tests: single-overload/required-parameter reflection proof; deleted-fallback proof; supplied identity + bracket + observation reaching the in-memory binding (gamePk never blank, observation != candidate start); a deliberately supplied wrong-day bracket governing and failing closed where a self-derived bracket would have admitted; context statuses still binding-free; determinism; half-open `[from,to)` bounds; and 24h normal / 23h spring-forward (2026-03-08) / 25h fall-back (2026-11-01) brackets.
+
+Full DevCore.Api.Tests **1580/1580** (1567 + 13). The 23 qualifier acceptance tests remain green. The four execution-gap characterization tests remain **green and explicitly unresolved**. agent-service pytest **617/617** no-drift (Python unchanged). Strict snapshot 25/6/0; `git diff --check` clean; scans found no leftover optional trusted parameter, no duplicate bracket constructor, no machine path, secret, authority grant, or live call.
+
+### Still open -- do not read this as completion
+
+C/D (exact vs admitted vs qualified accounting, member renames, canonical statuses, truthful summaries/terminals/explanations) remain open for Pass 1B. A/E (binding wire emission, fingerprint, closed eight-key ledger, producer parity) remain open for Pass 2. **No `provider_event_binding` block is emitted anywhere.** No input-evidence or Planner Pass 2 propagation exists. No execution protection exists. Slice A and the full provider-event-binding vertical remain incomplete and unintegrated. No artifact version was bumped in this pass; versions are finalized at the end of Pass 2.
+
+### Posture
+
+Zero StatsAPI, `/events`, `/odds`, model, Tool Gateway, or network calls. Zero database access, migration operation, service start, AgentRun, capture, settlement, reconciliation, scheduling, or activation. No integration, push, PR, or remote mutation. $0. The gamePk 823438 canary remains untouched historical non-wildcard, non-settled, pre-binding evidence.
+
+### Slice Synopsis
+
+**Change:** Made every trusted producer fact required at the qualification boundary and replaced the DST-unsafe candidate-derived bracket with the existing DST-aware authority threaded from each producer's own request.
+**Reason:** The Slice-A review proved both producers fell through permissive defaults -- blank gamePk, self-derived bracket, candidate start masquerading as observation time -- and that a fixed 24-hour bracket is wrong on eastern DST transition days.
+**Proof:** Reflection shows one overload with one required context and no defaulted members; `EasternBracketFor` deleted with a no-leftover assertion; supplied identity/bracket/observation verified reaching the binding on the real evaluation seam; a wrong-day supplied bracket fails closed; 24h/23h/25h brackets pinned; 1580/1580 .NET, 617/617 pytest, snapshot 25/6/0, scans clean.
+**State:** dai `6480a94` and this vault commit on local `wi/0035-provider-event-binding`, NOT pushed; both mains unmoved; C/D and A/E still open.
+**Next:** Pass 1B -- exact/admitted/qualified accounting, member renames, canonical status preservation, truthful vocabulary. Not Pass 2, not Slice B.
