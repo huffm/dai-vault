@@ -2,7 +2,7 @@
 title: "WI-0036 Wildcard Capture Flight Plan Implementation v1"
 type: "evidence-report"
 date: "2026-07-21"
-status: "complete and INTEGRATED 2026-07-22 (dai main ce34a9e7, dai-vault main 2cdb275b, each == origin/main; Slice-3 remainder and Slices 4-6 deferred)"
+status: "complete and INTEGRATED 2026-07-22 (Slice-3 remainder implemented locally later 2026-07-22; review/integration pending; Slices 4-6 deferred)"
 project: "DAI"
 slice: "WI-0036 Slice 2 + minimum Slice-3 provenance seam"
 repos:
@@ -383,11 +383,15 @@ Repository publication granted **no runtime or commercial authority**.
 
 ## next step
 
-**Superseded 2026-07-22 by addendum 4 (review and integration completed).** The current
-next implementation candidate is the **WI-0036 Slice-3 remainder** under a NEW operator
-authorization: settlement/reconciliation stratum reads plus realized-position writeback,
-preserving decision semantics and adding no retrieval, model, source, scheduler, spend, or
-activation. A recommendation is not an authorization.
+**Superseded again 2026-07-22 by the separately authorized Slice-3 remainder local
+implementation.** The current next action is independent review of the coordinated local
+`wi/0036-wildcard-settlement-strata-writeback` branches and, only under another explicit
+authorization if review passes, coordinated fast-forward integration.
+
+*(Historical after addendum 4: "The current next implementation candidate is the WI-0036
+Slice-3 remainder under a new operator authorization: settlement/reconciliation stratum
+reads plus realized-position writeback, preserving decision semantics and adding no
+retrieval, model, source, scheduler, spend, or activation.")*
 
 *(Historical: this section previously read -- "Independent review of the COMPLETE
 corrected chains in both repos (`wi/0036-wildcard-capture-flight-plan`), then coordinated

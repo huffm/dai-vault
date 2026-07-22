@@ -326,6 +326,20 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   Slices 4-6 remain deferred; the 2026-07-22 events-gate observation and any paid wildcard
   flight remain separately governed.
 
+  **Slice-3 remainder IMPLEMENTED LOCALLY 2026-07-22; review/integration pending.** On
+  coordinated branches `wi/0036-wildcard-settlement-strata-writeback` (dai base
+  `ce34a9e7`, vault base `6e667b5c`), nullable run-row writeback records the validated
+  frozen selection's flight/fingerprint/lane/role, scheduled and realized positions,
+  realization mode, and optional substituted-for provider identity. The existing
+  settlement-joined calibration row read adds `evidenceStratum` plus these facts:
+  core/reserve -> `core`, wildcard -> `wildcard`, absent/unknown -> `unclassified`.
+  Aggregate metrics and reconciliation matching are unchanged; provenance and lane
+  contracts remain 1.0; the migration is generated but unapplied. RED-first targeted
+  tests 37/37, full pytest 617/617, full DevCore.Api.Tests 1536/1536. Branches are local
+  only, not pushed/merged/integrated; no source/model/gateway/database/run/capture/
+  settlement/scheduling/activation action occurred and cost remains $0. Next = independent
+  review, then separately authorized coordinated integration if the review passes.
+
 ## scope boundary of this registry
 
 `WI-####` items cover qualifying slices per the WI-0007 qualification rule (canonical

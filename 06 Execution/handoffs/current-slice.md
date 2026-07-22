@@ -16792,3 +16792,72 @@ No dai file, commit, or push. Prompts, routing, decision logic, confidence, lean
 **Proof:** Both mains reverified == origin == published tips; producer-reproduction rule, request-required CLI paths, and 1.1/1.0 contract split confirmed from source; adversarial probes 0 leaks; pytest 617/617; DevCore.Api.Tests 1530/1530; protected state byte-identical; docs-only diff.
 **State:** One vault-only documentation commit fast-forwarded and pushed to vault main; dai untouched and uncommitted; WI-0036 remains in-progress.
 **Next:** The separately authorized Slice-3 remainder (settlement/reconciliation stratum reads + realized-position writeback); the July 22 observation and any paid wildcard flight remain separately governed and unauthorized.
+
+---
+
+## 2026-07-22 -- WI-0036 Slice-3 remainder implemented locally
+
+### Objective
+
+Continue WI-0036 and implement settlement/reconciliation stratum reads plus realized-
+position writeback on top of the integrated minimum provenance seam. Stop before
+integration.
+
+### Outcome
+
+Complete locally. `AgentRun` now has nullable, migration-backed frozen-selection columns;
+the request boundary copies already validated realized provenance into them before row
+creation. The existing settlement-joined calibration row read exposes those facts plus
+`evidenceStratum`: core/reserve -> core, wildcard -> wildcard, null/unknown ->
+unclassified. Aggregate metrics, reconciliation matching, buyer output, decisions,
+prompts, and all runtime authority are unchanged. `flight-selection-provenance/1.0` and
+`wi0036-candidate-lane/1.0` remain unchanged; no vector regeneration.
+
+### Repo state
+
+- Before: dai main `ce34a9e74659b42c71317267c64901a24ceb7091`; vault main
+  `6e667b5c2ce2feb7430d4ac8f33ab72bbf419aea`; each == origin/main.
+- After implementation: matching local branches
+  `wi/0036-wildcard-settlement-strata-writeback`; one local commit per repo is planned;
+  commit hashes are recorded in the external prompt-ledger outcome after creation.
+- Not pushed, merged, integrated, or activated. Protected worktree state preserved.
+
+### Work and evidence
+
+- RED-first focused run failed because writeback/stratum members did not exist.
+- Added direct `FlightSelectionRunWriteback`, closed `EvidenceStrata`, nine nullable
+  `AgentRun` columns and EF migration, controller fail-closed writeback, and additive
+  prompt-route calibration row fields.
+- Producer vectors prove wildcard-substitution and core-reserve modes at the controller
+  boundary; scheduled mode has a pure projection test. Missing realized position/via is
+  400 before the no-I/O service and row.
+- Focused .NET 37/37; full DevCore.Api.Tests 1536/1536; agent-service pytest 617/617.
+- Migration generated but not applied. A read-only migration-list command attempted the
+  configured SQL connection and timed out; no database write occurred.
+- No source/model/gateway/run/capture/screening/settlement/reconciliation/scheduling/
+  observation/paid-flight activity; $0.
+
+### Files
+
+Dai: AgentRun entity/mapping/migration, writeback and stratum helpers, controller,
+settlement-joined calibration export, focused tests. Vault: WI, architecture, MOC,
+timeline, new closeout report, this append. See
+`06 Execution/reports/wi-0036-settlement-strata-writeback-implementation-2026-07-22-v1.md`.
+
+### Open issues and next
+
+No implementation blocker. Slices 4-6 remain deferred. Next is independent review of the
+complete two-repo slice, followed only by a separately authorized coordinated fast-forward
+integration if review passes. No July 22 observation or paid wildcard flight is part of
+that review.
+
+### Slice Synopsis
+
+**Change:** Persisted producer-derived realized-selection facts on the run row and exposed
+closed core/wildcard/unclassified strata through the settlement-joined read.
+**Reason:** Wildcard evidence must remain inspectably separate from core settled coverage,
+and each run must identify the frozen slot it actually filled.
+**Proof:** RED-first; focused 37/37; full .NET 1536/1536; pytest 617/617; unchanged 1.0
+provenance/lane contracts and producer vectors; migration unapplied; $0.
+**State:** Local coordinated branches only; no integration or runtime authorization.
+**Next:** Independent review, then separately authorized integration only if it passes.
