@@ -269,7 +269,18 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   inspection only) were implemented TDD (70 pytest + 12 xunit new; suites 634/634 +
   1516/1516) on matching local branches `wi/0036-wildcard-capture-flight-plan`; NOT
   pushed / NOT merged / NOT integrated; default off; zero authority; paid use separately
-  gated. Slices 4-6 remain deferred.
+  gated. Slices 4-6 remain deferred. Same-day independent Codex review: NOT
+  integration-ready (findings A-G: wire-contract binding, reserve-lane collapse,
+  caller-invented vocabulary, fingerprint-laundered authority, trusted forged
+  realization, permissive .NET boundary, caller-edited board). Corrected RED-first in
+  new commits on top of the preserved pair: canonical camelCase cross-runtime wire +
+  exact all-false authorityLedger, reserve lane preserved with realized_via, canonical
+  manifest-derived recognized registry (digest-pinned, caller narrowing-only), strict
+  fingerprint-independent plan/realization validators, export-side internal
+  re-realization, full .NET validation matrix + controller-host 400 proof, and
+  producer-verified board reproduction through the real WI-0034 planner. Suites after
+  correction: pytest 653/653, DevCore.Api.Tests 1528/1528. Chains (2 commits per repo)
+  still local-only; next = independent review of the complete chains.
 
 ## scope boundary of this registry
 

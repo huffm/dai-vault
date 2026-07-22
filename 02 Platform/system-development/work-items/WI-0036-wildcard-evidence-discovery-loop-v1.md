@@ -61,6 +61,37 @@ implementation authorization is issued (operator decision, 2026-07-21).
 > sentinel). The REST of Slice 3 and Slices 4-6 remain deferred and unauthorized. Next
 > governed action for this code: independent review + coordinated integration of the two
 > local branches -- NOT the July 22 observation and NOT a paid wildcard run.
+>
+> **Pre-integration contract correction (2026-07-21, same day).** An independent Codex
+> review found the first implementation pair (dai `e64baab` / vault `8d98da9`) NOT
+> integration-ready: seven material defects (A: python snake_case export did not bind to
+> the .NET record and authority defaulted true on omission; B: core-qualified reserves
+> mislabeled lane `core`; C: caller-supplied vocabulary could invent recognized
+> recipes/regimes/taxonomy; D: a rehashed content fingerprint laundered escalated plan
+> authority through realization; E: provenance export trusted a tampered/forged
+> realization artifact; F: the .NET boundary tolerated omitted authority and lacked the
+> full validation matrix; G: a caller-edited board interior was treated as
+> producer-certified). All seven were reproduced RED-first and corrected in new commits
+> ON TOP (nothing amended): ONE canonical camelCase wire contract with an exact eight-key
+> all-false `authorityLedger` and provider-scoped `substitutedFor` (update-together
+> cross-runtime vector embedded verbatim in both suites); selection lane `reserve`
+> preserved end-to-end with `realized_via` recording the slot fill and the core minimum
+> counting reserve-via-core without relabeling; the recognized registry now DERIVED from
+> the canonical prompt manifest (hash-verified, digest-pinned
+> `prompt-manifest/2+sha256:...`) + the wi-0036 closed registries, caller
+> narrowing-only; strict closed-contract plan/realization validators independent of the
+> content fingerprint (a sha-256 is content identity, never authority); provenance
+> export re-derives realization internally from plan + availability (hand-authored
+> realization artifacts are never inputs); the .NET Validate matrix enforces
+> versions/ledger/fingerprint/timestamp/conditional-wildcard/substitution-consistency/
+> registered-values with a controller-host proof that malformed provenance returns 400
+> before the stub service and before any run row; and the WI-0036 CLI now REPRODUCES the
+> board through the real WI-0034 planner (the request supplies the upstream planner
+> request; any claimed board must be byte-identical to the reproduction). Suites after
+> correction: agent-service pytest 653/653 (89 wi-0036 tests), DevCore.Api.Tests
+> 1528/1528. Branch state: base commits preserved + one correction commit per repo;
+> still NOT pushed / NOT merged / NOT integrated; next = independent review of the
+> complete two-commit chains in both repos.
 
 ## problem  <!-- LITE -->
 

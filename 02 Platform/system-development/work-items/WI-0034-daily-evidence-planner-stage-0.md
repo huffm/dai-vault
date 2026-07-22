@@ -191,7 +191,12 @@ boundary).
   canonical board (`daily-evidence-board/2.2`, strictly validated, embedded) as upstream
   input. This planner's board/request/planner/cli versions and primary/reserve semantics
   are UNCHANGED; ownership did not transfer; the market-screen tier was not overloaded as
-  a flight lane
+  a flight lane. Boundary tightened by the same-day pre-integration correction (finding
+  G): the WI-0036 CLI now REPRODUCES the board by parsing the upstream wi-0034 planner
+  request with THIS planner's real parser and re-running THIS planner's real core; a
+  claimed board must be byte-identical to that reproduction, so a caller-edited board
+  interior can never pass as producer-certified. Still consumption-only; nothing in this
+  planner changed
 - lessons: consume the canonical policy verdict instead of recomputing it; encode the
   slate-not-evaluated vs zero-eligible distinction in the type contract; independent review
   corrections (2026-07-19): unrecognized failing-reason codes route to a diagnostic (never a

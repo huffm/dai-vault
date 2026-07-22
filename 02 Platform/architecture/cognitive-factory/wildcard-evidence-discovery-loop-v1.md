@@ -85,7 +85,20 @@ coverage gaps (settled evidence, by exact recipe/version/regime/signal-combinati
   failure paths, internal inspection only) are IMPLEMENTED on local review branches,
   default off, all-false ledgers, not integrated. The `SignalNeedProposal` type, the
   callable service seam, the refresh-loop runtime, and every activation remain
-  NOT implemented and separately gated.)*
+  NOT implemented and separately gated. Pre-integration correction, same day, per the
+  independent review findings A-G: the provenance wire contract is ONE canonical
+  camelCase shape carrying the exact eight-key all-false `authorityLedger` (data keys
+  stay canonical snake_case) and a provider-scoped `substitutedFor` object; the
+  selection lane `reserve` is preserved end-to-end (a core-qualified backup is never
+  relabeled core; `realized_via = scheduled | core_reserve | wildcard_substitution`
+  records the slot fill, and the one-core minimum counts reserve-via-core); the
+  recognized recipe/version/regime registry is DERIVED from the canonical prompt
+  manifest at the boundary (hash-verified load, digest-pinned taxonomy
+  `prompt-manifest/<v>+sha256:<digest>`) and caller input is narrowing-only; frozen
+  plans and realizations are validated by strict closed-contract validators INDEPENDENT
+  of the sha-256 content fingerprint, which is content identity only and never
+  authenticity or authority; and provenance export derives realization facts internally
+  from plan + availability, never from a hand-authored realization artifact.)*
 - Not an authorization: nothing here authorizes model calls, source retrieval, capture,
   settlement, spend, endpoint creation, or activation of the dormant probe-refresh chain.
 - Not a relaxation of `ProbeRequest`, station permissions, or Tool Gateway permissions.

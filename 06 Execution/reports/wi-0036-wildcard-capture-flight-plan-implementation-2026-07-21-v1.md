@@ -167,11 +167,68 @@ scheduled, NOT authorized, NOT production enabled: implementation present on loc
 branches, default off/no authority, available to a future separately authorized
 paid-flight prompt only after independent review and integration.
 
+## pre-integration correction addendum (2026-07-21, same day -- correction commits on top)
+
+The completion claim above described the FIRST implementation pair (dai `e64baab`, vault
+`8d98da9`). An independent Codex review then found that pair NOT integration-ready; this
+addendum records the correction honestly rather than rewriting the original claim.
+
+Findings (all reproduced RED-first against `e64baab` before any fix; probe evidence:
+snake_case export keys with no camel `flightId` and a summary authority boolean; core
+reserve lane `core`; `fake.recipe@v999` scheduled from caller-authored vocabulary; a
+ledger-tampered rehashed plan realized and its output ledger laundered all-false; a
+forged `forged/ghost` substitution exported; C# authority acquired by omission via the
+`AuthorityLedgerAllFalse = true` default; a caller-edited board interior accepted):
+
+- **A** python export was not the .NET wire contract -> ONE canonical camelCase wire
+  shape (exact eight-key all-false `authorityLedger`; provider-scoped `substitutedFor`;
+  `flightPlanSchemaVersion`/`laneVocabularyVersion`/`realizedVia` carried), pinned by an
+  update-together cross-runtime vector embedded verbatim in BOTH suites and regenerated
+  byte-for-byte from the real exporter on the python side.
+- **B** reserve lane collapsed -> selection lane `reserve` preserved in plan, realization,
+  and provenance; `realized_via` records the filled slot; the core minimum counts a
+  realized reserve-via-core without relabeling.
+- **C** caller-invented recognition -> the CLI derives the recognized registry from the
+  canonical prompt manifest (hash-verified; taxonomy pinned as
+  `prompt-manifest/2+sha256:<digest>`); caller vocabulary is narrowing-only; invented
+  recipe/version/regime/market-missing/taxonomy values fail closed; happy-path fixtures
+  now use the real manifest recipes (e.g.
+  `mlb.pregame.analysis.starter_enriched_market_missing.v1 @ v1`).
+- **D** fingerprint-laundered authority -> `validate_flight_plan` checks the full closed
+  contract (ledger, formulas, lanes, identities, positions, references) INDEPENDENT of
+  the fingerprint; the sha-256 is documented as a content fingerprint, never
+  authenticity/authority; a rehashed tampered plan still fails.
+- **E** trusted forged realization -> `export_run_provenance` re-runs deterministic
+  realization internally from plan + availability (the CLI export op takes
+  `--availability`; a realization artifact is no longer an input); a strict
+  `validate_realization` recomputes membership/substitution graph/counts/share and adds a
+  realization content fingerprint for the validate op.
+- **F** permissive .NET boundary -> `FlightSelectionProvenance` requires the exact ledger
+  (omission/extra/true/missing keys -> 400), validates versions, 64-lowercase-hex
+  fingerprint, explicit-UTC timestamp, positive positions, non-negative counts,
+  conditional wildcard fields, registered combination/dimension values, and
+  lane/role/realizedVia/substitution consistency; a controller-host test posts the exact
+  python wire body (200 + exact provenance at the stub service) and seven malformed
+  variants (400 before the stub and before any run row).
+- **G** caller-edited board -> the flight request supplies the strict wi-0034 planner
+  request; the CLI re-runs the REAL wi-0034 planner and requires any claimed board to be
+  byte-identical (`BOARD_NOT_REPRODUCIBLE` otherwise); the mutated-interior fixture is a
+  permanent regression.
+
+Corrected verification: RED evidence recorded per finding; suites after correction --
+agent-service pytest **653/653** (wi-0036: 66 core + 23 cli), DevCore.Api.Tests
+**1528/1528** (wi-0036 seam: 13 unit + 9 controller-host); zero warnings from changed
+files; strict planning snapshot re-run 25 work items / 6 timeline entries / 0 warnings;
+diff --check + machine-path/secret/authority scans clean; protected state byte-identical.
+External calls/spend remain zero (the manifest load is a packaged repo file, hash-verified,
+no network).
+
 ## next step
 
-Independent review, correction if necessary, and coordinated integration of the two local
-`wi/0036-wildcard-capture-flight-plan` branches -- NOT the July 22 observation and NOT a
-paid wildcard run. A recommendation is not an authorization.
+Independent review of the COMPLETE two-commit chains in both repos
+(`wi/0036-wildcard-capture-flight-plan`: base implementation + pre-integration
+correction), then coordinated integration under a later explicit prompt -- NOT the July 22
+observation and NOT a paid wildcard run. A recommendation is not an authorization.
 
 ## related
 
