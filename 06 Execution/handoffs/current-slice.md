@@ -16699,3 +16699,53 @@ diff --check clean.
 $0; no-spend posture intact.
 **Next:** Independent review of the complete three-commit chains; integration by later
 explicit prompt; July 22 observation separately governed.
+
+---
+
+## 2026-07-22 -- WI-0036 Slice 2 producer-replay correction (findings M-S), final review, coordinated integration
+
+**Slice type:** implementation correction + review + integration (continues WI-0036; not a new WI).
+**Repos:** dai (core/CLI/tests + provenance seam), dai-vault (WI, architecture record, WI-0034 seam, closeout addendum 3, MOC, timeline, this log).
+**Authorization:** 2026-07-22 operator prompt (producer-replay correction, final review, coordinated integration). No July 22 observation, live/paid source, model call, gateway call, DB write, AgentRun, capture, screening, settlement, scheduling, or flight activation.
+
+### Findings reproduced RED-first against dai `994b0c1`
+
+- **M** `board_reference.board_digest` rewritten to 64 `b` chars validated after re-fingerprinting: the trusted context never bound the reproduced board/request digest.
+- **N** four valid-shape forgeries validated after re-fingerprinting: `wildcard_mode=disabled` with a live wildcard lane; blank core-reserve provider identity; the same wildcard in the selected AND non-selected pools with empty reasons; boolean `True` as a scheduled position (`True == 1` in python).
+- **O** a market-missing wildcard rewritten to the canonical market-backed recipe/version/regime with `market_screen_tier=null` validated AND exported the market-backed hypothesis.
+- **P** the registry held recipe versions and data regimes as independent sets, cross-producting into manifest tuples that do not exist; prior ranking fixtures relied on such a pairing.
+- **Q** an availability row with a list `source_provider` raised `TypeError: unhashable type: 'list'` out of the pure core.
+- **R** an unfilled row replaced validated source reason `postponed` with the disposition code `scheduled_wildcard_unavailable`.
+- **S** accounting said `76 + 25`; fresh collection proved `76 core (72 defs + 4 parametrized) + 24 cli = 100`.
+
+### Corrections
+
+- **Exact producer re-production is now the full-validity rule.** A plan is valid IFF `plan_canonical_json(plan) == plan_canonical_json(build_flight_plan(verified_request))` -- the pattern already governing realization, applied to the plan. It proves allocation, market-safety, ordering, and cap decisions together instead of approximating them field by field. `validate` / `realize` / `export-provenance` REQUIRE the verified request; omission is a fail-closed usage error; no context-free or version-only path reports full validity.
+- `validate_flight_plan_structure` remains defense in depth only (strict int typing so booleans fail, blank/overlapping identities, closed non-selected reason codes, disabled-mode-with-wildcards) and never confers producer validity.
+- The registry preserves the manifest's EXACT `(recipe_id, recipe_version, data_regime)` relation with `market_state` DERIVED from that regime; caller narrowing selects real tuples only.
+- Availability rows are type-validated BEFORE any tuple/dict keying -> structured `INVALID_REQUEST`, never an unhandled exception.
+- Unfilled rows carry the exact validated `unavailability_reason` AND a separate closed `unfilled_reason_code` (`scheduled_wildcard_unavailable | no_eligible_substitute`).
+- Contracts bumped together: request/plan/planner/realization/cli **1.1**. `flight-selection-provenance/1.0` and `wi0036-candidate-lane/1.0` UNCHANGED. Both cross-runtime vectors regenerated from the real exporter and re-embedded verbatim in the python and C# suites; the C# plan-schema constant follows.
+- **Coverage-delta audit.** Consolidating the suites dropped four legacy scenarios (not-pregame safety gate + novelty-never-rescues, required/non-negative coverage facts per hypothesis triple and combination, fully-available realization identity, strongest-novelty ordering among substitution-reserve members). Caught by auditing the new test set against `994b0c1` and RESTORED as characterization tests in a second commit; production code untouched.
+
+### Verification
+
+- agent-service pytest **617/617**; targeted wi-0036 **39 core + 14 cli = 53**.
+- DevCore.Api.Tests **1530/1530**; targeted provenance **16 unit + 10 controller-host**.
+- Fresh-process determinism: plan and realization digests identical across separate interpreters.
+- Strict planning snapshot: 25 work items / 6 timeline entries / **0 warnings**.
+- `git diff --check` clean in both repos; added-line scans clean (only adversarial fixtures assert rejection of escalated authority).
+- Protected state byte-identical open -> close (dai csproj `63EF2488...`; vault graph `B3D68588...`; vault CLAUDE `9127E464...`; preflight manifest `68948EBD...`; system synopsis `25835E6C...`; `Welcome.md` still deleted).
+- Zero external calls; zero paid model calls; **$0**.
+
+### What did not change
+
+Prompts, routing, decision logic, confidence, lean encoding, posture, settlement, matching, buyer copy, migrations/schema, and runtime behavior are all unchanged. The WI-0034 planner (board/request/planner/cli versions, parser, core, primary/reserve semantics) is unchanged and consumption-only. Authority ledgers remain the exact eight keys, all false. The path stays default off.
+
+### Slice Synopsis
+
+**Change:** Replaced inferred plan validity with exact producer re-production (a plan is valid iff byte-identical to a rebuild from the verified request), preserved exact manifest recipe/version/regime tuples, made malformed availability fail structurally, and split unfilled-row source reason from disposition code; contracts bumped to 1.1.
+**Reason:** A third independent review proved a version/vocabulary context could not prove producer decisions -- forged board digests, disabled-mode wildcards, boolean positions, and market-backed rewrites all passed after re-fingerprinting.
+**Proof:** M-S each reproduced RED then GREEN; pytest 617/617; DevCore.Api.Tests 1530/1530; both cross-runtime vectors regenerated; fresh-process determinism; snapshot 25/6/0; scans and diff --check clean; protected state byte-identical; $0.
+**State:** Two correction commits per the dai chain plus the vault correction commit; coordinated fast-forward integration of both mains is authorized by this slice's prompt and its executed publication result is recorded in the external prompt-ledger record.
+**Next:** Slice-3 remainder and Slices 4-6 stay deferred; the July 22 observation and any paid wildcard flight remain separately governed and unauthorized.

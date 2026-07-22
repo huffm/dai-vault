@@ -189,7 +189,7 @@ priority: medium
 desired_by:
 due_by:
 not_before: PAID wildcard use requires a future explicit operator flight authorization; the separately governed 2026-07-22T12:00:00Z events-gate observation remains its own ungated action (2026-07-21 operator sequencing override -- offline implementation is no longer gated on it)
-proposed_by_system: independent review + coordinated integration of the local wi/0036-wildcard-capture-flight-plan branches (dai + dai-vault) as the next step
+proposed_by_system: after the 2026-07-22 producer-replay correction (findings M-S) and its final review, coordinated fast-forward integration of the wi/0036-wildcard-capture-flight-plan branches (dai + dai-vault); thereafter the Slice-3 remainder remains the next proposed step
 date_source: none
 date_confidence: high
 aliases:
@@ -218,6 +218,15 @@ related_work_items:
 
 ## change log
 
+- 2026-07-22 (WI-0036 Slice 2 producer-replay correction, findings M-S): the wi-0036
+  initiative's `proposed_by_system` now names coordinated fast-forward integration after
+  the correction and its final review. Full plan validity became exact producer
+  re-production; the WI-0036 request/plan/planner/realization/cli contracts bumped to
+  `1.1`. No `desired_by`/`due_by` invented; `not_before` is UNCHANGED (paid wildcard use
+  still requires a future explicit operator flight authorization and the 2026-07-22
+  events-gate observation remains its own separately governed action); the authorization
+  posture block is UNCHANGED (paid model calls and sports capture remain fail-closed /
+  not-authorized).
 - 2026-07-21 (WI-0036 Slice 2, operator-authorized sequencing override): the offline
   wildcard flight-plan implementation was un-gated from the July 22 observation and
   delivered on local branches; the wi-0036 initiative's not_before/proposed_by_system/

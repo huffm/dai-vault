@@ -288,7 +288,31 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   validation, availability-derived full realization validity, and the corrected
   eligibility truth table with a second cross-runtime vector + controller-host proof
   (pytest 664/664, DevCore.Api.Tests 1530/1530). Chains = 3 commits per repo,
-  local-only; next = independent review of the complete three-commit chains.
+  local-only; next = independent review of the complete three-commit chains. A third
+  independent review (2026-07-22, findings M-S) then found the ROOT contract still
+  wrong: full plan validity was inferred from a version/vocabulary context rather than
+  proven, so a forged reproduced-board digest, a disabled mode with a live wildcard lane,
+  a blank identity, a pool overlap, a boolean position, and a market-missing candidate
+  rewritten to a canonical market-backed tuple all passed after re-fingerprinting; the
+  registry cross-producted recipe versions against data regimes; malformed availability
+  escaped as an unhandled `TypeError`; unfilled rows dropped the validated source reason;
+  and the accounting said 76+25 where fresh collection proved 76+24=100. Corrected
+  RED-first in new commits on top of the preserved chain: **exact producer re-production
+  is now the full-validity rule** (a plan is valid iff canonically identical to
+  `build_flight_plan(verified_request)`), the verified request is REQUIRED by validate/
+  realize/export, the registry preserves EXACT manifest `(recipe_id, version, regime)`
+  tuples with a DERIVED market state, availability is type-validated before keying, and
+  unfilled rows separate `unavailability_reason` from `unfilled_reason_code`. Contracts
+  bumped to request/plan/planner/realization/cli `1.1` (`flight-selection-provenance/1.0`
+  and `wi0036-candidate-lane/1.0` unchanged); both cross-runtime vectors regenerated. A
+  coverage-delta audit caught four legacy scenarios dropped by the suite consolidation and
+  restored them. Suites: pytest **617/617**, DevCore.Api.Tests **1530/1530** (targeted
+  wi-0036 39 core + 14 cli). Slice 2 + minimum Slice-3 seam are review-complete and
+  authorized for coordinated fast-forward integration by the 2026-07-22 prompt; the
+  executed publication result (integration tips, push proof) is recorded in the external
+  prompt-ledger record and the current-slice handoff. Slice 3 remainder and Slices 4-6
+  stay deferred and separately gated; no runtime activation, capture, spend, or paid
+  flight is authorized.
 
 ## scope boundary of this registry
 

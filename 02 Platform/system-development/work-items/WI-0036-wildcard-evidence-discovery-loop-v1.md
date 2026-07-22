@@ -127,6 +127,72 @@ implementation authorization is issued (operator decision, 2026-07-21).
 > commits per repo (base + A-G + H-L), still NOT pushed / NOT merged / NOT integrated;
 > next = independent review of the complete three-commit chains.
 
+> **Producer-replay correction (2026-07-22, third independent review; findings M-S).**
+> The H-L correction remained intact but its root contract was still wrong: full plan
+> validity was INFERRED from a context holding producer version strings and a canonical
+> vocabulary, not PROVEN by re-production. All findings were reproduced RED-first against
+> dai `994b0c1`: M -- a `board_reference.board_digest` rewritten to 64 `b` characters
+> validated after re-fingerprinting, because the trusted context never carried the
+> reproduced board/request digest; N -- `wildcard_mode=disabled` with a live wildcard
+> lane, a blank core-reserve identity, a selected/non-selected overlap with empty
+> reasons, and a boolean position (`True == 1` in python) all validated after
+> re-fingerprinting; O -- a safe market-missing wildcard rewritten to the canonical
+> market-backed recipe/version/regime with `market_screen_tier = null` validated AND
+> exported, because recognition alone cannot re-prove the producer's market-safety
+> decision; P -- the registry stored recipe versions and data regimes as INDEPENDENT
+> sets, so individually canonical components cross-producted into manifest tuples that
+> do not exist (existing ranking fixtures relied on exactly such a pairing); Q -- an
+> availability row whose `source_provider` was a list raised
+> `TypeError: unhashable type: 'list'` out of the pure core, escaping the closed
+> structured-error contract; R -- an unfilled row replaced the validated source reason
+> `postponed` with the disposition code `scheduled_wildcard_unavailable`, contradicting
+> the H-L claim that the source reason is preserved; S -- the verification accounting
+> said `76 + 25` when fresh collection proved `76 core + 24 cli = 100`.
+>
+> **Root correction: exact producer re-production is now the full-validity rule.** A
+> candidate plan is fully valid IFF `plan_canonical_json(plan)` equals
+> `plan_canonical_json(build_flight_plan(verified_request))` -- the same governing
+> pattern already adopted for realization. Duplicated semantic field-checks over a
+> mutable serialized artifact cannot prove producer decisions; only re-production can,
+> and it proves the allocation, safety, ordering, and cap decisions together instead of
+> approximating them one field at a time. `validate`, `realize`, and `export-provenance`
+> all REQUIRE the verified request; omission is a fail-closed usage error and no
+> context-free or version-only path can report full validity. A narrow
+> `validate_flight_plan_structure` remains as defense in depth for malformed artifacts
+> (strict int typing so booleans fail, blank/overlapping identities, closed non-selected
+> reason codes, disabled-mode-with-wildcards) and is explicitly documented as never
+> conferring producer validity.
+>
+> The recognition registry now preserves the manifest's EXACT
+> `(recipe_id, recipe_version, data_regime)` relation plus the `market_state` DERIVED
+> from that same regime; caller narrowing selects a subset of real tuples and can never
+> author a market state. Availability rows are type-validated BEFORE any tuple/dict
+> keying, so malformed input returns `INVALID_REQUEST` rather than an unhandled
+> exception. Unfilled realization rows now carry the exact validated
+> `unavailability_reason` AND a separate closed `unfilled_reason_code`
+> (`scheduled_wildcard_unavailable | no_eligible_substitute`), keeping source
+> observation and orchestration disposition distinct. Because the request/registry
+> semantics and the unfilled-row shape changed, the still-unintegrated contracts bump
+> together to `wildcard-flight-plan-request/1.1`, `wildcard-flight-plan/1.1`,
+> `wildcard-flight-planner/1.1`, `wildcard-flight-realization/1.1`, and
+> `wildcard-flight-plan-cli/1.1`; `flight-selection-provenance/1.0` and
+> `wi0036-candidate-lane/1.0` are UNCHANGED. Both cross-runtime vectors were
+> regenerated from the real exporter (fingerprints changed with the plan version) and
+> embedded verbatim in the python and C# suites under the update-together rule.
+>
+> **Verification-accounting correction (finding S).** At dai `994b0c1` the true targeted
+> counts were 76 core (72 defs + 4 parametrized) + 24 cli = **100**, not `76 + 25`; the
+> earlier figure is corrected here and left in place above as history. After this
+> correction the suites were consolidated -- producer re-production replaced many
+> single-field semantic tests with mutation matrices -- so the targeted counts are now
+> **39 core + 14 cli = 53**. A coverage-delta audit against `994b0c1` found four legacy
+> scenarios silently dropped by that consolidation (the not-pregame safety gate and that
+> novelty rank never rescues it; required/non-negative coverage facts per hypothesis
+> triple and combination; the fully-available realization identity; strongest-novelty
+> ordering among substitution-reserve members) and they were RESTORED as characterization
+> tests in a second commit with production code untouched. Suites after the correction:
+> agent-service pytest **617/617**, DevCore.Api.Tests **1530/1530**.
+
 ## problem  <!-- LITE -->
 
 Three currently separate concerns do not close a learning loop:

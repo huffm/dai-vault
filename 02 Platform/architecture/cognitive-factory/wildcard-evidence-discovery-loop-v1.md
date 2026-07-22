@@ -109,7 +109,26 @@ coverage gaps (settled evidence, by exact recipe/version/regime/signal-combinati
   re-derivation from plan + availability; without availability no full-valid claim
   exists), and substitution ELIGIBILITY follows the frozen-lane truth table: core false,
   reserve TRUE, scheduled wildcard false, substitution-reserve wildcard true --
-  eligibility is a frozen plan fact, never proof of substitution and never authority.)*
+  eligibility is a frozen plan fact, never proof of substitution and never authority.
+  Producer-replay correction, 2026-07-22 (findings M-S) -- supersedes the validation
+  clauses above: full plan validity is no longer INFERRED from a version/vocabulary
+  context but PROVEN by exact re-production. A candidate plan is fully valid IFF it is
+  canonically byte-identical to `build_flight_plan(verified_request)`, so a mutated plan
+  fails even after its content fingerprint is recomputed (a forged reproduced-board
+  digest, a disabled mode with a live wildcard lane, a blank identity, a pool overlap, a
+  boolean position, and a market-missing candidate rewritten to a canonical market-backed
+  tuple were each reproduced passing before this correction). `validate`, `realize`, and
+  `export-provenance` all REQUIRE the verified request and fail closed without it; a
+  narrow structural validator remains only as defense in depth for malformed artifacts
+  and never confers producer validity. The recognized registry now preserves the
+  manifest's EXACT `(recipe_id, recipe_version, data_regime)` relation with the
+  `market_state` DERIVED from that regime, so individually canonical components can no
+  longer cross-product into a manifest tuple that does not exist. Availability rows are
+  type-validated before keying (malformed input returns the structured contract, never an
+  unhandled exception), and an unfilled row carries the exact validated
+  `unavailability_reason` separately from its closed `unfilled_reason_code`. Contracts
+  bumped together to request/plan/planner/realization/cli `1.1`;
+  `flight-selection-provenance/1.0` and `wi0036-candidate-lane/1.0` are UNCHANGED.)*
 - Not an authorization: nothing here authorizes model calls, source retrieval, capture,
   settlement, spend, endpoint creation, or activation of the dormant probe-refresh chain.
 - Not a relaxation of `ProbeRequest`, station permissions, or Tool Gateway permissions.

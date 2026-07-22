@@ -275,13 +275,80 @@ Verification after this correction: RED probe evidence per finding; agent-servic
 6 timeline entries / 0 warnings; diff --check + scans clean; protected state
 byte-identical; zero external calls; $0.
 
+## addendum 3 -- producer-replay correction (2026-07-22, findings M-S)
+
+Prior claims above are preserved as history. A third independent review found that the
+H-L trusted context, while a real improvement, still INFERRED full plan validity from
+producer version strings plus a canonical vocabulary rather than PROVING it. All findings
+were reproduced RED-first against dai `994b0c1` before any production edit:
+
+- **M** a `board_reference.board_digest` rewritten to 64 `b` characters validated after
+  re-fingerprinting -- the trusted context never carried the reproduced board or request
+  digest, so the H-L requirement was in fact unmet.
+- **N** four valid-shape forgeries validated after re-fingerprinting: `wildcard_mode`
+  flipped to `disabled` with the wildcard lane still present; a blank core-reserve
+  provider identity; the same wildcard in both the selected and non-selected pools with
+  an empty reason list; and scheduled position `1` replaced by boolean `True` (which
+  compares equal to `1` in python).
+- **O** a safe market-missing wildcard rewritten to
+  `starter_enriched_market_backed_depth.v2 / v2 / starter_enriched_market_backed_depth`
+  with `market_screen_tier = null` validated AND exported the market-backed hypothesis.
+  Every replacement value was individually canonical; recognition cannot re-prove the
+  producer's market-safety decision.
+- **P** the registry stored recipe versions and data regimes as INDEPENDENT sets, so
+  individually recognized components cross-producted into tuples absent from the
+  manifest; the prior happy-path ranking fixtures depended on exactly such a pairing.
+- **Q** an availability row whose `source_provider` was a list raised
+  `TypeError: unhashable type: 'list'` out of the pure core, escaping the closed
+  structured-error contract the core promised.
+- **R** an unfilled row replaced the validated source reason `postponed` with the
+  disposition code `scheduled_wildcard_unavailable`, contradicting the H-L claim that the
+  availability-row reason is preserved.
+- **S** the verification accounting reported `76 + 25`; fresh collection proved
+  **76 core (72 defs + 4 parametrized) + 24 cli = 100**.
+
+**Root correction.** Full plan validity is now exact producer re-production: a candidate
+plan is valid IFF `plan_canonical_json(plan)` equals
+`plan_canonical_json(build_flight_plan(verified_request))`. This is the pattern already
+governing realization, applied to the plan. It proves the allocation, market-safety,
+ordering, and cap decisions TOGETHER, where a growing duplicate validator could only
+approximate them one mutable field at a time. `validate`, `realize`, and
+`export-provenance` require the verified request and fail closed without it; no
+context-free or version-only path can report full validity.
+`validate_flight_plan_structure` survives as defense in depth for malformed artifacts
+(strict int typing so booleans fail, blank/overlapping identities, closed non-selected
+reason codes, disabled-mode-with-wildcards) and is documented as never conferring
+producer validity. The registry preserves the manifest's EXACT
+`(recipe_id, recipe_version, data_regime)` relation with `market_state` DERIVED from that
+regime, so caller narrowing selects real tuples and never authors a market state.
+Availability rows are type-validated BEFORE any keying. Unfilled rows carry the exact
+`unavailability_reason` plus a separate closed `unfilled_reason_code`
+(`scheduled_wildcard_unavailable | no_eligible_substitute`). Contracts bumped together to
+request/plan/planner/realization/cli **1.1**; `flight-selection-provenance/1.0` and
+`wi0036-candidate-lane/1.0` UNCHANGED; both cross-runtime vectors regenerated from the
+real exporter and re-embedded verbatim in both suites.
+
+**Corrected accounting (finding S).** The `76 + 25` figure above is wrong; the true
+targeted count at `994b0c1` was **76 + 24 = 100**. After this correction the suites were
+consolidated (re-production matrices replaced many single-field semantic tests), so the
+targeted counts are now **39 core + 14 cli = 53**. A coverage-delta audit against
+`994b0c1` found four legacy scenarios silently dropped by that consolidation -- the
+not-pregame safety gate (and that novelty rank never rescues it), required/non-negative
+coverage facts per hypothesis triple and combination, the fully-available realization
+identity, and strongest-novelty ordering among substitution-reserve members -- and they
+were RESTORED as characterization tests in a second commit with production code
+untouched. Suites after this correction: agent-service pytest **617/617**;
+DevCore.Api.Tests **1530/1530** (16 provenance unit + 10 controller-host); fresh-process
+plan and realization digests identical across separate interpreters; strict snapshot 25
+work items / 6 timeline entries / 0 warnings; `diff --check` and scans clean; protected
+state byte-identical; zero external calls; $0.
+
 ## next step
 
-Independent review of the COMPLETE three-commit chains in both repos
-(`wi/0036-wildcard-capture-flight-plan`: base implementation + A-G correction + H-L
-semantic-integrity correction), then coordinated integration under a later explicit
-prompt -- NOT the July 22 observation and NOT a paid wildcard run. A recommendation is
-not an authorization.
+Independent review of the COMPLETE corrected chains in both repos
+(`wi/0036-wildcard-capture-flight-plan`), then coordinated fast-forward integration --
+NOT the July 22 observation and NOT a paid wildcard run. A recommendation is not an
+authorization.
 
 ## related
 

@@ -196,7 +196,15 @@ boundary).
   request with THIS planner's real parser and re-running THIS planner's real core; a
   claimed board must be byte-identical to that reproduction, so a caller-edited board
   interior can never pass as producer-certified. Still consumption-only; nothing in this
-  planner changed
+  planner changed.
+  Boundary tightened again 2026-07-22 (WI-0036 producer-replay correction, findings M-S):
+  reproducing the board at parse time was not sufficient, because the reproduced digest
+  was not bound into plan validation -- a rewritten `board_reference.board_digest` passed
+  after re-fingerprinting. WI-0036 now treats the verified request (which embeds this
+  planner's reproduced board) as the producer proof and accepts a plan only when it is
+  byte-identical to a full re-build from that request. This planner's board/request/
+  planner/cli versions, parser, core, and primary/reserve semantics remain UNCHANGED and
+  consumption-only; the WI-0036 contracts bumped to `1.1` on their own side
 - lessons: consume the canonical policy verdict instead of recomputing it; encode the
   slate-not-evaluated vs zero-eligible distinction in the type contract; independent review
   corrections (2026-07-19): unrecognized failing-reason codes route to a diagnostic (never a
