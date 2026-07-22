@@ -17198,3 +17198,46 @@ Zero StatsAPI/`/events`/`/odds`/model/gateway/AgentRun/capture/settlement/reconc
 **Proof:** Doubleheader mis-binding, reversed-orientation acceptance, absent re-verification, and the binding-incapable `MarketSpreadInput` each proven by test at `OddsMarketClient:313-319`, `MarketSpreadHandlers.cs:9`, and `SportsRetriever:136-139`; production code untouched; suite 1540/1540; $0 with zero live activity.
 **State:** Test-only dai commit `96b935fd` and this vault documentation commit, both on local `wi/0035-provider-event-binding` branches, NOT pushed; both mains unmoved; the four prior vault commits and the 823438 canary preserved.
 **Next:** Three-pass decomposition (binding authority, propagation, execution enforcement), each separately authorized; no paid flight is authorized by anything here.
+
+---
+
+## 2026-07-22 -- WI-0035 provider-event binding Slice A: canonical qualification producer
+
+**Slice type:** offline implementation (continues WI-0035, WI-0036 seam awareness). No new WI.
+**Repos:** dai branch `wi/0035-provider-event-binding` commit `2e24782` (production + tests); dai-vault same-named branch. Neither pushed.
+
+### What Slice A delivers
+
+One pure versioned authority (`AgentRuns/ProviderEventBinding.cs`) owns the binding decision. BOTH producers -- zero-quota events gate and paid market-screen adapter -- derive their facts from it. `MarketJoinDiagnostics` is now the diagnostic projection only and keeps NO independent matching predicate.
+
+Truth table: unique `0s` -> `exact_start`; unique nonzero `-60..+60s` -> `bounded_start_tolerance`; `+/-61s` and `-240s` -> outside tolerance; reversed orientation never binds; team mismatch fails; two admissible events in one window fail ambiguous EVEN IF one is exact; blank or response-duplicated provider id fails; outside eastern bracket fails; sub-second instants fail structurally, never by exception; caller context statuses pass through fail-closed. Doubleheaders bind independently because multiplicity across the response is not ambiguity -- only multiplicity inside one candidate's window is.
+
+The `60`s limit lives in `ProviderEventBindingPolicy` ONLY and is emitted with each binding alongside its deciding policy version. A unique per-event `+/-60s` admission is NOT a global time normalization -- a fixture pins one scheduled instant yielding `0s` for one game and `+60s` for another.
+
+### Versions
+
+New `provider-event-binding/1.0` and `provider-event-binding-policy/1.0`. Bumped: screen bundle 1.3->1.4, source adapter 1.3->1.4, events-gate artifact 1.0->1.1, events-gate operator 1.1->1.2, required preflight bundle 1.3->1.4. Unchanged by design: `input-evidence-envelope/1.1` and the planner envelope projection, all planner contracts, all WI-0036 flight contracts, `flight-selection-provenance/1.0`, controller/retrieval/gateway/Odds-client/MarketSnapshot, and all decision/buyer/settlement surfaces.
+
+### Propagation boundary is mechanically enforced
+
+Binding propagation stops before the unchanged input-evidence envelope. Because the Python planner CLI still accepts only bundle `1.3`, a bundle from the new `1.4` producer is NOT replay-eligible until Slice B wires it deliberately. A new paid screen would produce a bundle Planner Pass 2 refuses -- the correct fail-closed posture for an unfinished vertical, and the reason the chains stay unintegrated and no live operator may use the new contract.
+
+### Still unsafe (unchanged)
+
+The four execution-gap characterization tests remain GREEN and EXPLICITLY UNRESOLVED. Execution still rebuilds identity from team/date, selects `FirstOrDefault` across either orientation (doubleheader-unsafe), performs no verification when given an event id, and has no contract member able to carry a binding. The complete vertical is still in progress.
+
+### Verification
+
+Slice-A acceptance 23/23; full DevCore.Api.Tests 1567/1567; execution-gap tests 4/4 green and unresolved; agent-service pytest 617/617 (no-drift, Python unchanged); canonical determinism identical across fresh processes; snapshot 25/6/0; `diff --check` clean both repos; added-line scans clean. RED evidence: acceptance suite failed to compile before the authority existed; nine tests pinning the superseded exact-`0s` predicate then failed and were updated with dated notes, and the corpus equivalence test was retargeted to an independent reference implementation of the current policy rather than deleted.
+
+### Posture
+
+Zero network, paid, model, gateway, AgentRun, capture, freeze, settlement, reconciliation, scheduling, activation, database, migration, or service-start activity. No integration, push, or remote mutation. $0. The gamePk 823438 canary remains historical non-wildcard, non-settled, pre-binding evidence.
+
+### Slice Synopsis
+
+**Change:** Implemented the canonical, pure, versioned provider-event qualification authority and made both the free events gate and the paid market-screen producer derive their binding facts from it, with coordinated contract bumps.
+**Reason:** The audit proved the screen bound only exact `0s` starts while the eleven stable `+60s` candidates could never bind, and that two producers reconstructing the decision separately is how the seam drifts.
+**Proof:** 23/23 Slice-A acceptance tests including the doubleheader, ambiguity, bracket, and no-global-rule fixtures; full .NET 1567/1567; pytest 617/617 no-drift; determinism identical across fresh processes; snapshot 25/6/0; four execution-gap tests still green and unresolved.
+**State:** dai `2e24782` and this vault commit on local `wi/0035-provider-event-binding` branches, NOT pushed; both mains unmoved; propagation deliberately stops before the unchanged envelope, and the 1.4 bundle is not planner-replay-eligible until Slice B.
+**Next:** Slice B -- binding propagation through input-evidence into the Planner Pass 2 board with producer replay. Not execution activation; no paid use authorized.
