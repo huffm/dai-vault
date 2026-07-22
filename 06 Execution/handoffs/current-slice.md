@@ -16631,3 +16631,71 @@ permissive boundary, editable board).
 pushed/merged; default off; $0.
 **Next:** Independent review of the complete chains; integration by later explicit prompt;
 July 22 observation separately governed.
+
+---
+
+## WI-0036 Slice 2 Semantic-Integrity Correction (2026-07-21)
+
+**Objective.** Correct the five remaining semantic-integrity defects (H-L) a second
+independent adversarial review found in the unintegrated Slice-2 chains (dai tip b0ff396 /
+vault tip 967170d): trusted-context, complete-partition, substitution-precedence, and
+substitution-eligibility gaps. New commits on top; nothing amended; no push/merge/
+integration; no July 22 action; no source/model/DB/paid activity.
+
+**Outcome (all five reproduced RED against b0ff396, then corrected):**
+H eligibility truth table (python + .NET): core false / reserve TRUE / scheduled wildcard
+false / substitution-reserve wildcard true -- a frozen plan fact, never substitution proof
+or authority; second update-together reserve-substitution cross-runtime vector embedded in
+both suites + controller-host end-to-end proof. I semantic plan validation: recognized
+recipe/version/regime vs the trusted context; non-blank hypothesis/selection fields;
+registered duplicate-free sorted combos/dims; threshold adherence; exact-typed novelty
+rank equal to the deterministic formula; strongest-novelty ordering across scheduled +
+reserve pools. J explicit TrustedValidationContext (wi-0034 producer version constants +
+manifest-derived vocabulary; boundary-built only) REQUIRED by validate/realize/export --
+no context-free path; producer references verified against it (shape/64-hex is never
+producer verification). K/L full realization validity is availability-derived: valid iff
+canonically identical to realize_flight(plan, availability, context); cli validate
+--realization requires --plan AND --availability (omission = fail-closed usage error);
+partition completeness, availability-bound unfilled rows, unavailable-never-realizes, and
+reserve-first precedence are thereby proven; membership+graph self-consistency documented
+as insufficient. Malformed nested content returns closed structured errors. Coverage-count
+claim narrowed honestly (internal consistency + threshold + rank; snapshot equality was
+plan-time enforced, fingerprint-bound, no digest linkage).
+
+**Verification.** RED probes recorded per finding; pytest 664/664 (wi-0036 76 core + 25
+cli); DevCore.Api.Tests 1530/1530 (14 seam unit + 10 controller-host); zero warnings from
+changed files; strict snapshot 25 WIs / 6 timeline / 0 warnings; diff --check + scans
+clean; protected state byte-identical.
+
+**External-call ledger.** model 0; StatsAPI 0; Odds /events 0; Odds /odds 0; db 0; Tool
+Gateway 0; AgentRun/capture/screening/settlement/scheduling 0; cost $0.
+
+**Docs.** WI-0036 semantic-integrity correction block; architecture record current-state
+note extended; MOC extended; closeout report second dated addendum (prior claims preserved
+as history); this append. WI-0034 / cohort / orchestrator / timeline unchanged (no
+statement became false).
+
+**Repo state.** Third local commit per repo on `wi/0036-wildcard-capture-flight-plan`
+(chains = base + A-G + H-L, 3 ahead of each main); NOT pushed / NOT merged / NOT
+integrated.
+
+**Next.** Independent review of the COMPLETE three-commit chains in both repos;
+integration only under a later explicit prompt. July 22 observation stays separately
+governed; paid wildcard use remains unauthorized.
+
+### Slice Synopsis
+
+**Change:** Closed the H-L semantic-integrity gaps in the unintegrated WI-0036 Slice-2
+vertical: corrected substitution-eligibility truth table (reserve is eligible), required
+trusted-context semantic plan validation (recognized values, deterministic rank/order,
+producer references), and availability-derived full realization validity proving
+partition completeness and reserve-first precedence.
+**Reason:** A second independent review proved a rehashed content fingerprint could still
+launder semantically forged plans/realizations and reserves were mislabeled ineligible.
+**Proof:** All five reproduced RED then GREEN; pytest 664/664; DevCore.Api.Tests
+1530/1530; second cross-runtime vector + controller-host proof; snapshot 25/0; scans +
+diff --check clean.
+**State:** Third local commit per repo (chains 3 ahead); not pushed/merged; default off;
+$0; no-spend posture intact.
+**Next:** Independent review of the complete three-commit chains; integration by later
+explicit prompt; July 22 observation separately governed.

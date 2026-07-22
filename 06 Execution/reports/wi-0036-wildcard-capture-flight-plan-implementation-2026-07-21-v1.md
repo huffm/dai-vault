@@ -223,12 +223,65 @@ diff --check + machine-path/secret/authority scans clean; protected state byte-i
 External calls/spend remain zero (the manifest load is a packaged repo file, hash-verified,
 no network).
 
+## semantic-integrity correction addendum (2026-07-21, same day -- third commits on top)
+
+A second independent adversarial review of the complete two-commit chains found the A-G
+correction still not integration-ready: five semantic gaps (findings H-L), all reproduced
+RED-first against dai `b0ff396` (probe evidence: reserve substitution exported
+`substitutionEligible:false`; a rehashed fake recipe/version/regime validated AND
+exported; blanked hypothesis + invented combos/dims + string rank validated; forged
+producer references validated; a partition-hole realization covering 3 of 4 slots
+validated; a forged unfilled row validated; a hand-authored wildcard substitution over an
+available core reserve validated):
+
+- **H** substitution eligibility now follows the frozen-lane truth table in python AND
+  .NET: core -> false; reserve -> TRUE; wildcard scheduled -> false; wildcard
+  substitution_reserve -> true. Eligibility is a frozen plan fact -- never proof of
+  substitution (realizedVia/substitutedFor carry that) and never authorization. A second
+  update-together reserve-substitution cross-runtime vector is embedded verbatim in both
+  suites and proven end-to-end through the controller host (lane stays reserve,
+  realizedVia core_reserve, eligibility true, substitutedFor intact, buyer boundary
+  untouched).
+- **I** plan validation became SEMANTIC: recognized recipe/version/regime against the
+  trusted context; non-blank hypothesis id/text/selection reason; registered,
+  duplicate-free, sorted combinations/dimensions; frozen counts within the recorded
+  underrepresentation threshold; the novelty rank exact-typed and EQUAL to the
+  deterministic formula from the entry's own facts; strongest-novelty ordering enforced
+  across scheduled wildcards and the substitution reserve (scheduled precedes reserve).
+- **J** producer references are verified against an explicit `TrustedValidationContext`
+  (the real wi-0034 core's board schema/planner version constants + the hash-verified
+  manifest-derived vocabulary, constructed only by the cli's `build_trusted_context`).
+  Every serialized-plan consumer (validate/realize/export) REQUIRES the context; no
+  context-free validation path remains; shape/64-hex syntax is documented as never being
+  producer verification.
+- **K/L** FULL realization validity is availability-derived: a candidate realization is
+  valid iff canonically byte-identical to `realize_flight(plan, availability, context)`
+  -- the only rule that proves the complete scheduled-slot partition, exact unfilled
+  identities/reasons bound to availability, that unavailable members never realize, and
+  reserve-first precedence with the deterministic frozen substitute order. The cli
+  `validate --realization` requires `--plan` AND `--availability`; omission is a
+  fail-closed usage error, never a full-valid result. Membership-plus-graph
+  self-consistency is explicitly documented as insufficient.
+- Malformed nested plan/realization content now returns the closed structured error
+  contract (never an unhandled KeyError/TypeError/comparison exception).
+- Narrowed claim recorded honestly: frozen coverage counts are validated for internal
+  consistency, threshold adherence, and rank equality; their equality with the external
+  coverage snapshot was enforced at plan time and is bound by the content fingerprint
+  (the coverage reference carries no digest) -- not re-proven at validation time.
+
+Verification after this correction: RED probe evidence per finding; agent-service pytest
+**664/664** (wi-0036: 76 core + 25 cli); DevCore.Api.Tests **1530/1530** (seam 14 unit +
+10 controller-host); zero warnings from changed files; strict snapshot 25 work items /
+6 timeline entries / 0 warnings; diff --check + scans clean; protected state
+byte-identical; zero external calls; $0.
+
 ## next step
 
-Independent review of the COMPLETE two-commit chains in both repos
-(`wi/0036-wildcard-capture-flight-plan`: base implementation + pre-integration
-correction), then coordinated integration under a later explicit prompt -- NOT the July 22
-observation and NOT a paid wildcard run. A recommendation is not an authorization.
+Independent review of the COMPLETE three-commit chains in both repos
+(`wi/0036-wildcard-capture-flight-plan`: base implementation + A-G correction + H-L
+semantic-integrity correction), then coordinated integration under a later explicit
+prompt -- NOT the July 22 observation and NOT a paid wildcard run. A recommendation is
+not an authorization.
 
 ## related
 

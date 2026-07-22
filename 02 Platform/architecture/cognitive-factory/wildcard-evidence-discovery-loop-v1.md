@@ -98,7 +98,18 @@ coverage gaps (settled evidence, by exact recipe/version/regime/signal-combinati
   plans and realizations are validated by strict closed-contract validators INDEPENDENT
   of the sha-256 content fingerprint, which is content identity only and never
   authenticity or authority; and provenance export derives realization facts internally
-  from plan + availability, never from a hand-authored realization artifact.)*
+  from plan + availability, never from a hand-authored realization artifact.
+  Semantic-integrity correction, same day (findings H-L): every serialized-plan consumer
+  now requires an explicit trusted validation context (wi-0034 producer version
+  constants + the manifest-derived canonical vocabulary, boundary-built only) -- plan
+  validation is SEMANTIC (recognized recipe/version/regime, non-blank hypothesis fields,
+  registered combinations/dimensions, threshold adherence, exact deterministic novelty
+  rank and ordering, producer references verified against the context), full realization
+  validity is availability-derived (valid iff canonically identical to the deterministic
+  re-derivation from plan + availability; without availability no full-valid claim
+  exists), and substitution ELIGIBILITY follows the frozen-lane truth table: core false,
+  reserve TRUE, scheduled wildcard false, substitution-reserve wildcard true --
+  eligibility is a frozen plan fact, never proof of substitution and never authority.)*
 - Not an authorization: nothing here authorizes model calls, source retrieval, capture,
   settlement, spend, endpoint creation, or activation of the dormant probe-refresh chain.
 - Not a relaxation of `ProbeRequest`, station permissions, or Tool Gateway permissions.

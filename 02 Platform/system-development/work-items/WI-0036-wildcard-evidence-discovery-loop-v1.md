@@ -92,6 +92,40 @@ implementation authorization is issued (operator decision, 2026-07-21).
 > 1528/1528. Branch state: base commits preserved + one correction commit per repo;
 > still NOT pushed / NOT merged / NOT integrated; next = independent review of the
 > complete two-commit chains in both repos.
+>
+> **Semantic-integrity correction (2026-07-21, same day, second independent review).**
+> The A-G correction still left five semantic gaps (findings H-L, all reproduced
+> RED-first against dai `b0ff396`): H -- a core-qualified reserve was exported/validated
+> substitution-INELIGIBLE (the formula ignored the reserve lane); I -- a rehashed
+> wildcard block with a fake recipe/version/regime, blanked hypothesis fields, invented
+> combinations/dimensions, or a non-deterministic novelty rank passed plan validation
+> and exported; J -- producer references (board schema/planner versions, manifest
+> version/digest) were caller-rewriteable after a rehash (shape/64-hex is not producer
+> verification); K -- a realization missing a scheduled slot from the realized+unfilled
+> partition, or carrying a forged unfilled identity/reason, passed; L -- membership plus
+> a self-consistent graph could not prove reserve-first precedence, so a hand-authored
+> wildcard substitution over an available core reserve passed. Corrections (new commits
+> on top; nothing amended): an explicit `TrustedValidationContext` (wi-0034 producer
+> version constants + the manifest-derived canonical vocabulary, built ONLY by the cli's
+> `build_trusted_context`) is now REQUIRED by validate/realize/export -- no context-free
+> path remains; plan validation became semantic (recognized recipe/version/regime,
+> non-blank hypothesis/selection fields, registered duplicate-free sorted
+> combinations/dimensions, threshold adherence, exact-typed novelty rank equal to the
+> deterministic formula, strongest-novelty ordering across scheduled + reserve pools,
+> closed reason shapes, producer references verified against the context) with the
+> sha-256 checked LAST as a content fingerprint only, and malformed nested content
+> returns the closed error contract; FULL realization validity is now
+> availability-derived -- valid iff canonically identical to
+> `realize_flight(plan, availability, context)` (cli `validate --realization` requires
+> `--plan` AND `--availability`; omission is a fail-closed usage error); and the
+> substitution-eligibility truth table was corrected in python + .NET (core false,
+> reserve TRUE, scheduled wildcard false, substitution-reserve wildcard true;
+> eligibility is a frozen plan fact, never proof of substitution, never authority) with
+> a second update-together reserve-substitution cross-runtime vector and a
+> controller-host end-to-end proof. Suites after this correction: agent-service pytest
+> 664/664 (wi-0036 76 core + 25 cli), DevCore.Api.Tests 1530/1530. Chains = three
+> commits per repo (base + A-G + H-L), still NOT pushed / NOT merged / NOT integrated;
+> next = independent review of the complete three-commit chains.
 
 ## problem  <!-- LITE -->
 

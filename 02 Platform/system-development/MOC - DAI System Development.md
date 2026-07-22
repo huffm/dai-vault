@@ -280,7 +280,15 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   re-realization, full .NET validation matrix + controller-host 400 proof, and
   producer-verified board reproduction through the real WI-0034 planner. Suites after
   correction: pytest 653/653, DevCore.Api.Tests 1528/1528. Chains (2 commits per repo)
-  still local-only; next = independent review of the complete chains.
+  still local-only; next = independent review of the complete chains. A second
+  independent review then found five semantic gaps (H-L: reserve substitution
+  eligibility, rehashed wildcard/producer-reference forgeries, incomplete realization
+  partition, unprovable precedence); corrected same-day RED-first in third commits per
+  repo: required TrustedValidationContext for every plan consumer, semantic plan
+  validation, availability-derived full realization validity, and the corrected
+  eligibility truth table with a second cross-runtime vector + controller-host proof
+  (pytest 664/664, DevCore.Api.Tests 1530/1530). Chains = 3 commits per repo,
+  local-only; next = independent review of the complete three-commit chains.
 
 ## scope boundary of this registry
 
