@@ -2,11 +2,11 @@
 title: "Provider-Event Binding Slice A -- Canonical Qualification Producer 2026-07-22 v1"
 type: "evidence-report"
 date: "2026-07-22"
-status: "Slice A implemented locally; vertical still in progress; execution remains unsafe for bound flights"
+status: "Slice A implemented locally through correction Pass 1B (findings B, C, D, F); findings A and E open for Pass 2; vertical still in progress; execution remains unsafe for bound flights"
 project: "DAI"
-slice: "WI-0035 provider-event binding vertical, Slice A"
+slice: "WI-0035 provider-event binding vertical, Slice A + corrections Pass 1A/1B"
 repos:
-  dai: "local branch wi/0035-provider-event-binding, commit 2e24782; NOT pushed"
+  dai: "local branch wi/0035-provider-event-binding, commit 54873b3 (Pass 1B); NOT pushed"
   dai-vault: "local branch wi/0035-provider-event-binding; NOT pushed"
 tags:
   - evidence-operations
@@ -143,3 +143,128 @@ pre-binding evidence -- not backfilled, rewritten, or reinterpreted.
 producer replay** -- not execution activation. Slices C-D then carry the binding to flight
 provenance and finally enforce it at execution retrieval. No live operator, capture,
 wildcard flight, or paid use is authorized by Slice A.
+
+---
+
+## addendum 2026-07-22 -- correction pass 1B (findings C and D)
+
+Pass 1B corrects the two accounting/vocabulary findings raised against Slice A. It is a
+producer-side correction only: **no binding block is emitted on the wire, no planner
+propagation exists, and execution is still unbound.** Findings A and E remain open for
+Pass 2; Slice B is not started.
+
+### finding C -- the counts were conflated
+
+The projection assigned `ExactMatchCount` from `q.Binding is not null ? 1 : q.AdmittedEventCount`.
+Because Slice A admits a unique same-orientation event anywhere inside the inclusive
++/-60s policy window, **a bounded admission was published as an exact match** on both the
+free events-gate artifact and the paid screen bundle. A reader could not distinguish
+"the provider agreed to the second" from "the provider was 45s off and we accepted it".
+
+Three independent counts now exist on `ProviderEventQualification` and are carried
+verbatim onto `MarketJoinDiagnostic`:
+
+| count | meaning |
+|---|---|
+| `ExactStartMatchCount` | literal zero-delta agreement, counted inside the in-bracket loop |
+| `AdmittedEventCount` | events inside the authorized bracket **and** the inclusive +/-60s window; may exceed 1, which is ambiguity |
+| `QualifiedBindingCount` | `1` only when exactly one admissible event produced a binding, else `0` |
+
+`MarketJoinDiagnostic.ExactMatches` is renamed `AdmittedEvents`: those events were admitted
+by the policy window, which is not a claim of exactness.
+
+Selection is now guarded on qualification rather than on collection shape. The paid adapter
+requires **all three** of `QualifiedBindingCount == 1`, `AdmittedEvents.Count == 1`, and
+`Binding is not null` before reading market depth; a collection that happens to hold one
+element is no longer sufficient. The events gate classifies readiness on
+`QualifiedBindingCount`, and `matched_odds_event_id` is gated on the same fact.
+
+Both artifacts emit `admitted_event_count`, `exact_start_match_count`, and
+`qualified_binding_count` separately, and both summaries keep
+`evaluated_candidate_exact_start_match_count` and
+`evaluated_candidate_qualified_binding_count` as distinct totals.
+
+### finding D -- the canonical status was not carried
+
+`MarketJoinDiagnostic.CanonicalStatus` is copied **directly** from the qualifier and emitted
+as `canonical_qualification_status`. It is never reconstructed from counts and never routed
+through the legacy vocabulary. `diagnostic_status` is retained only as a secondary legacy
+view for historical readers and must never contradict it.
+
+`duplicate_exact_match` is replaced by `ambiguous_admissible_events`. An ambiguous window may
+hold zero or one exact event, so the old token asserted something that was frequently false.
+The terminal vocabulary follows:
+
+| old | new |
+|---|---|
+| `exact_match_ready_for_separate_operator_decision` | `qualified_binding_ready_for_separate_operator_decision` |
+| `no_exact_matches` | `no_qualified_bindings` |
+| `duplicate_exact_match_blocked` | `ambiguous_qualified_binding` |
+
+Explanations are written from the canonical status and never call a bounded admission exact;
+the qualified-but-bounded explanation states `bounded tolerance, not an exact start` with the
+signed delta, and the paid join detail states the match method rather than always claiming
+`teams+start exact`.
+
+### also corrected
+
+`ProviderEventQualificationContext.TargetDate` is **removed**. It duplicated
+`AuthorizedBracket.TargetDate` as a second independently mutable representation of the same
+authorized fact. It was removed rather than left required-but-ignored, so the two can no
+longer disagree.
+
+### verification
+
+| gate | result |
+|---|---|
+| new Pass-1B accounting suite (`ProviderEventAccountingTests`) | **24/24** |
+| new producer-boundary tests (events gate + paid adapter) | **4/4** |
+| binding/join/contrast focused suites | **240/240** |
+| full `DevCore.Api.Tests` | **1608/1608** |
+| four execution-gap tests | **4/4 green, unresolved** |
+| full agent-service pytest (Python unchanged) | **617/617** |
+| strict planning snapshot | 25 work items / 6 timeline entries / **0 warnings** |
+| `git diff --check` both repos | clean |
+| stale-vocabulary scan | no `duplicate_exact_match` / `ExactMatches` / `ExactMatchReady` token remains in production or test names |
+| added-line scans | no machine paths, secrets, authority-ledger changes, or live-call surfaces |
+| protected hashes | `DevCore.Data.csproj` unchanged (`63EF2488...`) |
+
+RED evidence: **eight pre-existing tests failed immediately on the production change**, and
+they failed exactly at the conflation seam -- four qualifier rows asserting
+`ExactMatchCount == 1` for +/-30s and +/-60s admissions, two producer fixtures asserting an
+exact count on a boundary admission, the corpus-equivalence test comparing the admissible
+predicate against the exact count, and the ambiguity fixture pinned to the old token. Each
+was corrected to state the separated facts. The new accounting truth table is written so its
+rows **disagree with each other by construction** -- one exact plus one bounded is ambiguous
+with exactly 1 exact; two bounded is ambiguous with **0** exact -- so no row can be satisfied
+by copying one count into another.
+
+Known deviation: within the operator-specified batch order, the four dedicated Pass-1B test
+files were authored after the production edits in the same batch. The eight failing
+pre-existing tests are the honest RED signal for this pass; the new tests are additive
+pinning, not the original failure evidence.
+
+### left deliberately unchanged
+
+The schema-1.2 fixture in `services/agent-service/tests/test_daily_evidence_planner_cli.py`
+still uses `evaluated_candidate_exact_match_count`. That fixture is version-pinned to the
+older bundle shape and asserts backward compatibility; rewriting it would falsify what 1.2
+actually looked like. There is **no production Python or Angular reader** of any of these
+keys -- verified by scanning `services/agent-service/src` and `apps/`.
+
+### posture
+
+No StatsAPI, Odds `/events`, Odds `/odds`, model, Tool Gateway, or other network call. No
+paid call, AgentRun, capture, flight freeze, settlement, reconciliation, scheduling, or
+activation. No database read or write, migration operation, or service start. No integration,
+push, or remote mutation. **$0.**
+
+The persisted gamePk `823438` canary remains historical non-wildcard, non-settled,
+pre-binding evidence.
+
+### next
+
+**Pass 2 -- findings A and E**: emit the binding block on both artifacts and pin the
+fingerprint, then Slice B carries it through input-evidence into the Planner Pass 2 board.
+Execution correction stays gated behind those. Nothing here authorizes a paid call, a
+wildcard flight, or any live operator action.

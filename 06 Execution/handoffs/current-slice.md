@@ -17287,3 +17287,68 @@ Zero StatsAPI, `/events`, `/odds`, model, Tool Gateway, or network calls. Zero d
 **Proof:** Reflection shows one overload with one required context and no defaulted members; `EasternBracketFor` deleted with a no-leftover assertion; supplied identity/bracket/observation verified reaching the binding on the real evaluation seam; a wrong-day supplied bracket fails closed; 24h/23h/25h brackets pinned; 1580/1580 .NET, 617/617 pytest, snapshot 25/6/0, scans clean.
 **State:** dai `6480a94` and this vault commit on local `wi/0035-provider-event-binding`, NOT pushed; both mains unmoved; C/D and A/E still open.
 **Next:** Pass 1B -- exact/admitted/qualified accounting, member renames, canonical status preservation, truthful vocabulary. Not Pass 2, not Slice B.
+
+---
+
+## 2026-07-22 -- WI-0035 Slice-A correction Pass 1B (findings C and D): qualification accounting and canonical status
+
+### Objective
+
+Correct the two remaining Slice-A review findings that made the artifacts assert things the qualifier never decided: the conflated match accounting (C) and the discarded canonical status with its false `duplicate_exact_match` vocabulary (D). Also remove the redundant `ProviderEventQualificationContext.TargetDate` rather than leave it required-but-ignored. Producer-side only.
+
+### Outcome
+
+Implemented in four batches on `wi/0035-provider-event-binding`, each built and tested before the next. dai local commit `54873b3`; vault local commit recorded alongside. Findings C and D are closed at the producer boundary. Findings A and E remain open; Slice B is not started; execution is still unbound.
+
+### Repo state
+
+**Before** -- dai `6480a94`, vault `124c6bc`, both on `wi/0035-provider-event-binding`, both clean, dai main `48a2931`, vault main `3a82af0`, 0 remote refs.
+**After** -- dai `54873b3`, vault this commit, same branches, both mains unmoved, nothing pushed.
+
+### Work performed
+
+1. **Batch 1 -- qualifier counts + `TargetDate` removal.** `ProviderEventQualification` gained `ExactStartMatchCount`, `AdmittedEventCount`, and `QualifiedBindingCount` as three independent values. `ExactStartMatchCount` is counted inside the in-bracket loop on `delta == 0`; the invalid-identity, contextual, and no-events paths conservatively zero all counts. `ProviderEventQualificationContext.TargetDate` deleted -- `AuthorizedBracket.TargetDate` is now the single representation, so the two can no longer disagree.
+2. **Batch 2 -- projection, canonical status, rename.** `MarketJoinDiagnostic.ExactMatchCount` is now literal exact-start (previously assigned from `q.Binding is not null ? 1 : q.AdmittedEventCount`, which published a bounded +/-60s admission as an exact match). `ExactMatches` renamed `AdmittedEvents`. New `AdmittedEventCount`, `QualifiedBindingCount`, and `CanonicalStatus` -- the last copied directly from the qualifier, never reconstructed. `MarketJoinStatus.DuplicateExactMatch` replaced by `AmbiguousAdmissible`. `ExplanationFor` rewritten from the canonical status across eight distinguishable failure kinds.
+3. **Batch 3 -- paid adapter.** Market-depth selection guarded on all three of `QualifiedBindingCount == 1`, `AdmittedEvents.Count == 1`, and `Binding is not null`. New `ambiguous_market_match` join branch. Candidate JSON emits `admitted_event_count`, `canonical_qualification_status`, `exact_start_match_count`, `qualified_binding_count`; summary keeps `evaluated_candidate_exact_start_match_count` and `evaluated_candidate_qualified_binding_count` separate. Join detail states the match method instead of always claiming `teams+start exact`.
+4. **Batch 4 -- events gate, vocabulary, tests, docs.** Candidate JSON and summary mirrored. Readiness classification moved onto `CanonicalStatus`/`QualifiedBindingCount`; `matched_odds_event_id` gated on the same fact. Terminal vocabulary renamed: `exact_match_ready -> qualified_binding_ready`, `no_exact_matches -> no_qualified_bindings`, `duplicate_exact_match_blocked -> ambiguous_qualified_binding`.
+
+### Files changed
+
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/ProviderEventBinding.cs` -- three independent counts on the qualification record.
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/MarketJoinDiagnostics.cs` -- literal exact count, `AdmittedEvents`, `CanonicalStatus`, `AmbiguousAdmissible`, rewritten explanations, `TargetDate` removed.
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/MarketContrastSourceAdapter.cs` -- guarded selection, ambiguous branch, separated totals, truthful join detail.
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/MarketContrastEventsGate.cs` -- terminal vocabulary, qualified-binding classification, separated summary and candidate JSON.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/ProviderEventAccountingTests.cs` -- **new**, 24 tests.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/{MarketContrastEventsGateTests,MarketContrastSourceAdapterTests,MarketJoinDiagnosticsTests,ProviderEventTrustedContextTests}.cs` -- corrected assertions plus 4 new producer-boundary tests.
+
+### Validation proof
+
+New accounting suite 24/24; new producer-boundary tests 4/4; focused binding/join/contrast suites 240/240; full `DevCore.Api.Tests` **1608/1608**; four execution-gap tests 4/4 green and still unresolved; agent-service pytest **617/617** (Python untouched); strict planning snapshot 25 work items / 6 timeline entries / **0 warnings**; `git diff --check` clean; stale-vocabulary scan clean in production and test names; added-line scans show no machine paths, secrets, authority-ledger changes, or live-call surfaces; `DevCore.Data.csproj` protected hash `63EF2488...` unchanged.
+
+RED evidence: eight pre-existing tests failed immediately on the production change, exactly at the conflation seam -- four qualifier rows asserting `ExactMatchCount == 1` for bounded admissions, two producer fixtures asserting an exact count on a boundary admission, the corpus-equivalence test comparing the admissible predicate against the exact count, and the ambiguity fixture pinned to the old token. The new truth table is written so its rows disagree by construction (one exact + one bounded = ambiguous with 1 exact; two bounded = ambiguous with **0** exact), so no row can be satisfied by copying one count into another.
+
+Honest deviation: within the operator-specified batch order the dedicated Pass-1B tests were authored after the production edits in the same batch. The eight failing pre-existing tests are this pass's genuine RED signal; the new tests are additive pinning.
+
+### DB writes / external side effects / cost
+
+None. Zero paid calls. **$0.**
+
+### What did not change
+
+Prompts, routing, confidence logic, buyer copy, migrations/schema, and runtime behavior: unchanged. No binding block is emitted on either artifact wire, no fingerprint is pinned, no planner or execution propagation exists, and the eight-key authority ledger is untouched. Findings A and E are open. The schema-1.2 Python fixture keeps `evaluated_candidate_exact_match_count` deliberately -- it is version-pinned to the older bundle shape, and no production Python or Angular reader of these keys exists (verified by scanning `services/agent-service/src` and `apps/`).
+
+### Open issues
+
+Binding wire emission and fingerprint pinning (finding A), execution-path correction (finding E), Slice B propagation, and the four execution-gap characterization tests all remain open by design.
+
+### Posture
+
+Zero StatsAPI, `/events`, `/odds`, model, Tool Gateway, or network calls. Zero database access, migration operation, service start, AgentRun, capture, settlement, reconciliation, scheduling, or activation. No integration, push, PR, or remote mutation. $0. The gamePk 823438 canary remains untouched historical non-wildcard, non-settled, pre-binding evidence.
+
+### Slice Synopsis
+
+**Change:** Split the qualification accounting into three independent counts, carried the canonical qualification status through to both artifacts verbatim, guarded selection on qualification rather than collection shape, and replaced the false `duplicate_exact_match` vocabulary.
+**Reason:** The projection derived the exact count from "a binding exists", so a bounded +/-60s admission was published as an exact match, and the canonical status was discarded in favor of a legacy token that claimed duplicate exactness for windows often holding zero exact events.
+**Proof:** Eight pre-existing tests failed exactly at the conflation seam and were corrected; a truth table whose rows disagree by construction now pins the three counts; 1608/1608 .NET, 617/617 pytest, snapshot 25/6/0, diff --check and vocabulary scans clean, protected hash unchanged.
+**State:** dai `54873b3` and this vault commit on local `wi/0035-provider-event-binding`, NOT pushed; both mains unmoved; findings A and E still open, execution still unbound.
+**Next:** Pass 2 -- emit the binding block on both artifacts and pin its fingerprint. Not Slice B, not planner propagation, not execution correction.
