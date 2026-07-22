@@ -92,6 +92,9 @@ grants any authority.
 - `02 Platform/system-development/work-items/WI-0031-model-assisted-capability-recommendation-and-tool-selection-v1.md`
 - `02 Platform/system-development/work-items/WI-0036-wildcard-evidence-discovery-loop-v1.md`
 - `02 Platform/architecture/cognitive-factory/wildcard-evidence-discovery-loop-v1.md`
+- `06 Execution/patterns/daily-evidence-acquisition-operating-workflow-v1.md` (end-to-end
+  daily stage sequence, operating windows, and the two human authorization gates; current
+  implementation is manual and operator-gated)
 - `06 Execution/reports/gate4-discrimination-sufficiency-criterion-2026-07-05-v1.md`
 - `04 Products/sports-v1/calibration/` (settled evidence corpus doctrine)
 

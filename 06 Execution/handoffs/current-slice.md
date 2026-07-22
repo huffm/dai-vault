@@ -17021,3 +17021,47 @@ Evidence bar recorded for any future revisit: at least two independent observati
 **Proof:** Observation claims re-derived from the artifact and reconciled before integration (ff `e112731..3a82af0`, main == origin); the rounding hypothesis refuted by two identical-input/different-output counterexamples (`22:40:00Z` -> +0s/+60s; `00:10:00Z` -> +60s/-240s); July-20 artifacts shown to contain no provider instants; deterministic re-derivation script sha-256 `aa9440a9...`; zero provider/model/database/paid calls; migration unapplied.
 **State:** Vault main == origin/main == `3a82af0`; analysis docs on local branch `wi/0035-start-instant-normalization-analysis`, NOT pushed; dai untouched at `48a2931`.
 **Next:** A separately authorized fresh-preflight re-observation after starters are announced, under the unchanged predicate; only then might a bounded `/odds` screen be proposed.
+
+---
+
+## 2026-07-22 -- Daily evidence workflow: Planner Pass 1 reproduction + free preflight (stages 2-3)
+
+**Slice type:** governed operations slice composing WI-0034 (planner), WI-0035 (market-contrast preflight), WI-0036 (flight-plan context). No new WI.
+**Repos:** dai read-only and UNCHANGED (integrated CLIs invoked from main `48a2931`). dai-vault docs only on local branch `ops/2026-07-22-planner-pass1-free-preflight` from `9ef41c9`, NOT pushed.
+**Authorization:** one free StatsAPI schedule/hydration operation and one narrow tenant-scoped AgentRuns read via the existing preflight operator. Explicitly NOT authorized and NOT done: `/events`, `/odds`, paid screening, model/Tool Gateway call, AgentRun, flight freeze, capture, execution, database write, migration application.
+
+### Clocks
+
+Entry `2026-07-22T14:01:56Z` = 10:01:56 EDT (inside the morning window, ahead of the 10:30 target; the operator-reported ~09:50 ET was not used as evidence). Planner Pass 1 `14:03:01Z`. Preflight `14:05:22Z -> 14:05:25Z`. Elapsed entry-to-preflight-complete: ~3.5 minutes.
+
+### Phase A -- Planner Pass 1 reproduced byte-exact
+
+Versions verified before use: CLI `daily-evidence-planner-cli/2.5`, request `daily-evidence-planner-request/2.1`, board `daily-evidence-board/2.2`, planner `daily-evidence-planner/2.2`. Frozen request validated `valid`. Outcome `EVIDENCE_NEEDED_INPUT_TYPES_NOT_ADDRESSABLE` as expected (Pass 1 intentionally lacks market-contrast evidence). Authority ledger 8/8 false. Zero network/database/model/gateway calls.
+
+Reproduced canonical board sha-256 `3da03021d3ee6c21f4a1d18bc59735f5734e52a889073264e5d2fd919704156b`. The frozen `pass1-board.json` is 2 bytes longer; a byte scan returned **first differing index -1** (all 3473 common bytes identical) with the frozen file carrying two extra trailing bytes `0D 0A`. Frozen-minus-CRLF hashes to the identical value and the canonical strings compare `-ceq` equal at 3473 chars. Planner output is byte-identical; the delta is a trailing line terminator from the July-20 writer, recorded rather than silently normalized because a naive whole-file hash comparison would have read as a mismatch.
+
+### Phase B -- one free preflight
+
+Terminal `completed_preflight_no_paid_call`; bundle sha `c58623e9...`; schema `market-contrast-screen-bundle/1.3`; mode preflight; target 2026-07-22; exact Pass-1 SHA recorded; 15 distinct identities; authority all false; two independent parsers. Ledger: Odds `/events` 0, Odds `/odds` 0, StatsAPI schedule 1 + 28 starter attempts (0 failures), DB reads 1 / writes 0, model/gateway/AgentRun/capture/scheduling/settlement/reconciliation 0, migrations 0, **$0**.
+
+Verification was proportionate: no-restore build clean, focused market-contrast 56/56 and planner CLI 50/50; full suites not re-run because the integrated refs were already verified earlier in the session.
+
+Dependency: opening state recorded as Docker engine down / `devcore-sql` stopped; only that dependency started; web application and agent-service never started; opening state restored at close.
+
+### Readiness
+
+13 of 15 screenable; 2 preblocked. **Nothing changed versus the 08:37 preflight** -- no start moved, no disposition flipped. **824732 BAL@BOS is still `starters_not_announced`**, so the previously identified "already start-aligned" candidate has NOT cleared its preblock. **823438 LAD@PHI** is screenable and remains the single candidate with an exact provider join in the 08:38 artifact.
+
+Earliest screenable start `18:10:00Z` with admission cutoff `17:10:00Z`. Capacity facts kept separate: screenable 13; currently-screenable ∩ exact-at-08:38 = **1**; four or more remain potentially screenable = yes; a four-run flight is possible **in count terms only** (and admits at most one scheduled wildcard under `floor(total/4)`); actual market-screen eligibility, core/wildcard allocation, and capture authority remain unknown until later separately governed stages. The intersection is derived from the already-captured 08:38 artifact and is explicitly **not** a fresh `/events` join.
+
+### Documentation
+
+New: `06 Execution/patterns/daily-evidence-acquisition-operating-workflow-v1.md` (full stage sequence, operating windows, current-vs-target table, two-pass planner distinction, execution truth, `floor(total/4)` wildcard truth, migration-as-deployment-prerequisite, separate afternoon flight, resumable states, no-overwrite/idempotency/stop/recovery) and `06 Execution/reports/daily-evidence-planner-pass1-free-preflight-2026-07-22-v1.md`. Minimal link added to the orchestrator record.
+
+### Slice Synopsis
+
+**Change:** Reproduced Planner Pass 1 deterministically from the frozen July 22 request, ran exactly one refreshed free market-contrast preflight, and documented the complete daily evidence operating workflow.
+**Reason:** The daily workflow needed its first two stages executed with evidence and a durable record of the full stage sequence, authority gates, and operating windows that survives beyond handoffs.
+**Proof:** Canonical board reproduced byte-identical (`3da03021...`, first differing byte index -1, frozen delta is a trailing CRLF only); preflight `completed_preflight_no_paid_call` with 0 Odds requests, 1 DB read, 0 writes, authority all false; focused tests 56/56 and 50/50; protected hashes byte-identical; $0.
+**State:** Local commit on `ops/2026-07-22-planner-pass1-free-preflight` from `9ef41c9`, NOT pushed; dai untouched at `48a2931`; both mains unmoved; migration still unapplied; `9ef41c9` preserved.
+**Next:** Planner Pass 2, paid screening, flight planning/freeze, capture authorization, and execution all remain separate decisions; none is authorized here.
