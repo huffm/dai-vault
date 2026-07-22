@@ -16861,3 +16861,55 @@ and each run must identify the frozen slot it actually filled.
 provenance/lane contracts and producer vectors; migration unapplied; $0.
 **State:** Local coordinated branches only; no integration or runtime authorization.
 **Next:** Independent review, then separately authorized integration only if it passes.
+
+---
+
+## 2026-07-22 -- WI-0036 Slice-3 remainder: coordinated integration and post-integration reconciliation
+
+**Slice type:** integration continuation + documentation reconciliation (continues WI-0036; not a new WI).
+**Repos:** dai (fast-forward publication only, no new commit), dai-vault (fast-forward publication + one reconciliation commit).
+**Authorization:** 2026-07-22 operator prompt (coordinated integration of the verified Slice-3 remainder). Migration application, runtime activation, the July 22 observation, `/events`, `/odds`, capture, retrieval, model/source/gateway calls, scheduling, settlement, paid wildcard use, and Slices 4-6 all remain unauthorized.
+
+### Opening gates
+
+- dai main == origin/main == `ce34a9e7`; vault main == origin/main == `6e667b5c`; no remote drift.
+- Feature tips exactly `48a2931` (dai) and `fa31a3e` (vault), each 1 ahead / 0 behind, each with its main as a direct ancestor, both carrying `WI: WI-0036`.
+- dai worktree clean; vault worktree contained only the known protected set; nothing staged in either repo.
+- Protected hashes matched the established values; `Welcome.md` still deleted.
+
+### Pre-integration verification (from committed code, not report trust)
+
+- `git diff --check` clean across both complete main-to-tip ranges.
+- Prohibited-scope allowlist empty: no buyer, prompt, routing, confidence, lean, posture, matching, metrics-calculator, reconciliation-service, retrieval, gateway, scheduler, `FlightSelectionProvenance.cs`, or `services/agent-service` file appears in the dai range.
+- Migration: 9 `AddColumn` / 9 `DropColumn` / 9 `nullable: true` -- symmetric and additive.
+- `flight-selection-provenance/1.0` and `wi0036-candidate-lane/1.0` unchanged; the producer-vector file untouched in this range.
+- Focused writeback/strata/provenance tests **53/53**; full DevCore.Api.Tests **1536/1536**; full agent-service pytest **617/617**; strict snapshot **25 work items / 6 timeline entries / 0 warnings**.
+- No database-dependent migration command was run, per the standing instruction.
+
+### Accepted semantics (binding, recorded in the WI and closeout so they are not reopened)
+
+1. An AgentRun IS an executed realization -> provenance supplied at run creation must carry `realizedPosition` and `realizedVia`; omission is a 400 before service invocation and before any run row. Plan-time provenance stays valid for non-run uses. Endpoint-context requirement; `flight-selection-provenance/1.0` UNCHANGED.
+2. Scheduled-mode projection coverage is sufficient: the writeback has no `realizedVia`-specific branching, and genuine producer vectors cover `core_reserve` and `wildcard_substitution` end-to-end. A producer-generated scheduled vector is a non-blocking future enhancement.
+
+### Integration executed
+
+- dai: `ce34a9e7 -> 48a29313988beac34cb8dad388371c472ff21d73` (`main -> main`), `--ff-only`, ordinary non-force push.
+- dai-vault: `6e667b5c -> fa31a3e91a09753602e34ca8cee3d38e059d9dd0` (`main -> main`), `--ff-only`, ordinary non-force push.
+- Both pushes succeeded on first attempt; no asymmetric published state. No merge commit, amend, squash, rebase, cherry-pick, force-push, or history rewrite. Feature branches retained.
+- Post-fetch proof before the reconciliation commit: local main == origin/main == the verified tip in BOTH repositories.
+
+### Post-integration reconciliation (this vault commit)
+
+Active current-state surfaces moved from "implemented locally / review-integration pending" to "verified and integrated", with every prior claim preserved as dated history: WI-0036 frontmatter, current disposition, Slice-3 heading and remainder block, links block, and final-handoff section; the architecture record status line, current-state block, and recommended-next section; the system-development MOC entry; the delivery timeline title, `proposed_by_system`, `operator_intent`, `replan_triggers`, and a dated change-log entry; and the Slice-3 closeout frontmatter, superseded next step, and new addendum 1. The reconciliation records the verification PASS, both implementation commits, both accepted semantics, the unchanged 1.0 contracts, the unapplied migration, the absence of runtime/commercial authority, deferred Slices 4-6, and the separately governed July 22 observation and paid flights.
+
+### Posture
+
+Migration `20260722100648_AddAgentRunFlightSelectionWriteback` generated but **NOT applied**; no database write. No model, StatsAPI, Odds `/events` or `/odds`, Tool Gateway, AgentRun, capture, screening, settlement, reconciliation, scheduler, observation, or paid wildcard activity. Repository fetches and the two authorized main pushes plus this reconciliation push were the only external activity. **$0.** Prompts, routing, decision logic, confidence, lean, posture, matching, buyer surfaces, and runtime behavior are unchanged; the dormant probe-refresh chain remains dormant; nothing was activated.
+
+### Slice Synopsis
+
+**Change:** Integrated the independently verified WI-0036 Slice-3 remainder into both published mains by coordinated fast-forward, then reconciled every active vault current-state surface to "verified and integrated" and recorded the two operator-accepted semantics as binding.
+**Reason:** Slice 3 was verified and authorized for integration, and the accepted semantics existed only in conversation -- leaving them unrecorded would have invited a future reviewer to reopen the plan-time rejection as a defect.
+**Proof:** Opening gates matched exactly with no remote drift; range `diff --check` clean; prohibited-scope allowlist empty; migration 9/9 symmetric; contracts and producer vectors unchanged; focused 53/53, .NET 1536/1536, pytest 617/617, snapshot 25/6/0; both mains == origin == verified tips; protected state byte-identical; migration unapplied; $0.
+**State:** dai main `48a2931` and dai-vault main at the reconciliation tip, with `fa31a3e` as its direct integrated ancestor; WI-0036 Slices 1-3 complete, WI still in-progress.
+**Next:** None authorized. Applying the migration and any Slice-4 decision each require their own explicit operator authorization; the July 22 observation and paid wildcard flights remain separately governed.

@@ -4,10 +4,10 @@ type: "plan"
 date: "2026-07-21"
 status: "in-progress"
 project: "DAI"
-slice: "WI-0036 Slice-3 remainder: implemented locally 2026-07-22; review/integration pending (Slices 4-6 deferred)"
+slice: "WI-0036 Slices 1-3 verified and integrated 2026-07-22 (Slices 4-6 deferred)"
 repos:
-  dai: "Slice-3 remainder local branch wi/0036-wildcard-settlement-strata-writeback from integrated main ce34a9e7; not pushed or integrated"
-  dai-vault: "Slice-3 remainder local docs branch from main 6e667b5c; not pushed or integrated"
+  dai: "code+tests+migration integrated to main 48a29313988beac34cb8dad388371c472ff21d73 (migration generated, NOT applied)"
+  dai-vault: "docs integrated to main fa31a3e91a09753602e34ca8cee3d38e059d9dd0"
 tags:
   - system-development
   - work-item
@@ -30,23 +30,53 @@ into proposal-only signal-need inputs, and (later, separately gated) closes the
 orchestrator-mediated `Question -> Probe -> authorized retrieval -> Perceive refresh ->
 Verify -> Discern` loop with a callable protocol-service seam.
 
-**Current disposition (2026-07-22): Slice 1 and Slice 2 are integrated; the authorized
-Slice-3 remainder is IMPLEMENTED LOCALLY and awaits independent review/integration.** The
-local implementation adds nullable realized-selection writeback columns on `AgentRun`, a
-direct projection from already validated provenance, and additive settlement/
+**Current disposition (2026-07-22): Slices 1, 2, and 3 are independently VERIFIED and
+INTEGRATED.** Slice 3 is complete: the minimum provenance seam plus the remainder
+(realized-position writeback and settlement/reconciliation read strata). Integrated tips:
+dai main `48a29313988beac34cb8dad388371c472ff21d73` and dai-vault main
+`fa31a3e91a09753602e34ca8cee3d38e059d9dd0`, each equal to its `origin/main` after
+fast-forward-only coordinated publication (no amend, squash, rebase, merge commit, or
+history rewrite).
+
+The integrated behavior adds nullable realized-selection writeback columns on `AgentRun`,
+a direct projection from already validated provenance, and additive settlement/
 reconciliation read fields with the closed evidence strata `core | wildcard |
 unclassified`. Core-qualified reserve rows remain in the core stratum; wildcard rows
-remain wildcard; missing or unknown lanes fail visible as unclassified. No existing
-metric or reconciliation matcher changed. `flight-selection-provenance/1.0` and
-`wi0036-candidate-lane/1.0` remain unchanged, as do both producer-generated cross-runtime
-vectors. Full local gates: agent-service pytest **617/617** and DevCore.Api.Tests
-**1536/1536**. The coordinated branches are
-`wi/0036-wildcard-settlement-strata-writeback` from dai main `ce34a9e7` and dai-vault main
-`6e667b5c`; they are NOT pushed, merged, or integrated. WI-0036 remains `in-progress` and
-Slices 4-6 remain deferred. No source, model, Tool Gateway, database, AgentRun, capture,
-settlement, reconciliation, scheduling, activation, observation, or paid flight ran;
-cost **$0**. The next governed action is independent review and coordinated integration
-under a separate explicit authorization.
+remain wildcard; missing or unknown lanes fail visible as unclassified, so wildcard
+evidence can never silently read as core. No existing metric or reconciliation matcher
+changed. `flight-selection-provenance/1.0` and `wi0036-candidate-lane/1.0` remain
+unchanged, as do both producer-generated cross-runtime vectors.
+
+**Independent verification PASS (2026-07-22)**, performed against live repository state
+rather than the implementation report: commit ancestry/trailers, protected-state hashes,
+validation-before-persistence ordering, closed fail-closed strata mapping, buyer-boundary
+absence, migration symmetry (9 nullable additions / 9 symmetric removals), untouched
+provenance and planner code, and cross-runtime consumer tolerance were each re-derived
+from source. Suites re-run: agent-service pytest **617/617**, DevCore.Api.Tests
+**1536/1536**; strict snapshot 25 work items / 6 timeline entries / 0 warnings. No
+correction commit was required.
+
+**Operator-accepted semantics (binding; not to be reopened as defects):**
+
+1. **An AgentRun is an executed realization.** Flight-selection provenance supplied to
+   AgentRun creation must therefore carry `realizedPosition` and `realizedVia`; omission
+   returns 400 before service invocation and before any run row. Plan-time provenance
+   (exported without availability) remains valid for non-run uses. This is a DELIBERATE
+   endpoint-context requirement, not an incidental implementation side effect, and it does
+   NOT change `flight-selection-provenance/1.0`.
+2. **Scheduled-mode projection coverage is sufficient for this slice.** The writeback
+   performs no `realizedVia`-specific branching, and genuine producer vectors cover
+   `core_reserve` and `wildcard_substitution` end-to-end through the controller host. A
+   producer-generated scheduled vector is a non-blocking future test enhancement, not an
+   integration prerequisite.
+
+The migration `20260722100648_AddAgentRunFlightSelectionWriteback` was generated but is
+**NOT applied**; no database write occurred. WI-0036 remains `in-progress` and Slices 4-6
+remain deferred and separately gated. No source, model, Tool Gateway, database, AgentRun,
+capture, settlement, reconciliation, scheduling, activation, observation, or paid flight
+ran; cost **$0**. Repository publication granted **no runtime or commercial authority**.
+The 2026-07-22 events-gate observation and any PAID wildcard flight remain separately
+governed and unauthorized.
 
 *(Historical: the original Slice-1 disposition below read "documentation/contract Slice 1
 COMPLETE; runtime implementation NOT started", and implementation was sequenced not before
@@ -432,7 +462,7 @@ authorization each needs are stated inline. No slice inherits authority from thi
 - **Separate authorization:** a new operator implementation authorization (explicitly not
   granted by Slice 1).
 
-### Slice 3 -- wildcard provenance through production artifacts (REMAINDER IMPLEMENTED LOCALLY 2026-07-22; review/integration pending)
+### Slice 3 -- wildcard provenance through production artifacts (COMPLETE: VERIFIED AND INTEGRATED 2026-07-22)
 
 > The minimum seam shipped with Slice 2: additive default-null null-suppressed
 > `CompetitionMatchupInput.FlightSelection` (`flight-selection-provenance/1.0`; the
@@ -447,7 +477,8 @@ authorization each needs are stated inline. No slice inherits authority from thi
 > FastAPI request-byte invariance are test-pinned (12 xunit tests; full suite
 > 1516/1516).
 >
-> **Remainder implementation (2026-07-22; local only).** A nullable, migration-backed
+> **Remainder implementation (2026-07-22; VERIFIED AND INTEGRATED -- dai
+> `48a2931`, dai-vault `fa31a3e`, both == origin/main).** A nullable, migration-backed
 > `AgentRun` writeback now copies `flightId`, freeze fingerprint, lane/plan role,
 > scheduled and realized positions, `realizedVia`, and the optional provider-scoped
 > substituted-for identity directly from the already validated provenance before the
@@ -460,9 +491,12 @@ authorization each needs are stated inline. No slice inherits authority from thi
 > are unchanged. The two live 1.0 contracts and both producer vectors are unchanged.
 > RED-first regressions cover missing realization facts, all three realization modes,
 > substituted-for identity, separated settled core/wildcard rows, and legacy/unknown
-> unclassified rows. Full local suites: 617/617 pytest and 1536/1536 .NET tests. The
-> migration was generated but not applied; no database write occurred. Branches remain
-> local and unintegrated.
+> unclassified rows. Suites: 617/617 pytest and 1536/1536 .NET tests, re-run at
+> independent verification and again before integration. The migration was generated but
+> is **NOT applied**; no database write occurred. Independent verification PASSED against
+> live repository state with no correction commit required, and both accepted semantics
+> (an AgentRun is an executed realization; scheduled-mode projection coverage is
+> sufficient) are recorded in the current disposition above as binding.
 
 - **Purpose:** carry selection lane, hypothesis, expected/actual recipe/regime/signals,
   substitution facts, and evidence counts through the existing artifact without altering
@@ -636,9 +670,10 @@ prove the contracts; documentation drift claiming target capabilities as impleme
   `ce34a9e74659b42c71317267c64901a24ceb7091`, dai-vault main
   `2cdb275b85229c6ee11a7b2930dc50d847ae8240`, both == `origin/main`
 - Slice-3 remainder branches: `wi/0036-wildcard-settlement-strata-writeback` in both
-  repos, from dai `ce34a9e7` and dai-vault `6e667b5c`; local only, not pushed/merged/
-  integrated; commit hashes are recorded in the external prompt-ledger outcome after
-  commit creation
+  repos, from dai `ce34a9e7` and dai-vault `6e667b5c` -- INTEGRATED 2026-07-22 by
+  coordinated fast-forward after an independent verification PASS: dai main
+  `48a29313988beac34cb8dad388371c472ff21d73`, dai-vault main
+  `fa31a3e91a09753602e34ca8cee3d38e059d9dd0`, both == `origin/main`
 - pr: - (no PR; direct fast-forward publication of both mains 2026-07-22)
 - commits: Slice-1 docs `b04e6421` (vault); Slice-2 chain dai
   `e64baab -> b0ff396 -> 994b0c1 -> 1c556f4 -> ce34a9e` and vault
@@ -646,8 +681,9 @@ prove the contracts; documentation drift claiming target capabilities as impleme
 - tests: Slice 1 docs-only; Slice 2 as integrated -- agent-service pytest 617/617
   (wi-0036 targeted 39 core + 14 cli) and DevCore.Api.Tests 1530/1530 (16 provenance
   unit + 10 controller-host), reverified on the published mains 2026-07-22
-- Slice-3 remainder tests: RED-first missing members/strata, then focused 37/37;
-  full agent-service pytest 617/617 and DevCore.Api.Tests 1536/1536 locally
+- Slice-3 remainder tests: RED-first missing members/strata, then focused 37/37; full
+  agent-service pytest 617/617 and DevCore.Api.Tests 1536/1536, independently re-run at
+  verification and again immediately before integration
 - verification notes: [[wi-0036-wildcard-evidence-discovery-loop-planning-2026-07-21-v1]]
   (desk scenarios + snapshot + scans) and the current-slice handoff
 - docs updated: see "docs to update" (Slice 1 list)
@@ -667,10 +703,15 @@ events-gate observation, then Slice 2 under a new implementation authorization. 
 was integrated to vault main `b04e6421` on 2026-07-21 and the sequencing was superseded
 the same day.)*
 
-**Current (2026-07-22):** Slice 1 and Slice 2 are integrated and published. The Slice-3
-remainder is implemented on coordinated local branches and is not pushed, merged, or
-integrated; Slices 4-6 remain deferred and separately gated. Next governed action =
-independent review of the Slice-3 implementation and, only if it passes, separately
-authorized coordinated fast-forward integration. The 2026-07-22 events-gate observation
+*(Historical, Slice-3 remainder pre-integration: the remainder was implemented on
+coordinated local branches, not pushed/merged/integrated, with the next governed action
+being independent review and -- only on a pass -- separately authorized coordinated
+integration. That review PASSED and the integration executed on 2026-07-22.)*
+
+**Current (2026-07-22):** Slices 1, 2, and 3 are independently verified, INTEGRATED, and
+published (dai `48a2931`, dai-vault `fa31a3e`, both == `origin/main`). Slices 4-6 remain
+deferred and separately gated. The migration is generated but NOT applied. Next governed
+action = a separately authorized Slice-4 decision, or migration application under its own
+explicit authorization -- neither is granted here. The 2026-07-22 events-gate observation
 and any paid wildcard flight remain separately governed; nothing here authorizes
-activation, capture, retrieval, or spend.
+activation, capture, retrieval, spend, or database writes.

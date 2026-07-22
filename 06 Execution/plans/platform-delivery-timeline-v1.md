@@ -183,13 +183,13 @@ related_work_items:
 
 ```yaml
 initiative_id: wi-0036-wildcard-evidence-discovery-loop
-title: WI-0036 wildcard evidence discovery loop (Slice-3 remainder implemented locally 2026-07-22; review/integration pending; Slices 4-6 separately gated)
+title: WI-0036 wildcard evidence discovery loop (Slices 1-3 verified and integrated 2026-07-22; migration unapplied; Slices 4-6 separately gated)
 status: in-progress
 priority: medium
 desired_by:
 due_by:
 not_before: PAID wildcard use requires a future explicit operator flight authorization; the separately governed 2026-07-22T12:00:00Z events-gate observation remains its own ungated action (2026-07-21 operator sequencing override -- offline implementation is no longer gated on it)
-proposed_by_system: independently review the local WI-0036 Slice-3 remainder branches, then under a separate explicit authorization fast-forward integrate both repos only if review passes; no activation, retrieval, model, source, scheduler, spend, observation, or paid flight
+proposed_by_system: none -- WI-0036 Slices 1-3 are complete and integrated; no implementation slice is proposed. Two operational prerequisites are recorded as PROPOSALS ONLY, each requiring its own operator authorization: applying the generated AddAgentRunFlightSelectionWriteback migration, and any decision to begin Slice 4. No activation, retrieval, model, source, scheduler, spend, observation, or paid flight
 date_source: none
 date_confidence: high
 aliases:
@@ -199,11 +199,12 @@ aliases:
 depends_on:
 blocks:
 economic_reason: widens safe evidence acquisition toward underrepresented recognized recipes/regimes/signal combinations and turns artifact interrogation into proposal-only retrieval inputs; no spend authority of its own -- paid model calls and sports capture remain fail-closed per the authorization block above
-operator_intent: operator decisions 2026-07-21 -- Slice 1 docs authorized/completed/integrated; then a sequencing override authorized the offline/default-off implementation NOW (Slice 2 + minimum Slice-3 seam). 2026-07-22 -- Slice 2 and the minimum Slice-3 seam were reviewed and integrated; the Slice-3 remainder was separately authorized and implemented locally with no runtime action. Its branches must stop before integration for a later explicit review/integration decision. The July 22 observation is a separate still-unexecuted action; wildcard use in any future PAID flight remains explicitly operator-approved
+operator_intent: operator decisions 2026-07-21 -- Slice 1 docs authorized/completed/integrated; then a sequencing override authorized the offline/default-off implementation NOW (Slice 2 + minimum Slice-3 seam). 2026-07-22 -- Slice 2 and the minimum Slice-3 seam were reviewed and integrated; the Slice-3 remainder was separately authorized, implemented, independently verified (PASS, no correction commit), and INTEGRATED by coordinated fast-forward (dai 48a2931, dai-vault fa31a3e). The operator explicitly accepted two semantics as binding: an AgentRun is an executed realization (run-creation provenance must carry realizedPosition/realizedVia, an endpoint-context requirement that does not change flight-selection-provenance/1.0), and scheduled-mode projection coverage is sufficient. The migration remains unapplied. The July 22 observation is a separate still-unexecuted action; wildcard use in any future PAID flight remains explicitly operator-approved
 replan_triggers:
   - the 2026-07-22 events-gate observation completes
-  - (fulfilled 2026-07-22) an operator authorization for the WI-0036 Slice-3 remainder was issued and implemented locally
-  - an operator review/integration authorization for the local WI-0036 Slice-3 remainder is issued
+  - an operator authorization to apply the AddAgentRunFlightSelectionWriteback migration is issued
+  - an operator authorization for WI-0036 Slice 4 is issued
+  - (fulfilled 2026-07-22) an operator authorization for the WI-0036 Slice-3 remainder was issued, implemented, verified, and integrated
   - (fulfilled 2026-07-22) an operator implementation authorization for WI-0036 Slice 2 was issued, executed, and integrated
 related_work_items:
   - WI-0034
@@ -220,6 +221,20 @@ related_work_items:
 
 ## change log
 
+- 2026-07-22 (WI-0036 Slice-3 remainder verified, integrated, and reconciled): independent
+  verification of the Slice-3 remainder PASSED against live repository state with no
+  correction commit required, and coordinated fast-forward integration published dai main
+  `48a2931` and dai-vault main `fa31a3e`, each == origin/main. The wi-0036 initiative's
+  `title`, `proposed_by_system`, `operator_intent`, and `replan_triggers` now describe
+  Slices 1-3 as complete and integrated and record the two operator-accepted semantics
+  (an AgentRun is an executed realization; scheduled-mode projection coverage is
+  sufficient). New triggers cover the still-unauthorized migration application and any
+  Slice-4 decision; the fulfilled Slice-3 trigger is marked rather than deleted. The
+  generated migration remains UNAPPLIED and no database write occurred. No
+  `desired_by`/`due_by`/activation date invented; `not_before` is UNCHANGED (paid wildcard
+  use still requires a future explicit operator flight authorization and the 2026-07-22
+  events-gate observation remains separately governed); the authorization posture block is
+  UNCHANGED (paid model calls and sports capture remain fail-closed / not-authorized).
 - 2026-07-22 (WI-0036 Slice-3 remainder, local implementation): the settlement/
   reconciliation read now exposes closed core/wildcard/unclassified strata and persisted
   realized-selection facts; the run row receives those facts by direct projection from

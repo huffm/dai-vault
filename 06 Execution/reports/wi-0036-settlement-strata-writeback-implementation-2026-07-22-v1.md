@@ -2,12 +2,12 @@
 title: "WI-0036 Settlement Strata and Realized-Position Writeback Implementation v1"
 type: "evidence-report"
 date: "2026-07-22"
-status: "complete locally; independent review and integration pending"
+status: "complete, independently verified, and INTEGRATED 2026-07-22 (dai main 48a2931, dai-vault main fa31a3e, each == origin/main; migration generated but NOT applied)"
 project: "DAI"
 slice: "WI-0036 Slice 3 remainder"
 repos:
-  dai: "local branch wi/0036-wildcard-settlement-strata-writeback from ce34a9e7; not pushed or integrated"
-  dai-vault: "local branch wi/0036-wildcard-settlement-strata-writeback from 6e667b5c; not pushed or integrated"
+  dai: "code+tests+migration INTEGRATED to main 48a29313988beac34cb8dad388371c472ff21d73 (migration generated, NOT applied)"
+  dai-vault: "docs INTEGRATED to main fa31a3e91a09753602e34ca8cee3d38e059d9dd0"
 tags:
   - system-development
   - evidence-operations
@@ -172,12 +172,60 @@ Rollback is the local migration down operation plus reverting the two local slic
 because the migration was never applied and the branches are unintegrated, no external
 state rollback is presently required.
 
-Next action: independently review the complete coordinated branches. Review must probe
-stratum non-pooling, all three realization modes, substituted-for identity fidelity,
-legacy/unknown behavior, 400-before-row failure, migration shape, buyer exclusion, and
-decision/matching non-drift. Only a later explicit prompt may authorize coordinated
-fast-forward integration. Slices 4-6, the July 22 observation, and every paid wildcard
-flight remain separately governed.
+*(Superseded 2026-07-22 by the addendum below: the next action was an independent review
+of the coordinated branches, probing stratum non-pooling, all three realization modes,
+substituted-for identity fidelity, legacy/unknown behavior, 400-before-row failure,
+migration shape, buyer exclusion, and decision/matching non-drift, with integration
+gated behind a later explicit prompt. That review PASSED and integration executed.)*
+
+## addendum 1 -- independently verified and integrated (2026-07-22)
+
+**Independent verification: PASS. No correction commit required.** The review was
+performed against live repository state rather than this report, and re-derived from
+source: commit ancestry and `WI: WI-0036` trailers; protected-state hashes; that
+`Validate` then `TryCreate` both precede `db.AgentRuns.Add` and `SaveChangesAsync`; the
+closed fail-closed strata mapping (`core`/`reserve` -> core, `wildcard` -> wildcard, and
+`null`/unknown/`excluded`/`blocker` -> unclassified); that `Shape` runs in memory so the
+mapping carries no EF-translation hazard; absence of any Flight/Lane/Stratum member on the
+buyer surface; migration symmetry (9 nullable additions / 9 removals) with all nine
+properties in the model snapshot; that `FlightSelectionProvenance.cs` and
+`services/agent-service` are untouched; and that the additive export keys are inert to the
+python consumer, which reads exclusively via `.get()` (the C#-side superset is the
+pre-existing pattern -- market, settlement, and attribution fields were already absent
+from `CALIBRATION_FIELDS`). Suites re-run independently: **1536/1536** .NET and
+**617/617** pytest; strict snapshot 25/6/0; `diff --check` and scans clean; build
+warning-free on every changed file.
+
+**Operator-accepted semantics (binding; recorded so a future reviewer does not reopen
+them as unresolved defects):**
+
+1. **An AgentRun is an executed realization.** Provenance supplied at AgentRun creation
+   must carry `realizedPosition` and `realizedVia`; omission returns 400 before service
+   invocation and before any run row. Plan-time provenance (exported without availability)
+   remains valid for non-run uses. This is a deliberate endpoint-context requirement, not
+   an incidental side effect, and does NOT change `flight-selection-provenance/1.0`.
+2. **Scheduled-mode projection coverage is sufficient for this slice.** The writeback
+   performs no `realizedVia`-specific branching, while genuine producer vectors cover
+   `core_reserve` and `wildcard_substitution` end-to-end through the controller host. A
+   producer-generated scheduled vector is a non-blocking future test enhancement, not an
+   integration prerequisite.
+
+**Integration executed** by coordinated fast-forward, `--ff-only`, ordinary non-force
+pushes, no merge commit and no history rewrite:
+
+- dai: `ce34a9e7 -> 48a29313988beac34cb8dad388371c472ff21d73` (`main -> main`)
+- dai-vault: `6e667b5c -> fa31a3e91a09753602e34ca8cee3d38e059d9dd0` (`main -> main`)
+
+Post-fetch proof: local `main` == `origin/main` == the verified tip in both repositories.
+Both pushes succeeded on first attempt; no asymmetric published state occurred. Protected
+state byte-identical throughout. The migration
+`20260722100648_AddAgentRunFlightSelectionWriteback` remains **generated but NOT applied**;
+no database-dependent command was run and no database write occurred. Repository
+publication granted **no runtime or commercial authority**; **$0**.
+
+Next action: none authorized. Applying the migration and any Slice-4 decision each require
+their own explicit operator authorization. Slices 4-6, the July 22 observation, and every
+paid wildcard flight remain separately governed.
 
 ### Slice Synopsis
 
@@ -189,6 +237,8 @@ the realized slot queryable on the run row or prevent downstream reads from sile
 pooling wildcard evidence with core evidence.
 **Proof:** RED-first seam, focused 37/37, full .NET 1536/1536, pytest 617/617, unchanged
 1.0 contracts and producer vectors, migration unapplied, $0.
-**State:** Coordinated local branches only; not pushed, merged, integrated, or activated.
-**Next:** Independent review, then separately authorized coordinated integration only if
-the review passes.
+**State:** Independently verified (PASS, no correction commit) and INTEGRATED by
+coordinated fast-forward -- dai main `48a2931`, dai-vault main `fa31a3e`, each ==
+origin/main; migration generated but NOT applied; nothing activated.
+**Next:** None authorized. Applying the migration and any Slice-4 decision each require
+their own explicit operator authorization.

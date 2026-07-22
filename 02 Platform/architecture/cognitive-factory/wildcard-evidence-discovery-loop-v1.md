@@ -1,23 +1,30 @@
 # Wildcard Evidence Discovery Loop v1
 
 **date:** 2026-07-21 (current-state statement updated 2026-07-22)
-**status:** active doctrine for contracts and boundaries. Planner/provenance layers are integrated; Slice-3 read strata and realized-position writeback are implemented locally and await review/integration; Slices 4-6 remain TARGET architecture and separately gated.
+**status:** active doctrine for contracts and boundaries. The planner, provenance, writeback, and settlement-read-strata layers (Slices 1-3) are IMPLEMENTED and INTEGRATED; Slices 4-6 remain TARGET architecture, deferred and separately gated.
 **scope:** the governed vertical discovery loop that widens safe evidence acquisition (wildcard candidate lane in preflight), preserves selection provenance through production artifacts, and turns artifact interrogation into proposal-only signal-need inputs for later retrieval work.
 
-> **Current state (2026-07-22).** WI-0036 Slice 2 and the minimum Slice-3 provenance seam
-> are integrated. The authorized Slice-3 remainder is now IMPLEMENTED LOCALLY on matching
-> `wi/0036-wildcard-settlement-strata-writeback` branches and awaits independent review
-> and integration. It persists the already producer-derived realized slot facts on the
-> run row and exposes them through the existing settlement-joined read with an explicit
-> `core | wildcard | unclassified` evidence stratum. `reserve` is a core-qualified lane
-> and reads as core; wildcard never reads as core; absent/unknown is unclassified. The
-> mapping does not re-rank, re-realize, or authorize, and the aggregate metrics and
-> reconciliation matcher remain unchanged.
+> **Current state (2026-07-22).** WI-0036 Slices 1-3 are independently VERIFIED and
+> INTEGRATED on both published mains (dai `48a2931`, dai-vault `fa31a3e`). Slice 3 is
+> complete: the minimum provenance seam plus the remainder. The run row now persists the
+> already producer-derived realized slot facts, and the existing settlement-joined read
+> exposes them with an explicit `core | wildcard | unclassified` evidence stratum.
+> `reserve` is a core-qualified lane and reads as core; wildcard never reads as core;
+> absent/unknown is unclassified. The mapping does not re-rank, re-realize, or authorize,
+> and the aggregate metrics and reconciliation matcher remain unchanged.
+>
+> Two operator-accepted semantics govern this seam and are not open defects: (1) an
+> AgentRun IS an executed realization, so provenance supplied at run creation must carry
+> `realizedPosition` and `realizedVia` -- an endpoint-context requirement that does NOT
+> change `flight-selection-provenance/1.0`, while plan-time provenance stays valid for
+> non-run uses; and (2) scheduled-mode projection coverage is sufficient because the
+> writeback has no `realizedVia`-specific branching while genuine producer vectors cover
+> `core_reserve` and `wildcard_substitution` end-to-end.
 >
 > Live contracts remain request/plan/planner/realization/CLI `1.1`,
 > `flight-selection-provenance/1.0`, and `wi0036-candidate-lane/1.0`; no vector regeneration
-> was required. Full plan validity remains exact producer re-production. The local schema
-> migration is generated but unapplied, and no database write occurred.
+> was required. Full plan validity remains exact producer re-production. The schema
+> migration is generated but **NOT applied**, and no database write has occurred.
 >
 > STILL UNIMPLEMENTED and separately gated: `SignalNeedProposal`, the callable
 > protocol-service seam, the refresh-loop runtime, Slices 4-6, and EVERY activation. The
@@ -455,13 +462,17 @@ plus the minimum Slice-3 seam offline/default-off on local branches
 integration of those branches as the next governed action. That review and integration
 COMPLETED on 2026-07-22.)*
 
-**Current recommendation (2026-07-22): independent review of the locally implemented
-WI-0036 Slice-3 remainder**, including adversarial proof that wildcard settled rows never
-read as core, legacy/unknown rows remain unclassified, all three realization modes write
-the producer-derived slot without inference, and malformed realized provenance is
-rejected before service invocation and row creation. If that review passes, coordinated
-fast-forward integration requires a separate explicit authorization. The implementation
-and this recommendation authorize no runtime action.
+*(Superseded 2026-07-22: the recommendation was an independent review of the locally
+implemented Slice-3 remainder. That review PASSED with no correction commit required, and
+coordinated fast-forward integration executed under its own explicit authorization.)*
+
+**Current recommendation (2026-07-22): no implementation slice is proposed.** WI-0036
+Slices 1-3 are complete and integrated. The remaining WI-0036 work (Slices 4-6:
+proposal projection, the callable service seam with Verify re-entry, and limited
+activation) stays deferred, each behind its own operator authorization. Two operational
+prerequisites are recorded, neither authorized here: applying the generated
+`AddAgentRunFlightSelectionWriteback` migration, and any decision to begin Slice 4. This
+record authorizes no runtime action.
 
 The separately governed 2026-07-22 events-gate observation stays its own action; any paid
 wildcard flight requires a future explicit flight authorization. Slices 4-6 remain
