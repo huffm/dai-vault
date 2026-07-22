@@ -2,11 +2,11 @@
 title: "Provider-Event Binding Slice A -- Canonical Qualification Producer 2026-07-22 v1"
 type: "evidence-report"
 date: "2026-07-22"
-status: "Slice A producer work locally complete through correction Pass 2 (original findings A, B, C, D, E, F all closed at the producer boundary); UNINTEGRATED and unavailable to live workflow; execution retrieval remains a separate open downstream gap; vertical still in progress"
+status: "Slice A producer work locally complete through the Pass-2 content-integrity correction (original findings A, B, C, D, E, F all closed at the producer boundary); UNINTEGRATED and unavailable to live workflow; execution retrieval remains a separate open downstream gap; vertical still in progress"
 project: "DAI"
 slice: "WI-0035 provider-event binding vertical, Slice A + corrections Pass 1A/1B/2"
 repos:
-  dai: "local branch wi/0035-provider-event-binding, commit 4f4e726 (Pass 2); NOT pushed"
+  dai: "local branch wi/0035-provider-event-binding, commit 72a0347 (Pass-2 correction); NOT pushed"
   dai-vault: "local branch wi/0035-provider-event-binding; NOT pushed"
 tags:
   - evidence-operations
@@ -353,10 +353,17 @@ asserted explicitly.
 
 ### the independent wire validator
 
+> **NARROWED 2026-07-22 by the Pass-2 content-integrity correction (addendum below).** As
+> shipped in Pass 2 this validator was **structural only**. The claim that it detected "a
+> mutation that a producer-side round trip would hide" was **too broad**: it held for the
+> authority ledger and the closed key set, but NOT for ordinary content. The validator never
+> recomputed the fingerprint, so a mutation such as changing `external_game_id` while keeping
+> the old fingerprint passed. The matrix below was accurate for what it covered; it was not
+> the whole contract. Read the Pass-2 correction addendum for the complete boundary.
+
 `ProviderEventBindingWire.Validate` reads an emitted wire **as data**. It never calls the
-emitter and never compares against a re-rendered expected string, so it detects mutations a
-producer-side round trip would hide. Ledger mutation matrix, each **rehashed** so the
-attacker's fingerprint is internally consistent:
+emitter and never compares against a re-rendered expected string. Ledger mutation matrix,
+each **rehashed** so the attacker's fingerprint is internally consistent:
 
 | mutation | verdict |
 |---|---|
@@ -471,3 +478,128 @@ non-settled, pre-binding evidence.
 board with producer replay. Slices C-D then reach flight provenance and finally enforce the
 binding at execution retrieval. No paid flight, wildcard capture, settlement, or runtime use
 is authorized by Pass 2.
+
+---
+
+## addendum 2026-07-22 -- pass-2 correction: complete content-integrity verification
+
+Pass 2 emitted the right wire but did not yet **verify** it. This correction closes the
+verification and emission boundary. It changes no wire shape and no contract version.
+
+### what was actually wrong
+
+The Pass-2 validator checked the closed top-level key set, the eight-key all-false ledger,
+and the **lexical** shape of the fingerprint. That is all. It never recomputed the
+fingerprint and never validated field types, versions, identities, timestamps, bracket
+semantics, delta arithmetic, match-method consistency, or admitted counts.
+
+The consequence is blunt: **mutating `external_game_id` while keeping the old fingerprint
+passed validation.** So did a wrong schema or policy version, a widened admitted maximum,
+blank identities, a non-canonical timestamp, a non-DST bracket, an instant outside the
+bracket, a forged delta, a method contradicting its own delta, `+/-61s` and `-240s` deltas,
+and impossible counts.
+
+`EmittedWireJson` had the same hole from the other side. It checked binding presence and
+count/list agreement only, so a hand-constructed binding carrying an invalid ledger, wrong
+versions, or contradictory delta/method facts would still have been serialized.
+
+**RED evidence: 47 failed / 11 passed against `4f4e726`.** The 11 passes were exactly the
+ledger mutations Pass 2 already caught — which is precisely the shape of the gap. A separate
+compile-RED proved no typed strict path existed at all.
+
+### one strict path, not two
+
+| element | role |
+|---|---|
+| `ProviderEventBindingWire.Parse` | THE strict path; returns a typed `ValidatedProviderEventBinding` **or** a precise error |
+| `ProviderEventBindingWire.Validate` | thin compatibility wrapper over `Parse`; **not** a second validator |
+| `ProviderEventBindingWire.ValidateBinding` | the single semantic contract, shared by wire validation **and** by emission so they cannot diverge |
+
+Returning a typed validated binding matters: a future consumer cannot obtain a binding
+through a weaker route and skip the checks.
+
+### what the strict path now enforces
+
+- duplicate keys rejected at every level (strict parse);
+- the exact closed top-level key set in canonical order;
+- the exact eight-key all-false authority ledger;
+- **every field type-checked before it is read** — malformed scalars produce a structured
+  rejection, never an exception;
+- the exact current binding schema, policy version, and admitted maximum of `60`;
+- closed provider, source, and match-method vocabularies;
+- nonblank provider, candidate, event, game, and team identities, and home `!=` away;
+- instants parsed with `ParseExact` against the single canonical explicit-UTC whole-second
+  format, so offsets, sub-seconds, and timezone-less forms fail **structurally** rather than
+  being coerced into something plausible;
+- the bracket must equal `OddsMarketClient.EasternDayBracket(targetDate)` exactly — the
+  existing single authority; **no bracket arithmetic is duplicated**;
+- both the scheduled and provider instants inside the half-open bracket;
+- `start_delta_seconds` **recomputed** from provider commence minus candidate scheduled
+  start, never trusted as stated;
+- the inclusive `+/-60s` policy window;
+- `exact_start` iff delta `== 0`; `bounded_start_tolerance` iff delta `!= 0`;
+- `admitted_event_count == 1` and `same_orientation_team_pair_count >= 1`;
+- the fingerprint-omitted canonical content **reconstructed from the parsed values**, with
+  its SHA-256 required to equal the emitted lowercase fingerprint.
+
+### emission now fails closed on content, not just on counts
+
+`EmittedWireJson` consults the same `ValidateBinding` contract before serializing. It emits
+exactly `null` — never a partial or repaired block — for a missing, extra, renamed,
+non-boolean, or true authority entry; wrong schema, policy, provider, source, or admitted
+maximum; blank or malformed identities; invalid timestamps or bracket; target-date
+inconsistency; incorrect delta arithmetic; a method inconsistent with its delta; a delta
+outside the window; an admitted count other than one; or any qualification/count/list
+disagreement.
+
+### the honest limit of a verified fingerprint
+
+Three distinct claims, which must not be collapsed:
+
+| claim | what establishes it | what it proves |
+|---|---|---|
+| **canonical content integrity** | the strict path above | the wire matches its own canonical content, and every field is semantically legal |
+| **producer replay** | comparison against the verified upstream paid bundle — **Slice B work** | that this binding actually came from a real producer run |
+| **closed all-false authority posture** | the closed vocabulary + the all-false rule | the binding grants nothing, regardless of any hash |
+
+A semantically valid **ordinary-fact** mutation carrying a correctly recomputed fingerprint
+**does** satisfy content-integrity validation. That is the true and bounded claim, and it is
+now pinned by a test rather than left implicit. It is **not producer proof** and it grants
+nothing. The authority ledger is the deliberate exception: a rehashed authority mutation
+still fails, because authority is decided by the closed vocabulary and the all-false rule,
+never by hash agreement.
+
+### no version bump
+
+The wire **shape** is unchanged. The pinned exact and bounded canonical bytes
+(`b0b6f275...`, `8911c44b...`) still match both producers exactly. This corrects an
+unintegrated implementation to its already-announced contract rather than changing the
+contract, so no version was bumped. Had the wire shape needed to change, the correct action
+would have been to stop for a decision.
+
+### verification
+
+| gate | result |
+|---|---|
+| new content-integrity suite (`ProviderEventBindingWireIntegrityTests`) | **60/60** |
+| focused binding/join/contrast suites | **356/356** |
+| full `DevCore.Api.Tests` | **1724/1724** (1664 + 60 new) |
+| four execution-gap tests | **4/4 green, explicitly unresolved** |
+| full agent-service pytest (Python untouched) | **617/617** |
+| fresh-process determinism | pinned-wire + integrity + gap tests 66/66 on a rerun |
+| strict planning snapshot | 25 work items / 6 timeline entries / **0 warnings** |
+| `git diff --check` both repos | clean |
+| protected hash `DevCore.Data.csproj` | `63EF2488...` unchanged |
+| producer pinned-wire parity | exact and bounded bytes unchanged; both producers identical |
+| planner envelope | `input-evidence-envelope/1.1` byte-identical, no binding |
+| single-path proof | `Validate` -> `Parse` -> `ValidateBinding`; no second validator exists |
+| binding-token containment | confined to the authority, the two producers, and their tests |
+| scans | no machine paths, secrets, live-call surfaces, or authority grants on production lines |
+
+### posture
+
+No StatsAPI, Odds `/events`, Odds `/odds`, model, Tool Gateway, or other network call. No
+database access, migration, service start, AgentRun, capture, settlement, reconciliation,
+scheduling, or activation. No integration, push, PR, remote branch, or history rewrite.
+**$0.** Slice B is not started. gamePk `823438` remains untouched historical non-wildcard,
+non-settled, pre-binding evidence.

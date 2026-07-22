@@ -17427,3 +17427,78 @@ Zero StatsAPI, `/events`, `/odds`, model, Tool Gateway, or network calls. Zero d
 **Proof:** The suite failed to compile against `54873b3`; a second red exposed a real cross-class lease race; 1664/1664 .NET, 617/617 pytest, 294/294 focused, snapshot 25/6/0, byte-identical producer parity, externally computed fingerprints pinned, rehashed ledger mutations all rejected, protected hash unchanged.
 **State:** dai `4f4e726` and this vault commit on local `wi/0035-provider-event-binding`, NOT pushed; both mains unmoved; A and E closed, execution retrieval still a separate open gap.
 **Next:** Slice B -- carry the binding through `input-evidence-envelope` into the Planner Pass 2 board with producer replay. Not execution correction, not flight propagation.
+
+---
+
+## 2026-07-22 -- WI-0035 Slice-A Pass-2 correction: complete binding content-integrity verification
+
+### Objective
+
+Correct the Pass-2 verification and emission boundary. Pass 2 emitted the right wire but did not yet **verify** it: the validator was structural only, and emission checked counts rather than content. No propagation, no Slice B.
+
+### Claim narrowed (previous entry preserved as history)
+
+The Pass-2 entry above says the validator "reads the wire as data ... so it can detect a mutation that a producer-side round trip would hide". **That claim was too broad.** It held for the authority ledger and the closed key set, not for ordinary content. The earlier wording stays unedited under the append-only rule; this entry and the dated report addendum are the active disposition.
+
+### What was actually wrong
+
+The Pass-2 validator checked only the closed top-level key set, the eight-key all-false ledger, and the **lexical** shape of the fingerprint. It never recomputed the fingerprint and never validated field types, versions, identities, timestamps, bracket semantics, delta arithmetic, match-method consistency, or admitted counts. So **mutating `external_game_id` while keeping the old fingerprint passed** — as did wrong schema/policy/window, blank identities, non-canonical timestamps, a non-DST bracket, an out-of-bracket instant, a forged delta, a method contradicting its delta, `+/-61s` and `-240s`, and impossible counts. `EmittedWireJson` had the mirror hole: agreeing counts were sufficient, so a hand-constructed binding with an invalid ledger, wrong versions, or contradictory delta/method facts would still have been serialized.
+
+### Outcome
+
+Implemented on `wi/0035-provider-event-binding`. dai local commit `72a0347`; vault local commit recorded alongside. The verification boundary is closed. Slice B is not started; execution retrieval remains a separate open downstream gap.
+
+### Repo state
+
+**Before** -- dai `4f4e726`, vault `db85cb4`, both on `wi/0035-provider-event-binding`, dai clean, dai main `48a2931`, vault main `3a82af0`, 0 remote refs for the branch in both repos.
+**After** -- dai `72a0347`, vault this commit, same branches, both mains unmoved, nothing pushed.
+
+### Work performed
+
+1. **One strict path.** `Parse` returns a typed `ValidatedProviderEventBinding` or a precise error; `Validate` is a thin compatibility wrapper over it; `ValidateBinding` is the single semantic contract shared by wire validation **and** emission. No second, weaker validator exists. The typed return means a future consumer cannot obtain a binding through a weaker route.
+2. **Complete field validation.** Every field is type-checked before it is read, so malformed scalars give a structured rejection rather than an exception. Versions, the admitted maximum, and the provider/source/match-method vocabularies are pinned. Identities must be nonblank and home must differ from away.
+3. **Fail-closed temporal handling.** Instants are parsed with `ParseExact` against the single canonical explicit-UTC whole-second format, so offset forms, sub-second forms, and timezone-less forms fail structurally instead of being coerced. The bracket must equal `OddsMarketClient.EasternDayBracket(targetDate)` exactly -- the existing single authority, with no bracket arithmetic duplicated -- and both instants must lie inside the half-open bracket.
+4. **Recomputed arithmetic.** `start_delta_seconds` is recomputed from provider commence minus candidate scheduled start and never trusted as stated; the inclusive `+/-60s` window is enforced; `exact_start` is required iff the delta is zero and `bounded_start_tolerance` iff it is not; `admitted_event_count` must be `1` and `same_orientation_team_pair_count >= 1`.
+5. **Fingerprint recomputation.** The fingerprint-omitted canonical content is reconstructed from the **parsed** values and its SHA-256 must equal the emitted lowercase fingerprint.
+6. **Emission fails closed on content.** `EmittedWireJson` consults `ValidateBinding` before serializing and emits exactly `null` for any violation -- never a partial or repaired block.
+
+### Files changed
+
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/ProviderEventBinding.cs` -- `ValidatedProviderEventBinding`; `Parse` as the one strict path; `Validate` reduced to a wrapper; `ValidateBinding` as the shared semantic contract; `EmittedWireJson` gated on it.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/ProviderEventBindingWireIntegrityTests.cs` -- **new**, 60 tests.
+
+No producer file changed. No wire shape changed. No contract version changed.
+
+### Validation proof
+
+Content-integrity suite 60/60; focused binding/join/contrast suites 356/356; full `DevCore.Api.Tests` **1724/1724** (1664 + 60 new); four execution-gap tests 4/4 green and still unresolved; agent-service pytest **617/617** (Python untouched); fresh-process determinism 66/66 on rerun of the pinned-wire, integrity, and gap tests; strict planning snapshot 25 work items / 6 timeline entries / **0 warnings**; `git diff --check` clean in both repos; `DevCore.Data.csproj` protected hash `63EF2488...` unchanged; pinned exact/bounded canonical bytes (`b0b6f275...`, `8911c44b...`) still match both producers; `input-evidence-envelope/1.1` byte-identical; binding tokens still confined to the authority, the two producers, and their tests; scans show no machine paths, secrets, live-call surfaces, or authority grants on production lines.
+
+RED evidence: **47 failed / 11 passed** against `4f4e726`. The 11 passes were exactly the ledger mutations Pass 2 already caught, which is precisely the shape of the gap. A separate compile-RED proved no typed strict path existed. The behavioural RED was captured by temporarily gating the three `Parse`-dependent tests behind a compile symbol, running the suite, then restoring them -- so the failures are genuine observations of the old validator's behaviour, not inferred.
+
+### The honest limit, now pinned by a test
+
+A semantically valid **ordinary-fact** mutation carrying a correctly recomputed fingerprint **does** satisfy content-integrity validation. That is the true and bounded claim: the wire matches its own canonical content. It is **not producer proof** and grants nothing. Detecting it requires producer replay against the verified upstream paid bundle, which is Slice B work. The authority ledger is the deliberate exception -- a rehashed authority mutation still fails, because authority is decided by the closed vocabulary and the all-false rule, never by hash agreement.
+
+### DB writes / external side effects / cost
+
+None. Zero paid calls. **$0.**
+
+### What did not change
+
+Wire shape, contract versions, both producers, prompts, routing, confidence logic, buyer copy, migrations/schema, and runtime behaviour: unchanged. No planner, flight, provenance, controller, Tool Gateway, `MarketSpreadInput`, `SportsRetriever`, `OddsMarketClient`, or `MarketSnapshot` change. The Python replay validator still pins `market-contrast-screen-bundle/1.1|1.2|1.3`, so the `1.4` bundle stays mechanically unusable at Planner Pass 2.
+
+### Open issues
+
+Execution retrieval remains a separate open downstream gap: team/date fallback, doubleheader mis-binding, no by-ID re-verification, and no `MarketSpreadInput` binding member. Producer replay -- the only thing that can establish producer origin -- is Slice B. Slice A producer work is locally complete but **unintegrated and unavailable to live workflow**.
+
+### Posture
+
+Zero StatsAPI, `/events`, `/odds`, model, Tool Gateway, or network calls. Zero database access, migration operation, service start, AgentRun, capture, settlement, reconciliation, scheduling, or activation. No integration, push, PR, remote branch, or history rewrite. $0. The gamePk 823438 canary remains untouched historical non-wildcard, non-settled, pre-binding evidence.
+
+### Slice Synopsis
+
+**Change:** Replaced the structural-only wire validator with one strict path that type-checks every field, reuses the existing eastern-bracket authority, recomputes the delta and the fingerprint, returns a typed validated binding, and now also gates emission.
+**Reason:** The Pass-2 validator never recomputed the fingerprint or validated semantics, so mutating `external_game_id` with a stale fingerprint passed, and emission would serialize a hand-constructed binding with an invalid ledger or contradictory delta/method facts.
+**Proof:** 47 failed / 11 passed RED against `4f4e726` -- the 11 passes were exactly the ledger cases Pass 2 already covered; then 60/60 integrity, 356/356 focused, 1724/1724 .NET, 617/617 pytest, snapshot 25/6/0, pinned canonical bytes and envelope byte identity unchanged, protected hash unchanged.
+**State:** dai `72a0347` and this vault commit on local `wi/0035-provider-event-binding`, NOT pushed; both mains unmoved; no version bump because the wire shape did not change.
+**Next:** Slice B -- carry the binding into the envelope and Planner Pass 2 board with producer replay against the verified paid bundle, which is the only thing that can establish producer origin.
