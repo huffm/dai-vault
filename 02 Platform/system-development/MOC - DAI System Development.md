@@ -312,7 +312,19 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   executed publication result (integration tips, push proof) is recorded in the external
   prompt-ledger record and the current-slice handoff. Slice 3 remainder and Slices 4-6
   stay deferred and separately gated; no runtime activation, capture, spend, or paid
-  flight is authorized.
+  flight is authorized. **INTEGRATION EXECUTED 2026-07-22** (coordinated, fast-forward
+  only, ordinary non-force pushes; every prior commit preserved, no amend/squash/rebase/
+  force-push/merge commit): dai main `8369d64 -> ce34a9e74659b42c71317267c64901a24ceb7091`
+  and dai-vault main `b04e6421 -> 2cdb275b85229c6ee11a7b2930dc50d847ae8240`, each now
+  EQUAL to its `origin/main` and to the corrected branch tip. Reverified on the published
+  mains: agent-service pytest **617/617**, DevCore.Api.Tests **1530/1530**, adversarial
+  producer-replay probes zero leaks, protected state byte-identical. Repository
+  publication granted **no runtime or commercial authority** -- the integrated path stays
+  default off with all-false ledgers, executed no source/model/gateway/database call, and
+  cost $0. WI-0036 remains **in-progress**: next is the separately authorized **Slice-3
+  remainder** (settlement/reconciliation stratum reads + realized-position writeback);
+  Slices 4-6 remain deferred; the 2026-07-22 events-gate observation and any paid wildcard
+  flight remain separately governed.
 
 ## scope boundary of this registry
 

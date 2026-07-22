@@ -4,10 +4,10 @@ type: "plan"
 date: "2026-07-21"
 status: "in-progress"
 project: "DAI"
-slice: "WI-0036 Slice 1: documentation and contract baseline"
+slice: "WI-0036 Slice 2 + minimum Slice-3 seam: integrated 2026-07-22 (Slice-3 remainder and Slices 4-6 deferred)"
 repos:
-  dai: "unchanged"
-  dai-vault: "docs-only"
+  dai: "code+tests integrated to main ce34a9e7 (wildcard flight-plan core/CLI + provenance seam)"
+  dai-vault: "docs integrated to main 2cdb275b"
 tags:
   - system-development
   - work-item
@@ -30,11 +30,27 @@ into proposal-only signal-need inputs, and (later, separately gated) closes the
 orchestrator-mediated `Question -> Probe -> authorized retrieval -> Perceive refresh ->
 Verify -> Discern` loop with a callable protocol-service seam.
 
-**Current disposition (2026-07-21): documentation/contract Slice 1 COMPLETE; runtime
-implementation NOT started.** Slices 2-6 are defined below and each requires its own
-operator authorization. WI-0036 implementation is sequenced NOT BEFORE the separately
-governed 2026-07-22T12:00:00Z events-gate observation completes AND a separate
-implementation authorization is issued (operator decision, 2026-07-21).
+**Current disposition (2026-07-22): Slice 1 documentation COMPLETE and integrated; Slice 2
+plus the MINIMUM Slice-3 provenance seam IMPLEMENTED, corrected, reviewed, and INTEGRATED
+to both published mains.** WI-0036 itself remains `in-progress`: the Slice-3 remainder and
+Slices 4-6 are still deferred and each requires its own operator authorization. Integrated
+tips: dai main `ce34a9e74659b42c71317267c64901a24ceb7091` and dai-vault main
+`2cdb275b85229c6ee11a7b2930dc50d847ae8240`, each equal to its `origin/main`. Live
+contracts: request/plan/planner/realization/CLI `1.1`;
+`flight-selection-provenance/1.0` and `wi0036-candidate-lane/1.0` unchanged. Reverified on
+the published mains 2026-07-22: agent-service pytest **617/617**, DevCore.Api.Tests
+**1530/1530**. The integrated path is default off with all-false authority ledgers; it
+executed no source, model, gateway, or database call and cost **$0**. Repository
+publication granted NO runtime or commercial authority: the next governed action for this
+code is the separately authorized Slice-3 remainder, NOT activation. The 2026-07-22
+events-gate observation and any PAID wildcard flight remain separately governed and
+unauthorized.
+
+*(Historical: the original Slice-1 disposition below read "documentation/contract Slice 1
+COMPLETE; runtime implementation NOT started", and implementation was sequenced not before
+the July 22 observation plus a separate authorization. That sequencing was superseded by
+the 2026-07-21 operator override recorded immediately below; the dated blocks that follow
+are preserved as the historical record of local-only and integration-pending states.)*
 
 > **Operator sequencing override (2026-07-21, after Slice 1 integration).** A new operator
 > decision authorized proceeding with the offline/default-off implementation NOW: Slice 2
@@ -360,7 +376,24 @@ authorization each needs are stated inline. No slice inherits authority from thi
 - **Separate authorization:** the operator-sent WI-0036 documentation prompt (prompt
   ledger record 2026-07-21).
 
-### Slice 2 -- deterministic wildcard preflight and flight-plan allocation (IMPLEMENTED 2026-07-21, local branches; review + integration pending)
+### Slice 2 -- deterministic wildcard preflight and flight-plan allocation (INTEGRATED 2026-07-22)
+
+> **Post-integration disposition (2026-07-22).** Slice 2 and the minimum Slice-3
+> provenance seam are INTEGRATED and published: dai main
+> `ce34a9e74659b42c71317267c64901a24ceb7091`, dai-vault main
+> `2cdb275b85229c6ee11a7b2930dc50d847ae8240`, each equal to its `origin/main` after a
+> fast-forward-only coordinated publication (no amend, squash, rebase, force-push, or
+> merge commit; every prior commit preserved). Reverified on the published mains:
+> agent-service pytest **617/617** and DevCore.Api.Tests **1530/1530**, with the
+> adversarial producer-replay probes reproducing zero leaks. Live contracts are
+> request/plan/planner/realization/CLI `1.1`, with
+> `flight-selection-provenance/1.0` and `wi0036-candidate-lane/1.0` unchanged. The path
+> stays default off with all-false authority ledgers; integration executed no source,
+> model, gateway, or database call and cost **$0**, and granted no runtime or commercial
+> authority. Next governed action for this code: the separately authorized Slice-3
+> remainder. The acceptance evidence quoted below is the ORIGINAL 2026-07-21 delivery
+> record and is retained as history; the correction blocks near the top of this document
+> supersede its contract versions and test counts.
 
 > Delivered under the operator sequencing override as a WI-0036-OWNED contract that
 > CONSUMES the WI-0034 board (`daily-evidence-board/2.2` embedded and strictly validated:
@@ -581,10 +614,16 @@ prove the contracts; documentation drift claiming target capabilities as impleme
   read-only on `main` at `8369d64a2b4ed29ab1c6297de81270d2f9dd8a46` for Slice 1;
   INTEGRATED to vault main `b04e6421` 2026-07-21); implementation branches
   `wi/0036-wildcard-capture-flight-plan` (dai + dai-vault, matching, from
-  8369d64 / b04e6421; local only, NOT pushed / NOT merged)
-- pr: - (not pushed / not merged this slice)
-- commits: recorded in the Slice-1 closeout at close (single local vault docs commit)
-- tests: none this slice (docs-only); future slices per test plan
+  8369d64 / b04e6421) -- INTEGRATED 2026-07-22 by coordinated fast-forward: dai main
+  `ce34a9e74659b42c71317267c64901a24ceb7091`, dai-vault main
+  `2cdb275b85229c6ee11a7b2930dc50d847ae8240`, both == `origin/main`
+- pr: - (no PR; direct fast-forward publication of both mains 2026-07-22)
+- commits: Slice-1 docs `b04e6421` (vault); Slice-2 chain dai
+  `e64baab -> b0ff396 -> 994b0c1 -> 1c556f4 -> ce34a9e` and vault
+  `8d98da9 -> 967170d -> 8780e92 -> 2cdb275`
+- tests: Slice 1 docs-only; Slice 2 as integrated -- agent-service pytest 617/617
+  (wi-0036 targeted 39 core + 14 cli) and DevCore.Api.Tests 1530/1530 (16 provenance
+  unit + 10 controller-host), reverified on the published mains 2026-07-22
 - verification notes: [[wi-0036-wildcard-evidence-discovery-loop-planning-2026-07-21-v1]]
   (desk scenarios + snapshot + scans) and the current-slice handoff
 - docs updated: see "docs to update" (Slice 1 list)
@@ -595,9 +634,19 @@ prove the contracts; documentation drift claiming target capabilities as impleme
 
 ## final handoff requirements
 
-Slice handoff appended to `06 Execution/handoffs/current-slice.md`; status stays
-`in-progress` (Slices 2-6 deferred and separately gated); disposition: Slice 1
-documentation complete / local commit only / not pushed / not merged; next governed
-action = operator review of this slice, then the separately governed 2026-07-22
-events-gate observation, then (only under a new operator implementation authorization)
-WI-0036 Slice 2.
+Slice handoff appended to `06 Execution/handoffs/current-slice.md`; WI status stays
+`in-progress`.
+
+*(Historical, Slice 1: disposition was documentation complete / local commit only / not
+pushed / not merged, with the next governed action being operator review, then the July 22
+events-gate observation, then Slice 2 under a new implementation authorization. Slice 1
+was integrated to vault main `b04e6421` on 2026-07-21 and the sequencing was superseded
+the same day.)*
+
+**Current (2026-07-22):** Slice 1, Slice 2, and the minimum Slice-3 provenance seam are
+INTEGRATED and published (dai `ce34a9e7`, dai-vault `2cdb275b`, both == `origin/main`).
+The Slice-3 remainder and Slices 4-6 remain deferred and separately gated. Next governed
+action = the separately authorized Slice-3 remainder (settlement/reconciliation stratum
+reads plus realized-position writeback). The 2026-07-22 events-gate observation and any
+paid wildcard flight remain separately governed; nothing here authorizes activation,
+capture, retrieval, or spend.

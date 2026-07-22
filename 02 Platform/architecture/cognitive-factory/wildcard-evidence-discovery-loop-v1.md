@@ -1,8 +1,24 @@
 # Wildcard Evidence Discovery Loop v1
 
-**date:** 2026-07-21
-**status:** active doctrine for contracts and boundaries; every runtime capability described here is TARGET architecture, deferred and separately gated (WI-0036 Slices 2+). No runtime behavior exists or changed with this record.
+**date:** 2026-07-21 (current-state statement updated 2026-07-22)
+**status:** active doctrine for contracts and boundaries. The planner/provenance layers are now IMPLEMENTED and INTEGRATED; every other runtime capability described here remains TARGET architecture, deferred and separately gated.
 **scope:** the governed vertical discovery loop that widens safe evidence acquisition (wildcard candidate lane in preflight), preserves selection provenance through production artifacts, and turns artifact interrogation into proposal-only signal-need inputs for later retrieval work.
+
+> **Current state (2026-07-22).** WI-0036 Slice 2 (the offline deterministic wildcard
+> flight-plan core and portable CLI) and the MINIMUM Slice-3 provenance seam are
+> implemented and INTEGRATED on both published mains (dai `ce34a9e7`, dai-vault
+> `2cdb275b`). Live contracts: request/plan/planner/realization/CLI `1.1`;
+> `flight-selection-provenance/1.0` and `wi0036-candidate-lane/1.0` unchanged. Full plan
+> validity is exact producer re-production (a plan is valid iff canonically identical to
+> `build_flight_plan(verified_request)`).
+>
+> STILL UNIMPLEMENTED and separately gated: the `SignalNeedProposal` type, the callable
+> protocol-service seam, the refresh-loop runtime, the Slice-3 remainder
+> (settlement/reconciliation stratum reads and realized-position writeback), and EVERY
+> activation. The integrated path is default off with all-false authority ledgers; it
+> grants no retrieval, model, capture, scheduling, spend, or decision authority. The
+> 2026-07-22 events-gate observation and any paid wildcard flight remain separately
+> governed and unauthorized.
 
 ## purpose
 
@@ -73,7 +89,9 @@ coverage gaps (settled evidence, by exact recipe/version/regime/signal-combinati
 - Not implemented. No wildcard planner, no proposal type, no service seam, no loop runtime
   exists as of 2026-07-21; the current planner (WI-0034) has no wildcard lane and the
   current Probe path is the closed deterministic template set verified in source.
-  *(current-state update, 2026-07-21, WI-0036 Slice 2 under the operator sequencing
+  *(HISTORICAL dated block -- superseded by the "Current state (2026-07-22)" statement at
+  the top of this record, which is authoritative for integration status and contract
+  versions. Original text, 2026-07-21, WI-0036 Slice 2 under the operator sequencing
   override -- supersedes the first sentence for the PLANNER and PROVENANCE layers only:
   the offline deterministic wildcard flight-plan core + CLI
   (`services/agent-service/app/services/wildcard_flight_plan.py` / `_cli.py`; request
@@ -426,9 +444,17 @@ The coherent governed refresh loop is:
 
 ## recommended next slice
 
-Superseded 2026-07-21: the operator sequencing override authorized and delivered Slice 2
-plus the minimum Slice-3 seam offline/default-off (local branches
-`wi/0036-wildcard-capture-flight-plan`). The next governed action is independent review +
-coordinated integration of those branches; the separately governed July 22 events-gate
-observation stays its own action; any paid wildcard flight requires a future explicit
-flight authorization. Slices 4-6 remain deferred.
+*(Superseded 2026-07-21: the operator sequencing override authorized and delivered Slice 2
+plus the minimum Slice-3 seam offline/default-off on local branches
+`wi/0036-wildcard-capture-flight-plan`, and named independent review + coordinated
+integration of those branches as the next governed action. That review and integration
+COMPLETED on 2026-07-22.)*
+
+**Current recommendation (2026-07-22): the WI-0036 Slice-3 remainder**, under its own
+operator authorization -- settlement/reconciliation stratum reads plus realized-position
+writeback, preserving decision semantics and adding no retrieval, model, source,
+scheduler, spend, or activation. This is a proposal only and authorizes nothing.
+
+The separately governed 2026-07-22 events-gate observation stays its own action; any paid
+wildcard flight requires a future explicit flight authorization. Slices 4-6 remain
+deferred.

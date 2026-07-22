@@ -2,12 +2,12 @@
 title: "WI-0036 Wildcard Capture Flight Plan Implementation v1"
 type: "evidence-report"
 date: "2026-07-21"
-status: "complete (implementation on local branches; review + integration pending)"
+status: "complete and INTEGRATED 2026-07-22 (dai main ce34a9e7, dai-vault main 2cdb275b, each == origin/main; Slice-3 remainder and Slices 4-6 deferred)"
 project: "DAI"
 slice: "WI-0036 Slice 2 + minimum Slice-3 provenance seam"
 repos:
-  dai: "code+tests (offline deterministic flight-plan core/CLI + additive provenance seam; branch wi/0036-wildcard-capture-flight-plan; local only)"
-  dai-vault: "docs (WI, architecture, orchestrator, cohort doctrine, WI-0034 seam, MOC, timeline, this report, current-slice; branch wi/0036-wildcard-capture-flight-plan; local only)"
+  dai: "code+tests (offline deterministic flight-plan core/CLI + additive provenance seam) INTEGRATED to main ce34a9e74659b42c71317267c64901a24ceb7091"
+  dai-vault: "docs (WI, architecture, orchestrator, cohort doctrine, WI-0034 seam, MOC, timeline, this report, current-slice) INTEGRATED to main 2cdb275b85229c6ee11a7b2930dc50d847ae8240"
 tags:
   - system-development
   - evidence-operations
@@ -343,12 +343,58 @@ plan and realization digests identical across separate interpreters; strict snap
 work items / 6 timeline entries / 0 warnings; `diff --check` and scans clean; protected
 state byte-identical; zero external calls; $0.
 
+## addendum 4 -- integration executed (2026-07-22)
+
+The review and integration recommended by the "next step" below COMPLETED on 2026-07-22.
+That section is superseded and retained as history.
+
+**Publication.** Coordinated, fast-forward-only, ordinary non-force pushes; every prior
+commit preserved; no amend, squash, rebase, force-push, merge commit, or history rewrite.
+
+- dai: `8369d64 -> ce34a9e74659b42c71317267c64901a24ceb7091` (`main -> main`)
+- dai-vault: `b04e6421 -> 2cdb275b85229c6ee11a7b2930dc50d847ae8240` (`main -> main`)
+
+Post-fetch proof in BOTH repositories: local `main` == `origin/main` == the corrected
+branch tip.
+
+**Final chains.** dai `8369d64 -> e64baab -> b0ff396 -> 994b0c1 -> 1c556f4 -> ce34a9e`;
+dai-vault `b04e6421 -> 8d98da9 -> 967170d -> 8780e92 -> 2cdb275`.
+
+**Reverified on the published mains (2026-07-22, read-only).** agent-service pytest
+**617/617**; DevCore.Api.Tests **1530/1530**; the adversarial producer-replay probe set
+reproduced with **zero leaks** (exact plan + matching verified request ACCEPTED; changed
+board digest, disabled mode with a live wildcard lane, blank core-reserve identity,
+boolean scheduled position, true capture authority, market-backed rewrite of a
+market-missing wildcard, and a different verified request each REJECTED after
+re-fingerprinting, with export blocked; malformed availability returning structured
+`INVALID_REQUEST`; unfilled rows carrying `postponed` +
+`scheduled_wildcard_unavailable`). Live contracts confirmed from source:
+request/plan/planner/realization/CLI `1.1`, `flight-selection-provenance/1.0` and
+`wi0036-candidate-lane/1.0` unchanged.
+
+**Protected state** byte-identical before and after publication (dai csproj
+`63EF2488...`; vault graph `B3D68588...`; vault CLAUDE `9127E464...`; preflight manifest
+`68948EBD...`; system synopsis `25835E6C...`; `Welcome.md` still deleted).
+
+**Posture.** Integration executed no source, model, Tool Gateway, or database call, no
+AgentRun, capture, screening, settlement, reconciliation, scheduling, or activation.
+**$0.** The integrated path remains default off with all-false authority ledgers.
+Repository publication granted **no runtime or commercial authority**.
+
 ## next step
 
-Independent review of the COMPLETE corrected chains in both repos
-(`wi/0036-wildcard-capture-flight-plan`), then coordinated fast-forward integration --
-NOT the July 22 observation and NOT a paid wildcard run. A recommendation is not an
-authorization.
+**Superseded 2026-07-22 by addendum 4 (review and integration completed).** The current
+next implementation candidate is the **WI-0036 Slice-3 remainder** under a NEW operator
+authorization: settlement/reconciliation stratum reads plus realized-position writeback,
+preserving decision semantics and adding no retrieval, model, source, scheduler, spend, or
+activation. A recommendation is not an authorization.
+
+*(Historical: this section previously read -- "Independent review of the COMPLETE
+corrected chains in both repos (`wi/0036-wildcard-capture-flight-plan`), then coordinated
+fast-forward integration -- NOT the July 22 observation and NOT a paid wildcard run.")*
+
+The July 22 events-gate observation and any paid wildcard flight remain separately
+governed and unauthorized.
 
 ## related
 

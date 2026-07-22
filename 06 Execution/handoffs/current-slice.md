@@ -16749,3 +16749,46 @@ Prompts, routing, decision logic, confidence, lean encoding, posture, settlement
 **Proof:** M-S each reproduced RED then GREEN; pytest 617/617; DevCore.Api.Tests 1530/1530; both cross-runtime vectors regenerated; fresh-process determinism; snapshot 25/6/0; scans and diff --check clean; protected state byte-identical; $0.
 **State:** Two correction commits per the dai chain plus the vault correction commit; coordinated fast-forward integration of both mains is authorized by this slice's prompt and its executed publication result is recorded in the external prompt-ledger record.
 **Next:** Slice-3 remainder and Slices 4-6 stay deferred; the July 22 observation and any paid wildcard flight remain separately governed and unauthorized.
+
+---
+
+## 2026-07-22 -- WI-0036 post-integration state reconciliation (docs-only)
+
+**Slice type:** documentation reconciliation (continues WI-0036; not a new WI).
+**Repos:** dai-vault only. **dai was NOT modified and NOT committed** -- it stayed on `main` at `ce34a9e7` with no working-tree change beyond its pre-existing protected csproj entry.
+**Authorization:** 2026-07-22 operator prompt (post-integration state reconciliation). No July 22 observation, `/events`, `/odds`, live/paid source, model call, DB write, gateway call, AgentRun, capture, screening, settlement, reconciliation, scheduling, activation, Slice-3 remainder, or Slices 4-6.
+
+### Why
+
+Integration completed earlier the same day, but several ACTIVE current-status surfaces still announced a pending integration -- the WI's "Current disposition" block, the Slice-2 heading, the links/PR block, the final-handoff disposition, the architecture record's status line and "recommended next slice", the closeout frontmatter and "next step", and the timeline's `proposed_by_system`/`operator_intent`/`replan_triggers`. A reader landing on any of them would have been told to go do work that was already done.
+
+### Independent reverification before editing (read-only, from source not from the prior report)
+
+- dai main == origin/main == `ce34a9e74659b42c71317267c64901a24ceb7091`; dai-vault main == origin/main == `2cdb275b85229c6ee11a7b2930dc50d847ae8240`; no unexpected remote movement.
+- Producer-reproduction rule confirmed in `services/agent-service/app/services/wildcard_flight_plan.py` (`validate_flight_plan`: valid iff `plan_canonical_json(plan) == plan_canonical_json(build_flight_plan(verified_request))`); request-required paths confirmed in `wildcard_flight_plan_cli.py` (plan/realize/export `--request` required; `USAGE_ERROR` on omission).
+- Versions from source: request/plan/planner/realization `1.1`, CLI `1.1`; `flight-selection-provenance/1.0` and `wi0036-candidate-lane/1.0` unchanged.
+- Exact tuple recognition (`market_state` derived via `split_mlb_regime`, mismatch rejected), structured availability failure, and split `unavailability_reason` / `unfilled_reason_code` all confirmed in source.
+- Adversarial probe set rerun on the published main: **0 leaks**, reproducing the supplied evidence table exactly.
+- Full suites on the published mains: agent-service pytest **617/617**; DevCore.Api.Tests **1530/1530**.
+- Protected state byte-identical at open and close (dai csproj `63EF2488...`; vault graph `B3D68588...`; vault CLAUDE `9127E464...`; preflight manifest `68948EBD...`; system synopsis `25835E6C...`; `Welcome.md` still deleted).
+
+### Files changed (dai-vault only)
+
+- `02 Platform/system-development/work-items/WI-0036-wildcard-evidence-discovery-loop-v1.md` -- frontmatter `slice`/`repos`; current disposition now leads with the integrated state; Slice-2 heading `INTEGRATED 2026-07-22` + post-integration disposition block; links block records the integration tips, chains, and as-integrated test counts; final-handoff disposition rewritten with the old text preserved as dated history.
+- `02 Platform/architecture/cognitive-factory/wildcard-evidence-discovery-loop-v1.md` -- status line plus a leading current-state block (what IS integrated vs what remains unimplemented); "recommended next slice" now names the Slice-3 remainder, old text kept as a dated parenthetical.
+- `02 Platform/system-development/MOC - DAI System Development.md` -- executed-integration outcome appended after the correction history.
+- `06 Execution/plans/platform-delivery-timeline-v1.md` -- `title`, `proposed_by_system`, `operator_intent`, `replan_triggers` (fulfilled Slice-2 trigger marked, not deleted), plus a dated change-log entry.
+- `06 Execution/reports/wi-0036-wildcard-capture-flight-plan-implementation-2026-07-21-v1.md` -- frontmatter `status`/`repos`; addendum 4 with integration SHAs, push equality, reverified tests, protected-state and $0 posture; "next step" superseded with the prior text preserved.
+- `06 Execution/handoffs/current-slice.md` -- this append.
+
+### What did not change
+
+No dai file, commit, or push. Prompts, routing, decision logic, confidence, lean encoding, posture, settlement, matching, buyer copy, migrations/schema, and runtime behavior are untouched -- this slice changed only vault prose. WI-0036 stays `in-progress`; the Slice-3 remainder and Slices 4-6 stay deferred and unauthorized; paid wildcard use still requires a future explicit flight authorization; the 2026-07-22 events-gate observation remains separately governed. No document claims activation, capture, spend, or commercial authority.
+
+### Slice Synopsis
+
+**Change:** Reconciled every active WI-0036 current-status surface in the vault -- work item, architecture record, MOC, delivery timeline, closeout report -- so they lead with the integrated state instead of proposing an integration that already happened, with all prior claims preserved as dated history.
+**Reason:** Integration completed 2026-07-22, but active headings, frontmatter, recommendations, and timeline fields still said "local branches / review + integration pending", which would have sent the next reader to redo finished work.
+**Proof:** Both mains reverified == origin == published tips; producer-reproduction rule, request-required CLI paths, and 1.1/1.0 contract split confirmed from source; adversarial probes 0 leaks; pytest 617/617; DevCore.Api.Tests 1530/1530; protected state byte-identical; docs-only diff.
+**State:** One vault-only documentation commit fast-forwarded and pushed to vault main; dai untouched and uncommitted; WI-0036 remains in-progress.
+**Next:** The separately authorized Slice-3 remainder (settlement/reconciliation stratum reads + realized-position writeback); the July 22 observation and any paid wildcard flight remain separately governed and unauthorized.

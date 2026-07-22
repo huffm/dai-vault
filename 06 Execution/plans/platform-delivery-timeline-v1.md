@@ -183,13 +183,13 @@ related_work_items:
 
 ```yaml
 initiative_id: wi-0036-wildcard-evidence-discovery-loop
-title: WI-0036 wildcard evidence discovery loop (documentation Slice 1 complete; implementation separately gated)
+title: WI-0036 wildcard evidence discovery loop (Slice 1 + Slice 2 + minimum Slice-3 seam integrated 2026-07-22; Slice-3 remainder and Slices 4-6 separately gated)
 status: in-progress
 priority: medium
 desired_by:
 due_by:
 not_before: PAID wildcard use requires a future explicit operator flight authorization; the separately governed 2026-07-22T12:00:00Z events-gate observation remains its own ungated action (2026-07-21 operator sequencing override -- offline implementation is no longer gated on it)
-proposed_by_system: after the 2026-07-22 producer-replay correction (findings M-S) and its final review, coordinated fast-forward integration of the wi/0036-wildcard-capture-flight-plan branches (dai + dai-vault); thereafter the Slice-3 remainder remains the next proposed step
+proposed_by_system: the WI-0036 Slice-3 remainder (settlement/reconciliation stratum reads plus realized-position writeback, preserving decision semantics and adding no retrieval, model, source, scheduler, spend, or activation) -- PROPOSAL ONLY, requires its own operator authorization; Slice-2 integration is complete and is no longer a proposed step
 date_source: none
 date_confidence: high
 aliases:
@@ -199,10 +199,11 @@ aliases:
 depends_on:
 blocks:
 economic_reason: widens safe evidence acquisition toward underrepresented recognized recipes/regimes/signal combinations and turns artifact interrogation into proposal-only retrieval inputs; no spend authority of its own -- paid model calls and sports capture remain fail-closed per the authorization block above
-operator_intent: operator decisions 2026-07-21 -- Slice 1 docs authorized/completed/integrated; then a sequencing override authorized the offline/default-off implementation NOW (Slice 2 + minimum Slice-3 seam, delivered on local branches). The July 22 observation is a separate still-unexecuted action; wildcard use in any future PAID flight remains explicitly operator-approved
+operator_intent: operator decisions 2026-07-21 -- Slice 1 docs authorized/completed/integrated; then a sequencing override authorized the offline/default-off implementation NOW (Slice 2 + minimum Slice-3 seam). 2026-07-22 -- after three independent reviews and their corrections, Slice 2 and the minimum Slice-3 seam were reviewed and INTEGRATED to both published mains (dai ce34a9e7, dai-vault 2cdb275b); publication granted no runtime or commercial authority. The July 22 observation is a separate still-unexecuted action; wildcard use in any future PAID flight remains explicitly operator-approved
 replan_triggers:
   - the 2026-07-22 events-gate observation completes
-  - an operator implementation authorization for WI-0036 Slice 2 is issued
+  - an operator authorization for the WI-0036 Slice-3 remainder is issued
+  - (fulfilled 2026-07-22) an operator implementation authorization for WI-0036 Slice 2 was issued, executed, and integrated
 related_work_items:
   - WI-0034
   - WI-0035
@@ -218,6 +219,16 @@ related_work_items:
 
 ## change log
 
+- 2026-07-22 (WI-0036 post-integration state reconciliation, docs-only): the wi-0036
+  initiative's `title`, `proposed_by_system`, `operator_intent`, and `replan_triggers` now
+  describe the INTEGRATED state -- Slice 2 + the minimum Slice-3 seam are published on both
+  mains (dai `ce34a9e7`, dai-vault `2cdb275b`, each == origin/main), and the proposed next
+  step is the Slice-3 remainder (proposal only, separately authorized). The fulfilled
+  Slice-2 implementation-authorization trigger is retained but marked fulfilled. No
+  `desired_by`/`due_by`/activation date invented; `not_before` is UNCHANGED (paid wildcard
+  use still requires a future explicit operator flight authorization and the 2026-07-22
+  events-gate observation remains separately governed); the authorization posture block is
+  UNCHANGED (paid model calls and sports capture remain fail-closed / not-authorized).
 - 2026-07-22 (WI-0036 Slice 2 producer-replay correction, findings M-S): the wi-0036
   initiative's `proposed_by_system` now names coordinated fast-forward integration after
   the correction and its final review. Full plan validity became exact producer
