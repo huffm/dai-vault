@@ -17151,3 +17151,50 @@ The run MAY enter later settlement/reconciliation under separate authorization. 
 **Proof:** Migration additive-only with AgentRuns 302->302 and zero backfill; paid screen exactly 2 credits with 823438 `includable` and `same_orientation_team_pair_count=1`; board `COHORT_PROPOSED_FOR_OPERATOR_REVIEW` with primary `[823438]`; plan and realization both validated as exact producer re-production; AgentRuns 302->303 with writeback matching provenance field-for-field; model $0.0007176 and total Odds credits 5/5.
 **State:** Local documentation commit on `ops/2026-07-22-planner-pass1-free-preflight`, NOT pushed; both mains unmoved; dai source unchanged; migration retained as the authorized durable change; all services stopped.
 **Next:** Settlement of this run and the `+60s` identity-join decision are separate, unauthorized decisions.
+
+---
+
+## 2026-07-22 -- WI-0035/WI-0036 provider-event binding: audit complete, vertical NOT implemented
+
+**Slice type:** offline audit + RED evidence (continues WI-0035 and WI-0036; no new WI).
+**Repos:** dai local branch `wi/0035-provider-event-binding` from main, ONE TEST-ONLY commit `96b935fd`; dai-vault local branch `wi/0035-provider-event-binding` from `25ef999`. Neither pushed.
+**Terminal:** fail-closed. The required gap audit is complete and executably proven; the full binding vertical is NOT implemented.
+
+### Why the stop is deliberate
+
+A partially propagated binding is worse than none -- it would present a verified provider identity at the trust boundary while execution still fell back to team/date matching -- and a half-completed contract-version cascade would break the cross-runtime vectors that keep the two runtimes honest. The prompt provides for a precise fail-closed terminal when the complete safe vertical cannot be delivered.
+
+### Documentation correction (preserving prior history)
+
+The earlier analysis refuted a **universal scheduled-time rounding function**; that stands. Correction: refuting a global transform does NOT refute a bounded, unique, per-event identity join -- different claims. A safe join needs exact teams/orientation, a narrow window, exactly one admissible provider event, a producer-derived event ID, and propagation into execution. The second observation showed each delta stable to the second over ~104 minutes; the one-run canary corroborated the exact unique case but did NOT exercise screen-to-execution propagation and stays non-wildcard, non-settled, pre-binding evidence. `-240s` remains excluded.
+
+### Proven gaps (RED, executable, production code untouched)
+
+dai `96b935fd` adds four characterization tests asserting current behavior:
+
+1. **doubleheader mis-binding** -- with no provider event id, retrieval returns the FIRST listed event for the team pair regardless of start; a run intended for BAL@BOS game 2 (`23:10Z`) silently receives game 1 (`17:36Z`). (`OddsMarketClient.FetchSpreadAsync:313-319`)
+2. **reversed orientation binds** -- the fallback predicate accepts swapped home/away, which screening forbids.
+3. **no re-verification by id** -- the by-event-id path never re-checks teams/orientation/bracket/start against a frozen binding, and has no parameter to receive one.
+4. **contract cannot carry a binding** -- `MarketSpreadInput` is `(Competition, HomeTeam, AwayTeam, GameDate)`; `SportsRetriever:136-139` builds it from team names.
+
+Plus, from the screening side: `MarketJoinDiagnostics.Analyze` binds ONLY at exact UTC start equality, which is why the eleven stable `+60s` candidates never joined.
+
+### Implementation map -- the root shape
+
+The binding is produced correctly at the screen and **dropped at the input-evidence envelope**, four layers before execution; every downstream layer then re-derives identity from team names. This is a **propagation** defect, not a matching-tolerance defect. No pre-existing canonical binding authority closes the seam, so building one is not duplicative.
+
+### Proposed decomposition (proposal only, nothing authorized)
+
+Pass 1 binding authority + policy (fixtures 1-9, bundle/artifact bumps). Pass 2 propagation envelope -> planner -> flight -> provenance with coordinated bumps and full vector regeneration (fixtures 10-13, 21-22). Pass 3 execution enforcement: `MarketSpreadInput` member, gateway handler, `OddsMarketClient` verification, controller boundary (fixtures 14-20, legacy compatibility). Only after Pass 3 should a paid market-backed flight be considered, under its own authorization.
+
+### Posture
+
+Zero StatsAPI/`/events`/`/odds`/model/gateway/AgentRun/capture/settlement/reconciliation/scheduling/migration/database activity. No live service started. No integration, push, or remote mutation. $0. The persisted 823438 canary is untouched -- not backfilled, rewritten, retroactively rejected, or promoted to settled evidence. Full DevCore.Api.Tests 1540/1540 (1536 + 4).
+
+### Slice Synopsis
+
+**Change:** Completed the mandatory provider-event binding gap audit with four executable RED characterization tests and a source-traced implementation map, then stopped fail-closed without implementing the vertical.
+**Reason:** The binding is produced at the screen and dropped at the envelope four layers before execution, so this is a propagation defect spanning two runtimes and a versioned-contract cascade; delivering it partially would present false safety and break cross-runtime vectors.
+**Proof:** Doubleheader mis-binding, reversed-orientation acceptance, absent re-verification, and the binding-incapable `MarketSpreadInput` each proven by test at `OddsMarketClient:313-319`, `MarketSpreadHandlers.cs:9`, and `SportsRetriever:136-139`; production code untouched; suite 1540/1540; $0 with zero live activity.
+**State:** Test-only dai commit `96b935fd` and this vault documentation commit, both on local `wi/0035-provider-event-binding` branches, NOT pushed; both mains unmoved; the four prior vault commits and the 823438 canary preserved.
+**Next:** Three-pass decomposition (binding authority, propagation, execution enforcement), each separately authorized; no paid flight is authorized by anything here.
