@@ -17065,3 +17065,45 @@ New: `06 Execution/patterns/daily-evidence-acquisition-operating-workflow-v1.md`
 **Proof:** Canonical board reproduced byte-identical (`3da03021...`, first differing byte index -1, frozen delta is a trailing CRLF only); preflight `completed_preflight_no_paid_call` with 0 Odds requests, 1 DB read, 0 writes, authority all false; focused tests 56/56 and 50/50; protected hashes byte-identical; $0.
 **State:** Local commit on `ops/2026-07-22-planner-pass1-free-preflight` from `9ef41c9`, NOT pushed; dai untouched at `48a2931`; both mains unmoved; migration still unapplied; `9ef41c9` preserved.
 **Next:** Planner Pass 2, paid screening, flight planning/freeze, capture authorization, and execution all remain separate decisions; none is authorized here.
+
+---
+
+## 2026-07-22 -- Final free identity gate: paid-screen NO-GO
+
+**Slice type:** free evidence observation + go/no-go decision (WI-0034/0035/0036 composition). No new WI.
+**Repos:** dai read-only and UNCHANGED. dai-vault docs only, new commit on `ops/2026-07-22-planner-pass1-free-preflight` on top of `ceb6b961`; NOT pushed.
+**Authorization:** free gate only. Executed: one replacement free preflight + one zero-quota `/events`. NOT done: `/odds`, paid screening, Planner Pass 2, flight plan/freeze/realization, capture, execution, AgentRun, model/gateway, migration, database write.
+
+### Clocks and freshness
+
+Entry `14:20:42Z` = 10:20:42 EDT (inside the 11:15 EDT gate). The 10:05 bundle (`c58623e9...`, completed `14:05:25Z`) was **15.3 min old** -- over the 5-minute limit -- so it was NOT reused. Exactly one replacement preflight ran (`14:21:54Z -> 14:21:58Z`), and `/events` fired at `14:22:10Z` with the bundle **13 seconds old**.
+
+### Results
+
+Replacement preflight: `completed_preflight_no_paid_call`, sha `b83890d3...`, schema 1.3, exact Pass-1 hash, 15 distinct identities, **13 screenable** (capacity stop not triggered), Odds 0, DB reads 1 / writes 0, authority all false.
+
+`/events`: one request, zero retries, artifact `fb29c430...`, 17 provider events. **Zero-quota audit PASSED** -- `x-requests-last` exactly `"0"`, used 282 / remaining 218, unchanged from the 07-20 paid screen and the 08:38 observation.
+
+**Exact current screenable join count = 1** (823438 LAD@PHI, delta 0s, provider event `111a9557...`). Reversed 0, unresolved 0, ambiguous 0.
+
+### Decision
+
+`paid_screen_proposal_ready = (1 >= 4) = FALSE` -> **`DAILY_EVIDENCE_FINAL_FREE_GATE_NO_GO_INSUFFICIENT_EXACT_JOIN_CAPACITY`**. One exact join was not reinterpreted as sufficient because the paid endpoint is callable, and no filter was loosened to justify spend. Today's primary market-backed wildcard-capture path closes cleanly.
+
+### Comparison with attempt 1
+
+**Every cell identical** across 3h44m -- same dispositions, deltas, single exact match, two preblocks, 17 provider events, identical quota counters. 824732 BAL@BOS still has NOT cleared `starters_not_announced`, so the previously identified already-start-aligned candidate still cannot count.
+
+Incidental: this is a **second independent observation of provider instants** ~104 minutes after the first, stable to the second. Stability weakens the schedule-movement explanation for the +60s population but does NOT revive the rounding hypothesis -- the decisive counterexamples reproduce unchanged (`22:40:00Z` -> +0s/+60s; `00:10:00Z` -> +60s/-240s). Identical inputs still yield different outputs. No predicate or tolerance was changed.
+
+### Ledger and dependency
+
+Odds `/events` 1 (zero quota); Odds `/odds` **0**; StatsAPI schedule 1; DB reads 1 / writes 0; model/gateway/AgentRun/capture/scheduling/settlement/reconciliation 0; migrations 0; **$0**. Dependency opening state (engine down, `devcore-sql` stopped) recorded and restored; web application and agent-service never started. Attempt 1 untouched; attempt 2 claimed empty before the first live call.
+
+### Slice Synopsis
+
+**Change:** Ran the final free identity gate for 2026-07-22 -- one replacement preflight plus one zero-quota `/events` -- and returned a paid-screen NO-GO.
+**Reason:** The freshness rule invalidated the 10:05 bundle, and the go/no-go needed a current exact-join count measured under the unchanged predicate rather than an assumption carried from the morning.
+**Proof:** Bundle age 15.3 min forced replacement; replacement bundle 13s old at the boundary; `x-requests-last` exactly `"0"` with quota counters unchanged; exact join count 1 versus a threshold of 4; every cell identical to attempt 1; $0 with zero `/odds`, zero DB writes, zero AgentRuns.
+**State:** Local commit on `ops/2026-07-22-planner-pass1-free-preflight` above `ceb6b961`, NOT pushed; both mains unmoved; `9ef41c9` and `ceb6b961` preserved; migration still unapplied.
+**Next:** No paid screen today. The productive follow-up is an offline, separately authorized decision on whether the stable `+60s` population is a real identity-join defect worth a designed fix, using the two captured observations.
