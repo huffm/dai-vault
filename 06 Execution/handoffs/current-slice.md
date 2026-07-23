@@ -17755,3 +17755,64 @@ history; protected hash unchanged; preserved dirty vault state untouched.
 $0 throughout.
 **Next:** Operator push authorization for both mains, then durable publication closeout;
 optional WI-branch retirement only if separately authorized.
+
+---
+
+## WI-0035/WI-0036 Provider-Event-Binding Vertical -- REMOTE PUBLICATION closeout 2026-07-23
+
+### Remote publication truth
+
+- dai `origin/main`: `48a2931` -> **`85af96d`** (plain fast-forward push, verified by
+  direct remote query; 10 commits: Slice A + corrections, B, C, D). Remote verification
+  SUCCEEDED; local divergence 0/0.
+- dai-vault `origin/main`: `3a82af0` -> **`de5791f`** (plain fast-forward push, verified
+  by direct remote query; 15 commits: four pre-vertical July-22 operational records, the
+  nine vertical records, the A-D review record, and the local-integration disposition).
+- No force push, no tags, no remote WI branch created (`wi/0035-provider-event-binding`
+  confirmed absent from both remotes before and after), no PR, no history rewriting.
+- This closeout commit is the FINAL vault closeout SHA; it is pushed immediately after
+  creation and completes publication.
+
+### Validation truth
+
+- reviewed branch tip AND post-local-integration dai `main`: `DevCore.Api.Tests`
+  **1760/1760** (0 skipped); agent-service pytest **691/691**.
+- no code change of any kind occurred during publication; no paid calls; no capture or
+  settlement; $0 throughout.
+
+### Work-item disposition
+
+Slices A, B, C, D implementation COMPLETE; adversarial review COMPLETE with zero required
+corrections (same-session caveat recorded in the review report); local integration
+COMPLETE; remote code publication COMPLETE (`85af96d`); remote vault publication COMPLETE
+(`de5791f`); this closeout commit completes publication. WI-0035 and the
+provider-event-binding portion of WI-0036 are now **reviewed, integrated, remotely
+published, and closed for the provider-event-binding scope**. Unrelated WI-0036 scope,
+residual risks below, and future capture-path hardening are NOT globally closed by this
+record. Local WI branches are retained as audit evidence (deletion is a separate future
+decision).
+
+### Preserved residuals (follow-up candidates / standing risks; no new WI minted)
+
+- F1: the near-close by-id capture path performs no frozen-binding re-verification
+  (duplicate-id refusal only); proven non-bypassable from buyer execution.
+- F2: an unbound ambiguity/orientation refusal is externally indistinguishable from
+  "no market" outside logs, and a refused match caches null for 15 minutes.
+- F3: the near-close endpoints carry "dev-gated" comments without a located code gate
+  (pre-existing standing-risk family).
+- F5: the agent-service pytest fresh-process determinism test is working-directory
+  sensitive; always run pytest from `services/agent-service`.
+
+### Slice Synopsis
+
+**Change:** The reviewed A-D provider-event-binding vertical is now REMOTELY published --
+dai `origin/main` at `85af96d`, vault `origin/main` at `de5791f` -- and this closeout
+record completes the durable publication trail.
+**Reason:** Operator-authorized final publication after the adversarial review passed with
+zero corrections and local integration validated green on both suites.
+**Proof:** Direct remote queries confirm both pushed SHAs; 1760/1760 .NET and 691/691
+pytest on dai main; plain ff pushes only; preserved dirty vault state untouched.
+**State:** Both reviewed histories are remote; this closeout commit on clean vault main is
+being pushed to finish; WI branches retained locally as evidence.
+**Next:** Operator decisions -- WI-branch retention/deletion and a narrowly scoped
+follow-up for the near-close gate and capture-path residuals (F1/F2/F3/F5).
