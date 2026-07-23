@@ -17725,3 +17725,33 @@ pytest **691/691**, flight suites 61/61, diff-check clean, protected hash `63ef2
 unchanged, preserved dirty set untouched. Verdict: local fast-forward integration
 authorized (dai first, then vault); **push NOT authorized**. Report:
 `06 Execution/reports/provider-event-binding-a-d-review-2026-07-23-v1.md`.
+
+---
+
+## WI-0035/WI-0036 A-D Vertical -- LOCAL dai Integration complete 2026-07-23
+
+**Code integration:** dai local `main` fast-forwarded `48a2931` -> `85af96d` (ff-only, no
+merge commit, 10 commits: Slice A + corrections, B, C, D). Post-integration on `main`:
+full `DevCore.Api.Tests` **1760/1760** (0 skipped), full agent-service pytest **691/691**,
+working tree clean, protected hash unchanged. dai `origin/main` REMAINS `48a2931`; local
+main is 10 ahead; **push NOT authorized and NOT performed**. Review disposition: zero
+corrections (see the A-D review report); accepted residuals F1-F6 stand as documented.
+
+**Work-item state (truthful ladder):** WI-0035 implementation COMPLETE; adversarial review
+COMPLETE (same-session caveat recorded); LOCAL integration COMPLETE (dai main); remote
+publication PENDING operator push authorization. WI-0036 flight-consumer seam integrates
+with it (board 2.3, binding carry); NEITHER work item is remotely closed while local main
+is ahead of origin/main. The WI branches remain as immutable local evidence.
+
+### Slice Synopsis
+
+**Change:** The reviewed A-D provider-event-binding vertical is integrated into LOCAL dai
+main by fast-forward (`48a2931` -> `85af96d`); the vault record follows on its own main.
+**Reason:** Adversarial review of the full vertical passed with zero Blocker/High/Medium
+corrections, satisfying every integration gate in the operator authorization.
+**Proof:** 1760/1760 .NET and 691/691 pytest on dai main post-ff; clean tree; linear
+history; protected hash unchanged; preserved dirty vault state untouched.
+**State:** Local mains ahead of unmoved origins; nothing pushed, no PR, no remote branch;
+$0 throughout.
+**Next:** Operator push authorization for both mains, then durable publication closeout;
+optional WI-branch retirement only if separately authorized.
