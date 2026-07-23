@@ -17706,3 +17706,22 @@ by first-match either-orientation.
 pushed; both mains unmoved; self-reviewed only.
 **Next:** independent A-D review, then operator-authorized fast-forward integration; no
 flight, capture, spend, or push authorized by this slice.
+
+---
+
+## Provider-Event Binding A-D Vertical -- Adversarial Review PASSED 2026-07-23
+
+**State:** reviewed dai range `48a2931..85af96d` (10 commits, linear) and vault range
+`3a82af0..4cb22a2` from live repository evidence. Zero Blocker, zero High, zero Medium
+requiring correction -- NO correction commits; the reviewed tips are the implementation
+tips. Same-session review under explicit operator authorization; independence caveat
+recorded in the report. Findings: F1 accepted residual (near-close by-id capture path,
+proven unreachable from bound execution), F2 low (unbound refusal indistinguishable from
+no-market outside logs), F3 low pre-existing (near-close endpoints' dev-gating comment
+unverified in code), F4 info (binding is sole retrieval authority by design), F5 low
+pre-existing (cwd-dependent fresh-process pytest), F6 info (vault integration carries four
+pre-vertical July-22 docs records). Gates re-proven at tip: .NET **1760/1760** (0 skipped),
+pytest **691/691**, flight suites 61/61, diff-check clean, protected hash `63ef2488...`
+unchanged, preserved dirty set untouched. Verdict: local fast-forward integration
+authorized (dai first, then vault); **push NOT authorized**. Report:
+`06 Execution/reports/provider-event-binding-a-d-review-2026-07-23-v1.md`.
