@@ -17635,3 +17635,74 @@ Zero StatsAPI, `/events`, `/odds`, model, Tool Gateway, or network calls. Zero d
 **Proof:** flight suites failed against `6d4cd32` pre-migration; then 1746/1746 .NET, 691/691 pytest, WI-0036 54/54 on board 2.3, C#/Python provenance vectors byte-identical (bound + unbound), verbatim-bytes/strict-validation/mutation-fails-closed proofs, structured historical-2.2 rejection, compat deleted with no active reference, leakage-free, snapshot 25/6/0, protected hash unchanged.
 **State:** dai this commit and vault this commit on local `wi/0035-provider-event-binding`, NOT pushed; both mains unmoved; no remote ref created; execution retrieval still a separate open Slice-D gap.
 **Next:** Slice D -- carry the binding to the execution boundary and enforce independent by-ID re-verification, correcting the doubleheader/team-date hazards. No flight or runtime use is authorized by Slice C.
+
+---
+
+## Provider-Event Binding Slice D -- Execution-Retrieval Enforcement complete (local) 2026-07-23
+
+**State:** dai local commit `85af96d` (parent `88092eb`) and this vault commit on local
+`wi/0035-provider-event-binding`. NOT pushed, no remote ref; both mains unmoved (dai
+`48a2931`, vault `3a82af0`). $0, zero live calls, zero db access.
+
+### What changed
+
+The frozen provider-event binding now CONSTRAINS execution retrieval. Bound runs retrieve
+EXACTLY the bound Odds provider event with independent re-verification (re-running
+`ProviderEventQualifier.Qualify` against the frozen candidate/bracket -- the one
+qualification authority, no second predicate); every identity failure is a typed
+`ProviderEventBindingIntegrityException` with a closed status, never a benign "no market".
+Enforcement points: `MarketSpreadInput` binding member with NO default (silent omission is
+a compile error), gateway-handler strict validation (`ProviderEventBindingWire.Parse`, the
+one path), `SportsRetriever` verbatim carry + non-mlb refusal + defense re-check +
+verification recording, `OddsMarketClient.GetBaseballSpreadByBindingAsync` (internal,
+uncached), controller entry validation (400 before the run row) and final defense (failed
+row + 422 for a bound execution without verified agreement). Unbound team/date matching
+hardened to screening semantics: exact orientation only, doubleheader ambiguity refused,
+duplicate ids refused (FirstOrDefault either-orientation guess deleted).
+
+### Test conversion
+
+The four execution-gap characterization tests became twelve enforcement tests
+(`ProviderEventBindingGapTests`); RED proven on the behavioral conversions against
+unmodified production (first-listed doubleheader event still bound; reversed orientation
+still bound) before any production change. Plus three bound `SportsRetrieverTests` and
+three `FlightSelectionProvenanceEndpointTests` boundary cases through the real host.
+
+### Validation proof
+
+full `DevCore.Api.Tests` **1760/1760** (prior 1746, +14 enforcement, 0 skipped); full
+agent-service pytest **691/691** (python untouched); endpoint class 15/15 including the
+pre-existing bound reserve cross-runtime vector passing the new strict controller
+validation; `git diff --check` clean; `DevCore.Data.csproj` protected hash `63EF2488...`
+unchanged; no schema bump, no cross-runtime vector change, no OutputJson/buyer-surface
+change, no machine-absolute paths; changed set exactly the declared 13-file map.
+
+### What did not change
+
+Board/planner/request/replay/flight-plan/provenance schemas and the WI-0034/WI-0036
+shared-planner coupling; cross-runtime vectors; python agent-service; buyer surfaces;
+migrations; prompts. `GetBaseballSpreadByEventIdAsync` remains the near-close capture
+compatibility path (duplicate-id hardened; frozen-binding re-verification on the CAPTURE
+path is a documented post-slice candidate).
+
+### Open issues
+
+Full A-D vertical is implemented locally and SELF-reviewed only. Next authorization
+boundary: independent review of the A-D vertical, correction commits if findings demand,
+then operator-authorized fast-forward integration (dai first, then vault), push only if
+separately authorized. Report: `06 Execution/reports/provider-event-binding-slice-d-2026-07-23-v1.md`.
+
+### Slice Synopsis
+
+**Change:** Execution retrieval now enforces the frozen provider-event binding -- bound
+runs retrieve exactly the bound event with independent re-qualification and fail closed on
+drift, substitutes, duplicates, or malformed wires; unbound matching refuses doubleheader
+ambiguity and reversed orientation; the four gap tests now enforce instead of document.
+**Reason:** Slices A-C carried the binding to flight provenance but retrieval still guessed
+by first-match either-orientation.
+**Proof:** RED-first conversions failed against unmodified code; then 1760/1760 .NET,
+691/691 pytest, 15/15 host-boundary, protected hash unchanged, no schema or vector change.
+**State:** dai `85af96d` + this vault commit, local `wi/0035-provider-event-binding`, NOT
+pushed; both mains unmoved; self-reviewed only.
+**Next:** independent A-D review, then operator-authorized fast-forward integration; no
+flight, capture, spend, or push authorized by this slice.
