@@ -17918,3 +17918,41 @@ board-rejected; Gate 4 unchanged FALSE pending future settlements; 2 of 8 credit
 model.
 **Next:** Operator: run the 2026-07-24 daily cycle (reconcile July 23 = nothing to settle;
 plan the new slate; the postponed ARI@STL makeup must re-qualify from scratch).
+
+---
+
+## Daily Evidence 2026-07-23 Late-Slate Reevaluation -- Postponement Claim CORRECTED, Second Screen GO Recommended
+
+**Date:** 2026-07-23 (~17:43Z-17:50Z) **Branch:** `ops/2026-07-23-late-slate-reevaluation`
+(from published main `5bf9b91`)
+
+**Correction of record:** the midday claim that 823042 ARI@STL was weather-postponed is
+WRONG. StatsAPI carries 823042 under two date buckets (06-25 original `Postponed/DI`;
+07-23 makeup `Scheduled` 21:15Z). The 16:17Z pre-capture check read `dates[0]` of a bare
+gamePk query -- the June bucket -- and blocked a validly proposed capture on a false
+premise. Lesson: status rechecks MUST be date-bracket-filtered. Policy not changed; a
+narrow review of ad-hoc status checks + the `caller_state_mismatch` strictness (TB@TOR's
+routine Scheduled->Pre-Game drift) is recommended.
+
+Fresh free cycle (attempt-3, $0): pass-1 rebuilt from live statuses; preflight
+`d353607b...`; events gate `1df430c4...` zero-quota PASSED (last=0, used 289/remaining
+211 -- baseline exact). Qualified: 822785 (`7588f8f0...`, cutoff 18:07Z -- effectively
+lapsed), **823042 (`a8b30b36...`, cutoff 20:15Z)**, 824247 (`2f301dce...`, prior screen
+exclusion unchanged). DB closure re-proven (303/138, no runs).
+
+**Disposition: JULY23_SECOND_SCREEN_GO_RECOMMENDED** -- one ~2-credit bracket screen,
+anchored on 823042 (77-min-old paid evidence: includable/primary, disagreement 0.0187,
+9 books; blocked earlier only by the misread). Decide by ~19:55Z. No paid call made.
+
+### Daily Synopsis
+
+**Change:** Late-slate free reevaluation corrected the false postponement finding,
+re-qualified three candidates with fresh bindings, and recommends one second paid screen.
+**Reason:** The blocked capture rested on a date-bucket misread; fresh state shows the
+ARI@STL makeup Scheduled with 2.5h runway.
+**Proof:** Date-filtered StatsAPI (07-23 bucket Scheduled); events artifact `1df430c4...`
+zero-quota passed; DB 303/138 unchanged.
+**State:** $0 spent this phase; quota 289/211; no capture; published history untouched;
+correction recorded forward.
+**Next:** Operator go/no-go on ONE second paid screen (~2 credits) by ~19:55Z, targeting
+823042.
