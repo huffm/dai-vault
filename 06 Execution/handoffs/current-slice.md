@@ -17502,3 +17502,69 @@ Zero StatsAPI, `/events`, `/odds`, model, Tool Gateway, or network calls. Zero d
 **Proof:** 47 failed / 11 passed RED against `4f4e726` -- the 11 passes were exactly the ledger cases Pass 2 already covered; then 60/60 integrity, 356/356 focused, 1724/1724 .NET, 617/617 pytest, snapshot 25/6/0, pinned canonical bytes and envelope byte identity unchanged, protected hash unchanged.
 **State:** dai `72a0347` and this vault commit on local `wi/0035-provider-event-binding`, NOT pushed; both mains unmoved; no version bump because the wire shape did not change.
 **Next:** Slice B -- carry the binding into the envelope and Planner Pass 2 board with producer replay against the verified paid bundle, which is the only thing that can establish producer origin.
+
+---
+
+## 2026-07-22 -- WI-0035 Slice B (trusted bundle replay + planner propagation) + WI-0036 seam-preservation correction
+
+### Objective
+
+Carry the Slice-A content-integrity-validated `provider_event_binding` from the paid market-contrast bundle through `input-evidence-envelope` into the Planner Pass-2 request and board, under an explicit frozen replay context, with a coherent cross-runtime version cascade. Preserve the integrated WI-0036 flight vertical on board 2.2.
+
+### Outcome
+
+Implemented and green on both runtimes. dai local commit (this slice) on `wi/0035-provider-event-binding`; vault local commit recorded alongside. Slice B is local, unintegrated, and authorizes no flight or runtime use. Execution retrieval remains a separate open downstream gap.
+
+### Repo state
+
+**Before** -- dai `72a0347`, vault `2d422ee`, both on `wi/0035-provider-event-binding`, dai main `48a2931`, vault main `3a82af0`, 0 remote refs.
+**After** -- dai this commit, vault this commit, same branches, both mains unmoved, nothing pushed.
+
+### Work performed
+
+1. **`screen-bundle-replay-context/1.0`** (`provider_event_binding.py`): closed frozen context with `parse_replay_context` -- expected bundle/Pass-1 SHA, target date, attempt id, bundle schema (1.4), C#-origin bracket bounds, eight-key all-false ledger. Missing/extra/malformed/authority-true fail closed.
+2. **Strict 1.4 replay gate** (`daily_evidence_planner_cli._op_replay`, Option B removed): frozen-hash gate before candidate consumption; 1.4-only + paid + completed + attempt-id + internal-Pass1-ref + all-false enclosing ledger; exact candidate-set equality; per-candidate binding validated via `parse_binding_wire` against the frozen bracket; sibling canonical equality; `qualified==1 <-> one validated binding + one admitted event`; emits pass-2 with a closed `replay_reference`. `--context` now required.
+3. **Envelope/planner/board threading**: `MarketBindingEvidence` (C#, already green from the prior turn) carried as `market_binding_evidence`; Python `InputEvidenceRecord.market_binding_evidence` + `PlannerRequest.replay_reference`; `_parse_binding_evidence`; grounding requires status qualified + counts + a binding validated at grounding time (`validate_binding_self_bracket`) + a replay reference; board carries the validated binding + replay reference; closed key sets updated.
+4. **Version cascade in one commit**: envelope 1.2 / request 2.2 / board+planner 2.3 / CLI 2.6 / current replay 1.4-only. C#/Python constants and all cross-runtime vectors moved together.
+5. **WI-0036 seam-preservation correction** (dated operator authorization): new byte-exact frozen `daily_evidence_planner_compat_v22.py` (request 2.1 / board 2.2 / planner 2.2 / envelope 1.1) with `parse_request_v22`; `wildcard_flight_plan.py` pinned to a WI-0036-owned `CONSUMED_BOARD_SCHEMA_VERSION = 2.2` + 2.2 key set (rejects 2.3 as Slice-C-required); the flight CLI reproduces via the frozen reproducer, keeping the integrated happy path, realization, forged-plan rejection, publication, and C#-shared provenance vectors byte-identical. No flight schema/binding/provenance/allocation/authority change.
+
+### Files changed
+
+- `dai/services/agent-service/app/services/provider_event_binding.py` -- **new** replay-context contract (added to the Slice-A binding module).
+- `dai/services/agent-service/app/services/daily_evidence_planner.py` -- InputEvidenceRecord/PlannerRequest fields, grounding contract, board carries binding+replay ref, version bumps.
+- `dai/services/agent-service/app/services/daily_evidence_planner_cli.py` -- envelope/request parsing, strict replay op, version bumps.
+- `dai/services/agent-service/app/services/daily_evidence_planner_compat_v22.py` -- **new** frozen 2.2 reproducer.
+- `dai/services/agent-service/app/services/wildcard_flight_plan.py` -- WI-0036 board-2.2 pin.
+- `dai/services/agent-service/app/services/wildcard_flight_plan_cli.py` -- flight CLI reproduces via the frozen reproducer.
+- C# (from the prior turn, carried in this commit): `MarketContrastScreen.cs`, `MarketContrastSourceAdapter.cs`, and their tests -- the envelope-1.2 `MarketBindingEvidence` projection.
+- Tests: `test_provider_event_binding.py` (+context), `test_daily_evidence_planner_compat_v22.py` (**new** characterization), `test_daily_evidence_planner.py`, `test_daily_evidence_planner_cli.py` (binding/replay fixtures + strict replay rewrite), `test_wildcard_flight_plan{,_cli}.py` (frozen-2.2 repoint), `PlannerEnvelopeBindingPropagationTests.cs`.
+
+### Validation proof
+
+full `DevCore.Api.Tests` **1746/1746**; full agent-service pytest **688/688**; C#/Python binding+bracket vectors byte-identical (exact/+60/-60 ; 24h/23h/25h); fresh-process determinism 68/68 on rerun; WI-0036 flight suites **53/53** byte-identical on board 2.2 (incl. the C#-shared provenance vectors); frozen compat characterization 5 pins; strict planning snapshot 25/6/0; `git diff --check` clean both repos; `DevCore.Data.csproj` protected hash `63EF2488...` unchanged; Option-B removed from production (comments only); binding/replay tokens contained; no secrets/paths/live-calls/authority grants on production lines.
+
+RED evidence: the strict context/gate/grounding tests fail against `72a0347`; the version cascade first broke 104 tests (incl. 50 WI-0036) exactly at the shared-planner seam -- the empirical proof the WI-0036 decoupling was necessary. This turn resolved that from the preserved worktree.
+
+### DB writes / external side effects / cost
+
+None. **$0.**
+
+### What did not change
+
+Execution retrieval, the four execution-gap tests (green + unresolved), the events-gate-to-planner boundary (no such path), WI-0036 flight schema/binding/provenance/allocation/authority, buyer surfaces, prompts, migrations, and runtime behavior. Planned market-missing wildcard semantics remain WI-0036-owned.
+
+### Open issues
+
+Execution retrieval remains a separate open downstream gap. Slice C carries the binding to flight provenance and migrates WI-0036 to board 2.3; Slice D enforces at execution retrieval. The frozen `daily_evidence_planner_compat_v22` must never advance to 1.2/2.3 outside a Slice-C migration.
+
+### Posture
+
+Zero StatsAPI, `/events`, `/odds`, model, Tool Gateway, or network calls. Zero database access, migration, service start, AgentRun, capture, settlement, reconciliation, scheduling, or activation. No integration, push, PR, remote branch, or history rewrite. $0. gamePk 823438 untouched.
+
+### Slice Synopsis
+
+**Change:** The validated provider binding now propagates paid-bundle -> envelope(1.2) -> strict frozen-context replay -> planner request(2.2) -> grounded board(2.3), with the coherent cascade in one commit; the integrated WI-0036 flight vertical is preserved byte-identically on board 2.2 via a new frozen `daily_evidence_planner_compat_v22` reproducer.
+**Reason:** Slice A left the binding computed and validated but never propagated; the shared-planner bump collided with WI-0036, which reproduces its board (and its C#-shared provenance vectors) through the live planner.
+**Proof:** 104-test break at the shared seam proved the collision; then 1746/1746 .NET, 688/688 pytest, WI-0036 53/53 byte-identical on 2.2, C#/Python binding+bracket vectors identical, frozen-compat characterization pinned, snapshot 25/6/0, protected hash unchanged, Option-B removed.
+**State:** dai this commit and vault this commit on local `wi/0035-provider-event-binding`, NOT pushed; both mains unmoved; execution retrieval still a separate open gap; frozen compat is 2.2-only until Slice C.
+**Next:** Slice C -- carry the binding to flight provenance and migrate WI-0036 to board 2.3 + provider-event binding; then Slice D enforces at execution retrieval. No flight or runtime use is authorized by Slice B.
