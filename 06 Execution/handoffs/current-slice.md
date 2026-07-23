@@ -17956,3 +17956,41 @@ zero-quota passed; DB 303/138 unchanged.
 correction recorded forward.
 **Next:** Operator go/no-go on ONE second paid screen (~2 credits) by ~19:55Z, targeting
 823042.
+
+---
+
+## Daily Evidence 2026-07-23 Second Screen -- ONE CAPTURE FROZEN (822785 TB@TOR), Unsettled
+
+**Date:** 2026-07-23 (17:55Z-18:06Z) **Branch:** `ops/2026-07-23-late-slate-reevaluation`
+
+Corrected status discipline held throughout (date-bucketed queries only, no `dates[0]`).
+Freshness replacement (attempt-4, $0, zero-quota audit passed 289/211). ONE paid screen
+17:57:15Z (bundle `4e8f32df...`, last=2, 289->291): **822785 includable/primary at
+disagreement 0.0360 (day's strongest)**; 823042 LOST to `caller_state_mismatch` AGAIN
+(routine scheduled->pregame drift vs the frozen 17:44Z slate -- second demonstration of
+the flagged over-constraint, now review-worthy); 824247 excluded again (0.0190).
+
+Deterministic pass-2 board `0b2b1a28...`: primary [822785] only. Pre-capture gate
+17:59:10Z passed (Pre-Game, one bucket match, cutoff 18:07Z not crossed). Full published
+path: flight `flight-2026-07-23-paid-cohort-2` (freeze `45796b4e...`), verbatim binding
+event `36ba7a8a...` fp `78d8fe3a...`, Slice-D enforced execution. **Run
+`d329433e-f36b-1410-8196-00373db4b724` frozen 18:02:13Z, 4.8 min before cutoff**: lean
+away (TB) @ 0.75, monitor, market-agreed (9 books), stratum core, regime
+starter_enriched_market_backed_depth, writeback==provenance, UNSETTLED. AgentRuns
+303->304. Session ~5 of 8 credits; day total ~7; model < $0.01. Terminal:
+`JULY23_SECOND_SCREEN_COMPLETE_ONE_CAPTURE_FROZEN`. Record:
+`06 Execution/reports/daily-evidence-second-screen-capture-2026-07-23-v1.md`.
+
+### Daily Synopsis
+
+**Change:** Second authorized screen re-priced the bracket and pass-2 pivoted to 822785,
+which was captured 4.8 minutes before its cutoff; the intended anchor 823042 was lost to
+a recurring caller-state over-constraint.
+**Reason:** Corrected-state execution after the morning's false postponement block; the
+board, not preference, chose the capture.
+**Proof:** Bundle `4e8f32df...` (last=2); board primary [822785]; run `d329433e...`
+row verified (fingerprint match, unsettled); DB 304 rows.
+**State:** One frozen unsettled capture (TB@TOR 19:07Z); ~7 credits spent today; Gate 4
+unchanged; caller_state_mismatch flagged twice.
+**Next:** Operator: authorize settlement reconciliation of run `d329433e...` after
+TB@TOR is officially Final tonight (finals guard first).
