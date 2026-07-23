@@ -17816,3 +17816,63 @@ pytest on dai main; plain ff pushes only; preserved dirty vault state untouched.
 being pushed to finish; WI branches retained locally as evidence.
 **Next:** Operator decisions -- WI-branch retention/deletion and a narrowly scoped
 follow-up for the near-close gate and capture-path residuals (F1/F2/F3/F5).
+
+---
+
+## Daily Evidence Operation 2026-07-23 -- July 22 Reconciled, July 23 Preflight ALL-QUALIFIED (paid screen GO recommended)
+
+**Date:** 2026-07-23 (operation window ~14:55Z-15:15Z; separate operator authorization,
+no work item minted)
+**Branch:** `ops/2026-07-23-daily-evidence` (clean worktree from vault main `533fd74`;
+dai read-only at main `85af96d`)
+
+### July 22 reconciliation (executed FIRST)
+
+The single eligible July 22 capture -- exact-identity core canary run
+`a9b0433e-f36b-1410-8191-00373db4b724`, gamePk 823438 LAD@PHI, provider event
+`111a955795876d50988b15c219ce0796` -- was settled through the canonical identity path
+(finals guard READY; read-only preflight ready with 0 blockers; `POST /reconcile`
+SingleMatch). Authoritative StatsAPI final: **LAD 9 @ PHI 5 (Final/F)**. Frozen lean
+`away` @ 0.75 -> **evalStatus `correct`**, market-agreed, stratum `core`, exclusion null.
+Strata writeback verified intact (flight fingerprint `0d44530e...f954`). Cumulative:
+reconciled 137->138, valid settled set 59->60 (observed), market-disagreement N stays 9,
+discrimination still inverted -- **Gate 4 unchanged FALSE**; directional evidence only.
+
+### July 23 planner + free preflight (run AFTER settlement refresh)
+
+Fresh pass-1 request built from the live schedule (5 games, no doubleheaders) under the
+same-morning refreshed pooled readout (`conclusions_allowed=false`, both failing reasons
+stand). Board 2.3 outcome `EVIDENCE_NEEDED_INPUT_TYPES_NOT_ADDRESSABLE`, cohort WORTHY.
+Free preflight `completed_preflight_no_paid_call` (bundle 1.4). Zero-quota events gate
+PASSED audit (last=0, remaining 213): **5/5 candidates each produced exactly one
+qualified provider-event binding** (uniform +60s provider offset, bounded-tolerance
+policy) -- the capacity rule that failed July 22 (1<4) passes today (5>=4). Terminal:
+`qualified_binding_ready_for_separate_operator_decision`.
+
+Ranked slate: 1) 822785 TB@TOR 19:07Z, 2) 823042 ARI@STL 21:15Z, 3) 824247 KC@DET
+22:40Z (reserve), 4) 824406 MIN@CLE 17:10Z (reserve, time-boxed ~15:50Z), 5) 824893
+SD@ATL operationally ineligible (cutoff passed mid-operation). Classification:
+**PAID_SCREEN_GO_RECOMMENDED**; next paid op = ONE `/odds` screen (h2h+spreads, us,
+~2 credits) then pass-2 replay; max 2 captures under standing limits; floor(2/4)=0
+wildcards. NOTHING paid was called; authority ledgers all-false throughout.
+
+Records: `06 Execution/reports/july-22-canary-settlement-reconciliation-2026-07-23-v1.md`
+and `06 Execution/reports/daily-evidence-planner-free-preflight-2026-07-23-v1.md`.
+Artifacts outside both repos under `<DAI_WORKSPACE_ROOT>/daily-evidence-flight-2026-07-23/`
+and `<DAI_WORKSPACE_ROOT>/events-gate-2026-07-23/`. Preserved dirty WI-0035 vault worktree
+untouched. No merge/push/PR; no source changes.
+
+### Daily Synopsis
+
+**Change:** July 22 canary settled `correct` (LAD 9-5, away win) via the canonical
+reconcile path, and the July 23 planner + free preflight completed with all five
+candidates fully binding-qualified.
+**Reason:** Explicit operator authorization for the daily evidence sequence: reconcile
+first, then plan against refreshed state.
+**Proof:** Finals guard READY; reconcile SingleMatch/`correct`; metrics 137->138
+reconciled; events-gate artifact `73e7384b...` with 5 qualified bindings and zero-quota
+audit passed.
+**State:** Gate 4 unchanged FALSE; slate PAID_SCREEN_GO_RECOMMENDED; $0 spent; local
+ops branch only, nothing pushed.
+**Next:** Operator go/no-go on ONE paid `/odds` screen (~2 credits) -- decide by
+~17:45Z for the rank-1 TB@TOR window.
