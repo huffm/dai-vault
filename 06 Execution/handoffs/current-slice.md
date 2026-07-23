@@ -17568,3 +17568,70 @@ Zero StatsAPI, `/events`, `/odds`, model, Tool Gateway, or network calls. Zero d
 **Proof:** 104-test break at the shared seam proved the collision; then 1746/1746 .NET, 688/688 pytest, WI-0036 53/53 byte-identical on 2.2, C#/Python binding+bracket vectors identical, frozen-compat characterization pinned, snapshot 25/6/0, protected hash unchanged, Option-B removed.
 **State:** dai this commit and vault this commit on local `wi/0035-provider-event-binding`, NOT pushed; both mains unmoved; execution retrieval still a separate open gap; frozen compat is 2.2-only until Slice C.
 **Next:** Slice C -- carry the binding to flight provenance and migrate WI-0036 to board 2.3 + provider-event binding; then Slice D enforces at execution retrieval. No flight or runtime use is authorized by Slice B.
+
+---
+
+## 2026-07-22 -- WI-0035 Slice C (verbatim binding to flight provenance + WI-0036 board-2.3 migration)
+
+### Objective
+
+Carry the Slice-B-validated `provider_event_binding` VERBATIM from the board (2.3) into the WI-0036 flight plan and flight-selection provenance, and migrate the entire WI-0036 flight vertical off the frozen board-2.2 compatibility seam onto the live board 2.3, deleting the frozen reproducer -- all in one atomic dai commit.
+
+### Outcome
+
+Implemented and green on both runtimes. dai local commit (this slice) on `wi/0035-provider-event-binding`; vault local commit recorded alongside. Slice C is local, unintegrated, and authorizes no flight or runtime use. Execution retrieval remains a separate open Slice-D gap.
+
+### Repo state
+
+**Before** -- dai `6d4cd32`, vault `17fb8af`, both on `wi/0035-provider-event-binding`, dai main `48a2931`, vault main `3a82af0`, no remote-tracking ref for the branch.
+**After** -- dai this commit, vault this commit, same branches, both mains unmoved, nothing pushed, no remote ref created.
+
+### Work performed
+
+1. **Flight planner migration** (`wildcard_flight_plan.py`): consumes the LIVE board 2.3 (imports `BOARD_SCHEMA_VERSION` / `BOARD_REQUIRED_KEYS`); the local `CONSUMED_BOARD_SCHEMA_VERSION = 2.2` pin is removed. A historical board 2.2 is rejected with a stable structured `UNSUPPORTED_BOARD_SCHEMA_VERSION` error (expected 2.3 / actual / consumer=wildcard_flight_plan); no fallback.
+2. **Verbatim binding flow**: `_extract_candidate_binding` maps each board candidate to its verbatim binding, failing closed on a malformed provider-bound candidate; every plan candidate row and the provenance block carry `provider_event_binding` + `replay_reference` (null for a validly unbound member). Bytes are the exact canonical object the board validated.
+3. **Schema cascade**: flight plan 1.1 -> 1.2, flight planner 1.1 -> 1.2, flight-selection provenance 1.0 -> 1.1; row/plan key sets extended.
+4. **C# provenance parity** (`FlightSelectionProvenance.cs`): `providerEventBinding` + `replayReference` added as `JsonElement?`; `SchemaVersion` 1.0 -> 1.1, `FlightPlanSchema` 1.1 -> 1.2. Both cross-runtime vectors regenerated and updated on both runtimes byte-for-byte.
+5. **Flight CLI migration** (`wildcard_flight_plan_cli.py`): `_reproduce_board` uses the live `parse_request` + `build_board` (board 2.3); the frozen reproducer import is gone.
+6. **Compat retirement**: `daily_evidence_planner_compat_v22.py` and its characterization test **deleted**; the two WI-0036 test files migrated to build/consume board 2.3 (envelope-1.2 screens with real bindings + a replay reference).
+
+### Files changed
+
+- `dai/services/agent-service/app/services/wildcard_flight_plan.py` -- board-2.3 consume, structured rejection, verbatim binding flow, schema bumps.
+- `dai/services/agent-service/app/services/wildcard_flight_plan_cli.py` -- live board reproduction.
+- `dai/services/agent-service/app/services/daily_evidence_planner_compat_v22.py` -- **deleted**.
+- `dai/platform/dotnet/DevCore.Api/AgentRuns/FlightSelectionProvenance.cs` -- binding + replay reference; schema bumps.
+- `dai/platform/dotnet/DevCore.Api.Tests/AgentRuns/FlightSelectionProvenanceTests.cs` -- regenerated cross-runtime vectors.
+- `dai/platform/dotnet/DevCore.Api.Tests/Integration/FlightSelectionProvenanceEndpointTests.cs` -- new freeze fingerprint.
+- `dai/services/agent-service/tests/test_wildcard_flight_plan{,_cli}.py` -- board-2.3 fixtures + regenerated vectors + Slice-C propagation proofs.
+- `dai/services/agent-service/tests/test_daily_evidence_planner_compat_v22.py` -- **deleted**.
+
+### Validation proof
+
+full `DevCore.Api.Tests` **1746/1746**; full agent-service pytest **691/691**; WI-0036 flight suites 54/54 on board 2.3; C#/Python flight-provenance cross-runtime vectors byte-identical (bound + unbound); C#/Python binding+bracket vectors byte-identical; fresh-process determinism 77/77; four execution-gap tests 4/4 green and explicitly unresolved; strict planning snapshot 25/6/0; `git diff --check` clean both repos; `DevCore.Data.csproj` protected hash `63EF2488...` unchanged; compat module + test deleted with no active reference remaining; leakage scan shows no binding/replay token on any buyer or execution surface; stale-reference scan clean in active code.
+
+RED evidence: the flight suites failed against `6d4cd32` (board-2.2 consumption, flight/provenance 1.1/1.0, no binding fields, no structured rejection); the cross-runtime vectors and the binding-propagation proofs (byte identity, strict validation, mutation-fails-closed, unbound-stays-unbound, malformed-bound-fails-closed) were regenerated from the real exporter and pinned on both runtimes.
+
+### DB writes / external side effects / cost
+
+None. **$0.**
+
+### What did not change
+
+Execution retrieval and the four execution-gap tests, the events-gate-to-planner boundary, WI-0036 flight allocation/realization/lane/authority semantics beyond the binding-carry, buyer surfaces, prompts, migrations, and runtime behavior. `wildcard-flight-plan-request/1.1` and `wildcard-flight-realization/1.1` are unchanged.
+
+### Open issues
+
+Execution retrieval remains a separate open **Slice D** gap. Slice D carries the binding to the execution boundary (`MarketSpreadInput` binding member, Tool Gateway, `SportsRetriever`, `OddsMarketClient` independent by-ID re-verification, `MarketSnapshot`, controller trust boundary) and corrects the doubleheader/team-date hazards the four gap tests characterize.
+
+### Posture
+
+Zero StatsAPI, `/events`, `/odds`, model, Tool Gateway, or network calls. Zero database access, migration, service start, AgentRun, capture, settlement, reconciliation, scheduling, or activation. No integration, push, PR, remote branch, or history rewrite. $0. gamePk 823438 untouched.
+
+### Slice Synopsis
+
+**Change:** The validated provider binding now propagates VERBATIM board(2.3) -> flight plan(1.2) -> flight-selection provenance(1.1) with a replay reference for bound members and nulls for unbound; the WI-0036 flight vertical migrated atomically onto the live board 2.3 and the frozen board-2.2 compatibility reproducer was deleted.
+**Reason:** Slice B validated the binding but stopped before flight; the WI-0036 flight vertical was pinned to a frozen board-2.2 seam that had to be retired to carry the binding into provenance.
+**Proof:** flight suites failed against `6d4cd32` pre-migration; then 1746/1746 .NET, 691/691 pytest, WI-0036 54/54 on board 2.3, C#/Python provenance vectors byte-identical (bound + unbound), verbatim-bytes/strict-validation/mutation-fails-closed proofs, structured historical-2.2 rejection, compat deleted with no active reference, leakage-free, snapshot 25/6/0, protected hash unchanged.
+**State:** dai this commit and vault this commit on local `wi/0035-provider-event-binding`, NOT pushed; both mains unmoved; no remote ref created; execution retrieval still a separate open Slice-D gap.
+**Next:** Slice D -- carry the binding to the execution boundary and enforce independent by-ID re-verification, correcting the doubleheader/team-date hazards. No flight or runtime use is authorized by Slice C.
