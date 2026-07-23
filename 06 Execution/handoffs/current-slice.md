@@ -17876,3 +17876,45 @@ audit passed.
 ops branch only, nothing pushed.
 **Next:** Operator go/no-go on ONE paid `/odds` screen (~2 credits) -- decide by
 ~17:45Z for the rank-1 TB@TOR window.
+
+---
+
+## Daily Evidence Operation 2026-07-23 (paid phase) -- Paid Screen Complete, Capture BLOCKED by Live Postponement
+
+**Date:** 2026-07-23 (paid window 16:09Z-16:22Z; continuation of the morning operation on
+`ops/2026-07-23-daily-evidence`)
+
+Freshness recheck (morning artifacts 60 min stale): one replacement free preflight
+(`356e553c...`) + one zero-quota `/events` re-observation (`cb7dbbef...`, last=0). Live
+gates dropped 822785 (`caller_state_mismatch`), 824406/824893 (`insufficient_start_margin`);
+823042 and 824247 stayed qualified.
+
+**Exactly one paid screen** at 16:14:51Z: bundle 1.4 `bc475cd0...`, `x-requests-last=2`,
+used 287->289, remaining 211 (2 credits, reconciled). 823042 ARI@STL **includable/primary**
+(disagreement 0.0187, 9 books); 824247 KC@DET **excluded** (`outside_market_contrast_range`,
+0.0158). Deterministic pass-2 replay (context `2368bbca...`) produced board `229ba2e0...`:
+**COHORT_PROPOSED_FOR_OPERATOR_REVIEW, primary [823042] only**. Flight
+`flight-2026-07-23-paid-cohort-1` frozen (fingerprint `a3560dc8...`, provenance 1.1 with
+verbatim binding `478cfe50...`).
+
+**Pre-capture gate BLOCKED the capture at 16:17:00Z:** live StatsAPI flipped 823042 to
+**Postponed (DI, Inclement Weather)** minutes after the screen -- the June-25 makeup
+postponed again. Substitution prohibited (824247 is a board rejection). **Zero captures,
+zero runs, zero db writes, zero model calls.** Terminal:
+`JULY23_PAID_SCREEN_COMPLETE_CAPTURE_BLOCKED`. Reconciliation queue for July 23: empty.
+Record: `06 Execution/reports/daily-evidence-paid-screen-pass2-capture-blocked-2026-07-23-v1.md`.
+
+### Daily Synopsis
+
+**Change:** One authorized paid screen (2 credits) produced a single pass-2 primary
+(823042); the capture was blocked when the game was weather-postponed minutes after the
+screen. No capture, no run, no settlement.
+**Reason:** Pre-capture gate independently rechecks live status; a postponed game must
+never be captured, and no substitute was board-authorized.
+**Proof:** Bundle `bc475cd0...` (last=2, 287->289); board `229ba2e0...` primary [823042];
+StatsAPI statusCode DI at 16:17:00Z; precheck shows 0 runs for all slate gamePks.
+**State:** Paid screen complete; captures attempted 0 / successful 0; KC@DET unplayed but
+board-rejected; Gate 4 unchanged FALSE pending future settlements; 2 of 8 credits used, $0
+model.
+**Next:** Operator: run the 2026-07-24 daily cycle (reconcile July 23 = nothing to settle;
+plan the new slate; the postponed ARI@STL makeup must re-qualify from scratch).
