@@ -2,9 +2,9 @@
 title: "WI-0035 Market-Contrast Candidate Screen v1"
 type: "work-item"
 date: "2026-07-19"
-status: "in-progress"
+status: "complete"
 project: "DAI"
-slice: "WI-0035 Slice 1: offline deterministic classifier core + planner-envelope projection"
+slice: "WI-0035 closed 2026-07-24 completion audit: Slices 1-3 + join diagnostics + events-gate operator + provider-event-binding vertical A-D all integrated and operationally proven"
 repos:
   dai: "code+tests (C# classifier + market-math reuse + python consumer compatibility)"
   dai-vault: "docs (this WI, architecture record, closeout, MOC, handoff)"
@@ -278,9 +278,16 @@ adapter re-implementing market math (bounded by the recorded reuse decisions).
 
 - work item: WI-0035 (ADO: AB#- when wired; no ADO item created)
 - branch: `wi/0035-market-contrast-candidate-screen` (dai + dai-vault, matching, from
-  9147549 / 83a055f; local only, not pushed / not merged)
-- pr: - (not pushed / not merged this slice)
-- commits: dai `a6e213b` (WI: WI-0035); vault commit recorded in the closeout
+  9147549 / 83a055f; "local only, not pushed / not merged" superseded 2026-07-24 audit --
+  all WI-0035 content integrated per the final disposition below); later WI-0035 arcs on
+  `wi/0035-market-contrast-source-adapter`, `wi/0035-market-contrast-join-diagnostics`,
+  `wi/0035-provider-event-binding`
+- pr: merged direct (fast-forward publication chains to dai main through `85af96d`)
+- commits: dai `a6e213b`, `ecd0ddb`, `a05b63b`, `8e044a4`, `0aae858`, `5e81b83`
+  (screen core/adapter/diagnostics), `c7d4a79` (events-gate r7B), binding vertical
+  `2e24782` (A), `6d4cd32` (B), `88092eb` (C), `85af96d` (D); vault `32a1d99`,
+  `3a82af0`, `533fd74` (publication record) -- every SHA verified an ancestor of the
+  matching published main 2026-07-24
 - tests: `platform/dotnet/DevCore.Api.Tests/AgentRuns/MarketContrastScreenTests.cs`;
   planner/cli suites updated (tier + vectors)
 - verification notes: Slice-1 closeout + current-slice handoff
@@ -307,3 +314,42 @@ a separately authorized, time-gated action no earlier than 2026-07-22T12:00:00Z:
 refreshed free preflight plus exactly one zero-quota `/events` gate observation (no `/odds`
 request in that authorization). A paid `/odds` attempt is proposed separately only when a
 current exact identity/start join from a screenable candidate exists.
+
+## final disposition (2026-07-24 completion audit)
+
+complete. The parent scope -- a governed producer of `input.market_contrast_screen`
+evidence, integrated into the operating loop with no autonomous authority -- is fully
+delivered and operationally proven:
+
+- Slices 1-3, join diagnostics, and the events-gate operator (1.1): integrated on both
+  mains (see commits above), per the 2026-07-20 superseding disposition.
+- Operating integration (the deferred Slice-4 scope): delivered by the provider-event
+  binding vertical Slices A-D (`2e24782` -> `6d4cd32` -> `88092eb` -> `85af96d`, published
+  dai main tip; vault publication record `533fd74` closes the vertical for scope) which
+  wires screen output through planner Pass-2, flight provenance, and enforcement at
+  execution retrieval. The Slice-4 precondition ("only after one reviewed live screen")
+  was met 2026-07-22; the binding policy was operationally proven 2026-07-23 (free cycle
+  5/5 bindings qualified; two authorized paid screens; capture `d329433e` executed through
+  the Slice-D enforced path and settled 2026-07-24). No autonomous scheduling or capture
+  exists; every operation remains operator-authorized.
+- verification (current, 2026-07-24): DevCore.Api.Tests 1760/1760 (includes
+  ProviderEventBindingTests, MarketContrastScreenTests, MarketContrastSourceAdapterTests,
+  SportsRetrieverTests), agent-service pytest 691/691, sports-app 134/134 + build clean.
+
+Open residue recorded truthfully (does not reopen scope; next actions need their own
+authorizations):
+
+- **corrective candidate (verified, unowned by any open WI): `caller_state_mismatch`
+  over-constraint** at `platform/dotnet/DevCore.Api/AgentRuns/MarketContrastSourceAdapter.cs`
+  lines 348-351 -- the adapter pre-eliminates a caller candidate on any
+  scheduled-vs-pregame schedule-state inequality even though line 349 already admits both
+  states as screenable; routine Scheduled->Pre-Game drift between slate freeze and screen
+  cost the paid screen its primary anchor twice on 2026-07-23 (16:11Z and 17:57Z). The
+  sibling `caller_start_mismatch` branch (exact start equality, lines 343-347) is asserted
+  by `MarketContrastSourceAdapterTests.cs:268`; the state-mismatch branch has ZERO test
+  coverage. The adapter is a sealed class with no owning interface; file header and full
+  git history are WI-0035. Recommended remediation: a corrective slice under the WI-0035
+  lineage, RED characterization tests first, considering a start-tolerance for the
+  exact-equality sibling in the same slice.
+- binding-vertical residual findings F1/F2/F3/F5 remain open follow-ups from the A-D
+  publication record; they are recorded accepted residue, not unfinished scope.

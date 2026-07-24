@@ -132,13 +132,19 @@ one); identity-status; WI-0002/0003; doubleheader capture operation; push/merge
 - work item: WI-0013
 - branch: `wi/0013-pilot-ops-hardening` (dai, from `7152818`)
 - pr: -- (not authorized)
-- commits: dai `85a8831` (7 files, +711/-27; guard + metering + tests + review fixes,
-  LOCAL ONLY) + dai-vault docs commit (runbook, ledger templates, drill package, this
+- commits: dai `85a8831` (7 files, +711/-27; guard + metering + tests + review fixes;
+  "LOCAL ONLY" superseded 2026-07-24 audit -- integrated per final disposition below)
+  + dai-vault docs commit (runbook, ledger templates, drill package, this
   WI, MOC, current-slice, handoff)
 - tests: DevCore.Api.Tests 1235/1235; agent-service pytest 453/453; vitest 134/134
+- verification notes: pre-integration re-verification recorded in the final disposition
+  below (field added 2026-07-24 completion audit; it was omitted at close)
 - docs updated: this WI; MOC; `06 Execution/plans/v1-concierge-operations-runbook-v1`;
   `06 Execution/plans/v1-delivery-ledger-template-v1`;
   `06 Execution/plans/v1-rc-drill-package-v1`; current-slice; handoff
+- lessons: none recorded at close (explicit none, 2026-07-24 completion audit -- the
+  standing release constraint and unexecuted-RC-drill gates below are scoped-out
+  conditions, not lessons)
 
 ## final disposition
 

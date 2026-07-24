@@ -292,3 +292,10 @@ Slice handoff appended to `06 Execution/handoffs/current-slice.md`; definition o
 `implementation-lifecycle` checked for a planning slice; disposition recorded as: standard and
 implementation plan complete; runtime implementation not started; local branch and commits only;
 not integrated. Status remains `in-progress`.
+
+**Integration reconciliation (added 2026-07-24 completion audit).** The disposition above is
+stale for Slices 1-4: dai main contains the WI-0031 implementation commits (Slice-4 SHAs
+`f926484` and `209d485` re-verified as ancestors of published dai main 2026-07-24),
+consistent with the Slice-4 body note "INTEGRATED". Slices 5 (execution telemetry /
+offline evaluation) and 6 (governed pilot integration) remain deferred and unimplemented;
+status correctly remains `in-progress` for that reason alone.

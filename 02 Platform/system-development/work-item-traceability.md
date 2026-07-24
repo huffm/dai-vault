@@ -25,12 +25,15 @@ One set of naming and linking conventions so any artifact (spec, branch, PR, com
 doc, lesson) can be traced to its work item and back — working from day one, before Azure
 DevOps is connected, and unchanged after.
 
-## current reality (verified 2026-07-09)
+## current reality (verified 2026-07-09; corrected forward 2026-07-24)
 
-Both repos are GitHub-hosted (`huffm/devcore-ai`, `huffm/dai-vault`). No Azure DevOps org,
-project, or Boards↔GitHub connection exists in this workspace yet. Therefore v1 runs in
-**local-spine mode**: work-item IDs are minted in the vault and the spec doubles as the
-work item's state holder.
+Both repos are GitHub-hosted (`huffm/devcore-ai`, `huffm/dai-vault`). As of the 2026-07-19
+WI-0033 discovery (see [[WI-0033-azure-devops-publication-contract-v1]] and ADR 0010), an
+Azure DevOps org `jera-technologies` with project `dai` (Basic process) now exists; no
+publication has occurred and no Boards↔GitHub connection is wired. v1 therefore still runs
+in **local-spine mode**: work-item IDs are minted in the vault and the spec doubles as the
+work item's state holder. The original 2026-07-09 "no org exists" claim is preserved here
+as history; WI-0033 supersedes it.
 
 ## identifiers
 

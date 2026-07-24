@@ -6,8 +6,8 @@ status: "complete"
 project: "DAI"
 slice: "WI-0022 Representative Protocol Failure Corpus v1"
 repos:
-  dai: "tests-only on branch wi/0022-discern-stress-protocol-failure-corpus (NOT integrated; main frozen 85a8831)"
-  dai-vault: "docs-only (coordinated branch; NOT integrated)"
+  dai: "tests-only on branch wi/0022-discern-stress-protocol-failure-corpus (integrated -- dai/main ff to a0ca54d per final disposition; front matter corrected 2026-07-24 audit)"
+  dai-vault: "docs-only (coordinated branch; integrated per final disposition; front matter corrected 2026-07-24 audit)"
 tags:
   - system-development
   - work-item
@@ -99,7 +99,8 @@ proven final policy").
 
 - work item: WI-0022 (implements PH-01 Green subset; PH-01 marked pulled+active)
 - branch: wi/0022-discern-stress-protocol-failure-corpus (dai from 85a8831 +
-  coordinated dai-vault from 6ac892c; BOTH LOCAL-ONLY, not pushed, not integrated)
+  coordinated dai-vault from 6ac892c; "BOTH LOCAL-ONLY" superseded 2026-07-24 audit --
+  both pushed and integrated per final disposition)
 - pr: —
 - commits: dai e348310 (contract+fixtures), d35de5c (harness), f057a39 (seam tests);
   vault commits recorded at close

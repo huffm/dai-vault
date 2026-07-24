@@ -6,8 +6,8 @@ status: "complete"
 project: "DAI"
 slice: "WI-0023 Tool Authorization Fitness v1"
 repos:
-  dai: "tests-only on branch wi/0023-interrogate-probe-tool-authorization-fitness (NOT integrated; main a0ca54d)"
-  dai-vault: "docs-only (coordinated branch; NOT integrated)"
+  dai: "tests-only on branch wi/0023-interrogate-probe-tool-authorization-fitness (integrated -- dai/main ff to 3f244c8 per final disposition; front matter corrected 2026-07-24 audit)"
+  dai-vault: "docs-only (coordinated branch; integrated per final disposition; front matter corrected 2026-07-24 audit)"
 tags:
   - system-development
   - work-item
@@ -97,7 +97,8 @@ issues). Enforcement is explicitly out of scope.
 
 - work item: WI-0023 (implements PH-06 Green subset; PH-06 marked pulled+active)
 - branch: wi/0023-interrogate-probe-tool-authorization-fitness (dai from a0ca54d +
-  coordinated dai-vault from 8c24bd9; BOTH LOCAL-ONLY, not pushed, not integrated)
+  coordinated dai-vault from 8c24bd9; "BOTH LOCAL-ONLY" superseded 2026-07-24 audit --
+  both pushed and integrated per final disposition)
 - pr: —
 - commits: dai ef8acde (declarations), 0534de1 (harness), 383d7cb (seam tests);
   vault commits recorded at close

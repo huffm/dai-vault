@@ -6,7 +6,7 @@ status: "in-progress"
 project: "DAI"
 slice: "WI-0036 Slices 1-3 verified and integrated 2026-07-22 (Slices 4-6 deferred)"
 repos:
-  dai: "code+tests+migration integrated to main 48a29313988beac34cb8dad388371c472ff21d73 (migration generated, NOT applied)"
+  dai: "code+tests+migration integrated to main 48a29313988beac34cb8dad388371c472ff21d73 (migration APPLIED to the dev database during the 2026-07-22 canary; front matter corrected 2026-07-24 audit)"
   dai-vault: "docs integrated via implementation commit fa31a3e91a09753602e34ca8cee3d38e059d9dd0; vault main has since advanced with later post-integration reconciliation/correction commits"
 tags:
   - system-development
@@ -75,8 +75,10 @@ correction commit was required.
    producer-generated scheduled vector is a non-blocking future test enhancement, not an
    integration prerequisite.
 
-The migration `20260722100648_AddAgentRunFlightSelectionWriteback` was generated but is
-**NOT applied**; no database write occurred. WI-0036 remains `in-progress` and Slices 4-6
+The migration `20260722100648_AddAgentRunFlightSelectionWriteback` was generated but was
+**NOT applied at Slice-3 close** (since applied to the dev database during the 2026-07-22
+canary -- see the migration reconciliation note at the end of this spec; corrected forward
+2026-07-24 audit). WI-0036 remains `in-progress` and Slices 4-6
 remain deferred and separately gated. No source, model, Tool Gateway, database, AgentRun,
 capture, settlement, reconciliation, scheduling, activation, observation, or paid flight
 ran; cost **$0**. Repository publication granted **no runtime or commercial authority**.
@@ -727,3 +729,14 @@ action = a separately authorized Slice-4 decision, or migration application unde
 explicit authorization -- neither is granted here. The 2026-07-22 events-gate observation
 and any paid wildcard flight remain separately governed; nothing here authorizes
 activation, capture, retrieval, spend, or database writes.
+
+**Migration reconciliation (added 2026-07-24 completion audit).** The "NOT applied"
+statements above were true at Slice-3 close but are now stale: migration
+`20260722100648_AddAgentRunFlightSelectionWriteback` was applied to the local dev
+database during the separately authorized 2026-07-22 exact-identity canary capture
+(verified in `__EFMigrationsHistory` by the 2026-07-23 completion audit; the writeback
+columns are live -- current calibration reads expose populated
+`flightPlanFreezeFingerprint`/flight-selection fields, exercised again by the 2026-07-24
+settlement of run `d329433e`). Slices 4 (Interrogate signal-need projection), 5 (callable
+protocol-service seam), and 6 (limited orchestrated activation) remain deferred and
+unimplemented; status correctly remains `in-progress`.

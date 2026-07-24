@@ -133,13 +133,17 @@ export determinism; internal surface retaining numeric confidence.
 - work item: WI-0011
 - branch: `wi/0011-buyer-brief-contract` (dai, from `e64567f`)
 - pr: -- (not authorized)
-- commits: dai `140b5a2` (20 files, +1546/-359; implementation + tests + review fixes,
-  LOCAL ONLY) + dai-vault docs commit at close (this WI, freeze-doc RC criterion 1
+- commits: dai `140b5a2` (20 files, +1546/-359; implementation + tests + review fixes;
+  "LOCAL ONLY" superseded 2026-07-24 audit -- integrated per final disposition below)
+  + dai-vault docs commit at close (this WI, freeze-doc RC criterion 1
   correction, MOC, current-slice, handoff)
 - tests: DevCore.Api.Tests 1176/1176; sports-app vitest 134/134
 - verification notes: validation record above; live checks on 609d433e / 822882
 - docs updated: this WI; freeze-doc RC criterion 1 correction (operator-authorized);
   MOC; current-slice; handoff
+- lessons: none recorded at close (explicit none, 2026-07-24 completion audit -- no
+  reusable-lesson section was authored for this slice; single-sourcing of read blocks
+  was recorded above as a candidate follow-up instead)
 
 ## final disposition
 

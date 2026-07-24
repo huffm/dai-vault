@@ -168,8 +168,9 @@ boundary).
 - branch: `wi/0034-daily-evidence-planner-stage-0` (dai + dai-vault, matching, from ac634b5 /
   e5d90e9; reviewed, pushed, ff-integrated 2026-07-19 -> dai main `e3ef9a5`, vault main `6e5c99d`);
   `wi/0034-daily-evidence-planner-cli` (dai + dai-vault, matching, from e3ef9a5 / 6e5c99d;
-  local only, not pushed / not merged)
-- pr: - (Slice 2 not pushed / not merged this slice)
+  "local only, not pushed / not merged" superseded 2026-07-24 audit -- Slice-2 commits
+  `3ab9568` + `9147549` verified ancestors of published dai main)
+- pr: - (merged direct; Slice-2 state note superseded per the branch line above)
 - commits: recorded in the Slice-1 closeout at close
 - tests: `services/agent-service/tests/test_daily_evidence_planner.py` (35 after the
   slice-2 contract review); `services/agent-service/tests/test_daily_evidence_planner_cli.py`
@@ -218,3 +219,10 @@ boundary).
 Slice handoff appended to `06 Execution/handoffs/current-slice.md`; status stays `in-progress`
 (Slices 2-4 deferred); disposition: Slice 1 implementation complete / merge ready / not
 integrated; next governed action = independent review + integration of the local branches.
+
+**Integration reconciliation (added 2026-07-24 completion audit).** The disposition above is
+stale: Slice 1 (`ff55398` + review `e3ef9a5`) and Slice 2 (`3ab9568` + review `9147549`)
+are all verified ancestors of published dai main; the planner core and CLI run in the
+operating cadence at board/planner contract 2.3. Slices 3 (bounded free schedule adapter)
+and 4 (operating/skill integration) remain deferred and not separately authorized; status
+correctly remains `in-progress` for those slices only.

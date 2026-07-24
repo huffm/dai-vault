@@ -123,12 +123,16 @@ isolation 404; WI-0011 reuse (not re-derivation).
 - work item: WI-0012
 - branch: `wi/0012-settled-outcome-recap` (dai, from `140b5a2`)
 - pr: -- (not authorized)
-- commits: dai `7152818` (5 files, +989/-43; implementation + tests + review fixes,
-  LOCAL ONLY) + dai-vault docs commit at close (this WI, MOC, current-slice, handoff)
+- commits: dai `7152818` (5 files, +989/-43; implementation + tests + review fixes;
+  "LOCAL ONLY" superseded 2026-07-24 audit -- integrated per final disposition below)
+  + dai-vault docs commit at close (this WI, MOC, current-slice, handoff)
 - tests: DevCore.Api.Tests 1212/1212; sports-app vitest 134/134
 - verification notes: validation record above; live checks on 609d433e / 6c9d433e /
   6816433e / 0c8e433e
 - docs updated: this WI; MOC; current-slice; handoff
+- lessons: none recorded at close (explicit none, 2026-07-24 completion audit -- no
+  reusable-lesson section was authored for this slice; the accepted tense-divergence
+  note above is the only recorded residue)
 
 ## final disposition
 

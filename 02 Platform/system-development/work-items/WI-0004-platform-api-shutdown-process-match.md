@@ -20,7 +20,10 @@ related:
 
 # WI-0004 truthful platform api shutdown v1
 
-**Status: IN PROGRESS. Implementation AUTHORIZED 2026-07-11** (Truthful Platform API Shutdown v1
+**Status: COMPLETE** (banner corrected forward 2026-07-24 completion audit; the stale
+"IN PROGRESS" opener predated closure -- closure evidence is the links block and definition
+of done; integrated to dai/main at `e8050a9`). Originally: Implementation AUTHORIZED
+2026-07-11 (Truthful Platform API Shutdown v1
 execution prompt). Registered 2026-07-10 BACKLOG from a follow-up in the nightly closeout;
 unblocked after WI-0005 integrated. Filename kept stable to preserve the MOC wikilink; title
 updated to the authorized scope.

@@ -22,7 +22,9 @@ related:
 
 # WI-0006 identity-safe mlb doubleheader resolution v1
 
-**Status: IN PROGRESS. Authorized 2026-07-13** (Identity-Safe MLB Doubleheader Resolution v1
+**Status: COMPLETE** (banner corrected forward 2026-07-24 completion audit; the stale
+"IN PROGRESS" opener predated closure -- integration record confirms integrated + pushed,
+ff `e8050a9..4f8f381`). Originally: Authorized 2026-07-13 (Identity-Safe MLB Doubleheader Resolution v1
 execution prompt). Registered as the named follow-up that [[WI-0005-starter-retrieval-caches-transport-failures]]
 explicitly deferred: "Fixing it requires threading a game discriminator through the
 `/source-readiness` caller path -- a separate WI."

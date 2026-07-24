@@ -7,7 +7,7 @@ project: "DAI"
 slice: "WI-0021 AI Engineering Protocol Hardening Candidate Specifications v1"
 repos:
   dai: "unchanged (read-only inspection at 85a8831)"
-  dai-vault: "docs-only (WI-0021 branch; NOT integrated)"
+  dai-vault: "docs-only (WI-0021 branch; integrated -- ff to dai-vault/main, branch retained at 361a2e6 per final disposition; front matter corrected 2026-07-24 audit)"
 tags:
   - system-development
   - work-item
@@ -87,8 +87,9 @@ loci at pull time); PH-05 specification could read as implementation pressure
 ## links  <!-- LITE -->
 
 - work item: WI-0021
-- branch: wi/0021-protocol-hardening-candidate-specifications (dai-vault; local only,
-  NOT pushed, NOT integrated -- awaiting operator review)
+- branch: wi/0021-protocol-hardening-candidate-specifications (dai-vault; "local only,
+  NOT pushed, NOT integrated" superseded 2026-07-24 audit -- pushed and integrated per
+  final disposition, retained at `361a2e6`)
 - pr: —
 - commits: recorded at close on the branch
 - tests: none (docs-only)

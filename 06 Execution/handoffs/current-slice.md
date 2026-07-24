@@ -18033,3 +18033,44 @@ before/after row diff = 1 changed row; deltas +1 reconciled / +1 valid settled.
 Gate 4 refreshed truthfully; branch has one new settlement commit, unpushed.
 **Next:** Operator: review + publish the late-slate chain (03a576c..settlement commit),
 then realign ops/2026-07-24 and mint the caller_state_mismatch corrective slice.
+
+---
+
+## Work-Item Completion Audit 2026-07-24 -- PUBLISHED 2354707 + WI-0035 CLOSED
+
+**Date:** 2026-07-24 **Branch:** `audit/2026-07-24-work-item-completion` (from published main `2354707`)
+
+Late-slate chain PUBLISHED: ff push `5bf9b91..2354707` (exactly 03a576c, f5c724c,
+2354707; allowlist exact; diff --check + secret scans clean); remote main verified
+`2354707`; local main + `ops/2026-07-24-daily-evidence` ff-realigned. wi/0035 dirty
+worktree untouched (6 paths preserved).
+
+All 25 registered WIs audited against repo truth (evidence matrix in
+`06 Execution/reports/dai-work-item-completion-audit-2026-07-24-v1.md`). ONE transition:
+**WI-0035 in-progress -> complete** (Slices 1-3 + diagnostics + events-gate integrated;
+operating integration delivered by binding vertical A-D `2e24782`..`85af96d`, proven
+operationally 07-23, capture settled 07-24; all SHAs git-verified ancestors of published
+mains; 8/8 close links populated). 13 complete items got dated metadata repairs (stale
+IN-PROGRESS banners, LOCAL-ONLY/NOT-integrated claims, missing lessons/verification
+fields); WI-0036 "migration NOT applied" corrected forward (applied during 07-22 canary);
+traceability doc's "no ADO org" corrected per WI-0033. Retained open: WI-0031 (S5-6),
+WI-0032 (S3-5), WI-0034 (S3-4), WI-0036 (S4-6); blocked backlog WI-0002/0003 gates
+quoted+unmet. Suites current: DevCore 1760/1760, pytest 691, sports-app 134/134+build,
+snapshot tests 73/73. Strict snapshot fails on the stale reconciliation sidecar (2
+warnings, outside this audit's allowlist -- clears at next cadence close). Counts after:
+19 complete / 4 in-progress / 2 blocked; zero undocumented work.
+
+### Daily Synopsis
+
+**Change:** Published the settled July 23 chain to vault main `2354707`, realigned local
+refs, and reconciled all 25 work items -- WI-0035 closed with proof; 15 docs repaired.
+**Reason:** Operator closure authorization: one baseline, evidence-backed dispositions,
+no stale status left misleading.
+**Proof:** Remote main == 2354707; every integration SHA git-verified as a published-main
+ancestor; four suites green same-day; before/after snapshots agree except the one audited
+transition.
+**State:** 19/25 complete, 4 in-progress (all with named deferred slices), 2 blocked
+backlog; caller_state_mismatch recorded as the verified corrective candidate (WI-0035
+lineage, MarketContrastSourceAdapter.cs:348-351, zero coverage).
+**Next:** Operator review of this audit commit, then authorize the WI-0035 corrective
+slice (RED characterization tests for PreEliminationReason first).

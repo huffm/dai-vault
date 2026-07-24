@@ -158,3 +158,9 @@ under the exact-prefix protocol) created; local commits on wi/0024-reference-int
 in both repos; push and merge remain unauthorized; no runtime, prompt, schema, or
 product behavior changed; protected pre-existing state untouched and re-verified against
 preflight baselines.
+
+**Integration record (added 2026-07-24 completion audit).** The push/merge deferral above
+was later lifted under separate authorization: the WI-0024 content is on published dai
+main (`876b73a` "docs(system): repair WI-0024 reference integrity" verified an ancestor
+of main 2026-07-24) and the coordinated vault content is on published vault main. The
+"push and merge remain unauthorized" sentence describes the state at close only.

@@ -192,8 +192,9 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   ([[capability-recommendation-and-tool-selection-standard-v1]]) plus a six-slice
   implementation plan; the model is a semantic recommender, the Tool Gateway remains the
   execution authority, and relevant-but-inaccessible recommendations are retained as
-  capability-gap telemetry. **in-progress** (planning + documentation only 2026-07-18;
-  runtime not started; local vault-only branch + commits; not integrated). Reuses the Tool
+  capability-gap telemetry. **in-progress** (Slices 1-4 delivered and integrated -- dai main
+  contains the implementation through Slice-4 `f926484`+`209d485`, verified 2026-07-24
+  audit; Slices 5 telemetry + 6 pilot remain deferred). Reuses the Tool
   Gateway doctrine and the prompt-selection provenance dialect (ADR 0007) rather than forking.
 
 - [[WI-0032-dai-knowledge-architecture-and-writing-standard-v1]] — DAI Knowledge Architecture and
@@ -226,10 +227,11 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   Slice 1 delivered the offline deterministic planner core in `services/agent-service`
   (consumes the canonical `pooled_calibration` sufficiency verdict, never recomputes policy;
   closed six-outcome Daily Evidence Board; missing-capability records for the future WI-0031
-  seam; 19 fixture/invariant tests; canonical byte-deterministic JSON + Markdown projection).
-  Slices 2-4 (CLI, schedule adapter/wrapper, operating integration) deferred and separately
-  gated. **in-progress** (Slice 1 implementation complete 2026-07-19; local matching branches;
-  not pushed; not integrated; zero screening/capture/execution authority).
+  seam; 25 fixture/invariant tests at Slice-1 close, 35 after the Slice-2 review; canonical
+  byte-deterministic JSON + Markdown projection). Slice 2 delivered the portable CLI.
+  **in-progress** (Slices 1-2 integrated on published dai main -- `e3ef9a5`, `3ab9568`,
+  `9147549` verified ancestors 2026-07-24 audit; Slices 3 schedule adapter + 4 operating/skill
+  integration remain deferred; zero screening/capture/execution authority).
 
 - [[WI-0035-market-contrast-candidate-screen]] — Market-Contrast Candidate Screen v1 (the
   niche/domain producer for the planner capability `input.market_contrast_screen`;
@@ -239,10 +241,13 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   doctrine; blocker-vs-exclusion semantics; single de-vig authority `MarketDepth.DevigPair`;
   additive `H2hBookCount`; canonical envelope projection `input-evidence-envelope/1.1`;
   planner tier-aware ordering at contracts 2.1; cross-language vectors in both suites).
-  Slices 2-4 (bounded source adapter, one governed live screen, operating integration)
-  deferred and separately gated. **in-progress** (Slice 1 implementation complete
-  2026-07-19; local matching branches; not pushed; not integrated; result authorizes
-  nothing; dai-market disagreement stays unknown until generation).
+  Slices 2-3 (bounded source adapter, one governed live screen) were delivered and
+  integrated; operating integration was delivered by the provider-event binding vertical
+  A-D (`2e24782`..`85af96d`, published dai main tip) and operationally proven 2026-07-23.
+  **complete** (2026-07-24 completion audit; all integration SHAs verified ancestors of
+  the published mains; result authorizes nothing; known corrective candidate
+  `caller_state_mismatch` over-constraint recorded in the spec's final disposition;
+  binding residuals F1/F2/F3/F5 recorded as accepted follow-ups).
 
 - [[WI-0036-wildcard-evidence-discovery-loop-v1]] — Wildcard Evidence Discovery Loop v1
   (evidence-operations + cognitive-factory architecture; parent for the bounded wildcard

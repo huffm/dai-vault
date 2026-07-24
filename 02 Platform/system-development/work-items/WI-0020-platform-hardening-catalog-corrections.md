@@ -7,7 +7,7 @@ project: "DAI"
 slice: "DAI AI Engineering Hardening Catalog v1.1 -- Evidence Taxonomy, Branch Policy, Credential Exposure, and Fitness-Check Corrections"
 repos:
   dai: "unchanged (read-only history verification only)"
-  dai-vault: "docs-only (dedicated branch, NOT integrated)"
+  dai-vault: "docs-only (dedicated branch; integrated -- ff to dai-vault/main at 5c2500b per final disposition; front matter corrected 2026-07-24 audit)"
 tags:
   - system-development
   - work-item

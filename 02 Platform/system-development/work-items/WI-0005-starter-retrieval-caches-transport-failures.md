@@ -22,7 +22,9 @@ related:
 
 # WI-0005 identity-safe starter cache v1
 
-**Status: IN PROGRESS. Implementation AUTHORIZED 2026-07-11** (Identity-Safe Starter Cache v1
+**Status: COMPLETE** (banner corrected forward 2026-07-24 completion audit; the stale
+"IN PROGRESS" opener predated closure -- definition of done fully checked, ff merge
+`bb10c3c..4693b9d`). Originally: Implementation AUTHORIZED 2026-07-11 (Identity-Safe Starter Cache v1
 execution prompt). Registered 2026-07-10 BACKLOG from a defect reproduced during the day-2
 capture screen; unblocked after the v2 cadence wrap completed.
 

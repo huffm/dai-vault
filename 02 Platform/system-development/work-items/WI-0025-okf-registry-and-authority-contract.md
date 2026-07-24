@@ -184,3 +184,9 @@ verified on 2026-07-16 per the reviewed authorization contract; O8 recorded
 as retention; local commits on wi/0025-okf-registry in both repos; push and
 merge remain unauthorized; Phase 2+ not begun; protected pre-existing state
 untouched and re-verified against preflight baselines.
+
+**Integration record (added 2026-07-24 completion audit).** The push/merge deferral above
+was later lifted under separate authorization: the WI-0025 content is on published dai
+main (`c6166e2` "docs(system): add WI-0025 okf registry schema and historical notices"
+verified an ancestor of main 2026-07-24) and the coordinated vault content is on
+published vault main. Phase 2+ remains not begun; that deferral is intact.
