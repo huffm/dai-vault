@@ -18074,3 +18074,39 @@ backlog; caller_state_mismatch recorded as the verified corrective candidate (WI
 lineage, MarketContrastSourceAdapter.cs:348-351, zero coverage).
 **Next:** Operator review of this audit commit, then authorize the WI-0035 corrective
 slice (RED characterization tests for PreEliminationReason first).
+
+---
+
+## WI-0037 Game-State Correctness v1 -- MINTED (planning only)
+
+**Date:** 2026-07-24 **Branch:** `wi/0037-game-state-correctness` (from published main `af69725`)
+
+Audit chain reviewed adversarially and PUBLISHED: ce78470 verified (36 cited SHAs
+re-confirmed as published-main ancestors; no historical rewrite; scans clean), plus two
+correction commits -- febde72 (WI-0014 dangling reference resolved:
+NEVER_MINTED_PROPOSAL, the ungated cloud stage-2 proposal from 07-15) and af69725
+(reconciliation sidecar refreshed to 2026-07-24 sources, verbatim-copy convention).
+Vault main ff-published 2354707 -> af69725 (remote verified); ops/2026-07-24 realigned;
+strict snapshot 0 warnings. WI-0035 remains complete.
+
+WI-0037 minted as a NEW corrective WI (WI-0035 not reopened): parent invariant =
+deterministic test-pinned game-state truth across planning/screening/capture/finality/
+settlement. Slice 1 (monotonic caller-state progression) and Slice 2 (canonical
+date-bracketed status resolution) DEFINED with proof requirements and exclusions;
+NEITHER authorized. MOC registered with full backlog sequencing (S1 next, S2 follows,
+WI-0034 S4 after correctness; all other deferrals unchanged). No source change, no
+implementation, zero cost.
+
+### Daily Synopsis
+
+**Change:** Published the reviewed audit chain (final main `af69725`), resolved WI-0014
+as never-minted, refreshed the planning sidecar, and minted WI-0037 with two defined,
+unauthorized corrective slices.
+**Reason:** Operator authorization to establish the audit as baseline and stage the
+game-state corrective work without implementing it.
+**Proof:** Remote main == af69725; strict snapshot 26 items / 0 warnings on the WI-0037
+branch; every audit claim re-verified against git ancestry.
+**State:** 19 complete / 5 in-progress (incl. WI-0037 planning) / 2 blocked; ops-07-24
+branch == published main; wi/0035 dirty worktree untouched.
+**Next:** Operator: authorize WI-0037 Slice 1 implementation (RED characterization
+matrix first).

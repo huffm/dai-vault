@@ -358,6 +358,27 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   scheduling/activation action occurred; cost $0; no runtime or commercial authority
   granted. WI-0036 stays **in-progress** with Slices 4-6 deferred.
 
+- [[WI-0037-game-state-correctness-v1]] — Game-State Correctness v1 (corrective;
+  sports-v1 evidence operations): parent invariant = deterministic, test-pinned agreement
+  with authoritative MLB game-state truth across planning, screening, capture, finality,
+  and settlement boundaries. Created 2026-07-24 from the completion audit's two verified
+  corrective findings (July 23 operational evidence): Slice 1 = monotonic caller-state
+  progression (the `caller_state_mismatch` over-constraint at
+  `MarketContrastSourceAdapter.PreEliminationReason`, twice-demonstrated paid cost, zero
+  coverage) and Slice 2 = canonical date-bracketed status resolution (frozen Eastern
+  bracket + exact gamePk + exactly-one-match across all consumers; doubleheader/makeup/
+  duplicate handling; no positional bucket selection). Discovered by WI-0035 operational
+  validation; corrects behavior exercised through WI-0034 and WI-0035; related to
+  WI-0036 flight/provenance consumers. WI-0035 is NOT reopened. **in-progress**
+  (planning only 2026-07-24; NEITHER slice authorized; no implementation).
+  **Backlog sequencing (2026-07-24 briefing + audit):** WI-0037 Slice 1 is the
+  recommended next implementation; Slice 2 follows Slice 1; WI-0034 Slice 4
+  (operating/skill integration; its precondition is met) should follow the correctness
+  slices; WI-0034 Slice 3 remains deferred; WI-0031 Slices 5-6 remain deferred; WI-0032
+  Slices 3-4 remain deferred and Slice 5 activation-gated; WI-0036 Slices 4-5 remain
+  deferred and Slice 6 activation-gated; WI-0002 and WI-0003 remain valid conditional
+  backlog. No status or supersession change to any of those items.
+
 ## scope boundary of this registry
 
 `WI-####` items cover qualifying slices per the WI-0007 qualification rule (canonical
