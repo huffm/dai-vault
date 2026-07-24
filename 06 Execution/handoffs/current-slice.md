@@ -17994,3 +17994,42 @@ row verified (fingerprint match, unsettled); DB 304 rows.
 unchanged; caller_state_mismatch flagged twice.
 **Next:** Operator: authorize settlement reconciliation of run `d329433e...` after
 TB@TOR is officially Final tonight (finals guard first).
+
+---
+
+## Daily Evidence 2026-07-24 Settlement Closeout -- 822785 TB@TOR SETTLED INCORRECT
+
+**Date:** 2026-07-24 (~12:00Z-12:20Z) **Branch:** `ops/2026-07-23-late-slate-reevaluation`
+
+Two-pass authorization: first pass STOPPED at strict preflight (5 blockers, no write)
+because `-RequireRegistry -RequireBackedDepth -FailOnWarnings` assert registry-route
+fields this live-authoritative capture never populates; operator re-authorized with the
+live-path flag set (`-RequireUnreconciled` only) plus a strict five-warning semantic
+allowlist. Finals guard READY exit 0; independent StatsAPI re-read confirmed
+`codedGameState=F`, TB (away) 1 / TOR (home) 3. Preflight exit 0, ready 1, blockers 0,
+warnings exactly the 5 allowlisted. Persisted-evidence checks passed (regime
+`starter_enriched_market_backed_depth` observed, fidelity Pass, market-agreed 9 books,
+flight `flight-2026-07-23-paid-cohort-2`).
+
+ONE canonical write `POST /api/agent-runs/reconcile`: HTTP 200, `SingleMatch`, run
+`d329433e-f36b-1410-8196-00373db4b724`, **evalStatus `incorrect`** (lean away @ 0.75,
+result home_win 3-1). Evaluation row `5a46433e...` @ 12:18Z. Deltas verified: rows
+304->304, reconciled 159->160, unreconciled 145->144, valid settled 156->157, correct
+81->81. Cross-run diff: exactly one row changed. Zero credits; dai untouched
+(`85af96d`); wi/0035 worktree preserved. Runtime (docker engine, devcore-sql, api
+:5007) started and stopped by this op. Record:
+`06 Execution/reconciliations/daily-evidence-second-screen-settlement-2026-07-24-v1.md`.
+
+### Daily Synopsis
+
+**Change:** Settled the July 23 second-screen capture 822785 TB@TOR as home_win /
+incorrect through the canonical identity reconcile after a blocked-then-corrected
+two-pass authorization.
+**Reason:** Game went Final (TB 1, TOR 3); the away lean at 0.75 market-agreed lost.
+**Proof:** Finals guard READY + StatsAPI `codedGameState=F`; preflight exit 0 with only
+the 5 allowlisted live-path warnings; reconcile response `SingleMatch`/`incorrect`;
+before/after row diff = 1 changed row; deltas +1 reconciled / +1 valid settled.
+**State:** July 23 evidence chain fully closed; valid settled 157 on the live read;
+Gate 4 refreshed truthfully; branch has one new settlement commit, unpushed.
+**Next:** Operator: review + publish the late-slate chain (03a576c..settlement commit),
+then realign ops/2026-07-24 and mint the caller_state_mismatch corrective slice.
