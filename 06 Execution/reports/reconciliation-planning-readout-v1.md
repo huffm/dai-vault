@@ -30,10 +30,12 @@ newest reconciliation record, consumers must treat it as stale and warn.
 ```yaml
 planning-readout:
   schema_version: "1.0"
-  as_of: "2026-07-15"
-  source_date: "2026-07-15"
+  as_of: "2026-07-24"
+  source_date: "2026-07-24"
   source_type: reconciliation-closeout
   sources:
+    - "06 Execution/reconciliations/daily-evidence-second-screen-settlement-2026-07-24-v1.md"
+    - "06 Execution/reports/july-22-canary-settlement-reconciliation-2026-07-23-v1.md"
     - "06 Execution/reconciliations/cohort-v4-stragglers-reconciliation-2026-07-15-v1.md"
     - "06 Execution/reports/gate4-evidence-readout-v2-day2-2026-07-11-v1.md"
     - "06 Execution/reports/hardened-regime-baseline-measurement-2026-07-11-v1.md"
@@ -87,3 +89,16 @@ planning-readout:
   not readable. captured/settled/excluded/correct/incorrect above remain the v2
   cadence facts per the original convention; the v1-era settlement detail lives in the
   2026-07-15 reconciliation record.
+- 2026-07-24 refresh (two single-run settlement records, copied verbatim): july-22
+  canary (823438) settled CORRECT 2026-07-23 -- its record states calibration-filtered
+  valid settled set 59 -> 60 and "gate 4 / conclusions_allowed FALSE (unchanged)";
+  july-23 second-screen capture (822785, run d329433e) settled INCORRECT 2026-07-24 --
+  its record states, on the live prompt-route-calibration read (a broader denominator
+  than the filtered set, per that record's own baseline note): total rows 304
+  (unchanged), reconciled 159 -> 160, valid settled 156 -> 157, correct-lean 81 -> 81.
+  The v2 cadence facts and the gate block above remain UNCHANGED per convention: both
+  settlement records state no threshold or policy change, and no aggregate gate-4
+  readout newer than 2026-07-11 exists, so gate_valid_directional_n and market_opposed
+  are NOT advanced here (single-run records do not restate them; nothing is computed
+  in this sidecar). Small-sample language stands: every gate conclusion remains
+  disallowed (gate_conclusions_allowed false).
