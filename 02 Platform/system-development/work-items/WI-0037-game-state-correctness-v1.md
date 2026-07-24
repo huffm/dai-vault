@@ -160,7 +160,28 @@ future question but must not alter behavior); date-bucket resolver work (Slice 2
 schedule-adapter automation; operating-skill integration; provider-binding changes;
 planner schema changes; paid validation calls.
 
-### Slice 2 -- canonical date-bracketed status resolution (defined; NOT authorized)
+### Slice 2 -- canonical date-bracketed status resolution (DESIGN COMPLETE 2026-07-24; NOT authorized, NOT implemented)
+
+> Design state (2026-07-24, superseding "defined"): full read-only surface mapping and
+> design completed -- see
+> [[wi-0037-slice-2-status-resolution-design-2026-07-24-v1]]. Verified conclusions:
+> the C# identity core is fail-closed and pinned (resolver date scope is an implicit
+> caller invariant, both callers provably date-scoped); CONFIRMED defects are (D1) the
+> finals guard's bare-`gamePks=` fetch + all-bucket flatten false-DEFECTing the
+> legitimate postponed+makeup two-bucket class (untested), and (D2) `OddsScheduleClient`
+> `DistinctBy(Date)` collapsing legitimate same-date doubleheaders on reference
+> surfaces (zero tests); the realized July 23 cost was the OPERATOR gap (no canonical
+> date-bracketed status script; discipline prose-only). "Exactly one match" is a STAGED
+> policy: bracket-filter first, exact gamePk within bracket, uniqueness within bracket;
+> same-pk entries outside the bracket are reschedule context, not duplicates.
+> Architecture: Option B -- shared versioned contract `game-status-resolution/1.0` +
+> one canonical fixture corpus (24 vectors) consumed by both xunit and the PowerShell
+> harness. Null frozen `ScheduleState` -> typed validation rejection (rider).
+> Decomposition DECIDED: two implementation slices -- 2-i (contract + fixtures +
+> finals-guard staged-bracket correction + canonical operator script + doctrine),
+> then 2-ii (C# conformance: resolver seam, DH-safe dedup, batch-boundary tests,
+> null-state rider, xunit corpus runner). Neither is authorized; the r7a26 hygiene
+> candidate stays outside WI-0037.
 
 **Problem.** As above: date-scoping discipline is distributed and partially implicit;
 latent risks are resolver callers assumed date-scoped, `FirstOrDefault` in

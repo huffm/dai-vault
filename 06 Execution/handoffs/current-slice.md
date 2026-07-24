@@ -18182,3 +18182,43 @@ defect was fixed RED-first with full characterization.
 commit local pending its own publication.
 **Next:** Publish this closeout, then operator decides WI-0037 Slice 2
 planning/review authorization.
+
+---
+
+## WI-0037 Slice 2 -- DESIGN COMPLETE (canonical status resolution), Decomposed 2-i/2-ii
+
+**Date:** 2026-07-24 **Branch:** `wi/0037-game-state-correctness-slice-2-planning` (from published `14c3926`)
+
+Read-only surface mapping across dai (0a9129b) + vault + scripts + python. Verdict:
+C# identity core COMPLIANT (resolver fail-closed, 24 pinned DH scenarios, both callers
+date=-scoped; date scope = implicit caller invariant to formalize). CONFIRMED defects:
+D1 finals guard fetches bare gamePks= and flattens all dates[] buckets ->
+FALSE-DEFECTs the legitimate postponed+makeup two-bucket class (exactly July 23's
+identity shape; multi-bucket case untested); D2 OddsScheduleClient DistinctBy(Date)
+collapses legitimate same-date DHs on reference surfaces (zero tests). Realized cost
+lives in the OPERATOR gap: no canonical date-bracketed status script; "date= + gamePk,
+never dates[0]" is prose-only in two reports. Python decides nothing (no HTTP client);
+preflight-settlement resolves no status. Invariant refined to a STAGED policy
+(bracket-filter -> exact pk within bracket -> in-bracket uniqueness; out-of-bracket
+same-pk = reschedule context). Architecture: shared contract game-status-resolution/1.0
++ one 24-vector fixture corpus for xunit AND the ps1 harness (Option B). Null frozen
+ScheduleState -> typed validation rejection (2-ii rider). DECOMPOSITION: two slices,
+2-i (contract/fixtures/guard fix/operator script/doctrine) then 2-ii (C# conformance).
+Design record: `06 Execution/reports/wi-0037-slice-2-status-resolution-design-2026-07-24-v1.md`.
+Ops note: ops/2026-07-24-daily-evidence is clean, 0 unique, 3 behind 14c3926 -- ff it
+before the next daily-evidence operation. No source changed; nothing pushed; zero cost.
+
+### Slice Synopsis
+
+**Change:** Slice 2 design completed and decomposed -- full surface inventory, two
+confirmed defects, operator gap, staged-resolution invariant, Option-B architecture,
+24-vector corpus; spec updated; no implementation.
+**Reason:** Determine the smallest safe implementation boundary before authorizing
+date-bracket correctness work.
+**Proof:** Two-agent surface sweep with file:line evidence (guard :246/:255 flatten +
+duplicate branch :96-103; DistinctBy :127/:223; resolver :64/:86 + 24 pinned tests);
+July 23 misread reconstructed verbatim from the late-slate record.
+**State:** WI-0037 in-progress; Slice 1 closed; Slice 2 design-complete, neither
+sub-slice authorized; planning commit local on the slice-2-planning branch.
+**Next:** Operator: authorize WI-0037 Slice 2-i (guard staged-bracket fix + canonical
+operator script + contract/fixtures + doctrine).
