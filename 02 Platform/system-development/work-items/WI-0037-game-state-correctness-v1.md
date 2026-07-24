@@ -108,7 +108,16 @@ WI-0035 screening, finals/settlement guards, and WI-0036 flight/provenance consu
 
 ## decomposition
 
-### Slice 1 -- monotonic caller-state progression (defined; NOT authorized)
+### Slice 1 -- monotonic caller-state progression (IMPLEMENTED LOCAL 2026-07-24; review pending)
+
+> State (2026-07-24, superseding "defined; NOT authorized"): authorized and implemented
+> RED-first on local branch `wi/0037-game-state-correctness-slice-1` (dai `0a9129b` from
+> base `85af96d`): 18-row transition matrix + July 23 regression fixture +
+> start-instant precedence proof (2 RED before the fix); narrow predicate correction
+> admits ONLY frozen `scheduled` -> authoritative `pregame`; focused 47/47, related
+> 343/343, full suite 1780/1780. NOT reviewed, NOT integrated, NOT pushed. Evidence:
+> [[wi-0037-slice-1-caller-state-progression-2026-07-24-v1]]. Slice 2 remains
+> unauthorized and unimplemented; WI-0037 stays `in-progress`.
 
 **Problem.** As above: `PreEliminationReason` rejects `Scheduled -> Pre-Game` because it
 compares normalized states for ordinal equality although both states are independently

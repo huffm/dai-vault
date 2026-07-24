@@ -18110,3 +18110,39 @@ branch; every audit claim re-verified against git ancestry.
 branch == published main; wi/0035 dirty worktree untouched.
 **Next:** Operator: authorize WI-0037 Slice 1 implementation (RED characterization
 matrix first).
+
+---
+
+## WI-0037 Slice 1 -- IMPLEMENTED LOCAL (caller-state progression), Review Pending
+
+**Date:** 2026-07-24 **Branch:** `wi/0037-game-state-correctness-slice-1` (dai base `85af96d`, vault base `51b64f4`)
+
+Planning record 51b64f4 independently reviewed and PUBLISHED unchanged (vault remote
+main verified 51b64f4b2bb9...). Slice 1 then implemented RED-first in a dedicated dai
+worktree: 18-row caller-x-authoritative transition matrix + operationally realistic
+July 23 fixture (frozen Scheduled, exact start, authoritative Pre-Game) +
+start-instant precedence proof. RED: exactly 2 failures (both the progression cases,
+each currently caller_state_mismatch). Correction: explicit predicate at
+MarketContrastSourceAdapter.cs:348-357 admitting identical states plus ONLY
+scheduled->pregame; every other unequal pair, backward progression, non-screenable
+state, unknown/empty state, and the start-instant blocker stay fail-closed. GREEN:
+focused 47/47, related screen/binding/envelope 343/343, full DevCore.Api.Tests
+1780/1780 (baseline 1760 + the 20 new tests, 0 skipped). Scope audit: exactly 2
+changed paths (adapter + tests); no schema/migration/planner/binding/resolver/script/
+threshold/policy change; scans clean. dai commit `0a9129b` local-only; this vault
+record local-only. Slice 2 untouched and unauthorized. Zero cost; no paid call,
+capture, settlement, DB write, or model call.
+
+### Slice Synopsis
+
+**Change:** WI-0037 Slice 1 implemented locally -- the screen's pre-elimination now
+admits frozen Scheduled -> authoritative Pre-Game progression; everything else stays
+fail-closed.
+**Reason:** The over-constraint cost the July 23 paid screens their primary anchor
+twice; twice-demonstrated paid cost with zero coverage.
+**Proof:** RED 2-failure run before the fix; 1780/1780 full suite after; 18-row matrix
++ July 23 regression fixture + start-instant precedence pinned.
+**State:** dai `0a9129b` + this vault record, both local unpushed; WI-0037 in-progress;
+Slice 2 unauthorized; preserved worktrees untouched.
+**Next:** Operator: authorize independent adversarial review of the Slice 1 chain,
+then integration.
