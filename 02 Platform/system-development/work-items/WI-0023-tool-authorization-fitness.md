@@ -132,3 +132,13 @@ CLOSED; PH-06 Amber (enforcement) NOT pulled; WIP = 0.** Every gap owned (PH-03,
 PH-06 Amber, R-04, G-10/R-05, WI-0014); zero deferred candidates. PH-02..PH-05
 unpulled; G-10 unexecuted; R-05 gated; RC Gate 1 (2026-07-17) remains next, conditional
 on the added topology opening checks (Friday input updated to hash 3f244c8).
+
+**WI-0014 reference disposition (2026-07-24 audit review): NEVER_MINTED_PROPOSAL.**
+"WI-0014" above names the proposed cloud stage-2 deployment work item from the
+2026-07-15 hardening-catalog planning round ("<=6 proposed WIs (NOT minted): WI-0014
+cloud stage 2 ..." per the current-slice record; also
+`06 Execution/plans/ai-engineering-fitness-checks-v1.md` "gated by the cloud stage-2
+deployment boundary / WI-0014"). It was proposed and gate-recorded but never authorized
+or created; no spec file exists and none should be inferred. The gap it owns (CI/cloud
+pipeline hosting for the three conditional fitness checks) remains gated behind that
+unminted proposal.
