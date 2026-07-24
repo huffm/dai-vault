@@ -18146,3 +18146,39 @@ twice; twice-demonstrated paid cost with zero coverage.
 Slice 2 unauthorized; preserved worktrees untouched.
 **Next:** Operator: authorize independent adversarial review of the Slice 1 chain,
 then integration.
+
+---
+
+## WI-0037 Slice 1 -- INTEGRATED AND PUBLISHED (caller-state progression)
+
+**Date:** 2026-07-24 **Branch:** `wi/0037-game-state-correctness-slice-1-closeout` (from published `3b66596`)
+
+Independent adversarial review returned WI0037_SLICE1_INTEGRATION_READY (RED
+independently reproduced in a detached worktree -- exactly 2 failures at base;
+direction/normalization/precedence/unintended-acceptance all confirmed; zero required
+corrections). Pre-integration gate: focused 47/47, related 343/343, full 1780/1780
+(known r7a26 flake did NOT occur; protocol stood ready). Coordinated fast-forward
+publication, both remotes directly verified: dai main `85af96d` ->
+`0a9129b5ab74158a2169653cedac1d898f09b67e`; vault main `51b64f4` ->
+`3b66596b704773e7158f211ad930d4a80cd761c1`. Post-integration full suite on published
+dai main: 1780/1780, 0 skipped. Slice branches retained locally; only the two mains
+pushed; wi/0035 preserved worktree byte-identical throughout.
+
+Follow-ups recorded, NOT implemented: r7a26 global Console.SetOut capture race
+(pre-existing test-harness hygiene, needs own ownership decision); null frozen
+ScheduleState NRE exposure (Slice-2 planning rider); Scheduled/Preview->Warmup alias
+note (intentional). Slice 2 (canonical date-bracketed status resolution) remains
+unauthorized and unimplemented; WI-0037 stays in-progress.
+
+### Slice Synopsis
+
+**Change:** WI-0037 Slice 1 integrated and published -- the screen now admits frozen
+Scheduled -> authoritative Pre-Game progression on both published mains.
+**Reason:** Review verdict INTEGRATION_READY after the twice-demonstrated paid-cost
+defect was fixed RED-first with full characterization.
+**Proof:** Remote SHAs directly verified (dai 0a9129b..., vault 3b66596...);
+1780/1780 pre- and post-publication; RED reproduced independently at base.
+**State:** WI-0037 in-progress (Slice 2 open); three follow-ups recorded; closeout
+commit local pending its own publication.
+**Next:** Publish this closeout, then operator decides WI-0037 Slice 2
+planning/review authorization.

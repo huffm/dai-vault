@@ -108,16 +108,28 @@ WI-0035 screening, finals/settlement guards, and WI-0036 flight/provenance consu
 
 ## decomposition
 
-### Slice 1 -- monotonic caller-state progression (IMPLEMENTED LOCAL 2026-07-24; review pending)
+### Slice 1 -- monotonic caller-state progression (COMPLETE: INTEGRATED + PUBLISHED 2026-07-24)
 
-> State (2026-07-24, superseding "defined; NOT authorized"): authorized and implemented
-> RED-first on local branch `wi/0037-game-state-correctness-slice-1` (dai `0a9129b` from
-> base `85af96d`): 18-row transition matrix + July 23 regression fixture +
-> start-instant precedence proof (2 RED before the fix); narrow predicate correction
-> admits ONLY frozen `scheduled` -> authoritative `pregame`; focused 47/47, related
-> 343/343, full suite 1780/1780. NOT reviewed, NOT integrated, NOT pushed. Evidence:
-> [[wi-0037-slice-1-caller-state-progression-2026-07-24-v1]]. Slice 2 remains
-> unauthorized and unimplemented; WI-0037 stays `in-progress`.
+> State (2026-07-24 closeout, superseding "IMPLEMENTED LOCAL; review pending"):
+> implemented RED-first, INDEPENDENTLY REVIEWED (verdict
+> WI0037_SLICE1_INTEGRATION_READY; zero required corrections; findings recorded below),
+> INTEGRATED and PUBLISHED by coordinated fast-forward: dai main `85af96d` ->
+> `0a9129b5ab74158a2169653cedac1d898f09b67e` (remote verified), vault main `51b64f4` ->
+> `3b66596b704773e7158f211ad930d4a80cd761c1` (remote verified). Post-integration full
+> suite on published dai main: 1780/1780, 0 skipped. The predicate admits ONLY frozen
+> `scheduled` -> authoritative `pregame`; every other unequal pair, backward
+> progression, non-screenable state, and the start-instant blocker remain fail-closed.
+> Evidence: [[wi-0037-slice-1-caller-state-progression-2026-07-24-v1]]. Review
+> follow-ups (recorded, NOT implemented): (1) test-harness hygiene -- pre-existing
+> global `Console.SetOut` capture race in
+> `MarketContrastEventsGateTests.r7a26_command_di_named_client_seam` (flaked once in
+> six full runs, passed isolated/class/rerun; outside Slice 1; needs its own
+> hygiene-slice ownership decision); (2) Slice-2 rider -- null/absent frozen
+> `ScheduleState` would NRE in the normalizer (pre-existing; characterize during
+> Slice 2 planning); (3) alias note -- raw `Scheduled/Preview -> Warmup` passes because
+> those values normalize to scheduled -> pregame (intentional, not an additional
+> normalized transition). Slice 2 remains unauthorized and unimplemented; WI-0037 stays
+> `in-progress`.
 
 **Problem.** As above: `PreEliminationReason` rejects `Scheduled -> Pre-Game` because it
 compares normalized states for ordinal equality although both states are independently
@@ -228,16 +240,28 @@ must keep the duplicate-DEFECT discipline pinned by its existing tests).
 ## links  <!-- LITE; all 8 required at close, per work-item-traceability -->
 
 - work item: WI-0037 (ADO: AB#- when wired; no ADO item created)
-- branch: `wi/0037-game-state-correctness` (dai-vault planning branch from published
-  main `af69725`; implementation branches minted at slice authorization)
-- pr: - (planning slice; no push authorized)
-- commits: planning commit recorded at close of this slice
-- tests: none this slice (planning only; future test surfaces named above)
-- verification notes: strict snapshot 26 items / 0 warnings at close; audit report
-  ownership analysis
-- docs updated: this WI; MOC; current-slice at close
-- lessons: none this slice (the operational lessons live in the July 23 records and the
-  completion-audit report)
+- branch: planning `wi/0037-game-state-correctness` (from `af69725`, published via
+  `51b64f4`); Slice 1 `wi/0037-game-state-correctness-slice-1` (dai from `85af96d`,
+  vault from `51b64f4`; both retained locally per the branch-retained convention);
+  closeout `wi/0037-game-state-correctness-slice-1-closeout` (vault, from `3b66596`)
+- pr: merged direct: dai `85af96d..0a9129b`, vault `51b64f4..3b66596` (coordinated
+  fast-forward, plain non-force pushes, remote SHAs directly verified)
+- commits: planning vault `51b64f4`; Slice 1 dai `0a9129b` (adapter predicate + 20
+  tests), Slice 1 vault `3b66596` (execution record + spec + handoff); closeout commit
+  recorded at close of this closeout slice
+- tests: `platform/dotnet/DevCore.Api.Tests/AgentRuns/MarketContrastSourceAdapterTests.cs`
+  -- 18-row `caller_state_transition_matrix`, `scheduled_candidate_survives_natural_pregame_progression`,
+  `pregame_progression_does_not_weaken_start_instant_blocker`; suites at integration:
+  focused 47/47, related 343/343, full 1780/1780 pre- and post-publication
+- verification notes: independent adversarial review verdict
+  WI0037_SLICE1_INTEGRATION_READY (RED reproduced in a detached worktree: exactly 2
+  failures at base; direction, normalization, precedence, and unintended-acceptance
+  analyses all confirmed); post-integration full suite on published main 1780/1780
+- docs updated: this WI; [[wi-0037-slice-1-caller-state-progression-2026-07-24-v1]];
+  MOC (planning registration); current-slice (planning, implementation, closeout)
+- lessons: characterization-matrix-first made the one-line predicate change reviewable
+  and refutable; equivalence-class rows beat exhaustive cells when a single code path
+  owns all rejections
 
 ## final handoff requirements
 
