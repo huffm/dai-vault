@@ -66,8 +66,12 @@ contradiction with the reviewed design.
    (never pre-flattened); new optional `-BracketDate` (validated `YYYY-MM-DD`; never
    inferred); per-game staged authority; out-of-bracket same-pk = reschedule context
    (`bucketDate` + `rescheduleContextCount` added to per-game output, additive);
-   in-bracket duplicates remain DEFECT; without a bracket, single-bucket behavior is
-   byte-compatible and a multi-bucket pk is a DEFECT naming the cause and instructing
+   in-bracket duplicates remain DEFECT; without a bracket, single-bucket behavior
+   remains classification-, exit-, and shared-field compatible -- Slice 2-i adds
+   `bucketDate` and `rescheduleContextCount` to every per-game output, so the complete
+   serialized output is NOT byte-identical to the pre-slice representation (wording
+   corrected per adversarial-review finding F1, documentation-only; no source change
+   occurred) -- and a multi-bucket pk is a DEFECT naming the cause and instructing
    `-BracketDate`. Exit-code contract UNCHANGED (0/1/2/3).
 4. **Operator script** `scripts/dev/sports/check-game-status.ps1` -- the canonical
    date-bracketed status query: required Competition/BracketDate/GamePk, optional

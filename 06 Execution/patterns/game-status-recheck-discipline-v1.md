@@ -70,7 +70,9 @@ resolution exits 0.
 `check-settlement-finals.ps1` accepts `-BracketDate <YYYY-MM-DD>`; supply it whenever a
 target gamePk could have a reschedule history (postponed/makeup class). With the
 bracket, the guard resolves authority within the bracket and reports
-`rescheduleContextCount`; without it, single-bucket responses behave exactly as before
+`rescheduleContextCount`; without it, single-bucket responses keep identical
+classification, exit codes, and shared-field values (the two per-game fields above are
+additive in all outputs)
 and a multi-bucket gamePk is a DEFECT whose reason instructs the operator to supply
 `-BracketDate` (fail closed, never a silent guess). Finality remains
 `abstractGameState=Final` AND `codedGameState=F` per

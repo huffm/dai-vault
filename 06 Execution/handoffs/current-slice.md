@@ -18237,7 +18237,10 @@ game-status-resolution/1.0 contract + canonical 24-fixture cross-runtime corpus
 corrected to staged bracket authority (optional -BracketDate; buckets never
 pre-flattened; out-of-bracket same-pk = reschedule context with additive
 bucketDate/rescheduleContextCount fields; in-bracket duplicates stay DEFECT; exit
-contract 0/1/2/3 unchanged; no-bracket single-bucket behavior byte-compatible) + NEW
+contract 0/1/2/3 unchanged; no-bracket single-bucket behavior classification-, exit-,
+and shared-field compatible with two additive per-game fields bucketDate +
+rescheduleContextCount, NOT byte-identical serialization [F1 wording correction,
+docs-only]) + NEW
 canonical operator check-game-status.ps1 (typed closed-vocabulary refusals, exit 0/1/
 2/3 = resolved/refused/source/usage, offline seam, live mode implemented but NOT
 executed) + corpus conformance harness + ACTIVE doctrine
