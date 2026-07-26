@@ -18470,3 +18470,54 @@ conflicting same-id and blank-id payloads fail closed order-independently.
 in-progress; 2-ii-c is the final unauthorized slice.
 **Next:** Operator: authorize independent adversarial review of the 2-ii-b chain,
 then integration, then Slice 2-ii-c.
+
+---
+
+## WI-0037 Slice 2-ii-b -- ADVERSARIAL REVIEW (CORRECTIONS_REQUIRED) + CORRECTION PASS APPLIED, Delta Review Pending
+
+**Date:** 2026-07-26 **Branch:** `wi/0037-game-state-correctness-slice-2-ii-b` (dai `841ae26 -> 5a11a2c -> c5ab834 -> c545117`; vault `664cd4a -> fd2d20b -> this commit`)
+
+Independent adversarial review of the 2-ii-b chain returned
+WI0037_SLICE2IIB_REVIEW_CORRECTIONS_REQUIRED: F-A High (dev-artifact-review
+date:home:away gameKey aliased DH pairs -- one toggle selected both games, 1
+counted selection = 2 paid runs, duplicate track keys); F-B Med (pair path
+filtered before NormalizeEvents, masking team-field same-id conflicts); F-C Med
+(StartUtc silently truncated accepted fractional seconds vs "exact instant"
+claim); F-D Med (identical-instant DH pills byte-identical); F-E Low (missing
+commence -> year-one sentinel event); F-F Low ("end to end" overstated; analysis
+payload carries date+teams only); F-G Low (batch test pinned NotNull, not the
+typed reason). All seven corrected RED-first with NEW commits (originals never
+amended): c5ab834 backend -- normalize-before-filter on both paths; group-level
+malformed policy (valid member of a malformed same-id group never survives);
+STARTUTC_FIXED_WIDTH_UTC_100NS (yyyy-MM-ddTHH:mm:ss.fffffffZ, typed-instant
+ordering, excess precision fails closed, explicit offset required); typed
+duplicate_gamepk_batch_input assertion. c545117 frontend -- providerEventId is
+the identity for every dev-artifact-review selection/track/count/filter/cap
+surface (one selected id = one game = one paid run); shared deterministic
+occurrence-label policy (core/matchup-event-labels.ts) in analyzer + both dev
+lists with Game N ordinals; boundary wording corrected. Durable residual:
+SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE; Slice 2-iii
+"Selected-Event Identity Continuity" DEFINED (unauthorized) in the WI spec --
+must complete before WI-0037 closes; NOT folded into 2-ii-c.
+
+RED: backend 18/20 integrity failures + frontend 9 failures pre-fix (preserved).
+Suites after: .NET 1853/1853 (1831+22), operator 187/187, guard 40/40, frontend
+155/155 (136+19) + build SUCCESS. Scope: 14 correction paths; contract, corpus,
+PS, resolvers, analysis-request DTO, dependencies untouched. Nothing pushed;
+ops branch 664cd4a untouched; wi/0035 hash 86aa8b74 intact. Zero live/paid/db/
+model calls. Evidence:
+[[wi-0037-slice-2-ii-b-adversarial-review-and-corrections-2026-07-26-v1]].
+
+### Slice Synopsis
+
+**Change:** All seven adversarial-review findings corrected -- provider integrity
+now decided before any filtering with group-level malformed semantics, StartUtc
+fixed-width 100ns with typed ordering, dev-artifact-review selection keyed by
+providerEventId, deterministic Game N occurrence labels, typed batch assertion.
+**Reason:** Review verdict CORRECTIONS_REQUIRED (F-A..F-G).
+**Proof:** RED 18/20 backend + 9 frontend pre-fix; 1853/1853, 187/187, 40/40,
+155/155 + build after.
+**State:** dai c545117 + vault correction commit, local unpushed; delta review
+pending; 2-ii-c and new 2-iii unauthorized.
+**Next:** Operator: authorize the delta review of 5a11a2c..c545117 +
+fd2d20b..vault-tip.

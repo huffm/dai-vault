@@ -160,7 +160,34 @@ future question but must not alter behavior); date-bucket resolver work (Slice 2
 schedule-adapter automation; operating-skill integration; provider-binding changes;
 planner schema changes; paid validation calls.
 
-### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a CLOSED; 2-ii-b IMPLEMENTED LOCAL 2026-07-26, review pending; 2-ii-c NOT authorized)
+### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a CLOSED; 2-ii-b CORRECTIONS APPLIED LOCAL 2026-07-26, delta review required; 2-ii-c NOT authorized)
+
+> Slice 2-ii-b correction state (2026-07-26, superseding "IMPLEMENTED LOCAL, review
+> pending"): the independent adversarial review of the 2-ii-b chain returned
+> **WI0037_SLICE2IIB_REVIEW_CORRECTIONS_REQUIRED** (F-A High dev-artifact-review
+> date:home:away identity aliasing; F-B Medium pair-path filtering before
+> provider-integrity normalization; F-C Medium silent StartUtc whole-second
+> truncation; F-D Medium byte-identical labels for identical-instant events; F-E Low
+> year-one sentinel from missing commence; F-F Low overstated "end to end" identity
+> wording; F-G Low weak duplicate-batch assertion). All seven were corrected
+> RED-first with NEW commits on the same local branch (5a11a2c never amended):
+> dai `5a11a2c` -> `c5ab834` (backend: normalize-before-filter on both paths;
+> group-level malformed-record policy -- a valid member of a malformed same-id group
+> never survives; STARTUTC_FIXED_WIDTH_UTC_100NS fixed-width
+> yyyy-MM-ddTHH:mm:ss.fffffffZ with typed-instant ordering and excess-precision
+> fail-closed; typed duplicate_gamepk_batch_input assertion) -> `c545117`
+> (frontend: providerEventId is the identity for every dev-artifact-review
+> selection/tracking/count/filter/cap surface -- one selected id = one game = one
+> paid execution entry; shared deterministic occurrence-label policy in
+> core/matchup-event-labels.ts consumed by analyzer and both dev-artifact-review
+> lists, Game N ordinals for label-identical events; identity-boundary wording
+> corrected). RED: 18/20 backend + 9 frontend failures pre-fix. Suites after:
+> .NET **1853/1853**, operator **187/187**, guard **40/40**, frontend **155/155**
+> + build. Durable residual:
+> SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE (the analysis
+> request still carries date+teams only -- see Slice 2-iii below). NOT
+> delta-reviewed, NOT integrated, NOT pushed. Evidence:
+> [[wi-0037-slice-2-ii-b-adversarial-review-and-corrections-2026-07-26-v1]].
 
 > Slice 2-ii-b state (2026-07-26, superseding "2-ii-b unauthorized"): authorized and
 > implemented RED-first on local branches
@@ -328,6 +355,23 @@ behavior.
 **Exclusions.** Caller-state progression correction (Slice 1); provider-binding
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
+
+### Slice 2-iii -- selected-event identity continuity (DEFINED 2026-07-26; NOT authorized)
+
+> Defined during the 2-ii-b correction pass (F-F); architecture work, NOT
+> implementation-ready. Purpose: bind the provider event the operator selected to
+> the analysis execution request and durable run provenance without duplicating or
+> bypassing the existing provider-event binding architecture (WI-0035/WI-0036).
+> Motivating residual: SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE
+> -- the analysis-request payload carries date and teams only, so two distinct
+> provider selections (a doubleheader pair) may still serialize to equivalent
+> analysis requests; count parity does not prove semantic run identity. Changing
+> that payload may affect WI-0035/WI-0036 provider binding, stored runs, API
+> compatibility, reconciliation provenance, and other callers, so it requires its
+> own architecture-binding review before any implementation. Slice 2-iii must be
+> reviewed and completed before WI-0037 closes, and is deliberately NOT folded into
+> Slice 2-ii-c, which retains its existing obligations (F3, F4, requireStatus
+> hardening, normalization consolidation, cross-runtime parity).
 
 ## acceptance criteria  <!-- LITE -->
 
