@@ -160,7 +160,26 @@ future question but must not alter behavior); date-bucket resolver work (Slice 2
 schedule-adapter automation; operating-skill integration; provider-binding changes;
 planner schema changes; paid validation calls.
 
-### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a CLOSED 2026-07-26; 2-ii-b/c NOT authorized)
+### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a CLOSED; 2-ii-b IMPLEMENTED LOCAL 2026-07-26, review pending; 2-ii-c NOT authorized)
+
+> Slice 2-ii-b state (2026-07-26, superseding "2-ii-b unauthorized"): authorized and
+> implemented RED-first on local branches
+> `wi/0037-game-state-correctness-slice-2-ii-b` (dai `5a11a2c` from base `841ae26`;
+> vault docs from base `664cd4a`): provider event id is the authoritative
+> odds-surface identity through a shared NormalizeEvents pipeline (doubleheaders
+> survive both discovery paths; same-id conflicts and blank ids fail closed with
+> structured logs; deterministic Date/StartUtc/id ordering); MatchupEventDto gains
+> StartUtc + ProviderEventId additively (eastern Date semantics unchanged); TS
+> mirror/stub/analyzer updated (pills track providerEventId, start-time labels on
+> shared dates, selection keyed by id, one-per-day assumption removed); batch
+> duplicate gamePk input rejected atomically before any work
+> (duplicate_gamepk_batch_input). RED: 11 C# failures pre-fix + frontend static
+> analysis. Suites: .NET 1831/1831, operator 187/187, guard 40/40, frontend 136/136
+> + build. NOT reviewed, NOT integrated, NOT pushed. Evidence:
+> [[wi-0037-slice-2-ii-b-discovery-identity-2026-07-26-v1]]. Slice 2-ii-c (F3, F4,
+> requireStatus hardening, normalizer consolidation, parity vectors) remains
+> unauthorized -- the final slice before WI-0037 closure; WI-0037 stays
+> `in-progress`.
 
 > Slice 2-ii-a closeout (2026-07-26, superseding "IMPLEMENTED LOCAL; review
 > pending"): implemented RED-first (`f8c0962`), INDEPENDENTLY REVIEWED (verdict

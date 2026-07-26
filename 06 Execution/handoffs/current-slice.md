@@ -18429,3 +18429,44 @@ corrected RED-first, delta-reviewed, published per authorization.
 **State:** WI-0037 in-progress; S1, S2-i, S2-ii-a closed; 2-ii-b next
 (unauthorized); 2-ii-c obligations recorded.
 **Next:** Operator: authorize Slice 2-ii-b (discovery correctness).
+
+---
+
+## WI-0037 Slice 2-ii-b -- IMPLEMENTED LOCAL (discovery identity), Review Pending
+
+**Date:** 2026-07-26 **Branch:** `wi/0037-game-state-correctness-slice-2-ii-b` (dai base `841ae26`, vault base `664cd4a`)
+
+RED-first: 11 C# failures pre-fix (pair + sampler DH collapse, dto representation
+loss, duplicate-batch last-write x2, same-id conflict x2, blank id x2,
+identical-fields distinct ids, ordering) + frontend static RED (pills tracked BY
+DATE, selection find-first-by-date at analyzer.component.ts:500, TS model without
+identity fields). Delivered: shared NormalizeEvents pipeline -- provider event id
+authoritative (blank ids fail closed; same-id conflicts exclude the whole id,
+order-independent, structured logs; same-id transport duplicates coalesce; distinct
+ids always distinct; ordering Date/StartUtc/id); MatchupEventDto + StartUtc +
+ProviderEventId (eastern Date semantics preserved: DATE_IS_EASTERN_OPERATIONAL_DATE);
+TS mirror (required fields) + stub DH pair + analyzer event-keyed pills/selection
+(selectDate removed); GetStartersForDateBatchAsync rejects duplicate pk input
+atomically (typed duplicate_gamepk_batch_input, zero requests, empty map; DH pks
+unaffected). First-ever OddsScheduleClient tests (14) through the real HTTP seam.
+
+Suites: .NET 1831/1831 (baseline 1817 + 14), operator 187/187, guard 40/40 (no PS
+file changed), frontend vitest 136/136 (14 files, +2) + build SUCCESS (npm ci =
+lockfile install only, no dependency change). Scope: exactly 9 paths; 2-ii-a
+surfaces + contract + corpus + scripts untouched (verified). dai `5a11a2c`
+local-only; this vault record local-only. Zero live/paid/db/model calls.
+wi/0035 preserved worktree byte-identical (86aa8b74).
+
+### Slice Synopsis
+
+**Change:** Discovery now preserves provider game identity end to end -- odds
+doubleheaders survive to the analyzer as distinguishable, selectable events, and
+ambiguous duplicate batch input is rejected atomically.
+**Reason:** Date-keyed dedup collapsed legitimate games (design D2) and the batch
+boundary had silent last-write behavior.
+**Proof:** RED 11 pre-fix; 1831/1831 + 187/187 + 40/40 + 136/136 + build after;
+conflicting same-id and blank-id payloads fail closed order-independently.
+**State:** dai `5a11a2c` + vault docs commit, both local unpushed; WI-0037
+in-progress; 2-ii-c is the final unauthorized slice.
+**Next:** Operator: authorize independent adversarial review of the 2-ii-b chain,
+then integration, then Slice 2-ii-c.
