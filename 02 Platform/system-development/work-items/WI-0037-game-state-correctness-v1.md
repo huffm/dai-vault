@@ -160,7 +160,26 @@ future question but must not alter behavior); date-bucket resolver work (Slice 2
 schedule-adapter automation; operating-skill integration; provider-binding changes;
 planner schema changes; paid validation calls.
 
-### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii ARCHITECTURE BOUND 2026-07-26, NOT authorized)
+### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a IMPLEMENTED LOCAL 2026-07-26, review pending; 2-ii-b/c NOT authorized)
+
+> Slice 2-ii-a state (2026-07-26, superseding "architecture bound, NOT authorized"
+> for the 2-ii-a portion only): authorized and implemented RED-first on local
+> branches `wi/0037-game-state-correctness-slice-2-ii-a` (dai `f8c0962` from base
+> `dd760f9`; vault docs from base `59f32e4`): contract
+> `game-status-resolution/1.1` (F2 resolved normatively; 25 fixtures incl. gsr-25;
+> `csharp_resolver` tags), xunit corpus runner (linked single-source corpus,
+> version-gated, generic tag selection with a no-skip proof), typed
+> `GameStatusResolver` (staged stages 1-5, closed refusal enum, consumer-scoped
+> stage-5 `requireStatus`), structural bracket routing in `MlbStarterClient`
+> (flattens removed; duplicate in-bracket pk fails closed; `MlbEventResolver`
+> unchanged as matchup validator; caller signatures unchanged), and typed frozen
+> `ScheduleState` slate validation ("candidate schedule state is required"; empty
+> is now request-level invalid input -- one Slice-1 matrix row migrated to a
+> non-empty unknown alias, documented). RED A-D preserved; suites: .NET 1811/1811,
+> operator 187/187, guard 40/40. NOT reviewed, NOT integrated, NOT pushed.
+> Evidence: [[wi-0037-slice-2-ii-a-contract-conformance-2026-07-26-v1]].
+> Slices 2-ii-b (discovery) and 2-ii-c (parity) remain unauthorized; WI-0037 stays
+> `in-progress`.
 
 > Slice 2-ii architecture (2026-07-26, superseding "defined but unauthorized" with a
 > bound implementation plan; still NOT authorized, NOT implemented): see

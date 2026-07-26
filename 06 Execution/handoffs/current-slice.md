@@ -18353,3 +18353,42 @@ planning commit local on the slice-2-ii-planning branch.
 **Next:** Operator: review/publish this planning record, then authorize Slice
 2-ii-a (xunit corpus runner + contract 1.1 + GameStatusResolver + frozen-state
 validation + narrow PS conformance).
+
+---
+
+## WI-0037 Slice 2-ii-a -- IMPLEMENTED LOCAL (contract conformance), Review Pending
+
+**Date:** 2026-07-26 **Branch:** `wi/0037-game-state-correctness-slice-2-ii-a` (dai base `dd760f9`, vault base `59f32e4`)
+
+Planning 59f32e4 reviewed + PUBLISHED unchanged (vault remote main verified
+59f32e4c151b...); ops branch ff to 59f32e4. Implementation RED-first: RED A scalar
+dates = bracket_missing (current), RED B cross-bucket reachability (Expected Final /
+Actual Postponed on the 823042-shaped two-bucket payload), RED C uncontrolled NRE on
+JSON-null frozen state through the real deserialization seam, RED D no corpus
+runner/version gate. Delivered: contract 1.1 (absent/null/non-array dates ->
+bucket_malformed normative; 25 fixtures; csharp_resolver tags), PS CLI 1.1
+conformance (+harness 187/187), typed GameStatusResolver (staged 1-5, closed enum,
+consumer-scoped requireStatus per the contract's fields-the-consumer-needs clause),
+MlbStarterClient bracket routing (flattens REMOVED; duplicate in-bracket pk
+fail-closed as ambiguity diagnostics; MlbEventResolver unchanged; signatures
+unchanged), frozen-state slate validation ("candidate schedule state is required";
+Slice-1 empty-state matrix row migrated to non-empty alias, documented), xunit
+corpus runner (linked corpus, version-gated, no-skip proof). Suites: .NET 1811/1811
+(baseline 1780 + 31; all 24 pinned DH scenarios green), operator 187/187, guard
+40/40 (F3 untouched). 12 dai paths; zero excluded-path leakage; zero live calls;
+zero cost. dai commit `f8c0962` local-only; this vault record local-only. 2-ii-b /
+2-ii-c unauthorized. wi/0035 preserved worktree byte-identical (86aa8b74).
+
+### Slice Synopsis
+
+**Change:** C# runtime now enforces the same staged bracket-first game-status
+authority as the scripts -- contract 1.1, corpus-conformant resolver, structural
+routing, frozen-state validation -- implemented locally RED-first.
+**Reason:** Close the implicit date-scope reliance and F2, and give both runtimes
+one machine-checked contract.
+**Proof:** RED A-D preserved; 1811/1811 + 187/187 + 40/40; corpus single-sourced
+with a no-skip proof; excluded-path scan clean.
+**State:** dai `f8c0962` + vault docs commit, both local unpushed; WI-0037
+in-progress; 2-ii-b/c unauthorized.
+**Next:** Operator: authorize independent adversarial review of the 2-ii-a chain,
+then integration.
