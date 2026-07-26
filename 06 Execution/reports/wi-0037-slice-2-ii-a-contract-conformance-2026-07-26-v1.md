@@ -160,3 +160,44 @@ empty-state matrix row migration is an intentional, documented behavior change
 
 Independent adversarial review of the 2-ii-a chain, then a separate integration
 authorization. Slices 2-ii-b and 2-ii-c remain unauthorized.
+
+## correction pass (2026-07-26, adversarial-review findings F-A/F-B/F-C)
+
+Independent review verdict: WI0037_SLICE2IIA_CORRECTIONS_REQUIRED. Corrections
+implemented as ONE new dai commit `841ae26` (5 files, +191/-26) on top of `f8c0962`
+(never amended):
+
+- **F-A (Critical) -- terminal duplicate refusal.** RED preserved: 3 failures against
+  f8c0962 (both conflicting-team duplicate order variants produced an identity; the
+  wrong-type-dates container was misclassified SourceFailure). Correction: shared
+  `MapPkResolution` at BOTH starter call sites maps `DuplicateInBracket` DIRECTLY to
+  `MlbEventResolution.Ambiguous` carrying the COMPLETE in-bracket duplicate set
+  (candidates built with the same all-or-nothing describability rule); matchup
+  selection is never re-run over duplicates. Tests: conflicting-team (both orders),
+  matching-team, malformed-status twin -- all terminally ambiguous with 2 candidates,
+  no identity.
+- **F-B (High) -- production-owned payload boundary.** `GameStatusPayloadReader`
+  (production, GameStatusResolver.cs) validates the raw JSON kind of `dates` before
+  DTO binding: wrong-type/absent/null container -> null schedule -> the staged
+  resolver's `bucket_malformed`; an entirely INVALID JSON document is category B --
+  outside contract resolution -- and keeps each path's PRE-EXISTING semantics (single
+  path: parse exception propagates, pinned by
+  malformed_schedule_body_does_not_poison_the_cache; batch path: SourceFailure).
+  Both production paths AND the corpus runner consume this one boundary; the
+  test-local JsonException catch is REMOVED; the contract doc names the typed-runtime
+  boundary and the invalid-JSON disposition. Production/PS parity: wrong-type
+  containers = bucket_malformed in both; invalid JSON = source failure in both
+  (PS CLI exits 2).
+- **F-C (Medium) -- refusal observability.** Every per-candidate typed refusal is
+  logged structured at the mapping site: gamePk, bracket, ReasonCode, path
+  (single/batch), context count, duplicate count; bracket-level batch refusals log the
+  typed reason too. Public shapes unchanged; no payloads or secrets logged.
+
+Verification after correction: full .NET **1817/1817** (1811 + 6 correction tests, 0
+skipped; the pinned malformed-body cache test remains green under the preserved
+category-B semantics), operator **187/187**, guard **40/40**; diff-check + scans
+clean; zero live calls; no 2-ii-b/2-ii-c paths (MlbEventResolver, OddsScheduleClient,
+MatchupEventDto, F3, F4, requireStatus architecture, adapter normalizer all
+untouched); no public signature changes. Residual obligations carried to 2-ii-c:
+requireStatus type-level hardening; normalizer consolidation. State: corrections
+implemented locally; delta review pending.
