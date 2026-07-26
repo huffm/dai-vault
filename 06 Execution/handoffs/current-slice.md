@@ -18392,3 +18392,40 @@ with a no-skip proof; excluded-path scan clean.
 in-progress; 2-ii-b/c unauthorized.
 **Next:** Operator: authorize independent adversarial review of the 2-ii-a chain,
 then integration.
+
+---
+
+## WI-0037 Slice 2-ii-a -- CLOSED (corrected, integrated, published, verified)
+
+**Date:** 2026-07-26 **Branch:** `wi/0037-game-state-correctness-slice-2-ii-a-closeout` (from published `61877e9`)
+
+Adversarial review: CORRECTIONS_REQUIRED (F-A Critical: conflicting-team in-bracket
+duplicate could resolve via post-refusal matchup filtering, probe-proven; F-B High:
+malformed-container classification lived only in the test runner while production
+said SourceFailure; F-C Medium: per-candidate refusal reasons unobservable). All
+other claims confirmed. Corrections `841ae26` (RED 3 failures pre-fix): terminal
+duplicate ambiguity carrying the FULL duplicate set at both call sites (order-
+independent, matchup selection never re-run); production GameStatusPayloadReader
+shared by both starter paths and the corpus runner (test-local translation removed;
+invalid JSON = pre-existing per-path source semantics, pinned cache test green);
+structured refusal logging (gamePk/bracket/reason/path/context/duplicates).
+Vault record `61877e9`. Delta review PASS. PUBLISHED: dai main dd760f9 ->
+841ae26a70cf... , vault main 59f32e4 -> 61877e9cc312... (remotes verified; only the
+two mains pushed). Post-publication: .NET 1817/1817, operator 187/187, guard 40/40;
+contract 1.1; 25 fixtures. wi/0035 preserved worktree byte-identical (86aa8b74).
+
+Carried to 2-ii-c (mandatory): requireStatus type hardening; normalizer
+consolidation. NEXT slice: 2-ii-b discovery correctness. Zero cost; no live calls.
+
+### Slice Synopsis
+
+**Change:** Slice 2-ii-a closed -- C# bracket authority, contract 1.1 conformance,
+terminal duplicate refusals, production payload boundary, and refusal observability
+are live on both published mains.
+**Reason:** Review found the duplicate mapping and payload-boundary defects;
+corrected RED-first, delta-reviewed, published per authorization.
+**Proof:** Remote SHAs verified (dai 841ae26..., vault 61877e9...); post-publication
+1817/1817 + 187/187 + 40/40; RED evidence preserved at every step.
+**State:** WI-0037 in-progress; S1, S2-i, S2-ii-a closed; 2-ii-b next
+(unauthorized); 2-ii-c obligations recorded.
+**Next:** Operator: authorize Slice 2-ii-b (discovery correctness).

@@ -160,7 +160,29 @@ future question but must not alter behavior); date-bucket resolver work (Slice 2
 schedule-adapter automation; operating-skill integration; provider-binding changes;
 planner schema changes; paid validation calls.
 
-### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a IMPLEMENTED LOCAL 2026-07-26, review pending; 2-ii-b/c NOT authorized)
+### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a CLOSED 2026-07-26; 2-ii-b/c NOT authorized)
+
+> Slice 2-ii-a closeout (2026-07-26, superseding "IMPLEMENTED LOCAL; review
+> pending"): implemented RED-first (`f8c0962`), INDEPENDENTLY REVIEWED (verdict
+> WI0037_SLICE2IIA_CORRECTIONS_REQUIRED: F-A Critical terminal-duplicate, F-B High
+> production payload boundary, F-C Medium refusal observability -- all other claims
+> confirmed), CORRECTED (`841ae26`, RED-first: conflicting-team duplicates now
+> terminally ambiguous with the full duplicate set; production-owned
+> `GameStatusPayloadReader` shared by both starter paths AND the corpus runner,
+> invalid JSON keeps pre-existing per-path source-failure semantics; every typed
+> refusal logged with gamePk/bracket/path/context/duplicate correlation),
+> DELTA-REVIEWED (PASS), INTEGRATED and PUBLISHED by coordinated fast-forward:
+> dai main `dd760f9` -> `841ae26a70cfe53465b68a937ce714fa9ec418ca` (remote
+> verified), vault main `59f32e4` -> `9f2a938`/`61877e9cc3120f14371ac731b3e74f9b4e
+> 5fd1cf` (remote verified). Post-publication on published dai main: .NET
+> **1817/1817**, operator **187/187**, guard **40/40**; contract 1.1; 25 fixtures;
+> six-reason vocabulary. Slice 2-ii-a is CLOSED. Carried 2-ii-c obligations
+> (mandatory): requireStatus type-level guarantee hardening; normalizer
+> consolidation (resolver/adapter alias sets currently identical, machine-diffed).
+> Slice 2-ii-b (discovery: OddsScheduleClient id-keyed dedup, additive
+> MatchupEventDto, batch duplicate rejection, sports-app verify incl.
+> agent-run.model.ts mirror) remains NEXT and unauthorized; 2-ii-c unauthorized;
+> WI-0037 stays `in-progress`.
 
 > Slice 2-ii-a state (2026-07-26, superseding "architecture bound, NOT authorized"
 > for the 2-ii-a portion only): authorized and implemented RED-first on local
