@@ -227,3 +227,60 @@ binding, reconciliation/settlement/db/schemas/migrations, dependencies.
 Delta review limited to `5a11a2c..c545117` and `fd2d20b..<vault tip>`, then a
 separate integration/publication authorization. 2-ii-c and 2-iii remain
 unauthorized.
+
+## part 3 -- dr-1 disposition (delta review + source-hygiene correction, 2026-07-26)
+
+The independent delta review of `5a11a2c..c545117` / `fd2d20b..3f31c84` PASSED
+every behavioral and architectural attack (selection identity, cardinality
+parity, track keys, integrity ordering, malformed groups, source-order
+independence, utc precision, frontend seven-digit runtime compatibility incl.
+the documented sub-millisecond Date.parse bound with providerEventId tie-break,
+chronological ordering, occurrence labels, missing commence, typed batch
+failure, analysis identity boundary, slice 2-iii governance, 2-ii-c exclusion,
+vault accuracy) and returned exactly one finding:
+
+**DR-1 (Medium, audit-integrity; no runtime-behavior impact).**
+`apps/sports-app/src/app/core/matchup-event-labels.ts` line 26 contained two RAW
+U+0000 bytes as the group-key separators inside a template literal (byte offsets
+55 and 70 of the line; the only NUL-bearing file in the whole slice delta). Git
+therefore classified the committed source blob as BINARY: `file` reported
+"data", ordinary grep degraded to "Binary file matches", and the complete-chain
+numstat showed `- -`. Runtime behavior was correct throughout (NUL is a legal,
+collision-safe separator; 155/155 + build were green), but the blob was opaque
+to textual diff, blame, and grep-based audit -- the same sweep machinery this
+program's reviews depend on.
+
+**Correction (dai `b8d0c0b`, new commit; nothing amended).** The raw bytes are
+now the six ascii characters backslash-u-0-0-0-0, which the javascript runtime
+evaluates to the IDENTICAL U+0000 separator. Distinction recorded: a raw NUL is
+a byte in the source file; the escape is ascii source that produces the same
+character at runtime -- grouping semantics are untouched. One
+collision-resistance vector was added to the EXISTING
+`matchup-event-labels.spec.ts` because the pre-existing tests could not
+distinguish the correct NUL runtime from a defective printable separator: the
+new vector aliases under a printable "0000" or space separator and passes only
+with the real NUL, proving runtime equivalence (separator character code 0).
+
+**Text-classification proof.** Committed blob NUL count: 0 (was 2). `file`:
+javascript source, utf-8 text. Ordinary grep inspects the file without binary
+overrides. Complete chain `841ae26..b8d0c0b`: the helper appears as a textual
+file, numstat `63 0` (numeric, not `- -`), and NO source file in the chain is
+binary-classified. No `.gitattributes`, diff driver, base64, or generated
+replacement was used -- the blob itself is clean text. Git nuance recorded: the
+PARENT-pair diff `c545117..b8d0c0b` alone still renders as binary because the
+parent blob contains the raw bytes; that is expected and not a failed
+correction -- the authoritative checks are the new blob and the complete
+published-candidate chain, both text.
+
+**Verification.** Frontend **156/156** (155 baseline + 1 dr-1 pin) + production
+build SUCCESS; full .NET **1853/1853, 0 skipped**; operator **187/187**; finals
+guard **40/40**; `git diff --check` clean; secret/machine-path scans clean;
+dependency and lockfile diffs empty. Scope: exactly `matchup-event-labels.ts` +
+its existing spec (justified above). The optional sub-millisecond observation
+test was NOT added (explicitly unauthorized this turn). Zero live/paid/model/
+db/capture/reconciliation/settlement activity.
+
+**State.** dai chain: `841ae26 -> 5a11a2c -> c5ab834 -> c545117 -> b8d0c0b`
+(local only). Slice 2-ii-b: DR-1 corrected locally; INDEPENDENT DR-1 DELTA
+REVIEW REQUIRED before any integration claim. 2-ii-c unauthorized; 2-iii
+defined/unauthorized; WI-0037 in-progress.

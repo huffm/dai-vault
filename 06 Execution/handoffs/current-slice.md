@@ -18521,3 +18521,38 @@ providerEventId, deterministic Game N occurrence labels, typed batch assertion.
 pending; 2-ii-c and new 2-iii unauthorized.
 **Next:** Operator: authorize the delta review of 5a11a2c..c545117 +
 fd2d20b..vault-tip.
+
+---
+
+## WI-0037 Slice 2-ii-b -- DR-1 SOURCE-HYGIENE CORRECTION APPLIED, DR-1 Delta Review Pending
+
+**Date:** 2026-07-26 **Branch:** `wi/0037-game-state-correctness-slice-2-ii-b` (dai `... -> c545117 -> b8d0c0b`; vault `... -> 3f31c84 -> this commit`)
+
+Delta review of the correction chain: every behavioral/architectural attack
+PASSED; sole finding DR-1 (Medium, audit-integrity, no runtime defect) -- two
+raw U+0000 bytes as group-key separators made core/matchup-event-labels.ts a
+git-BINARY source blob (undiffable, invisible to text sweeps). Corrected in
+NEW commit b8d0c0b: raw bytes -> six-character ascii escape syntax (identical
+runtime NUL separator); one collision-resistance vector added to the EXISTING
+spec (required: pre-existing tests could not distinguish NUL from a defective
+printable separator; the new vector fails under any printable separator).
+Proofs: blob NUL count 0; file = javascript source text; ordinary grep works;
+complete-chain diff/numstat show helper as text 63/0; no gitattributes/diff
+drivers; parent-pair diff still reads binary because the PARENT blob holds the
+raw bytes (expected git nuance, recorded). Suites: frontend 156/156 (155+1
+dr-1 pin) + build, .NET 1853/1853, operator 187/187, guard 40/40. Optional
+sub-ms test NOT added (unauthorized). Nothing pushed; ops branch untouched at
+664cd4a; wi/0035 hash 86aa8b74 intact.
+
+### Slice Synopsis
+
+**Change:** DR-1 fixed -- the label-grouping separators are now escaped ascii
+source producing the identical runtime NUL, restoring text classification and
+audit visibility of the helper.
+**Reason:** Delta review verdict CORRECTIONS_REQUIRED (sole finding DR-1).
+**Proof:** Blob NUL 0; chain numstat 63/0 text; collision pin green; 156/156 +
+build, 1853/1853, 187, 40.
+**State:** dai b8d0c0b + vault DR-1 record, local unpushed; independent DR-1
+delta review required before integration claim; 2-ii-c and 2-iii unauthorized.
+**Next:** Operator: authorize the DR-1 delta review of c545117..b8d0c0b +
+3f31c84..vault-tip.

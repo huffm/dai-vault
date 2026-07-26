@@ -160,7 +160,28 @@ future question but must not alter behavior); date-bucket resolver work (Slice 2
 schedule-adapter automation; operating-skill integration; provider-binding changes;
 planner schema changes; paid validation calls.
 
-### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a CLOSED; 2-ii-b CORRECTIONS APPLIED LOCAL 2026-07-26, delta review required; 2-ii-c NOT authorized)
+### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a CLOSED; 2-ii-b DR-1 CORRECTED LOCAL 2026-07-26, DR-1 delta review required; 2-ii-c NOT authorized)
+
+> Slice 2-ii-b DR-1 state (2026-07-26, superseding "corrections applied, delta
+> review required"): the independent delta review of the correction chain returned
+> **WI0037_SLICE2IIB_DELTA_REVIEW_CORRECTIONS_REQUIRED** with every behavioral and
+> architectural attack PASSING and exactly one finding -- DR-1 (Medium,
+> audit-integrity, no runtime defect): `core/matchup-event-labels.ts` contained two
+> raw U+0000 bytes as group-key separators, so git classified the source blob as
+> binary (undiffable; skipped by text-based audit sweeps). Corrected with a NEW
+> commit dai `b8d0c0b` ("fix(sports): make label grouping source text-safe"): the
+> raw bytes are now six-character ascii escape syntax producing the IDENTICAL
+> runtime NUL separator, plus one collision-resistance vector in the existing spec
+> (required for runtime-equivalence proof: it fails under any printable separator).
+> Proofs: zero NUL bytes in the committed blob; file classifies as javascript
+> source text; complete-chain diff/numstat show the helper as text (63/0); no
+> gitattributes/diff-driver concealment; the parent-pair diff alone still reads
+> binary because the PARENT blob at c545117 contains the raw bytes (expected git
+> nuance -- the authoritative checks are blob and complete-chain classification).
+> Suites: .NET 1853/1853, operator 187/187, guard 40/40, frontend **156/156**
+> (155 + 1 dr-1 pin) + build. NOT yet independently re-reviewed, NOT integrated,
+> NOT pushed; integration readiness is NOT claimed until the DR-1 delta review
+> passes. 2-ii-c unauthorized; 2-iii defined/unauthorized; WI-0037 in-progress.
 
 > Slice 2-ii-b correction state (2026-07-26, superseding "IMPLEMENTED LOCAL, review
 > pending"): the independent adversarial review of the 2-ii-b chain returned
