@@ -160,7 +160,27 @@ future question but must not alter behavior); date-bucket resolver work (Slice 2
 schedule-adapter automation; operating-skill integration; provider-binding changes;
 planner schema changes; paid validation calls.
 
-### Slice 2 -- canonical date-bracketed status resolution (2-i IMPLEMENTED LOCAL 2026-07-26; 2-ii NOT authorized)
+### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED 2026-07-26; 2-ii NOT authorized)
+
+> Slice 2-i closeout (2026-07-26, superseding "IMPLEMENTED LOCAL; review pending"):
+> implemented RED-first, INDEPENDENTLY REVIEWED (verdict
+> WI0037_SLICE2I_CORRECTIONS_REQUIRED with exactly one docs-only finding F1),
+> CORRECTED (`87c0d06` compatibility-wording commit, delta-review PASS), INTEGRATED
+> and PUBLISHED by coordinated fast-forward: dai main `0a9129b` ->
+> `dd760f92e2d7b204283ffea6c31910252f1ea6e1` (remote verified), vault main `5577f55`
+> -> `f1b66e7` -> `87c0d067874c40de3d6a227d0872b03ee4276935` (remote verified).
+> Post-publication offline verification on published dai main: guard harness 40/40,
+> operator harness 181/181; 24 fixtures; closed six-reason refusal vocabulary;
+> gsr-23 resolves final with one reschedule-context record; gsr-24 remains a
+> fail-closed duplicate DEFECT; zero live calls; zero C# changes. Slice 2-i is
+> CLOSED. Review follow-ups carried to Slice 2-ii (recorded, NOT implemented):
+> F2 scalar `dates` refuses bracket_missing vs stricter bucket_malformed
+> (cross-runtime classification convergence); F3 guard-harness eager detail
+> interpolation can crash the RED tally path (fix in next harness-touching slice);
+> F4 CLI live mode (date=+gamePks=) reports no reschedule context vs the guard's
+> broad fetch (authority-only vs authority-plus-context live semantics is a 2-ii
+> architecture decision; no live call until reviewed). Slice 2-ii remains
+> unauthorized and unimplemented; WI-0037 stays `in-progress`.
 
 > Slice 2-i state (2026-07-26, superseding "NOT authorized, NOT implemented" for the
 > 2-i half only): authorized and implemented RED-first on local branches

@@ -18266,3 +18266,44 @@ gsr-23 READY with context 1; gsr-24 DEFECT retained; design published at 5577f55
 Slice 2-ii unauthorized; ops branch realigned to 5577f55.
 **Next:** Operator: authorize independent adversarial review of the Slice 2-i chain,
 then integration.
+
+---
+
+## WI-0037 Slice 2-i -- CLOSED (corrected, integrated, published, verified)
+
+**Date:** 2026-07-26 **Branch:** `wi/0037-game-state-correctness-slice-2-i-closeout` (from published `87c0d06`)
+
+Adversarial review verdict: WI0037_SLICE2I_CORRECTIONS_REQUIRED -- every functional
+claim CONFIRMED (staged bracket authority, duplicates fail-closed, context
+non-authoritative, finality unchanged, cross-runtime-neutral corpus, JSON purity,
+exit tables, RED reproduced independently); sole required correction F1 =
+overstated "byte-compatible" wording. F1 applied docs-only as `87c0d06` (3 files;
+literal occurrences 2, semantically-equivalent pattern-doc line 1; spec note had no
+inaccurate claim; the dai contract doc's behavior-level line left for 2-ii
+harmonization). Delta review PASS. Coordinated publication, remotes directly
+verified: dai main `0a9129b` -> `dd760f92e2d7...` (implementation dd760f9); vault
+main `5577f55` -> `f1b66e7` -> `87c0d067874c...`. Post-publication on published dai
+main: guard 40/40, operator 181/181, 24 fixtures, six-reason vocabulary, gsr-23
+resolves final w/ context 1, gsr-24 stays DEFECT. Zero live calls, zero C#, zero
+cost; only the two mains pushed; implementation/correction branches retained local;
+wi/0035 preserved worktree byte-identical (86aa8b74) throughout.
+
+Follow-ups carried to Slice 2-ii (NOT implemented): F2 scalar-dates classification
+convergence, F3 harness eager-interpolation crash on RED tally, F4 authority-only vs
+authority-plus-context live CLI semantics. Slice 2-ii remains unauthorized.
+
+### Slice Synopsis
+
+**Change:** Slice 2-i closed -- bracket-staged game-status resolution is live on both
+published mains with contract, corpus, corrected guard, operator CLI, doctrine, and
+the F1 wording correction.
+**Reason:** Review confirmed all function and demanded one docs correction; corrected,
+delta-reviewed, and published per authorization.
+**Proof:** Remote SHAs directly verified (dai dd760f92e2d7..., vault 87c0d067874c...);
+post-publication 40/40 + 181/181; RED reproduced pre-fix; strict snapshot 26/0.
+**State:** WI-0037 in-progress; S1 closed, S2 design published, S2-i CLOSED, S2-ii
+defined/unauthorized with F2/F3/F4 as explicit inputs; ops-07-24 branch now behind
+final main (ff-eligible).
+**Next:** Operator: authorize the Slice 2-ii architecture/contract-binding review
+(xunit corpus runner, resolver date-scope seam, DH-safe discovery, null
+ScheduleState, F2/F3/F4 dispositions).
