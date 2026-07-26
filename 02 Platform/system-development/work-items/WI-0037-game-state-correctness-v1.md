@@ -160,7 +160,31 @@ future question but must not alter behavior); date-bucket resolver work (Slice 2
 schedule-adapter automation; operating-skill integration; provider-binding changes;
 planner schema changes; paid validation calls.
 
-### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED 2026-07-26; 2-ii NOT authorized)
+### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii ARCHITECTURE BOUND 2026-07-26, NOT authorized)
+
+> Slice 2-ii architecture (2026-07-26, superseding "defined but unauthorized" with a
+> bound implementation plan; still NOT authorized, NOT implemented): see
+> [[wi-0037-slice-2-ii-architecture-review-2026-07-26-v1]]. Bound decisions:
+> contract bump to `game-status-resolution/1.1` REQUIRED (absent/null/non-array
+> `dates` becomes normatively `bucket_malformed`; +1 fixture gsr-25; additive
+> `csharp_resolver` consumer tags; resolves F2); resolver enforcement = Option B, a
+> new typed `GameStatusResolver` over the existing bucketed `MlbScheduleResponse`
+> with the starter-client flattens removed (`MlbEventResolver` unchanged); frozen
+> `ScheduleState` = typed slate-validation rejection (caller-state contract, not the
+> gsr vocabulary); discovery identity = provider event id within provider scope
+> (gamePk unavailable on the odds surface; team+date rejected), with an additive
+> `MatchupEventDto` shape (StartUtc + ProviderEventId) so doubleheaders survive
+> end-to-end; batch boundary = duplicate input gamePks rejected fail-closed;
+> F3 = null-safe harness detail strings (2-ii-c); F4 = AUTHORITY_PLUS_CONTEXT
+> (CLI live URL drops `date=`, parity with the guard's accepted broad fetch; no
+> live call anywhere in 2-ii). DECOMPOSITION SELECTED: three sub-slices --
+> 2-ii-a contract conformance (xunit corpus runner + 1.1 + GameStatusResolver +
+> frozen-state validation + narrow PS CLI conformance), 2-ii-b discovery
+> correctness (OddsScheduleClient id-keyed dedup + matchup shape + batch guard +
+> first client tests), 2-ii-c operator/harness parity (F3 + F4 + parity vectors +
+> doctrine sync); dependency order a -> b -> c (b and c both depend only on a).
+> WI-0037 CLOSES when a+b+c complete; reconciliation CLI/admin UI are explicitly
+> not prerequisites. First implementation authorization = Slice 2-ii-a.
 
 > Slice 2-i closeout (2026-07-26, superseding "IMPLEMENTED LOCAL; review pending"):
 > implemented RED-first, INDEPENDENTLY REVIEWED (verdict

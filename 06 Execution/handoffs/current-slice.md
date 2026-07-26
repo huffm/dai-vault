@@ -18307,3 +18307,49 @@ final main (ff-eligible).
 **Next:** Operator: authorize the Slice 2-ii architecture/contract-binding review
 (xunit corpus runner, resolver date-scope seam, DH-safe discovery, null
 ScheduleState, F2/F3/F4 dispositions).
+
+---
+
+## WI-0037 Slice 2-ii -- ARCHITECTURE BOUND (three sub-slices), Review Pending
+
+**Date:** 2026-07-26 **Branch:** `wi/0037-game-state-correctness-slice-2-ii-planning` (from published `642d8f2`)
+
+Read-only architecture/contract-binding review over published authority (dai
+dd760f9: contract 1.0 + 24 fixtures + scripts; vault 642d8f2: design + 2-i records
++ doctrine). Verified call graph: statsapi -> MlbScheduleResponse (bucket date IS
+modeled) -> flatten at MlbStarterClient :278/:338 (bucket identity dies here) ->
+MlbEventResolver (unchanged, fail-closed) -> adapter/retriever; odds surface has NO
+gamePk but DOES carry provider event id (OddsScheduleClient.cs:18) while
+MatchupEventDto discards it.
+
+BOUND DECISIONS: contract 1.1 REQUIRED (F2: absent/null/non-array dates ->
+bucket_malformed normative; +gsr-25; additive csharp_resolver tags); resolver =
+Option B typed GameStatusResolver over bucketed response, flattens removed,
+MlbEventResolver untouched; frozen ScheduleState -> typed slate-validation
+rejection (not gsr vocabulary); discovery dedup key = provider event id (team+date
+rejected; gamePk absent on odds surface); MatchupEventDto gains StartUtc +
+ProviderEventId additively (sports-app one-per-day assumption = explicit 2-ii-b
+verify); batch boundary rejects duplicate input gamePks fail-closed; F3 null-safe
+detail strings in 2-ii-c; F4 = AUTHORITY_PLUS_CONTEXT (CLI live URL drops date=,
+guard parity; no live calls). DECOMPOSITION: 2-ii-a (conformance) -> 2-ii-b
+(discovery) -> 2-ii-c (parity); path counts <=~8-9/slice; WI-0037 closes at
+a+b+c (no reconciliation CLI / admin UI prerequisites). Report:
+`06 Execution/reports/wi-0037-slice-2-ii-architecture-review-2026-07-26-v1.md`.
+No source changed; nothing pushed; ops branch untouched at 642d8f2; wi/0035
+preserved worktree byte-identical (86aa8b74). Zero cost.
+
+### Slice Synopsis
+
+**Change:** Slice 2-ii architecture bound -- contract 1.1 decision, Option-B
+resolver boundary, id-keyed discovery identity, batch fail-closed contract, F2/F3/
+F4 dispositions, and a three-sub-slice decomposition with RED gates.
+**Reason:** Convert the published design + closed 2-i contract into an exact,
+reviewable implementation sequence before authorizing C# work.
+**Proof:** Requirements matrix + verified call graph with file:line evidence;
+strict snapshot 26/0 on the planning tree; all decisions traceable to published
+authority.
+**State:** WI-0037 in-progress; S1 + S2-i closed; 2-ii bound/unauthorized;
+planning commit local on the slice-2-ii-planning branch.
+**Next:** Operator: review/publish this planning record, then authorize Slice
+2-ii-a (xunit corpus runner + contract 1.1 + GameStatusResolver + frozen-state
+validation + narrow PS conformance).
