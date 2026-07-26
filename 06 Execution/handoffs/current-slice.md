@@ -18556,3 +18556,38 @@ build, 1853/1853, 187, 40.
 delta review required before integration claim; 2-ii-c and 2-iii unauthorized.
 **Next:** Operator: authorize the DR-1 delta review of c545117..b8d0c0b +
 3f31c84..vault-tip.
+
+---
+
+## WI-0037 Slice 2-ii-b -- DR-2 COLLISION-SAFE GROUPING CORRECTION APPLIED, DR-2 Delta Review Pending
+
+**Date:** 2026-07-26 **Branch:** `wi/0037-game-state-correctness-slice-2-ii-b` (dai `... -> b8d0c0b -> af59853`; vault `... -> a727c63 -> this commit`)
+
+DR-1 delta review: DR-1 CLOSED (blob pure, runtime NUL proven, chain
+text-visible, no concealment); sole new finding DR-2 (Medium) -- the
+"NUL cannot appear in team fields" claim was overstated: provider team
+names are unvalidated, a NUL-embedded name probe-survives the sampler
+path, and the delimiter key aliased distinct tuples (label-grouping
+impact only). Corrected in NEW commit af59853: group key is now
+JSON.stringify([date, homeTeam, awayTeam]) over the contract-guaranteed
+string tuple; table-driven structural vectors (NUL, printable
+delimiters, quotes, backslashes, json-looking, empty, unicode; both
+orders; identical tuples group); overstated wording removed in source
+and explicitly superseded in the record. RED re-reproduced (dr2-red.txt).
+Suites: frontend 157/157 + build, .NET 1853/1853, operator 187/187,
+guard 40/40. Chain 841ae26..af59853 fully text-visible. Backend
+control-char sanitization deliberately out of scope (recorded appetite).
+Nothing pushed; ops 664cd4a untouched; wi/0035 hash 86aa8b74 intact.
+
+### Slice Synopsis
+
+**Change:** Label grouping now uses structurally unambiguous JSON tuple
+keys -- no field content can alias distinct matchup groupings.
+**Reason:** DR-1 delta review verdict CORRECTIONS_REQUIRED (sole finding
+DR-2, reachable NUL-boundary aliasing + overstated claim).
+**Proof:** RED aliasing reproduced pre-fix; 157/157 + build, 1853/1853,
+187, 40 after; ten structural vectors both orders.
+**State:** dai af59853 + vault DR-2 record, local unpushed; independent
+DR-2 delta review required; 2-ii-c and 2-iii unauthorized.
+**Next:** Operator: authorize the DR-2 delta review of b8d0c0b..af59853
++ a727c63..vault-tip.

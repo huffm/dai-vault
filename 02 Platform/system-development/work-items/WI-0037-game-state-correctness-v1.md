@@ -160,7 +160,32 @@ future question but must not alter behavior); date-bucket resolver work (Slice 2
 schedule-adapter automation; operating-skill integration; provider-binding changes;
 planner schema changes; paid validation calls.
 
-### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a CLOSED; 2-ii-b DR-1 CORRECTED LOCAL 2026-07-26, DR-1 delta review required; 2-ii-c NOT authorized)
+### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a CLOSED; 2-ii-b DR-2 CORRECTED LOCAL 2026-07-26, DR-2 delta review required; 2-ii-c NOT authorized)
+
+> Slice 2-ii-b DR-2 state (2026-07-26, superseding "DR-1 corrected, DR-1 delta
+> review required"): the independent DR-1 delta review CLOSED DR-1 (blob purity,
+> runtime U+0000 equivalence, chain text visibility, no concealment, behavior
+> identical) and returned one new finding, DR-2 (Medium): the collision-safety
+> claim was overstated -- provider-controlled team names are not validated
+> against control characters, and a NUL-embedded team name probe-survives the
+> sampler path, letting the delimiter-concatenated group key alias distinct
+> tuples ("A", NUL+"B") vs ("A"+NUL, "B") (label-grouping impact only; selection
+> identity and paid-run cardinality unaffected). Corrected with NEW commit dai
+> `af59853` ("fix(sports): use collision-safe matchup group keys"): the key is
+> now `JSON.stringify([date, homeTeam, awayTeam])` -- unambiguous for arbitrary
+> STRING content over the contract-guaranteed string tuple
+> (GROUP_KEY_MEMBERS_STRING_GUARANTEED) -- with table-driven structural vectors
+> (embedded NUL, printable delimiters, spaces/colons/pipes, quotes, backslashes,
+> json-looking content, empty strings, unicode; both source orders; identical
+> tuples still group) and the overstated claim removed/superseded in code and
+> record. RED re-reproduced pre-fix (dr2-red.txt). Suites: .NET 1853/1853,
+> operator 187/187, guard 40/40, frontend **157/157** + build. Chain
+> `841ae26..af59853` fully text-visible (no binary source entries). NOT yet
+> independently re-reviewed, NOT integrated, NOT pushed; integration readiness
+> NOT claimed until the DR-2 delta review passes. 2-ii-c unauthorized; 2-iii
+> defined/unauthorized; WI-0037 in-progress. Evidence:
+> [[wi-0037-slice-2-ii-b-adversarial-review-and-corrections-2026-07-26-v1]]
+> part 4.
 
 > Slice 2-ii-b DR-1 state (2026-07-26, superseding "corrections applied, delta
 > review required"): the independent delta review of the correction chain returned

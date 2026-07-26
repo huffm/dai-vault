@@ -284,3 +284,65 @@ db/capture/reconciliation/settlement activity.
 (local only). Slice 2-ii-b: DR-1 corrected locally; INDEPENDENT DR-1 DELTA
 REVIEW REQUIRED before any integration claim. 2-ii-c unauthorized; 2-iii
 defined/unauthorized; WI-0037 in-progress.
+
+## part 4 -- dr-2 disposition (grouping collision-safety correction, 2026-07-26)
+
+The independent DR-1 delta review confirmed DR-1 fully closed (blob purity, exact
+ascii escape spelling, runtime U+0000 equivalence proven against the committed
+implementation, complete-chain text visibility, no concealment, behavior
+identical) and returned one new finding:
+
+**DR-2 (Medium).** The part-3 statement "NUL cannot appear inside date or team
+fields, so concatenated grouping fields can never alias each other" is hereby
+EXPLICITLY SUPERSEDED as overstated (the original wording is preserved above as
+history). Reachability evidence: a provider payload whose team name embeds an
+escaped NUL survives the REAL sampler path into MatchupEventDto (no schema,
+parser, validation, or normalization excludes control characters from
+provider-controlled team strings), and at the frontend helper the
+delimiter-concatenated key aliased the distinct ordered tuples ("A", NUL+"B")
+and ("A"+NUL, "B") -- probe-reproduced and re-reproduced RED this turn
+(dr2-red.txt). Impact was label-grouping ONLY: spurious shared-group time/Game N
+discriminators; provider ids, angular track keys, row identity, selection, and
+execution-entry cardinality were never affected.
+
+**Correction (dai `af59853`, new commit; nothing amended).** Ordered-string-tuple
+contract verified first: date, homeTeam, and awayTeam are REQUIRED strings on
+the canonical MatchupEventDto (backend record guarantees non-null strings;
+stubs and call sites conform) -- GROUP_KEY_MEMBERS_STRING_GUARANTEED, so no
+runtime guard or coercion is needed. The group key is now
+`JSON.stringify([date, homeTeam, awayTeam])`. Guarantee claimed, precisely: JSON
+array serialization is an unambiguous encoding for THIS ordered tuple of
+strings -- embedded control characters, quotes, backslashes, delimiter
+lookalikes, empty strings, and unicode cannot cause distinct tuples to alias,
+and identical tuples always share one key. No claim is made for non-string
+values (unreachable here by contract). The runtime NUL separator construction
+and the superseded exclusion claim are removed from source.
+
+**Collision vectors (table-driven, committed in the existing spec).** Embedded
+NUL at the boundary (the exact DR-2 pair, now non-aliasing); printable "0000";
+spaces; colons; pipes; quotes; backslashes; json-looking content (brackets,
+commas, null-text); empty strings in either position (order significance);
+unicode (accented + cjk) -- each proving distinct ordered tuples yield distinct
+keys under both source orders; plus an identical-tuple vector (quotes +
+backslash + NUL content) proving identical tuples still group. NUL is
+constructed programmatically (String.fromCharCode(0)); zero raw control bytes
+exist in either changed file.
+
+**Source hygiene.** Both files: NUL 0, unexpected C0 0, valid utf-8; helper
+classifies as javascript source text; the complete chain `841ae26..af59853`
+contains no binary source entry and the helper numstat is numeric (67/0); the
+parent-pair diff `b8d0c0b..af59853` is itself textual now that both blobs are
+clean; no gitattributes or diff drivers.
+
+**Verification.** Frontend **157/157** (156 baseline - 1 superseded dr-1 vector
++ 2 structural tests) + production build SUCCESS; full .NET **1853/1853, 0
+skipped**; operator **187/187**; finals guard **40/40**; git diff --check
+clean; secret/machine-path scans clean; dependency and lockfile diffs empty.
+Scope: exactly the helper + its existing spec. Zero live/paid/model/db/capture/
+reconciliation/settlement activity. Backend control-character sanitization
+remains deliberately OUT of scope (recorded hardening appetite, 2-iii-adjacent).
+
+**State.** dai chain: `841ae26 -> 5a11a2c -> c5ab834 -> c545117 -> b8d0c0b ->
+af59853` (local only). Slice 2-ii-b: DR-2 corrected locally; INDEPENDENT DR-2
+DELTA REVIEW REQUIRED before any integration claim. 2-ii-c unauthorized; 2-iii
+defined/unauthorized; WI-0037 in-progress.
