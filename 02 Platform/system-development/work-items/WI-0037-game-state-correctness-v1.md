@@ -160,7 +160,22 @@ future question but must not alter behavior); date-bucket resolver work (Slice 2
 schedule-adapter automation; operating-skill integration; provider-binding changes;
 planner schema changes; paid validation calls.
 
-### Slice 2 -- canonical date-bracketed status resolution (DESIGN COMPLETE 2026-07-24; NOT authorized, NOT implemented)
+### Slice 2 -- canonical date-bracketed status resolution (2-i IMPLEMENTED LOCAL 2026-07-26; 2-ii NOT authorized)
+
+> Slice 2-i state (2026-07-26, superseding "NOT authorized, NOT implemented" for the
+> 2-i half only): authorized and implemented RED-first on local branches
+> `wi/0037-game-state-correctness-slice-2-i` (dai `dd760f9` from base `0a9129b`; vault
+> docs from base `5577f55`): contract `game-status-resolution/1.0` + canonical
+> 24-fixture corpus + finals-guard staged-bracket correction (optional `-BracketDate`;
+> legit postponed+makeup two-bucket pairs no longer false-DEFECT; in-bracket
+> duplicates stay DEFECT; exit contract unchanged) + canonical operator
+> `check-game-status.ps1` + corpus conformance harness + ACTIVE doctrine
+> [[game-status-recheck-discipline-v1]]. RED 6 failures preserved pre-fix; guard
+> 40/40 and operator 181/181 after; zero C# changes. NOT reviewed, NOT integrated,
+> NOT pushed. Evidence: [[wi-0037-slice-2-i-status-resolution-2026-07-26-v1]].
+> Slice 2-ii (C# conformance: resolver seam, OddsScheduleClient DH-safe dedup,
+> batch-boundary tests, null-ScheduleState rider, xunit corpus runner) remains
+> unauthorized and unimplemented; WI-0037 stays `in-progress`.
 
 > Design state (2026-07-24, superseding "defined"): full read-only surface mapping and
 > design completed -- see

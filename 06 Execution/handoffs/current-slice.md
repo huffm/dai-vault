@@ -18222,3 +18222,44 @@ July 23 misread reconstructed verbatim from the late-slate record.
 sub-slice authorized; planning commit local on the slice-2-planning branch.
 **Next:** Operator: authorize WI-0037 Slice 2-i (guard staged-bracket fix + canonical
 operator script + contract/fixtures + doctrine).
+
+---
+
+## WI-0037 Slice 2-i -- IMPLEMENTED LOCAL (bracketed status resolution), Review Pending
+
+**Date:** 2026-07-26 **Branch:** `wi/0037-game-state-correctness-slice-2-i` (dai base `0a9129b`, vault base `5577f55`)
+
+Slice 2 design 5577f55 re-reviewed and PUBLISHED unchanged (vault remote main verified
+5577f559da26...); clean ops/2026-07-24 branch ff-realigned af69725 -> 5577f55 (not
+pushed). Slice 2-i then implemented RED-first in a dedicated dai worktree:
+game-status-resolution/1.0 contract + canonical 24-fixture cross-runtime corpus
+(gsr-01..24; makeup vectors shaped from stored 823042 evidence) + finals guard
+corrected to staged bracket authority (optional -BracketDate; buckets never
+pre-flattened; out-of-bracket same-pk = reschedule context with additive
+bucketDate/rescheduleContextCount fields; in-bracket duplicates stay DEFECT; exit
+contract 0/1/2/3 unchanged; no-bracket single-bucket behavior byte-compatible) + NEW
+canonical operator check-game-status.ps1 (typed closed-vocabulary refusals, exit 0/1/
+2/3 = resolved/refused/source/usage, offline seam, live mode implemented but NOT
+executed) + corpus conformance harness + ACTIVE doctrine
+game-status-recheck-discipline-v1 codifying "bracket first, exact gamePk within it,
+never the first positional bucket."
+
+RED preserved: 6 failures pre-fix incl. the verbatim false-duplicate reason on the
+legit two-bucket payload. GREEN: guard 40/40, operator 181/181; zero live calls; zero
+C# changes (scope audit clean). dai commit `dd760f9` local-only; this vault record
+local-only. Slice 2-ii unauthorized. Zero cost; no paid call, capture, settlement, DB
+write, or model call. wi/0035 preserved worktree byte-identical (hash 86aa8b74).
+
+### Slice Synopsis
+
+**Change:** Slice 2-i implemented locally -- staged bracket-first status resolution is
+now executable in the finals guard and a canonical operator script, backed by a shared
+24-vector contract corpus and ACTIVE doctrine.
+**Reason:** The finals guard false-DEFECTed the legitimate postponed+makeup class and
+the operator path that caused the July 23 misread had no supported tool.
+**Proof:** RED 6 failures preserved; guard 40/40 + operator 181/181 after; fixture
+gsr-23 READY with context 1; gsr-24 DEFECT retained; design published at 5577f55.
+**State:** dai `dd760f9` + vault docs commit, both local unpushed; WI-0037 in-progress;
+Slice 2-ii unauthorized; ops branch realigned to 5577f55.
+**Next:** Operator: authorize independent adversarial review of the Slice 2-i chain,
+then integration.
