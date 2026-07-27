@@ -1107,3 +1107,146 @@ dictionary; no glossary path is guessed or edited in this allowlist.
 Slice 2-iii: ADR part 5 bound locally; closing delta review of
 58f1a7c..tip required; publication and implementation unauthorized; 2-ii-c
 unauthorized; WI-0037 in-progress.
+
+# part 6 -- verified identity bundle, conversion authority, and residual states (fr-6..fr-8), 2026-07-26
+
+Staff review of part 5 found FR-6 (High), FR-7 (Medium), FR-8 (Medium). Parts
+1-5 preserved; PART 6 IS CURRENT AUTHORITY, superseding part 5 sections
+5.3-5.5 ONLY where it completes conversion authority, selected-candidate
+classification, and the atomic identity bundle. The part-5 concurrency truth
+table and every other sound decision (shared gate, cross-path identity
+contract, same-verified-pk condition, default-off activation gate,
+one-active-process constraint, provenance cardinality/single-assignment,
+platform/domain ownership, two-gate freshness, resubmission-only lifecycle,
+refusal limits, four slices) are preserved unweakened.
+
+## 6.1 fr-6 -- ATOMIC_VERIFIED_GAME_IDENTITY_BUNDLE_V1
+
+Part 5 section 5.4 persisted ExternalGameId + team refs but omitted
+SourceProvider, ScheduledStartUtc, and Season -- a PARTIAL settlement
+identity, because the reconciliation/settlement key is (SourceProvider,
+ExternalGameId) and the complete GameIdentityContext bundle is six fields
+(SourceProvider, ExternalGameId, ScheduledStartUtc, Season, HomeTeamRef,
+AwayTeamRef) written together by ApplyGameIdentity today; and because Gate 2
+verifies-but-never-replaces, omitted fields would never become durable.
+SUPERSEDED. Bound: for every selected-event run, Gate 1 constructs ONE
+complete immutable server-derived bundle BEFORE run creation --
+SourceProvider (the verified authoritative game source; currently
+GameIdentitySources.MlbStatsApi for a statsapi gamePk), ExternalGameId
+(verified gamePk, invariant serialization), ScheduledStartUtc (verified
+candidate scheduled start), Season (existing canonical season rule),
+HomeTeamRef, AwayTeamRef, server-canonical Competition, and verified
+operational GameDate. The initial insert atomically persists the complete
+bundle + InputJson intent + DomainExecutionProvenanceJson + tenant/run/
+status/correlation. The six GameIdentityContext fields are ALL-OR-NONE for
+selected runs; no partial selected identity is permitted; the canonical
+settlement key remains exactly (SourceProvider, ExternalGameId); no client
+field may populate any member.
+
+## 6.2 selection namespace versus game source provider
+
+providerNamespace inside selected_event_binding provenance identifies the
+server-observed SELECTION provider (currently the odds-provider namespace).
+SourceProvider on the run identifies the authoritative GAME identity provider
+(currently mlb_statsapi for gamePk). Different purposes; never conflated;
+both server-derived and frozen; historical interpretation reads persisted
+values, never current configuration.
+
+## 6.3 gate-2 compare-not-replace
+
+Gate 2 independently derives the authoritative game identity and COMPARES it
+to the complete frozen Gate-1 bundle; it never calls a mutation-style
+writeback that replaces frozen selected-run identity. Exact match ->
+execution continues. Any provider, gamePk, orientation/team-ref, bracket,
+uniqueness, or other authoritative mismatch -> typed failed-run outcome
+BEFORE model invocation; the failed row retains the complete Gate-1 bundle
+and immutable provenance; no partial update; no settlement of the failed
+run. Legacy runs retain their current retrieve-time identity-write behavior.
+2-iii-b2 must test compare-not-replace and separate the current
+ApplyGameIdentity mutation seam for selected runs (it writes the six fields
+at retrieve completion today; selected runs need it split into
+write-at-creation + compare-at-retrieve).
+
+## 6.4 fr-7a -- canonical team-reference authority pinned
+
+v1 authoritative representation semantics = the existing
+GameIdentityDerivation.NormalizeTeamRef contract at af59853: lowercase ascii
+alphanumeric tokens; runs of non-alphanumeric characters collapse to one
+hyphen; no leading/trailing separator; deterministic and culture-invariant;
+no nickname/abbreviation/alias resolution. A refactor may extract an
+idiomatically named sports-domain component, but provider binding AND
+duplicate-identity preparation must consume the same implementation and
+behavior. The legacy request/candidate adapter applies this conversion only
+to provider-originated names from the supported screened workflow; selected
+canonical refs must validate as canonical under the same contract; the
+unordered duplicate pair sorts the two canonical refs ordinally;
+DuplicateRunGuard receives the PREPARED pair and compares equality only -- it
+does not retain a second independently evolving normalizer for this
+fallback. Characterization over every supported screened team name is
+REQUIRED before the old normalizer is retired; any behavior difference
+affecting supported names blocks b2 publication; no new alias guarantee.
+Clarified: the existing "never a matching mechanism" comment means this is
+not fuzzy or alias matching -- it supplies the deterministic representation
+for equality after a provider-originated name has entered the supported
+workflow.
+
+## 6.5 fr-7b -- selected-candidate classification
+
+The b2 candidate query transports: SourceProvider, ExternalGameId,
+ScheduledStartUtc, Season, HomeTeamRef, AwayTeamRef, Competition, GameDate,
+InputJson (legacy compatibility), and the opaque domain-provenance envelope
+needed by the sports-owned candidate builder. Classification and
+interpretation occur in the sports domain: a selected run is identified via
+envelope metadata domain=sports + type=selected_event_binding; sports code
+owns schema/version validation and payload interpretation; generic platform
+persistence transports the opaque envelope without interpreting sports
+fields. Selected marker + incomplete authoritative bundle -> fail-closed
+typed internal defect/refusal; selected rows never fall back to InputJson
+team descriptors; legacy/historical rows without selected provenance retain
+the existing request-gamePk/InputJson fallback; unknown selected-event
+schema versions fail closed for authoritative reuse. The outward failure
+surface may reuse the existing failure/error mechanism but must durably
+explain why creation was refused or failed and must NEVER let a duplicate
+through by skipping a malformed candidate.
+
+## 6.6 preserved concurrency truth table
+
+Restated and to be tested: both known + same gamePk -> duplicate; both known
++ distinct gamePks -> distinct games; either unknown + same canonical pair
+-> fail-closed duplicate; either unknown + distinct canonical pair -> not
+the same candidate; selected-selected same verified gamePk ignores client
+spellings; same providerEventId with different independently verified
+gamePks -> separate versioned decisions; unknown-pk legacy doubleheader
+identity blocks until resolved; arbitrary legacy aliases outside v1; no
+selection-level idempotency or multi-process claim.
+
+## 6.7 fr-8 -- residual states corrected
+
+- SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE: still
+  OPEN and BLOCKING WI-0037 closure until 2-iii implementation, consumer
+  continuity, review, integration, publication, and verification complete.
+  Architecture publication defines the implementation path but does NOT
+  resolve it. Never abbreviated, renamed, or called resolved-by-architecture.
+- MULTI_INSTANCE_SELECTED_EVENT_ATOMICITY_REQUIRED_BEFORE_SCALE_OUT:
+  retained; blocking any multi-process/scale-out topology.
+- DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_DEFERRED: retained;
+  nonblocking deferred capability.
+
+## 6.8 naming, comments, and semantics
+
+Carried forward: PascalCase .NET / camelCase JSON; architecture/WI/FR/ADR
+labels never become production names; new comments lowercase ascii focused on
+authority, invariants, or failure behavior; the report remains the
+descriptive evidence linked from WI-0037; reusable terminology receives an
+operator-owned glossary/dictionary disposition at WI-0037 completion; model
+memory is never durable terminology authority. Added distinctions: selection
+provider namespace vs authoritative game SourceProvider; complete
+game-identity bundle vs partial identity; canonical team-reference
+representation vs alias matching; identity COMPARISON (gate 2) vs identity
+MUTATION (legacy retrieve-time write).
+
+## 6.9 state
+
+Slice 2-iii: ADR part 6 bound locally; closing delta review of c6d8aac..tip
+required; publication and implementation unauthorized; 2-ii-c unauthorized;
+WI-0037 in-progress.

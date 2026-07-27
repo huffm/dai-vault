@@ -18824,3 +18824,41 @@ docs-only delta on the three allowlisted paths.
 **State:** Vault-only commit; closing delta review of 58f1a7c..tip required;
 publication and implementation unauthorized.
 **Next:** Operator: authorize the closing delta review.
+
+---
+
+## WI-0037 Slice 2-iii -- ADR PART 6 BOUND (FR-6..FR-8), Closing Delta Review Pending
+
+**Date:** 2026-07-26 **Branch:** `wi/0037-selected-event-identity-continuity-architecture` (... -> c6d8aac -> this commit); dai untouched at af59853
+
+FR-6 High: part 5's selected-run insert omitted SourceProvider/
+ScheduledStartUtc/Season -- partial settlement identity vs the
+(SourceProvider, ExternalGameId) key and six-field GameIdentityContext; with
+gate-2 compare-not-replace those fields would never become durable. Part 6
+binds ATOMIC_VERIFIED_GAME_IDENTITY_BUNDLE_V1 (complete immutable bundle
+constructed at Gate 1, all-or-none atomic persistence, no client field in
+any member), the odds-selection-namespace vs game-SourceProvider
+distinction, gate-2 compare-not-replace with the ApplyGameIdentity seam
+split for selected runs, the pinned canonical conversion
+(GameIdentityDerivation.NormalizeTeamRef semantics, one implementation for
+binding + duplicate prep, characterization gate before retiring the guard
+normalizer), sports-owned selected-candidate classification via envelope
+metadata (fail-closed incomplete/unknown; malformed candidates never
+skipped), the preserved truth table, and corrected residual states (the
+propagation residual stays OPEN and blocking until 2-iii implementation
+completes -- architecture publication does not resolve it). Skills gate:
+four named skills unavailable -- tracked doctrine fallback. Nothing pushed;
+ops at 234d3f0 untouched; wi/0035 hash 86aa8b74 intact; dai byte-identical.
+
+### Slice Synopsis
+
+**Change:** Part 6 completes the atomic six-field identity bundle, pins the
+canonical conversion authority, binds sports-owned candidate classification,
+and corrects the residual states.
+**Reason:** Staff review verdict (FR-6 High, FR-7/FR-8 Med).
+**Proof:** Settlement-key and GameIdentityContext citations; normalizer
+comparison; strict snapshot 26/0/0; docs-only delta on the three allowlisted
+paths.
+**State:** Vault-only commit; closing delta review of c6d8aac..tip required;
+publication and implementation unauthorized.
+**Next:** Operator: authorize the closing delta review.

@@ -427,7 +427,37 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (ADR PART 5 BOUND LOCAL 2026-07-26; closing delta review required; implementation NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (ADR PART 6 BOUND LOCAL 2026-07-26; closing delta review required; implementation NOT authorized)
+
+> Part-6 state (2026-07-26, superseding "part 5 bound"): staff review found
+> FR-6 High (part 5 persisted ExternalGameId + team refs WITHOUT
+> SourceProvider/ScheduledStartUtc/Season -- a partial settlement identity
+> against the (SourceProvider, ExternalGameId) key and the six-field
+> GameIdentityContext bundle), FR-7 Med (conversion semantics unpinned across
+> the two existing normalizers; selected-candidate classification
+> underspecified), FR-8 Med (the propagation residual is NOT resolved by
+> architecture publication). ADR part 6 binds:
+> **ATOMIC_VERIFIED_GAME_IDENTITY_BUNDLE_V1** -- Gate 1 constructs the
+> complete immutable six-field bundle (+ Competition + GameDate) before run
+> creation, persisted all-or-none in the initial atomic insert; settlement
+> key stays exactly (SourceProvider, ExternalGameId); selection
+> providerNamespace (odds) never conflated with game SourceProvider
+> (mlb_statsapi); Gate 2 = COMPARE-NOT-REPLACE (typed failed-run outcome on
+> any authoritative mismatch, before model; ApplyGameIdentity mutation seam
+> split for selected runs); canonical conversion authority pinned =
+> GameIdentityDerivation.NormalizeTeamRef semantics (single implementation
+> consumed by binding AND duplicate preparation; screened-workflow scope;
+> characterization over every supported name before retiring the old
+> normalizer; no alias guarantees); selected-candidate classification via
+> envelope metadata in sports-owned builder code (fail-closed on incomplete
+> bundles or unknown schema versions; malformed candidates never skipped);
+> part-5 truth table preserved; residuals corrected --
+> SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE remains
+> OPEN and blocking until full 2-iii implementation/verification; scale-out
+> residual retained blocking; decision-ledger residual retained nonblocking.
+> NOT published; implementation NOT authorized; 2-ii-c unauthorized; WI-0037
+> in-progress. Evidence:
+> [[wi-0037-slice-2-iii-architecture-review-2026-07-26-v1]] part 6.
 
 > Part-5 state (2026-07-26, superseding "part 4 bound"): staff review found
 > FR-4 High (the shared gate ORDERS checks but does not equalize duplicate
