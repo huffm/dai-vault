@@ -427,7 +427,44 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (ARCHITECTURE PUBLISHED 2026-07-27; implementation NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (FOUNDATION BATCH 2-iii-a + 2-iii-b1 IMPLEMENTED LOCAL 2026-07-27; independent review required; 2-iii-b2/c and 2-ii-c NOT authorized)
+
+> Foundation-batch state (2026-07-27, superseding "architecture published;
+> implementation not authorized" for the 2-iii-a and 2-iii-b1 portions only):
+> the operator authorized and this batch implemented BOTH foundation slices
+> RED-first on local branch `wi/0037-selected-event-foundation` (dai, from
+> published `af59853`): Commit A `19fbc77c4db9884609ae752041f4a11d99d3dc85`
+> ("refactor(sports): centralize provider event game matching") moves the
+> WI-0035 binding rule family to the sports domain as the canonical matcher
+> (`Sports/ProviderEventQualifier.cs` -- the ADR role
+> "ProviderEventGameBindingMatcher" realized by the retained established
+> production type; single-definition predicates now shared by the decision
+> and the wire content contract; wire emitters byte-untouched; RED = 7
+> ownership failures at base); Commit B
+> `63c70099a095383d96df9cbbbf3d6632ba145ed8` ("feat(agent-runs): add inert
+> domain provenance storage") adds nullable single-assignment
+> `AgentRun.DomainExecutionProvenanceJson` (private setter; second
+> assignment fails deterministically preserving original bytes), the opaque
+> generic `DomainExecutionProvenanceEnvelope` {domain, type, schemaVersion,
+> payload}, and the additive UNAPPLIED migration
+> `20260727133845_AddAgentRunDomainExecutionProvenance` (nvarchar(max)
+> nullable, precedent-identical; snapshot consistent via
+> has-pending-model-changes; no database accessed). Nothing writes or reads
+> the field in production; no SelectedEventIntent; no controller/frontend/
+> guard/dependency change. Suites: full .NET **1896/1896, 0 skipped**
+> (baseline 1853 + 43 new); solution build clean; frontend proven not
+> applicable (zero non-platform paths in the delta). Code review: zero
+> blocking findings; one recorded comment-precision note ("moved verbatim"
+> vs predicate extraction) carried to the independent review. NOT reviewed,
+> NOT integrated, NOT pushed; integration readiness NOT claimed until the
+> independent review-and-integrate-on-PASS authorization passes. Semantic
+> dispositions recorded (domain-execution-provenance promoted to
+> [[glossary]]; matcher role/type distinguished). Evidence:
+> [[wi-0037-slice-2-iii-foundation-implementation-2026-07-27-v1]].
+> Residuals unchanged (propagation OPEN/blocking -- the foundation batch
+> does NOT resolve it; scale-out blocking; decision ledger deferred).
+> Next: independent review; then 2-iii-b2 as the next separately
+> authorized implementation batch; WI-0037 stays `in-progress`.
 
 > Publication state (2026-07-27, superseding "ADR part 8 bound local;
 > closing delta review required"): the final independent closing review

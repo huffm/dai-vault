@@ -19037,3 +19037,64 @@ report.
 **State:** Vault main = closeout commit, pushed main-only after
 verification; architecture branch local-only; dai untouched at af59853.
 **Next:** Operator: authorize Slice 2-iii-a (canonical matcher) separately.
+
+---
+
+## WI-0037 Slice 2-iii Foundation Batch (2-iii-a + 2-iii-b1) -- IMPLEMENTED LOCAL, Independent Review Required
+
+**Date:** 2026-07-27 **Governing WI:** WI-0037 (`02 Platform/system-development/work-items/WI-0037-game-state-correctness-v1.md`) **Branches:** dai `wi/0037-selected-event-foundation` (af59853 -> 19fbc77 -> 63c7009), vault `wi/0037-selected-event-foundation-records` (0e191e0 -> this commit)
+
+One continuous authorized batch, two independently reviewable phases, two
+source commits, nothing pushed. Commit A 19fbc77c4db9884609ae752041f4a11d99d3dc85
+("refactor(sports): centralize provider event game matching"): the WI-0035
+binding rule family (policy, statuses, candidate/bracket/qualification records,
+ProviderEventQualifier decision) moved to Sports/ProviderEventQualifier.cs as
+the canonical sports-domain matcher; single-definition predicates
+(IsWithinAdmittedWindow, MatchMethodFor, IsWholeSecondInstant,
+SignedStartDeltaSeconds, ProviderEventBracket.Contains) now shared by the
+decision AND the wire content contract; frozen wire emitters byte-untouched;
+both existing consumers unchanged call sites; ADR role
+"ProviderEventGameBindingMatcher" realized by the retained established type
+name (batch rule: no rename to match ADR prose). RED = 7 sports-ownership
+failures at base; provider-event/market-join 240/240 + adjacents 210/210
+after. Commit B 63c70099a095383d96df9cbbbf3d6632ba145ed8 ("feat(agent-runs):
+add inert domain provenance storage"): nullable single-assignment
+AgentRun.DomainExecutionProvenanceJson (private setter; second assignment
+throws, original bytes preserved; blank refused), opaque generic
+DomainExecutionProvenanceEnvelope {domain,type,schemaVersion,payload} with
+strict structural TryRead/ToJson and zero value recognition, additive
+UNAPPLIED migration 20260727133845_AddAgentRunDomainExecutionProvenance
+(nvarchar(max) nullable, PromptRouteProvenanceJson precedent; snapshot
+consistent by has-pending-model-changes; no database accessed). Inertness
+proven: no production writer/reader, no SelectedEventIntent, no controller/
+DTO/frontend path in the 9-file all-platform delta. RED B = compile-absence
+captured; 17/17 after. Cumulative: full .NET 1896/1896 0 skipped (baseline
+1853 + 43 new), solution build 0 errors, frontend not applicable by proof.
+Code review (A, B, combined): zero blocking; one comment-precision note
+("moved verbatim" vs predicate extraction) recorded for the independent
+review. Docs: implementation report created
+([[wi-0037-slice-2-iii-foundation-implementation-2026-07-27-v1]]), WI-0037
+foundation-batch state bound, glossary gains "domain execution provenance"
+(authorized single dictionary edit); ledger record
+2026-07-27-wi-0037-slice-2-iii-foundation-batch.md executing -> outcome
+linked at close. NOT reviewed, NOT integrated, NOT pushed. Residuals
+unchanged: propagation OPEN/blocking (b2+c still required); scale-out
+blocking; decision ledger deferred. 2-iii-b2, 2-iii-c, 2-ii-c remain
+unauthorized. dai main untouched at af59853; vault main untouched at 0e191e0;
+ops at 0e191e0; wi/0035 preservation hash 86aa8b74 intact.
+
+### Slice Synopsis
+
+**Change:** Foundation batch implemented local -- the binding rule family is
+now the sports-domain canonical matcher (Commit A 19fbc77) and inert
+single-assignment domain-provenance storage exists with an unapplied additive
+migration (Commit B 63c7009).
+**Reason:** First implementation step of the published Slice 2-iii
+architecture (matcher ownership + provenance home) without any activation.
+**Proof:** RED-first both phases; full .NET 1896/1896; solution build clean;
+migration inspected + has-pending-model-changes clean; inertness greps; zero
+blocking review findings.
+**State:** Local branches only (dai foundation branch two commits ahead of
+af59853; vault records branch on 0e191e0); nothing integrated or pushed.
+**Next:** Operator: authorize the independent review-and-integrate-on-PASS of
+the foundation batch.

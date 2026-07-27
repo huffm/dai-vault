@@ -32,3 +32,6 @@ the Interrogate micro-action that performs targeted investigation of signal gaps
 
 ## position
 the Decide micro-action that sets the decision posture from the niche posture vocabulary. position names a posture (in sports today: play, pass, monitor, wait, compare, avoid), not a pick or a lock. the UI label remains Read Stance. position replaces the earlier proposed Decide.Choose.
+
+## domain execution provenance
+a generic opaque per-run document recording which domain-owned facts governed an execution. stored on the run row as a nullable single-assignment json envelope {domain, type, schemaVersion, payload}; the platform owns storage, retrieval, run association, cardinality (zero-or-one), and single assignment only, and never parses or interprets the payload. the owning domain (for sports: selected-event binding) classifies and consumes the content under its own separately reviewed rules.
