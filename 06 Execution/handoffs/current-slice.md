@@ -18940,3 +18940,43 @@ captured.
 **State:** Vault-only commit; closing delta review of 9b7ccdd..tip required;
 publication and implementation unauthorized.
 **Next:** Operator: authorize the closing independent delta review.
+
+---
+
+## WI-0037 Slice 2-iii -- Part-8 Record-Conformance Correction, Closing Review Pending
+
+**Date:** 2026-07-27 **Governing WI:** WI-0037 **Branch:** `wi/0037-selected-event-identity-continuity-architecture` (... -> 8039894 -> this commit); dai untouched at af59853
+
+Record-conformance continuation; the Part-8 ARCHITECTURE WAS NOT CHANGED (the
+four-arm classification, database-NULL-only legacy route, ownership boundary,
+RED contracts, and all part 1-7 decisions stand verbatim). Corrections: (1)
+the architecture report's OKF `repos.dai` value normalized to `unchanged`,
+making section 8.6's existing statement true (one front-matter line; no other
+report change); (2) accurate part-8 delta attribution recorded -- the actual
+9b7ccdd..8039894 numstat is WI 25/1, current-slice 45/0, report 137/3 (total
+207/4); the prior "four front-matter deletions" attribution was INACCURATE
+(three deletions were report front matter; the fourth was the WI
+current-state heading replacement); (3) the external prompt-ledger record was
+normalized in place to the canonical Prompt Ledger Hook shape (required YAML
+front matter, four required sections, exactly one Outcome; stale pending
+outcome removed; related_commits carry the part-8 SHA and this correction
+commit once minted; record remains outside both repos, secret-free). Closing
+independent review remains REQUIRED; architecture remains UNPUBLISHED;
+implementation and 2-ii-c remain UNAUTHORIZED; residuals unchanged
+(propagation OPEN/blocking; scale-out blocking; ledger deferred). Skills
+gate: named skills not callable -- recorded; tracked doctrine applied.
+Nothing pushed; ops at 234d3f0 untouched; wi/0035 hash 86aa8b74 intact.
+
+### Slice Synopsis
+
+**Change:** Part-8 records aligned -- one OKF front-matter value normalized,
+the delta attribution corrected, and the prompt-ledger record made canonical;
+zero architecture change.
+**Reason:** Operator record-conformance authorization (noncanonical ledger
+shape; inaccurate deletion attribution; repos.dai wording).
+**Proof:** Live numstat 25/1 + 45/0 + 137/3; one-line report diff; canonical
+ledger validated; strict snapshot 26/0/0.
+**State:** Docs-only commit on the architecture branch (ninth unique);
+closing review of 9b7ccdd..tip required; publication and implementation
+unauthorized.
+**Next:** Operator: authorize the corrected closing independent review.

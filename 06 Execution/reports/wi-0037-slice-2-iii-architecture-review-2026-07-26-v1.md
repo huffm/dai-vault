@@ -6,7 +6,7 @@ status: "in-progress"
 project: "DAI"
 slice: "WI-0037 Slice 2-iii: selected-event identity continuity"
 repos:
-  dai: "read-only inspection of published main af59853; ZERO source changes"
+  dai: "unchanged"
   dai-vault: "docs-only"
 tags:
   - system-development
