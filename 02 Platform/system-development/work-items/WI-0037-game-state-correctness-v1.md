@@ -427,7 +427,34 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (ARCHITECTURE REVIEWED LOCAL 2026-07-26; independent review required; implementation NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (ARCHITECTURE CORRECTED LOCAL 2026-07-26; delta architecture review required; implementation NOT authorized)
+
+> Architecture-correction state (2026-07-26, superseding "architecture reviewed
+> local"): the independent adversarial architecture review returned
+> **WI0037_SLICE2III_ARCHITECTURE_REVIEW_CORRECTIONS_REQUIRED** (AF-1 High:
+> translation placed after DuplicateRunGuard + run creation would 409 the second
+> doubleheader selection under the guard's fail-closed matchup rule; AF-2/3/4/5
+> Medium: durable verified-evidence home unspecified, provider namespace not
+> persisted, activation gap, replay classes conflated; L-1 Low serialization
+> pin). Corrected in ADR part 2 (part 1 preserved as history): canonical design
+> is now **E-PRIME-PRECREATE** -- SERVER_TRANSLATION_BEFORE_DUPLICATE_GUARD
+> (validate -> observe -> translate via the canonical
+> ProviderEventGameBindingMatcher -> staged verification -> creation gate ->
+> pk-conflict check -> guard with the VERIFIED pk -> persist evidence -> create
+> run -> execute; translation I/O outside the gate); durable evidence home
+> DECIDED = new nullable run-row column (sketch `SelectedEventBindingJson`,
+> PromptRouteProvenanceJson migration precedent) --
+> **NEW_DURABLE_FIELD_AND_MIGRATION_REQUIRED**, "zero schema change" withdrawn;
+> server-derived provider namespace frozen per run; three replay classes bound
+> (same-run retry reuses frozen evidence; resubmission re-resolves; audit replay
+> never contacts providers; cross-run rebinding = permit-with-provenance);
+> internal-first decomposition (2-iii-a translator, 2-iii-b atomic contract
+> activation + enforcement + evidence column, 2-iii-c frontend/consumers) with
+> mandatory pre-activation refusal `selection_identity_not_active` and
+> all-or-none intent semantics (`selection_intent_malformed`). NOT
+> delta-reviewed, NOT published, implementation NOT authorized; 2-ii-c
+> unauthorized; WI-0037 in-progress. Evidence:
+> [[wi-0037-slice-2-iii-architecture-review-2026-07-26-v1]] part 2.
 
 > Architecture-review state (2026-07-26, superseding "defined, unauthorized"):
 > the architecture review is COMPLETE LOCALLY on branch

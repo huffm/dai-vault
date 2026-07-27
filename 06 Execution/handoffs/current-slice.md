@@ -18669,3 +18669,46 @@ architecture review required; implementation unauthorized; 2-ii-c
 unauthorized.
 **Next:** Operator: authorize the independent adversarial architecture review
 of 234d3f0..<tip>.
+
+---
+
+## WI-0037 Slice 2-iii -- ARCHITECTURE CORRECTED LOCAL (AF-1..AF-5, L-1), Delta Architecture Review Pending
+
+**Date:** 2026-07-26 **Branch:** `wi/0037-selected-event-identity-continuity-architecture` (base 234d3f0 -> cbc5ccf -> this commit); dai untouched at published af59853
+
+Independent architecture review: E-prime authority model PASSED, five findings.
+AF-1 High: part-1 placed translation in retrieval, AFTER DuplicateRunGuard +
+run creation -- the guard fails closed on matchup identity without a request pk
+(DuplicateRunGuard.cs:16-19,84-89; controller :157), so the second legitimate
+DH selection would 409. Corrected canonical design = E-PRIME-PRECREATE:
+SERVER_TRANSLATION_BEFORE_DUPLICATE_GUARD with translation I/O outside the
+creation gate, guard fed the VERIFIED gamePk, evidence persisted atomically
+with run creation, no run/model before verification. AF-2: durable evidence
+home DECIDED = new nullable run-row JSON column (SelectedEventBindingJson
+sketch; PromptRouteProvenanceJson precedent) -- NEW_DURABLE_FIELD_AND_
+MIGRATION_REQUIRED; zero-schema claim withdrawn; intent (InputJson) vs
+verified evidence (server column) separation bound. AF-3: server-derived
+provider namespace frozen per run; audit uses persisted namespace. AF-5:
+same-run retry / new resubmission / audit replay bound; cross-run rebinding =
+permit-with-provenance. AF-4: internal-first decomposition (2-iii-a matcher,
+2-iii-b atomic activation + enforcement + column, 2-iii-c frontend) with
+mandatory selection_identity_not_active pre-activation refusal and all-or-none
+intent (selection_intent_malformed). Canonical rule owner bound:
+ProviderEventGameBindingMatcher shared with market-contrast, no duplication,
+no workflow dependency. L-1: byte-identity serialization pins mandatory in
+2-iii-b RED. Nothing pushed; ops at 234d3f0 untouched; wi/0035 hash 86aa8b74
+intact; zero live/paid/db/model calls; dai byte-identical.
+
+### Slice Synopsis
+
+**Change:** 2-iii architecture corrected -- pre-create translation ordering,
+decided evidence column, frozen namespace, bound replay classes, and
+internal-first activation replace the superseded part-1 conclusions.
+**Reason:** Architecture review verdict CORRECTIONS_REQUIRED (AF-1 High +
+four Medium).
+**Proof:** Guard/controller file:line evidence; all decisions bound with
+dispositions; part-1 preserved as history.
+**State:** Vault-only correction commit on the architecture branch; delta
+architecture review required; implementation and publication unauthorized.
+**Next:** Operator: authorize the independent delta architecture review of
+cbc5ccf..tip.

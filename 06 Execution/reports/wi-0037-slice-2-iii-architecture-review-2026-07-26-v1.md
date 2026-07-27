@@ -399,3 +399,246 @@ one vault commit; no translation, no frontend wiring, no live calls; expected
 status WI0037_SLICE2IIIA_IMPLEMENTED_LOCAL_REVIEW_REQUIRED. (Full prompt to be
 issued by the operator only after the independent architecture review passes
 and the architecture is published.)
+
+# part 2 -- architecture correction (af-1..af-5, l-1), 2026-07-26
+
+The independent adversarial architecture review returned
+WI0037_SLICE2III_ARCHITECTURE_REVIEW_CORRECTIONS_REQUIRED. Sections 1-25 above
+are PRESERVED AS HISTORY; where this part conflicts with them, THIS PART IS THE
+CURRENT AUTHORITY. The corrected canonical design is named
+**E-PRIME-PRECREATE**.
+
+## 2.1 af-1 (High) -- canonical pre-create authority order: SERVER_TRANSLATION_BEFORE_DUPLICATE_GUARD
+
+Part 1 placed translation "during retrieval" -- AFTER DuplicateRunGuard and run
+creation. That is wrong: the guard fails CLOSED on matchup identity whenever
+either side lacks a known gamePk (`DuplicateRunGuard.cs:16-19,84-89`) and the
+controller evaluates it with `req.Input.GamePk` straight from the request
+before creating the run (`AgentRunsController.cs:157`). Under the part-1 order,
+the second legitimate doubleheader selection (SelectedEvent-only, no pk) is
+409-blocked -- the slice's flagship scenario fails. SUPERSEDED.
+
+Canonical order (bound): request received -> validate SelectedEvent shape and
+input bounds -> obtain the server-owned provider observation -> translate
+providerEventId + StartUtc through the canonical rule owner -> candidate
+gamePk -> existing staged gamePk verification (2-ii-a resolver) -> immutable
+verified-resolution candidate -> ENTER the existing per-matchup creation gate
+(`AgentRunsController.cs:129`) -> compare any client-supplied gamePk with the
+verified gamePk (conflict -> refuse) -> DuplicateRunGuard WITH THE VERIFIED
+AUTHORITATIVE GAMEPK -> freeze and persist intent + verified evidence +
+gamePk atomically with run creation -> leave the gate -> model execution.
+Invariants: no run row before translation + staged verification succeed; no
+model call before evidence is persisted; no date/team-only duplicate decision
+when a valid non-null SelectedEvent is present.
+
+Gate/I-O boundary (bound): provider observation, translation, and staged
+verification run OUTSIDE the creation gate (no network I/O under the lock);
+the gamePk conflict check, duplicate evaluation, evidence persistence, and run
+creation run INSIDE. The gate already serializes same-matchup creation, so the
+outside-computed verified candidate cannot race a same-game duplicate past the
+inside check. If implementation-time inspection proves different lock
+semantics are required, the implementing slice must document the corrected
+atomic design before merging.
+
+Client/discovery-supplied gamePk is DEMOTED to optional intent and cross-check
+only (never a co-equal canonical path): it never replaces server-owned
+translation and staged verification; a conflict with the verified pk refuses
+(`selection_gamepk_conflict`) before run creation.
+
+Named af-1 RED scenarios (mandatory in the implementation slices): (1) first
+DH selection creates run for gamePk A; (2) second selection, same teams/date,
+different providerEventId, creates run for gamePk B; (3) the second selection
+is never 409-blocked under matchup identity; (4) same selection twice follows
+the existing duplicate policy for the same verified pk; (5) two provider ids
+resolving to one gamePk -> the existing duplicate outcome, explicitly typed;
+(6) conflicting client gamePk refuses before run creation; (7) no model call
+before translation + verification; (8) no run row after an early selection
+refusal.
+
+## 2.2 canonical binding-rule owner (promoted from risk to requirement)
+
+One sports-domain component -- architecture name
+**ProviderEventGameBindingMatcher** (implementation name may follow repository
+conventions) -- owns: provider-event normalization inputs, orientation
+matching, date-bracket evaluation, commence-delta with sub-second handling,
+candidate-set construction, unique-match selection, ambiguity/no-match
+outcomes, and rule-version reporting. Bound rules: market-contrast and
+selected-event translation consume the SAME matcher; neither duplicates the
+rule family; selected-event translation never depends on market-contrast
+orchestration, state, or workflow; the matcher is sports-domain, returns
+evidence and typed outcomes only, never creates runs or invokes models; its
+rule version is durably recorded in verified evidence.
+
+## 2.3 af-2 (Medium) -- exact durable verified-evidence home: NEW_DURABLE_FIELD_AND_MIGRATION_REQUIRED
+
+Part 1's "zero schema change" phrasing is WITHDRAWN. Inspection of the run
+persistence surface (`AgentRun.cs`) shows no existing field satisfies the
+requirements: `OutputJson` is composed at completion/failure (written AFTER
+execution -- disqualified); `InputJson` is the serialized client request
+(placing server evidence there would let client-supplied data masquerade as
+verification -- disqualified); the scalar stable-identity columns cannot carry
+the evidence bundle; `PromptRouteProvenanceJson` is owned by a different
+provenance domain. Decision: a NEW nullable server-owned JSON column on the
+run row -- sketch name `SelectedEventBindingJson` -- following the exact
+`PromptRouteProvenanceJson` precedent (additive nullable string column, one
+EF migration `AddAgentRunPromptRouteProvenance`-style, legacy rows null, no
+backfill). Written INSIDE the creation gate atomically with the run row,
+BEFORE model execution; survives failed and successful execution and every
+retry; never touched by the composer; immutable for the run.
+
+Conceptual separation (bound): `SelectedEventIntent { providerEventId,
+startUtc }` -- client-supplied, nonauthoritative, lives in InputJson as part
+of the request snapshot. `VerifiedSelectedEventBinding { providerNamespace,
+observedProviderEventId, observedStartUtc, observedHomeTeam,
+observedAwayTeam, operationalDate, candidateGamePks, authorizedGamePk,
+bindingRuleVersion, bracketContext, translationOutcome,
+providerObservationTimestampUtc, frozenAtUtc }` -- server-written only (sketch
+names, not implementation authority); no client path can populate it.
+Pre-create refusals (no run row): typed 409/422 response + structured log,
+consistent with the existing duplicate-guard 409 precedent -- explicitly
+accepted as the durable-record posture for pre-run refusals; post-creation
+failures retain the persisted evidence block.
+
+## 2.4 af-3 (Medium) -- provider namespace: server-derived and durable
+
+providerNamespace is derived from the server's competition-scoped provider
+registration (CompetitionCatalog/service registration -- the same mechanism
+that selects the odds client today), NEVER client-supplied, frozen into
+VerifiedSelectedEventBinding at observation time, immutable for the run and
+its retries. Historical audit uses the persisted namespace, never current
+configuration (rationale: legacy odds ids in `ExternalGameId`,
+`DuplicateRunGuard.cs:97-99`, prove namespaces shift). If the provider
+observed at execution differs from the namespace implied by the selection
+context, fail closed (provider-source/selection typed outcome). Configuration
+changes between discovery, submission, execution, retry, and audit are
+resolved by the frozen per-run namespace.
+
+## 2.5 af-5 (Medium) -- three replay classes (bound)
+
+**Same-run retry** (another attempt for an existing run): reuse persisted
+VerifiedSelectedEventBinding and authorized gamePk; never re-contact the
+provider to retranslate; namespace and candidate set immutable; can never
+bind the other DH game. **New resubmission** (a new request from the same
+intent): a new decision -- re-observe, re-translate, re-verify, persist NEW
+evidence, may refuse if the event moved/disappeared/became ambiguous;
+duplicate policy applies on the newly verified pk. Cross-run rebinding policy
+(bound): if the same namespace + providerEventId later resolves to a
+DIFFERENT gamePk, the resubmission is PERMITTED as a new versioned decision
+with visible provenance (each run's evidence stands alone); it is NOT refused
+at runtime because gamePk authority + staged verification already prevent
+wrong-game execution, and runtime refusal would require queryable cross-run
+evidence (see risk 7). The divergence is surfaced in audit by evidence
+comparison. **Historical audit replay**: nonmutating; reads persisted intent +
+evidence + outcome; zero provider or StatsAPI calls; no new translation; no
+mutation.
+
+## 2.6 af-4 (Medium) -- activation safety and all-or-none semantics
+
+Invariant (bound): any non-null SelectedEvent presented to a server without
+active translation + enforcement receives the typed refusal
+`selection_identity_not_active`; it NEVER falls through to legacy date/team
+resolution. All-or-none: both fields absent -> legacy request; both present ->
+selected-event path; exactly one present, blank id, or malformed StartUtc ->
+`selection_intent_malformed`, fail closed, never legacy fallback.
+
+Corrected decomposition (internal-first; SUPERSEDES part 1 section 22):
+**2-iii-a -- canonical internal translator:** extract/establish
+ProviderEventGameBindingMatcher + internal selected-intent domain types +
+typed translation outcomes; NO public request field, NO frontend change, NO
+persistence change. RED: DH selection resolves to intended pk; forged id,
+stale StartUtc, ambiguous, and no-candidate refusals; rule parity with
+WI-0035/36; no market-contrast dependency; no run/model creation.
+**2-iii-b -- atomic contract activation + execution authority:** additive
+null-suppressed SelectedEventIntent + all-or-none validation + pre-guard
+translation/verification per 2.1 + the SelectedEventBindingJson column and
+migration + namespace freeze + guard integration + retry/resubmission
+semantics + legacy preservation. Contract and enforcement publish TOGETHER;
+a non-null block can never be accepted without translation. RED: legacy
+byte-identity serialization (see 2.8), historical deserialization, second-DH-
+selection-creates-second-run, duplicate policy, client-pk conflict, evidence-
+before-execution, no-run/no-model on early refusal, same-run retry uses
+frozen evidence.
+**2-iii-c -- frontend and consumer continuity:** analyzer + dev-artifact-
+review propagation, stubs/alternate callers, provenance surfacing, offline
+end-to-end DH tests, reconciliation/settlement continuity verification. RED:
+two pills -> two intents -> two verified pks -> two evidence blocks -> two
+runs -> two reconciliation identities; no semantic request collapse.
+No slice is authorized by this document.
+
+## 2.7 refusal-domain corrections
+
+Retained: selection_event_not_in_schedule, selection_ambiguous_candidates,
+selection_identity_mismatch, selection_start_mismatch,
+selection_gamepk_conflict. Added: `selection_intent_malformed` (shape/bounds),
+`selection_identity_not_active` (pre-activation). Provider transport/
+availability failures map to the EXISTING provider-source-failure domain
+(retryable; no authority decision; no model call) -- never forced into the
+selection vocabulary. Binding-history divergence across runs is a permitted
+versioned decision (2.5), not a runtime refusal. For every selection refusal:
+detected pre-create in the controller translation step; client-correctable
+except transient source failures; no run row (pre-create) or standard failed
+run (post-create); durable record = typed response + structured log
+(pre-create) or run row (post-create); provider observation happens before
+refusal by necessity; model calls forbidden. Game-status-resolution codes are
+never overloaded.
+
+## 2.8 input bounds and legacy serialization pin (l-1)
+
+Bounds (to be bound + tested in 2-iii-b from the provider contract; observed
+odds ids are 32-char hex -- cap selected from contract/fixture evidence, not
+invented): providerEventId nonblank, bounded length, control characters
+rejected (reuse the 2-ii-b strict posture); StartUtc exact fixed-width
+STARTUTC_FIXED_WIDTH_UTC_100NS form only; bounded candidate counts and
+diagnostic lengths; structured logs only; no payload/url logging. The client
+can never choose namespace, rule version, candidates, authorized pk, or
+verified evidence. Mandatory 2-iii-b RED serialization pins: byte-equality of
+legacy request serialization before/after the additive field; historical
+InputJson deserialization; populated-block additivity; every serializer
+option-set used on the path. If byte identity fails, STOP and reassess -- no
+silent downgrade.
+
+## 2.9 traceability evidence table (durable homes bound)
+
+submitted providerEventId / startUtc -> InputJson (client intent, immutable);
+providerNamespace, observed event, candidate pks, rule version, bracket
+context, outcome, frozen timestamp -> SelectedEventBindingJson (server,
+immutable); authorized gamePk -> run row ExternalGameId + evidence block;
+refusal outcome -> typed response + log (pre-create) / run row (post-create);
+run/correlation id -> run row; reconciliation + settlement -> existing
+records. All nine audit questions in the review's section 22 are answerable
+from these homes.
+
+## 2.10 corrected scoring and recommendation
+
+**E-PRIME-PRECREATE** is the recommended canonical architecture: additive
+client intent; server-owned namespace; one canonical matcher; translation
+BEFORE DuplicateRunGuard; staged verification before run creation; durable
+server-owned evidence (new nullable column + migration); gamePk sole
+execution authority; reconciliation/settlement authority unchanged;
+internal-first activation; precise retry/resubmission/audit semantics.
+Rescored vs part 1: idempotency STRONG (guard now receives the verified pk);
+ordering STRONG; doubleheader safety STRONG; persistence STRONG (explicit
+home); migration risk ACCEPTABLE (one additive nullable column, established
+precedent) -- honest downgrade from part 1's overstated "zero change";
+operational complexity STRONG. Mandatory client/discovery gamePk as the
+primary design is REJECTED (shifts correctness pressure to client-supplied
+identity and still requires server verification); retained as cross-check /
+later optimization only.
+
+## 2.11 risks and open decisions (dispositions)
+
+(1) evidence home: DECIDED (2.3). (2) gate boundary: DECIDED (2.1), with an
+implementation-time verification obligation. (3) cross-run rebinding:
+DECIDED permit-with-provenance (2.5). (4) rule owner: DECIDED (2.2).
+(5) namespace changes: DECIDED frozen-per-run (2.4). (6) provider
+unavailability: source-failure domain (2.7). (7) queryability: JSON evidence
+is NOT efficiently queryable cross-run -- accepted for v1 because no runtime
+decision reads it cross-run; revisit only if a future slice needs
+binding-history enforcement. (8) pre-run refusal durability: DECIDED typed
+response + structured log (2.3), consistent with the dup-guard 409 precedent.
+
+## 2.12 state
+
+Slice 2-iii: architecture CORRECTED locally; independent delta architecture
+review of this correction required; implementation unauthorized; publication
+not claimed. 2-ii-c unauthorized; WI-0037 in-progress.
