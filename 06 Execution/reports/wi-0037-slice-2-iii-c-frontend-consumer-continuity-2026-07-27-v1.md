@@ -364,3 +364,59 @@ branch-delta comment audit clean (zero labels, zero uppercase/non-ascii in added
 Source production changes remain confined to apps/sports-app; no platform/dotnet, lockfile,
 manifest, appsettings, or migration change. activation remains disabled; migration remains
 unapplied; nothing pushed or integrated.
+
+## slice 2-iii-c local integration closeout (2026-07-27)
+
+The complete selected-event frontend continuity package (2-iii-c propagation + 2-iii-c1
+comment/evidence hardening) was independently reviewed and integrated into the LOCAL
+engineering baseline. No remote push and no deployment occurred.
+
+### review and integration
+
+- Independent adversarial review (external prompt ledger, slice 2-iii-c2): PASS, no findings,
+  over the complete ranges aee1ade..baf5e90 (source) and e217a3f..c497262 (records).
+- Source integrated by local fast-forward: dai local main aee1ade -> baf5e90 (two commits:
+  d5d093c propagation, baf5e90 hardening). dai origin/main remains aee1ade.
+- This records branch is advanced into local vault main by an atomic local ref update; vault
+  origin/main remains e217a3f. Nothing pushed to any remote; nothing deployed.
+
+### engineering-completion doctrine (correction)
+
+Remote publication is not required for engineering completion during the hardening phase.
+Engineering completion is established by independent review, deterministic local verification,
+and integration into the designated local baseline. Remote publication and product deployment
+belong to a future release program and are not prerequisites for ordinary local slice
+completion. The earlier 2-iii-c/c1 "corrected publication sequence" (source-first remote push)
+is superseded for the purpose of resolving the propagation residual.
+
+### residual disposition
+
+- SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE = RESOLVED 2026-07-27
+  (independently reviewed and integrated into the local WI-0037 baseline; remote publication
+  and deployment deferred). The client identity-loss line is closed in the integrated baseline.
+- MULTI_INSTANCE_SELECTED_EVENT_ATOMICITY_REQUIRED_BEFORE_SCALE_OUT: blocking before scale-out.
+- DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_DEFERRED: deferred/nonblocking.
+
+### release state (tracked separately and truthfully)
+
+LOCAL-ONLY; UNPUBLISHED; UNDEPLOYED; selected-event activation DISABLED (appsettings
+Enabled=false, blank DeploymentId/EvidencePath); migration 20260727133845 UNAPPLIED. No
+product release, production readiness, deployment readiness, feature activation, or live
+selected-event execution is claimed.
+
+### verification at integration
+
+Focused frontend 50/50; full frontend 207/207 (24 files) + build clean; full .NET 2025/2025,
+0 skipped; source-range diff --check clean; branch-delta comment audit clean. Warning
+inventory (accurate, pre-existing, not introduced by this frontend-only package): NU1903
+high-severity advisories for Microsoft.OpenApi 2.0.0 and System.Security.Cryptography.Xml
+10.0.7, plus pre-existing compiler/nullability/xUnit analyzer warnings; the earlier
+"no unresolved warnings" phrasing is superseded by this inventory. Not remediated in this slice.
+
+### status and next
+
+Slice 2-ii-c (F3, F4, requireStatus hardening, normalizer consolidation, parity vectors)
+remains UNAUTHORIZED and is the last slice before WI-0037 closure. WI-0037 remains in-progress.
+Next governed action = a separate authorization for Slice 2-ii-c or an operator-selected
+evidence/capture slice, based on the integrated baseline (dai main baf5e90, vault main = this
+closeout commit).

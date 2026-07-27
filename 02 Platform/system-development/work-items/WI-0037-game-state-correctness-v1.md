@@ -427,7 +427,64 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (2-iii-c + correction 2-iii-c1 IMPLEMENTED LOCAL, review-required 2026-07-27; 2-iii-b2 REVIEWED + INTEGRATED + PUBLISHED; activation DEFAULT-OFF; 2-ii-c NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (2-iii-c + c1 INDEPENDENTLY REVIEWED + INTEGRATED INTO LOCAL BASELINE 2026-07-27, local-only/unpublished/undeployed; 2-iii-b2 integrated; activation DEFAULT-OFF; 2-ii-c NOT authorized)
+
+> 2-iii-c local-integration closeout (2026-07-27, superseding "2-iii-c + c1
+> IMPLEMENTED LOCAL, review-required"): the complete selected-event frontend
+> continuity package (2-iii-c propagation + 2-iii-c1 comment/evidence hardening) was
+> INDEPENDENTLY REVIEWED and INTEGRATED INTO THE LOCAL ENGINEERING BASELINE. The
+> independent adversarial review (recorded in the external prompt ledger, slice
+> 2-iii-c2) returned PASS with no findings over the complete ranges
+> aee1ade..baf5e90 (source) and e217a3f..c497262 (records). The reviewed source was
+> integrated by a local fast-forward: dai local `main` advanced aee1ade -> **baf5e90**
+> (two commits: d5d093c propagation, baf5e90 hardening); dai `origin/main` remains
+> aee1ade. This vault records branch is advanced into local vault `main` by an
+> atomic local ref update; vault `origin/main` remains e217a3f. NOTHING was pushed
+> to any remote and NOTHING was deployed.
+>
+> **Engineering-completion doctrine (correcting the earlier assumption).** Remote
+> publication is NOT required for engineering completion during this hardening
+> phase. Engineering completion is established by independent review, deterministic
+> local verification, and integration into the designated LOCAL baseline. Remote
+> publication and product deployment belong to a future release program and are not
+> prerequisites for ordinary local slice completion. The earlier 2-iii-c/c1
+> "corrected publication sequence" (source-first remote push) is superseded for the
+> purpose of resolving the propagation residual; it may be revisited if and when a
+> release program is authorized.
+>
+> **Residual disposition.** SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_
+> WI0037_CLOSE = **RESOLVED 2026-07-27 (independently reviewed and integrated into
+> the local WI-0037 baseline; remote publication and deployment deferred)**. The
+> client identity-loss line is closed in the integrated baseline: both sports-app
+> run-creation paths carry the operator's selected providerEventId + startUtc as the
+> additive null-suppressed selectedEvent intent, reaching the server-owned
+> selected-event authority. MULTI_INSTANCE_SELECTED_EVENT_ATOMICITY_REQUIRED_BEFORE_
+> SCALE_OUT stays **blocking before scale-out**;
+> DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_DEFERRED stays
+> **deferred/nonblocking**.
+>
+> **Release state (tracked separately and truthfully).** LOCAL-ONLY; UNPUBLISHED;
+> UNDEPLOYED; selected-event activation DISABLED (appsettings Enabled=false, blank
+> DeploymentId/EvidencePath); migration 20260727133845_AddAgentRunDomainExecution
+> Provenance UNAPPLIED. No product release, production readiness, deployment
+> readiness, feature activation, or live selected-event execution is claimed.
+>
+> **Verification at integration.** Focused frontend 50/50; full frontend 207/207 (24
+> files) + build clean; full .NET 2025/2025, 0 skipped; source-range diff --check
+> clean; branch-delta comment audit clean (zero labels/uppercase/non-ascii in added
+> comments). Warning inventory (accurate, pre-existing, not introduced by this
+> frontend-only package): NU1903 high-severity advisories for Microsoft.OpenApi
+> 2.0.0 and System.Security.Cryptography.Xml 10.0.7, plus pre-existing
+> compiler/nullability/xUnit analyzer warnings; the earlier "no unresolved warnings"
+> phrasing is superseded by this inventory. Not remediated in this slice.
+>
+> **Status.** Slice 2-ii-c (F3, F4, requireStatus hardening, normalizer
+> consolidation, parity vectors) remains UNAUTHORIZED and is the last slice before
+> WI-0037 closure. WI-0037 remains **in-progress**. Next governed action = a separate
+> authorization for Slice 2-ii-c or an operator-selected evidence/capture slice, based
+> on the integrated baseline (dai main baf5e90, vault main = this closeout). Evidence:
+> [[wi-0037-slice-2-iii-c-frontend-consumer-continuity-2026-07-27-v1]]
+> (local integration closeout section).
 
 > 2-iii-c1 correction state (2026-07-27, on top of 2-iii-c): a narrow
 > correction/evidence-hardening pass, IMPLEMENTED LOCAL and review-required, on

@@ -19581,3 +19581,52 @@ mains not moved; branches not pushed; activation DISABLED; migration UNAPPLIED; 
 stays RESOLUTION-PENDING-VERIFICATION.
 **Next:** Independent review, then source-first publication followed by a NEW vault closeout
 commit and vault publication; do not begin 2-ii-c yet.
+
+---
+
+## WI-0037 Slice 2-iii-c -- Local-Only Integration and Governance Closeout (2026-07-27)
+
+The independently reviewed selected-event frontend continuity package (2-iii-c propagation +
+2-iii-c1 hardening) was integrated into the LOCAL engineering baseline. No remote push, no
+deployment.
+
+- Review: independent adversarial review (external prompt ledger, slice 2-iii-c2) returned
+  PASS with no findings over aee1ade..baf5e90 (source) and e217a3f..c497262 (records).
+- Source integration: dai local main fast-forwarded aee1ade -> baf5e90 (d5d093c propagation,
+  baf5e90 hardening); dai origin/main remains aee1ade. Vault records advanced into local vault
+  main by an atomic local ref update; vault origin/main remains e217a3f. Nothing pushed; nothing
+  deployed.
+- Engineering-completion doctrine (correction): remote publication is not required for
+  engineering completion during the hardening phase. Completion is established by independent
+  review, deterministic local verification, and integration into the local baseline. Remote
+  publication and product deployment belong to a future release program.
+- Residual: SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE = RESOLVED
+  2026-07-27 (independently reviewed and integrated into the local WI-0037 baseline; remote
+  publication and deployment deferred). Scale-out residual blocking; decision ledger deferred.
+- Release state: LOCAL-ONLY; UNPUBLISHED; UNDEPLOYED; activation DISABLED; migration UNAPPLIED.
+  No product release, production/deployment readiness, activation, or live selected-event
+  execution is claimed.
+- Verification: focused 50/50; full frontend 207/207 (24 files) + build; full .NET 2025/2025,
+  0 skipped; diff --check clean; comment audit clean. Warnings (accurate, pre-existing): NU1903
+  advisories for Microsoft.OpenApi 2.0.0 and System.Security.Cryptography.Xml 10.0.7, plus
+  compiler/nullability/xUnit warnings; the earlier "no unresolved warnings" phrasing is
+  superseded. Preserved wi/0035 checkout unchanged (de5791f, fingerprint 86aa8b74).
+- 2-ii-c remains unauthorized; WI-0037 remains in-progress. Evidence:
+  [[wi-0037-slice-2-iii-c-frontend-consumer-continuity-2026-07-27-v1]] (local integration closeout).
+
+### Slice Synopsis
+
+**Change:** Integrated the independently reviewed selected-event frontend continuity package
+(2-iii-c + c1) into the LOCAL baseline (dai main -> baf5e90 by fast-forward; vault main advanced
+by atomic local ref update), and corrected the doctrine so local reviewed integration -- not
+remote publication -- completes the propagation residual.
+**Reason:** The reviewed, green package was stranded on topic branches behind a remote-publication
+gate that the local-only hardening policy makes unnecessary.
+**Proof:** c2 review PASS; focused 50/50, full frontend 207/207 + build, .NET 2025/2025 (no
+backend diff); diff --check + comment audit clean. No push; no deployment; protected wi/0035
+worktree byte-identical (86aa8b74).
+**State:** dai local main = baf5e90 (origin/main still aee1ade); vault local main = this closeout
+(origin/main still e217a3f); LOCAL-ONLY/UNPUBLISHED/UNDEPLOYED; activation disabled; migration
+unapplied; propagation residual RESOLVED; scale-out blocking; decision ledger deferred.
+**Next:** Separate authorization for Slice 2-ii-c or an operator-selected evidence/capture slice,
+based on the integrated baseline.
