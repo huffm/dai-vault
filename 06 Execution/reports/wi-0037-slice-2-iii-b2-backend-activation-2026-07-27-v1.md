@@ -362,12 +362,61 @@ skipped** (2011 + 6); solution build 0 errors; scan proves no client-GamePk quer
 widening remains. "provider-scoped candidate identity" is RETAINED WI-local pending
 the WI-completion glossary pass.
 
+## f-b2-8 provider-qualified duplicate identity -- 2026-07-27
+
+Staff review found F-B2-8 (High): candidate DISCOVERY became provider-scoped at
+b6aae1c, but DuplicateRunGuard still compared external ids without their namespace --
+`DuplicateRunIdentity`/`DuplicateRunCandidate` carried bare ids, `KnownGamePk` parsed
+ANY numeric ExternalGameId, and the F-B2-7 tests could not reach the gap because their
+cross-provider rows were filtered before the guard ran. Genuine RED inside normal
+scope: (1) a same-competition/date row from another provider with a colliding numeric
+id FALSELY BLOCKED an unrelated game and disclosed its AgentRunId; (2) different
+numeric ids from different providers were treated as "two known distinct games",
+SKIPPING the canonical-team fallback and ADMITTING a duplicate of the same physical
+game; (3) unknown-provider identity handling was untyped. Corrected by dai
+`aee1ade8a27da45d845510baffaabca7068be974` ("fix(agent-runs): qualify duplicate
+identity by provider"):
+
+- **`ProviderGameIdentity(SourceProvider, ExternalGameId)`** -- the governing pair as
+  one typed, sports-prepared, opaque identity; `DuplicateRunIdentity` and
+  `DuplicateRunCandidate` now carry it; `KnownGamePk` and every numeric parse are gone
+  from the guard (identifier shape carries no authority: opaque nonnumeric ids are
+  valid identities).
+- **Decision table (bound):** same SourceProvider + same ExternalGameId -> the same
+  authoritative game, blocks under status doctrine; same SourceProvider + different
+  ids -> two distinct games, independently creatable, canonical-team fallback NOT
+  consulted (doubleheader doctrine preserved); different SourceProviders -> ids
+  incomparable, accidental string/numeric equality ignored, canonical unordered-pair
+  fallback; either side without a complete pair -> pair fallback, fail closed. All
+  comparisons exact ordinal over server-prepared canonical values.
+- **Caller preparation** (sports-owned, in the controller): selected requests use the
+  gate-1 verified pair; selected candidates use the agreed `ClassifyCandidateRow`
+  result (never unchecked row fields); legacy candidates use persisted
+  (SourceProvider, ExternalGameId) when BOTH exist, else a pending row's own GamePk is
+  an `mlb_statsapi` identity ONLY under the existing WI-0009 mlb contract, else
+  identity stays unknown and the pair fallback applies. Both arrival orders pinned
+  (selected-first/legacy-second and legacy-pending-first/selected-second refuse
+  exactly one active run).
+- **Scans:** the guard contains zero TryParse/numeric authority; the only remaining
+  production ExternalGameId comparisons are the F-B2-7 provider-PAIRED widening
+  predicate and the already-paired reconciliation read; the one retained
+  `long.TryParse` is the statsapi-specific starter-cache admit (a validated
+  StatsAPI-only operation outside this contract).
+
+F-B2-7 preserved verbatim (query rule untouched; its suite green). Suites: full .NET
+**2025/2025, 0 skipped** (2017 + 8: three RED-to-GREEN endpoint attacks, one endpoint
+fallback pin, four guard decision-table pins incl. opaque-id and unknown-provider
+rows); solution build 0 errors; activation disabled; migration unapplied.
+"provider-qualified duplicate identity" is MERGED with the F-B2-7 "provider-scoped
+candidate identity" vocabulary as one WI-local concept (discovery scope + comparison
+contract over the same governing pair), retained for the WI-completion glossary pass.
+
 ## next step
 
 Exactly one: operator issues the final independent b2 re-review over the complete
-package `1311137..b6aae1c` (delta emphasis on the exact provider-identity widening
-pair, no client-controlled widening, and every prior correction) and integrates on
-PASS; production activation stays disabled; 2-iii-c and 2-ii-c stay unauthorized.
+package `1311137..aee1ade` (reproducing the provider-qualified comparison matrix and
+all F-B2-1..8 corrections) and integrates on PASS; production activation stays
+disabled; 2-iii-c and 2-ii-c stay unauthorized.
 
 ## related
 

@@ -427,7 +427,43 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (2-iii-b2 CORRECTED LOCAL incl. F-B2-7 2026-07-27; final re-review required; activation DEFAULT-OFF; 2-iii-c and 2-ii-c NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (2-iii-b2 CORRECTED LOCAL incl. F-B2-8 2026-07-27; final re-review required; activation DEFAULT-OFF; 2-iii-c and 2-ii-c NOT authorized)
+
+> F-B2-8 correction state (2026-07-27, superseding "corrected incl. f-b2-7;
+> final re-review required" for the duplicate-comparison contract only):
+> staff review found F-B2-8 High -- discovery became provider-scoped but
+> DuplicateRunGuard still compared external ids namespace-blind and parsed
+> any numeric ExternalGameId, so inside normal scope a same-number
+> different-provider row falsely blocked (and disclosed its AgentRunId) and
+> different-number different-provider rows skipped the canonical-team
+> fallback and ADMITTED a duplicate of the same physical game. CORRECTED by
+> dai `aee1ade8a27da45d845510baffaabca7068be974` ("fix(agent-runs): qualify
+> duplicate identity by provider"): typed
+> ProviderGameIdentity(SourceProvider, ExternalGameId) carried by
+> DuplicateRunIdentity and DuplicateRunCandidate; KnownGamePk and ALL
+> numeric parsing removed from the guard (opaque ids are valid identities;
+> shape carries no authority); bound decision table -- same source: id
+> equality decides and different ids stay distinct with NO team fallback
+> (doubleheader doctrine); different sources or incomplete pair: ids
+> incomparable, canonical unordered-pair fallback fail-closed; exact
+> ordinal comparisons over server-prepared values. Caller preparation
+> sports-owned: selected sides use gate-1/classified agreed pairs; legacy
+> uses persisted (SourceProvider, ExternalGameId) when both exist, else
+> pending GamePk = mlb_statsapi ONLY under the existing WI-0009 mlb
+> contract, else unknown -> pair fallback; both arrival orders pinned.
+> F-B2-7 query rule preserved verbatim. RED-first: three genuine in-scope
+> failures pre-fix (false cross-provider block + disclosure; admitted
+> cross-provider duplicate; unknown-provider handling). Suites: full .NET
+> **2025/2025, 0 skipped** (2017 + 8); build clean; guard parse scans
+> clean; activation disabled; migration unapplied. Semantic disposition:
+> "provider-qualified duplicate identity" MERGED with "provider-scoped
+> candidate identity" as one WI-local concept over the governing pair,
+> retained for the WI-completion glossary pass. NOT re-reviewed, NOT
+> integrated, NOT pushed; the six-commit package 1311137..aee1ade is ONE
+> atomic integration unit. Evidence:
+> [[wi-0037-slice-2-iii-b2-backend-activation-2026-07-27-v1]] (f-b2-8
+> section). Residuals unchanged. Next: final independent b2 re-review over
+> 1311137..aee1ade, integrate-on-PASS; WI-0037 stays `in-progress`.
 
 > F-B2-7 correction state (2026-07-27, superseding "corrections applied;
 > delta re-review required" for the candidate-scope rule only): staff review

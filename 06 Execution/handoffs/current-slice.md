@@ -19345,3 +19345,67 @@ clean; no-client-widening scan; preservation pins green.
 integrated or pushed; activation off; migration unapplied.
 **Next:** Operator: authorize the final independent b2 re-review and
 integrate-on-PASS over the complete package.
+
+---
+
+## WI-0037 Slice 2-iii-b2 -- Provider-Qualified Duplicate Identity (F-B2-8) CORRECTED LOCAL, Final Re-Review Required
+
+**Date:** 2026-07-27 **Governing WI:** WI-0037 (`02 Platform/system-development/work-items/WI-0037-game-state-correctness-v1.md`) **Branches:** dai `wi/0037-selected-event-backend-activation` (b6aae1c -> aee1ade), vault `wi/0037-selected-event-backend-activation-records` (49d238f -> this commit)
+
+Staff finding F-B2-8 (High): candidate discovery became provider-scoped at
+b6aae1c but DuplicateRunGuard still compared external ids without their
+namespace (bare-id DuplicateRunIdentity/Candidate; KnownGamePk parsed any
+numeric ExternalGameId), so INSIDE normal scope a same-number
+different-provider row falsely blocked an unrelated game and disclosed its
+AgentRunId, and different-number different-provider rows were treated as two
+known distinct games -- skipping the canonical-team fallback and ADMITTING a
+duplicate of the same physical game. CORRECTED with one narrow commit dai
+aee1ade8a27da45d845510baffaabca7068be974 ("fix(agent-runs): qualify duplicate
+identity by provider"): typed ProviderGameIdentity(SourceProvider,
+ExternalGameId) carried by both guard records; ALL numeric parsing removed
+from the guard -- opaque ids are valid identities and shape carries no
+authority; bound decision table: same source -> id equality decides, and
+different ids under one source stay distinct with NO team fallback
+(doubleheader doctrine preserved); different sources or an incomplete pair ->
+ids incomparable, canonical unordered-pair fallback fail-closed; exact
+ordinal comparisons over server-prepared canonical values. Caller
+preparation stays sports-owned in the controller: selected requests use the
+gate-1 verified pair; selected candidates use the agreed ClassifyCandidateRow
+identity (never unchecked row fields); legacy candidates use the persisted
+(SourceProvider, ExternalGameId) pair when both exist, else a pending row's
+own GamePk is an mlb_statsapi identity ONLY under the existing WI-0009 mlb
+contract, else identity stays unknown and the pair fallback applies. Both
+arrival orders pinned (selected-first/legacy and legacy-pending/selected each
+leave exactly one active run). F-B2-7 preserved verbatim (query rule
+untouched; suite green). RED-first: three genuine in-scope failures pre-fix.
+Scans: guard has zero TryParse/numeric authority; remaining production
+ExternalGameId comparisons are the provider-PAIRED f-b2-7 widening and the
+already-paired reconciliation read; the retained statsapi starter-cache
+long.TryParse is a validated StatsAPI-specific operation outside this
+contract. Suites: full .NET 2025/2025 0 skipped (2017 + 8); solution build 0
+errors; activation disabled; migration 20260727133845 UNAPPLIED. Semantic
+disposition: "provider-qualified duplicate identity" MERGED with
+"provider-scoped candidate identity" as one WI-local concept over the
+governing pair (WI-completion glossary pass retained). NOT re-reviewed, NOT
+integrated, NOT pushed; the six-commit package 1311137..aee1ade (9f12d2d,
+b4734aa, 8d2d064, 0b523a5, b6aae1c, aee1ade) is ONE atomic integration unit.
+Ledger record 2026-07-27-wi-0037-slice-2-iii-b2-provider-identity-correction.md
+executing -> outcome linked at close. Residuals unchanged (propagation
+OPEN/blocking; scale-out blocking; ledger deferred). dai main untouched at
+1311137; vault main at 21f532d; ops at 21f532d; wi/0035 hash 86aa8b74 intact.
+
+### Slice Synopsis
+
+**Change:** Duplicate identity is provider-qualified end to end -- one typed
+(SourceProvider, ExternalGameId) pair with a bound comparison table; the
+guard no longer parses ids, cross-provider numbers are incomparable, and the
+canonical-pair fallback closes the admitted-duplicate hole (commit aee1ade).
+**Reason:** Staff finding F-B2-8 (High): namespace-blind id comparison
+falsely blocked and falsely admitted within normal candidate scope.
+**Proof:** Three genuine in-scope RED failures pre-fix; full .NET 2025/2025;
+build clean; guard parse scans clean; doubleheader and both-arrival-order
+pins green.
+**State:** Local branches only; 1311137..aee1ade one atomic unit; activation
+off; migration unapplied; nothing pushed.
+**Next:** Operator: authorize the final independent b2 re-review and
+integrate-on-PASS over the complete package.
