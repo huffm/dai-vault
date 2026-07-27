@@ -2,7 +2,7 @@
 title: "WI-0037 Slice 2-iii Foundation Implementation: Canonical Matcher + Inert Provenance 2026-07-27 v1"
 type: "evidence-report"
 date: "2026-07-27"
-status: "complete (implementation) -- independent review pending"
+status: "complete"
 project: "DAI"
 slice: "WI-0037 Slice 2-iii foundation batch: 2-iii-a matcher + 2-iii-b1 inert provenance"
 repos:
@@ -120,7 +120,10 @@ applied; no database contacted (design-time tooling only).
 the four-member shape `{domain, type, schemaVersion, payload}` with a strict structural
 `TryRead` (exactly four members; three non-empty string metadata; payload any json
 value; precise errors) and deterministic camel-case `ToJson` that writes the payload
-through verbatim. No domain/type/schema value is recognized, preferred, or rejected;
+through semantically unchanged (json value identity preserved; lexical whitespace is
+not -- empirically verified during review; byte preservation belongs to the stored
+run-row column, which keeps the assigned document exactly as supplied). No
+domain/type/schema value is recognized, preferred, or rejected;
 `selected_event_binding` is never referenced by platform code. No platform
 envelopeVersion in v1.
 
@@ -228,12 +231,59 @@ Unchanged by this batch, exactly as published:
   any scale-out authorization.
 - DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_DEFERRED -- deferred/nonblocking.
 
+## review and integration closeout -- 2026-07-27
+
+The operator-authorized independent adversarial review (with mandatory staff-engineer
+attacks) PASSED and the batch was integrated. This section supersedes the "independent
+review pending" state above; the implementation sections stand verbatim except the
+payload-emission wording corrected in place above.
+
+- **RED reproduction:** the ownership RED was independently reproduced in a detached
+  worktree at base af59853 -- exactly 7 failed / 8 passed / 15 total.
+- **Wire stability:** zero changed lines across the whole chain in the canonical wire
+  emitters/fingerprint (diff-scan on af59853..63c7009).
+- **Attack 1 (matcher dependency direction):**
+  MATCHER_EVIDENCE_LOCATION_ACCEPTABLE_WITH_BOUND_NOTE. The canonical decision
+  executes zero market-contrast/gate/run-creation/filesystem/model code (grep-proven:
+  the matcher file references none); ProviderEventBinding is shared sports evidence
+  co-located with its frozen wire for byte-compatibility, its wire helper a lazily
+  invoked pure escaper; relocation is optional future hygiene, not required. b2/c must
+  depend only on matcher + evidence record + strict validator (bound in WI-0037).
+- **Attack 2 (write-seam integrity):**
+  RAW_STORAGE_AND_VALIDATED_DOMAIN_WRITER_BOUND. The entity stores raw byte-verbatim
+  documents (correct for audit and part-8 fail-closed classification of malformed
+  history); no production writer exists today (grep-proven); the enforceable
+  write-side contract SELECTED_RUN_PROVENANCE_VALIDATED_WRITER_CONTRACT_V1 is bound
+  in WI-0037 as a mandatory 2-iii-b2 obligation with six RED contracts (malformed
+  json / non-object / missing metadata / duplicate-extra members / unvalidated
+  payload / generic assembly all refused fail-closed with no run and no document).
+- **Attack 3 (opaque-payload semantics):** empirically proven --
+  JsonElement.WriteTo re-emits compact json (interior whitespace normalized; value
+  identity preserved). Distinctions now recorded accurately: envelope serialization
+  is semantic; column storage after assignment is byte-verbatim; storage is
+  single-assignment immutable at the API surface.
+- **Attack 4 (comment corrections):** preauthorized narrow correction commit dai
+  `13111375b9257c1542eb2861df9c08c02163f983` ("docs(sports): correct extraction and
+  payload comments", 2 files, comments only) fixed the matcher "moved verbatim"
+  header and the envelope "verbatim" payload wording. Focused suites 43/43 and
+  `git diff --check` clean after correction.
+- **Attack 5 (verification integrity):** all verification re-run with visible
+  counts after restore (the earlier empty-output zero-exit was diagnosed as a
+  missing-restore artifact and discarded as evidence): focused matcher family
+  240/240; provenance 17/17; post-correction focused 43/43; full DevCore.Api.Tests
+  **1896/1896, 0 skipped**; full solution build exit 0, 0 errors.
+- **Integration:** dai main af59853 -> 1311137 by fast-forward (19fbc77, 63c7009,
+  1311137; linear, no merges); vault main advanced over 416ab74 plus the
+  documentation-only integration-closeout commit containing this section (full SHA
+  in the operator report and external ledger); plain non-force main-only pushes with
+  direct remote verification, claimed only in the post-push operator report.
+
 ## next step
 
-Exactly one: operator issues the independent review-and-integrate-on-PASS
-authorization for the foundation batch (attack Commit A, Commit B, and the combined
-delta; integrate and publish only on PASS; 2-iii-b2 stays unauthorized and is the next
-separately authorized implementation batch).
+Exactly one: operator authorizes the 2-iii-b2 implementation batch (atomic
+activation: shared tenant/competition creation gate, four-arm provenance
+classification, gate-2 compare-not-replace, and the bound validated-writer
+contract). 2-iii-c and 2-ii-c remain separately gated.
 
 ## related
 

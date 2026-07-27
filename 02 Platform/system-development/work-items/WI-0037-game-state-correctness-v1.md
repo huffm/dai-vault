@@ -427,7 +427,64 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (FOUNDATION BATCH 2-iii-a + 2-iii-b1 IMPLEMENTED LOCAL 2026-07-27; independent review required; 2-iii-b2/c and 2-ii-c NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (FOUNDATION 2-iii-a + 2-iii-b1 REVIEWED + INTEGRATED 2026-07-27; 2-iii-b2/c and 2-ii-c NOT authorized)
+
+> Foundation review/integration state (2026-07-27, superseding "implemented
+> local; independent review required"): the independent adversarial review of
+> Commit A, Commit B, and the combined delta PASSED with the mandatory staff
+> attacks resolved: RED independently reproduced at base (exactly 7 ownership
+> failures / 15); wire emitters proven byte-untouched across the whole chain;
+> matcher attack verdict **MATCHER_EVIDENCE_LOCATION_ACCEPTABLE_WITH_BOUND_NOTE**;
+> provenance write-seam verdict **RAW_STORAGE_AND_VALIDATED_DOMAIN_WRITER_BOUND**;
+> JsonElement.WriteTo empirically proven whitespace-normalizing (semantic
+> preservation only), so the preauthorized comment-correction commit dai
+> `13111375b9257c1542eb2861df9c08c02163f983` ("docs(sports): correct
+> extraction and payload comments", comments-only, 2 files) fixed the "moved
+> verbatim" and payload-"verbatim" wording; full .NET 1896/1896 and clean
+> solution build re-verified with visible counts on the corrected tip. The
+> batch is INTEGRATED by fast-forward: dai main `af59853` -> `1311137`
+> (19fbc77 matcher, 63c7009 inert provenance, 1311137 comments) and vault
+> main advanced over the records commit `416ab74` plus the documentation-only
+> integration-closeout commit containing this update (full SHA recorded in
+> the operator report and external prompt ledger; publication is claimed only
+> after direct remote verification of both mains, plain non-force, main-only).
+>
+> **Bound note (matcher evidence location).** `ProviderEventBinding` is shared
+> sports evidence co-located with its frozen wire in the agent-runs boundary
+> for byte-compatibility; the canonical matching decision executes zero
+> market-contrast, gate, run-creation, filesystem, or model code (the record's
+> wire serialization helper is a lazily invoked pure string escaper and a
+> candidate for relocation to a neutral home in an optional future hygiene
+> slice -- not required). Selected-event translation (b2/c) must depend only
+> on the canonical matcher, the evidence record, and the strict wire
+> validator -- never on gate/adapter/orchestration types; b2 review re-checks
+> this boundary.
+>
+> **Bound: SELECTED_RUN_PROVENANCE_VALIDATED_WRITER_CONTRACT_V1 (2-iii-b2
+> obligation).** The entity stores the assigned document raw and
+> byte-verbatim; write-side integrity is owned by the sports builder: a newly
+> created selected run may persist a domain-execution provenance document
+> ONLY when (1) generic structural TryRead accepts the envelope; (2) the
+> sports-owned selected-event payload validation accepts the content
+> (complete authoritative bundle, known schemaVersion); (3) the document was
+> assembled by the sports-owned builder -- generic platform code never
+> assembles one; (4) any failure refuses fail-closed with no run created and
+> no document persisted. Mandatory b2 RED contracts: malformed json refused;
+> non-object envelope refused; missing generic metadata refused; duplicate or
+> extra generic members refused; unvalidated sports payload refused;
+> generic-assembly impossible by construction. Malformed HISTORICAL rows
+> continue to materialize for audit and part-8 fail-closed classification --
+> never repaired. Until b2, no production writer exists (grep-proven inert).
+>
+> Suites at integration: full .NET **1896/1896, 0 skipped**; solution build
+> 0 errors; frontend not applicable by proof. Residuals unchanged
+> (propagation OPEN/blocking until b2 + c complete and verify; scale-out
+> blocking; decision ledger deferred). 2-iii-b2 (atomic activation: shared
+> creation gate + four-arm classification + gate-2 + validated writer) is the
+> NEXT separately authorized implementation batch; 2-iii-c and 2-ii-c remain
+> unauthorized; WI-0037 stays `in-progress`. Evidence:
+> [[wi-0037-slice-2-iii-foundation-implementation-2026-07-27-v1]] (review and
+> integration closeout section).
 
 > Foundation-batch state (2026-07-27, superseding "architecture published;
 > implementation not authorized" for the 2-iii-a and 2-iii-b1 portions only):

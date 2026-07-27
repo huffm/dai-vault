@@ -19098,3 +19098,55 @@ blocking review findings.
 af59853; vault records branch on 0e191e0); nothing integrated or pushed.
 **Next:** Operator: authorize the independent review-and-integrate-on-PASS of
 the foundation batch.
+
+---
+
+## WI-0037 Slice 2-iii Foundation Batch -- REVIEW PASSED, INTEGRATED (Closeout)
+
+**Date:** 2026-07-27 **Governing WI:** WI-0037 (`02 Platform/system-development/work-items/WI-0037-game-state-correctness-v1.md`) **Branches:** dai main ff af59853 -> 1311137; vault main ff over 416ab74 + this closeout commit
+
+The independent adversarial review of the foundation batch PASSED with all
+six mandatory staff attacks resolved: RED reproduced at base in a detached
+worktree (exactly 7/15 ownership failures); wire emitters byte-untouched
+across the chain; matcher verdict
+MATCHER_EVIDENCE_LOCATION_ACCEPTABLE_WITH_BOUND_NOTE (decision executes zero
+market-contrast/gate/run/filesystem/model code; evidence record co-located
+with its frozen wire; b2/c bound to depend only on matcher + evidence +
+strict validator); write-seam verdict
+RAW_STORAGE_AND_VALIDATED_DOMAIN_WRITER_BOUND with
+SELECTED_RUN_PROVENANCE_VALIDATED_WRITER_CONTRACT_V1 bound in the WI as a
+mandatory b2 obligation (six write-side RED contracts; malformed history
+still materializes for audit, never repaired); JsonElement.WriteTo
+empirically proven whitespace-normalizing, so payload emission is recorded
+as semantic-only while column storage stays byte-verbatim. Preauthorized
+comment-correction commit dai 13111375b9257c1542eb2861df9c08c02163f983
+("docs(sports): correct extraction and payload comments", comments only)
+closed both recorded wording findings; focused 43/43 + diff --check clean
+after. Verification integrity: every count re-captured visibly (240/240
+matcher family, 17/17 provenance, full .NET 1896/1896 0 skipped, solution
+build 0 errors); the earlier empty-output zero-exit was a missing-restore
+artifact, discarded as evidence. INTEGRATED: dai main af59853 -> 1311137
+(19fbc77 matcher, 63c7009 inert provenance, 1311137 comments; ff-only, no
+merges); vault main advanced over records commit 416ab74 plus this
+documentation-only closeout commit (its own SHA recorded post-commit in the
+operator report and external ledger). Pushes are main-only, plain,
+non-force; integration is claimed PUBLISHED only after direct remote
+verification in the operator report. The migration remains UNAPPLIED to any
+database; deployment separately gated. Residuals unchanged: propagation
+OPEN/blocking until b2 + c complete; scale-out blocking; decision ledger
+deferred. 2-iii-b2 (atomic activation + validated writer), 2-iii-c, and
+2-ii-c remain unauthorized. Ledger: foundation-batch and review/integration
+records outcome-linked post-push. wi/0035 preservation hash 86aa8b74 intact.
+
+### Slice Synopsis
+
+**Change:** The foundation batch (canonical matcher + inert provenance +
+comment corrections) passed independent adversarial review and was
+fast-forward integrated: dai main = 1311137, vault main = this closeout.
+**Reason:** Review-and-integrate-on-PASS authorization with six staff
+attacks, all resolved (two bound notes/contracts recorded in the WI).
+**Proof:** Base RED 7/15 reproduced; full .NET 1896/1896; build clean;
+WriteTo semantics empirically tested; emitter diff-scan zero.
+**State:** Both mains pushed main-only after verification; branches local;
+migration unapplied; no runtime activation.
+**Next:** Operator: authorize the 2-iii-b2 implementation batch separately.
