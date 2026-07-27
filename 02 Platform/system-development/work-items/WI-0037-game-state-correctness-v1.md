@@ -427,7 +427,31 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (ADR PART 4 BOUND LOCAL 2026-07-26; closing delta review required; implementation NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (ADR PART 5 BOUND LOCAL 2026-07-26; closing delta review required; implementation NOT authorized)
+
+> Part-5 state (2026-07-26, superseding "part 4 bound"): staff review found
+> FR-4 High (the shared gate ORDERS checks but does not equalize duplicate
+> IDENTITY -- the guard's fallback compares InputJson-sourced team pairs,
+> DuplicateRunGuard.cs:36-43/84-89, which a selected run does not
+> authoritatively provide) and FR-5 Medium (the two-spelling RED scenario was
+> overbroad vs the divergence policy). ADR part 5 binds
+> **CROSS_PATH_CANONICAL_DUPLICATE_IDENTITY_V1**: a typed sports-prepared
+> duplicate identity (known-pk equality first; otherwise ONE canonical
+> unordered team-reference pair single-sourced across guard and provider
+> normalization, screened-workflow scope, no alias resolution); selected-run
+> atomic insert persists verified gamePk + canonical competition/date +
+> server-derived team refs into the EXISTING authoritative fields
+> (ExternalGameId, HomeTeamRef/AwayTeamRef) so candidate queries read
+> authoritative rows, never selected InputJson teams and never parsed
+> provenance; candidate-source precedence bound; the full selected/legacy/
+> doubleheader concurrency truth table replaces part 4's unqualified claim
+> (fail-closed on unknown-pk DH identity; same-verified-pk condition on the
+> two-spelling scenario; ten corrected RED scenarios). All other part-4
+> decisions preserved (shared gate key, default-off activation evidence gate,
+> extended residual, single-assignment provenance, two-gate freshness,
+> resubmission-only, four slices). NOT published; implementation NOT
+> authorized; 2-ii-c unauthorized; WI-0037 in-progress. Evidence:
+> [[wi-0037-slice-2-iii-architecture-review-2026-07-26-v1]] part 5.
 
 > Part-4 state (2026-07-26, superseding "constraints bound local"): the final
 > delta review returned CORRECTIONS_REQUIRED (FR-1 High: the creation gate is

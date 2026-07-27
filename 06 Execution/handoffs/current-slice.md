@@ -18788,3 +18788,39 @@ Medium).
 **State:** Vault-only commit; closing delta review of 191402c..tip required;
 publication and implementation unauthorized.
 **Next:** Operator: authorize the closing delta review.
+
+---
+
+## WI-0037 Slice 2-iii -- ADR PART 5 BOUND (FR-4..FR-5), Closing Delta Review Pending
+
+**Date:** 2026-07-26 **Branch:** `wi/0037-selected-event-identity-continuity-architecture` (... -> 58f1a7c -> this commit); dai untouched at af59853
+
+FR-4 High: the shared creation gate orders checks but does not equalize
+duplicate identity -- FindBlocking's no-pk fallback compares InputJson-sourced
+team pairs (DuplicateRunGuard.cs:36-43, 84-89), which selected runs do not
+authoritatively provide, so part 4's both-arrival-orders claim was unproven.
+Part 5 binds CROSS_PATH_CANONICAL_DUPLICATE_IDENTITY_V1: typed sports-
+prepared duplicate identity (pk equality first; otherwise one single-sourced
+canonical unordered team-reference pair, screened-workflow scope, no alias
+resolution; platform compares prepared values only); selected-run atomic
+insert persists verified gamePk + canonical competition/operational date +
+server-derived team refs into EXISTING authoritative fields (ExternalGameId,
+HomeTeamRef/AwayTeamRef); candidate queries read authoritative rows, never
+selected InputJson teams, never parsed provenance; candidate-source
+precedence bound; full concurrency truth table incl. fail-closed unknown-pk
+doubleheader identity and the FR-5 same-verified-pk condition; ten corrected
+b2 RED scenarios. All sound part-4 decisions preserved. Skills gate: four
+named skills unavailable -- tracked doctrine fallback. Nothing pushed; ops at
+234d3f0 untouched; wi/0035 hash 86aa8b74 intact; dai byte-identical.
+
+### Slice Synopsis
+
+**Change:** Part 5 separates serialization from duplicate identity and binds
+one cross-path canonical identity contract with durable selected-run
+candidate fields.
+**Reason:** Staff review verdict CORRECTIONS_REQUIRED (FR-4 High, FR-5 Med).
+**Proof:** Guard branch/field citations; truth table; strict snapshot 26/0/0;
+docs-only delta on the three allowlisted paths.
+**State:** Vault-only commit; closing delta review of 58f1a7c..tip required;
+publication and implementation unauthorized.
+**Next:** Operator: authorize the closing delta review.

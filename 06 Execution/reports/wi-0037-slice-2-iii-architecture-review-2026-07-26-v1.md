@@ -980,3 +980,130 @@ now -- these terms are WI-scoped; revisit at WI-0037 close.
 Slice 2-iii: part 4 bound locally; CLOSING delta review of 191402c..tip
 required; architecture publication and implementation remain unauthorized;
 2-ii-c unauthorized; WI-0037 in-progress.
+
+# part 5 -- cross-path duplicate identity (fr-4..fr-5), 2026-07-26
+
+Staff review of part 4 found FR-4 (High) and FR-5 (Medium). Parts 1-4 are
+preserved; PART 5 IS CURRENT AUTHORITY where it supersedes part 4: the
+unqualified part-4 claim that a selected/legacy race yields exactly one active
+run in both arrival orders (4.1), and the overbroad two-spelling RED scenario
+(4.1 scenario 1). SHARED_TENANT_COMPETITION_CREATION_GATE_V1 and every other
+part-4 decision are preserved unchanged: server tenant + catalog-validated
+canonical competition key only; Gate 1 outside the semaphore; no network I/O
+held under the gate; default-off activation evidence gate; extended
+multi-instance residual; ONE_IMMUTABLE_DOMAIN_DOCUMENT_PER_RUN with
+single-assignment; opaque platform ownership; two-gate freshness;
+resubmission-only lifecycle; refusal durability limits; four-slice
+decomposition.
+
+## 5.1 fr-4 source proof
+
+Serialization and duplicate identity are distinct. `DuplicateRunGuard`
+compares gamePk only when BOTH sides have one (`DuplicateRunGuard.cs:78-81`);
+otherwise it falls closed on a normalized matchup pair built from candidate
+`InputHomeTeam`/`InputAwayTeam` sourced from persisted InputJson
+(`DuplicateRunCandidate`, `:36-43`; fallback `:84-89`), with alias
+canonicalization explicitly outside the guard contract (`:118-123`). A
+selected run's authoritative identity lives in verified team refs and
+ExternalGameId, not in its raw client InputJson descriptors -- so the shared
+semaphore ORDERS the two checks but does not make their identities EQUAL.
+Part 4's both-arrival-orders claim was therefore unproven as written.
+
+## 5.2 CROSS_PATH_CANONICAL_DUPLICATE_IDENTITY_V1
+
+The duplicate evaluator receives a TYPED identity prepared by the sports
+domain (illustrative .NET name `DuplicateRunIdentity`; WI/FR/ADR labels never
+become production names). Precedence: both sides with known authoritative
+gamePks -> equal = existing duplicate outcome, different = distinct games
+(incl. doubleheaders); either side lacking a known gamePk -> compare the SAME
+canonical unordered team-reference pair within tenant + canonical competition
++ applicable operational date scope; matching pair = fail-closed duplicate
+per existing legacy doctrine; nonmatching = not the same candidate.
+
+## 5.3 one canonical team-reference representation
+
+ONE sports-domain-owned canonical team-reference conversion is used on BOTH
+sides of every fallback comparison -- pinned and single-sourced; the guard's
+Normalize and provider team-ref normalization stop evolving independently.
+v1 scope = provider-originated team names from the supported screened
+workflow; deterministic representation normalization only, NOT nickname or
+arbitrary-alias resolution; the existing limitation stands and arbitrary
+legacy aliases receive no newly invented same-game guarantee. The generic
+platform/guard compares prepared values for equality only -- it never parses
+sports provenance or interprets team semantics.
+
+## 5.4 selected-run candidate durability
+
+The initial selected-run atomic insert persists together: authoritative
+verified gamePk; server-canonical competition and verified operational date
+(as used by the duplicate query); server-derived canonical home/away team
+refs; the immutable DomainExecutionProvenanceJson; run, tenant, status, and
+correlation fields. Existing authoritative identity fields are REUSED where
+source-compatible -- ExternalGameId and HomeTeamRef/AwayTeamRef
+(`AgentRun.cs:58-82`) -- no new niche schema field without a separately
+justified decision. InputJson remains the immutable submitted client intent
+and is never rewritten to masquerade as server evidence. Later candidate
+queries obtain selected-run duplicate identity from these authoritative
+persisted fields -- never from the selected request's raw InputJson teams,
+and never by generic code parsing DomainExecutionProvenanceJson. Gate 2
+verifies the frozen fields and may fail the run; it does not replace them.
+
+## 5.5 candidate-source precedence
+
+Known-gamePk precedence: resolved ExternalGameId, then an applicable
+persisted request gamePk (legacy compatibility). A complete authoritative
+persisted team-ref pair takes precedence for a selected run.
+Legacy/historical candidates without authoritative refs retain the existing
+InputJson fallback. Incomplete authoritative selected identity is a
+defect/refusal -- never a silent fallback to selected client descriptors.
+
+## 5.6 concurrency truth table (supersedes part-4 claims)
+
+- selected + selected, SAME verified gamePk, different client descriptions ->
+  exactly one active run (existing duplicate policy);
+- selected + selected, distinct independently verified gamePks -> separate
+  versioned decisions permitted;
+- selected + legacy, same known gamePk -> duplicate in either arrival order;
+- selected + legacy, one side lacking gamePk but both identifying the same
+  matchup under the supported canonical team-reference contract ->
+  fail-closed duplicate in either arrival order;
+- selected + identity-less legacy candidate, same team pair, doubleheader ->
+  fail closed while identity is unknown (never guess it is the other game);
+  after the legacy run resolves to a distinct gamePk, a new selected
+  submission for the other verified gamePk may proceed;
+- arbitrary legacy nickname/alias equivalence remains OUT of v1 and is not
+  described as solved;
+- no selection-level idempotency and no multi-process guarantee is claimed.
+
+## 5.7 fr-5 -- corrected mandatory red scenarios (2-iii-b2)
+
+(1) same providerEventId + SAME verified gamePk + different selected client
+team spellings -> exactly one run; (2) same providerEventId + different
+verified gamePks after separate verified observations -> separate immutable
+decisions permitted; (3) selected-first then legacy (supported canonical
+pair, missing legacy gamePk) -> duplicate; (4) legacy-first then selected
+(same conditions) -> duplicate; (5) selected-first candidate lookup uses
+authoritative row refs, never selected InputJson teams; (6) same verified
+gamePk always follows duplicate policy; (7) distinct known DH gamePks remain
+separately creatable; (8) unknown-pk legacy DH identity fails closed until
+resolved; (9) tenant isolation; (10) no network I/O under the shared gate.
+The former two-spelling scenario is superseded by (1)'s same-verified-pk
+condition (FR-5).
+
+## 5.8 naming, comments, and semantics (carried into 2-iii-b2)
+
+Idiomatic PascalCase .NET / camelCase JSON; no WI/slice/FR/ADR identifiers in
+production names; new comments meaningful, lowercase, ascii, explaining
+authority, invariants, or failure behavior. Terminology disposition: creation
+gate = ordering/serialization; duplicate identity = the game-equivalence
+verdict; canonical team reference = the single sports-owned comparison
+representation; provider alias resolution = distinct and out of scope.
+Reusable terminology receives a central operator-owned dictionary/glossary
+disposition at WI-0037 completion; model memory is never the durable
+dictionary; no glossary path is guessed or edited in this allowlist.
+
+## 5.9 state
+
+Slice 2-iii: ADR part 5 bound locally; closing delta review of
+58f1a7c..tip required; publication and implementation unauthorized; 2-ii-c
+unauthorized; WI-0037 in-progress.
