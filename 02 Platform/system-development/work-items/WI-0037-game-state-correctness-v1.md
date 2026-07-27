@@ -427,7 +427,48 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (2-iii-b2 IMPLEMENTED LOCAL 2026-07-27; independent review required; activation DEFAULT-OFF; 2-iii-c and 2-ii-c NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (2-iii-b2 CORRECTED LOCAL 2026-07-27; delta re-review required; activation DEFAULT-OFF; 2-iii-c and 2-ii-c NOT authorized)
+
+> 2-iii-b2 correction state (2026-07-27, superseding "implemented local;
+> independent review required"): the final independent review returned
+> **WI0037_SLICE2III_B2_REVIEW_CORRECTIONS_REQUIRED** (F-B2-1 High row/
+> provenance agreement unchecked and classifier output ignored; F-B2-2 High
+> post-gate-2 retrieval grounded via client team names with only a post-model
+> ExternalGameId check; F-B2-3 Med providerEventId-only execution-seam check;
+> F-B2-4 Med unbounded/semantically-unused evidence freshness; F-B2-5 Low
+> save-failure seam untested; F-B2-6 Low dual selected/binding divergence
+> unchecked; passed dispositions PROVIDER_NAMESPACE_DURABLE and
+> CLIENT_DATE_CROSSCHECK_ONLY not reopened). ALL SIX CORRECTED with two new
+> commits on the same branch (nothing amended): Commit C
+> `8d2d0642cfd78cc5040c555fe000de195935d40d` -- ClassifyCandidateRow complete
+> row/document agreement with bound internal detail
+> row_provenance_identity_disagreement, pk-widened tenant candidate query,
+> duplicate path consumes the AGREED classifier identity, gate-1 freezes the
+> server's own canonical binding wire (ServerBindingWire + payload
+> fingerprint), selected retrieval runs on a separate authoritative internal
+> input (observed names/canonical competition/verified date+pk/server wire;
+> client descriptions never select evidence; InputJson untouched), and the
+> LAST pre-model gate compares the retrieved identity to the complete frozen
+> bundle before any analyzer call (SelectedExecutionIntegrityException ->
+> truthful failed run, zero model calls), dual selected/binding event
+> divergence refuses selection_binding_conflict; Commit D
+> `0b523a562d5c1f1896ed613d2b4071176815d4e6` -- gate 2 MINTS the run-bound
+> SelectedExecutionAuthority consumed by the execution seam with full
+> request/authority coherence before retrieval (run id, event id, start,
+> canonical competition, date, client pk), activation evidence freshness
+> bounded (5-min skew, 24h max age and validity window, expiry strictly after
+> observation, structured {artifact, reference} citations; runbook updated),
+> deterministic SaveChanges failure injection proves the atomic insert
+> (no row, no execution, gate released), and selected persistence uses the
+> server-confirmed resolution GameDate. RED-first per finding (the two High
+> admission paths captured failing pre-fix). Suites: full .NET **2011/2011,
+> 0 skipped** (1977 + 34); build clean; activation disabled; migration
+> unapplied. NOT re-reviewed, NOT integrated, NOT pushed; the four-commit
+> package 1311137..0b523a5 remains ONE atomic integration unit. Evidence:
+> [[wi-0037-slice-2-iii-b2-backend-activation-2026-07-27-v1]] (corrections
+> section). Residuals unchanged. Next: delta re-review of b4734aa..0b523a5
+> plus the full-chain re-run, then integrate-on-PASS; WI-0037 stays
+> `in-progress`.
 
 > 2-iii-b2 state (2026-07-27, superseding "foundation integrated; b2 not
 > authorized" for the b2 portion only): the operator authorized the verified

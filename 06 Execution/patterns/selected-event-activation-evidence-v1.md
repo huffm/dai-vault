@@ -43,9 +43,15 @@ Write one json file OUTSIDE the repository (the path is deployment configuration
 {
   "deploymentId": "<the running deployment/revision identity>",
   "observedAtUtc": "<when the topology was actually observed>",
-  "expiresUtc": "<short validity window; re-observe to renew>",
-  "deploymentConfigurationCitation": "<the actual config proving one api service/replica>",
-  "processObservationCitation": "<the actual process/revision listing observed>",
+  "expiresUtc": "<must be after observedAtUtc; window capped at 24 hours>",
+  "deploymentConfigurationCitation": {
+    "artifact": "<the config artifact, ex: compose.prod.yaml>",
+    "reference": "<digest/revision/detail an audit re-checks>"
+  },
+  "processObservationCitation": {
+    "artifact": "<the process/revision listing artifact>",
+    "reference": "<the concrete observation detail>"
+  },
   "topology": {
     "singleRunCreatingProcess": true,
     "oneWorkerPerProcess": true,
@@ -68,22 +74,28 @@ blue/green or mixed-version backend pool; no second manually started API process
 background worker or alternate service capable of run creation; the old process stopped
 or unable to accept run creation before the new enforcement-capable process accepts
 selected requests; the domain-provenance migration applied to the target database.
-Citations must reference the ACTUAL deployment configuration and the ACTUAL
-process/revision observation, with enough detail that a later audit can re-check them.
+Citations are STRUCTURED, not prose: each carries a bounded `artifact` identifier and
+a bounded `reference` (digest, revision, timestamp, or listing detail) that a later
+audit re-checks. Unstructured or partial citations refuse.
 
 ## validating
 
 Configuration binds `SelectedEventActivation` (`Enabled`, `DeploymentId`,
 `EvidencePath`). The gate (`SelectedEventActivationEvidence.Evaluate`) refuses --
 keeping the feature off -- when the flag is off, the deployment identity is unset or
-mismatched, the record is missing/malformed/expired, a citation is absent, or ANY
-topology assertion is missing or false. Every requirement is individually pinned by
-`SelectedEventActivationTests`.
+mismatched, the record is missing/malformed/expired, a citation is absent or
+unstructured, or ANY topology assertion is missing or false. Freshness is
+semantically enforced (b2 correction F-B2-4): the observation instant may not sit in
+the future beyond 5 minutes of clock skew, may not be older than 24 hours, the expiry
+must be strictly after the observation, and the total validity window is capped at
+24 hours -- evidence can never be made effectively permanent, so activation always
+rests on a topology observation made within the last day. Every requirement is
+individually pinned by `SelectedEventActivationTests`.
 
 ## expiring and revoking
 
-- expiry: `expiresUtc` bounds validity; renewal requires a FRESH observation, never an
-  edit of the old timestamps.
+- expiry: `expiresUtc` bounds validity within the 24-hour maximum window; renewal
+  requires a FRESH observation, never an edit of the old timestamps.
 - revoke immediately by deleting the record or setting `Enabled` to false -- both take
   effect on the next request; no restart or deploy is required for revocation.
 - any deployment change (scale-out, revision overlap, new worker topology) INVALIDATES

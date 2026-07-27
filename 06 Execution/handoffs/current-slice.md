@@ -19217,3 +19217,73 @@ findings.
 branch on 21f532d); nothing integrated or pushed.
 **Next:** Operator: authorize the independent review-and-integrate-on-PASS of
 the b2 batch.
+
+---
+
+## WI-0037 Slice 2-iii-b2 -- Authority Corrections (F-B2-1..6) APPLIED LOCAL, Delta Re-Review Required
+
+**Date:** 2026-07-27 **Governing WI:** WI-0037 (`02 Platform/system-development/work-items/WI-0037-game-state-correctness-v1.md`) **Branches:** dai `wi/0037-selected-event-backend-activation` (b4734aa -> 8d2d064 -> 0b523a5), vault `wi/0037-selected-event-backend-activation-records` (5e4c3a9 -> this commit)
+
+The final independent b2 review returned CORRECTIONS_REQUIRED (2 High, 2 Med,
+2 Low). All six findings corrected in one continuous run, two new source
+commits, nothing amended, nothing integrated or pushed. Commit C
+8d2d0642cfd78cc5040c555fe000de195935d40d ("fix(agent-runs): enforce selected
+identity consistency"): F-B2-1 -- ClassifyCandidateRow compares the COMPLETE
+persisted row bundle against the frozen provenance under canonical
+representations (409 duplicate_candidate_identity_invalid with bound internal
+detail row_provenance_identity_disagreement on any missing/partial/
+contradictory pair; never an identity-less candidate), pk-widened tenant
+candidate query so contradictory row date/competition cannot hide a same-game
+candidate, duplicate evaluation consumes the classifier's AGREED identity;
+F-B2-2 -- gate-1 freezes the server's own canonical binding wire
+(ServerBindingWire; fingerprint frozen in the payload; builder proves the wire
+through the strict validator), selected retrieval runs on a separate internal
+authoritative input (observed provider names, canonical competition, verified
+date + gamePk, server wire -- client home/away never select StatsAPI or
+market evidence; InputJson preserved verbatim), and the LAST pre-model gate
+requires the retrieved identity to exist and equal the complete frozen
+six-field bundle before analyzer invocation (SelectedExecutionIntegrityException
+-> truthful failed run, model spy zero); selected executions additionally
+require verified market-binding agreement; F-B2-6 -- a client flight binding
+naming a different provider event than the selected block refuses 422
+selection_binding_conflict; the server wire is always the execution binding.
+RED captured pre-fix: 12 failures incl. both High admission paths (null-row
+identity and contradictory row pk ADMITTED duplicates; client-name grounding
+reached retrieval). Commit D 0b523a562d5c1f1896ed613d2b4071176815d4e6
+("fix(agent-runs): harden selected execution activation"): F-B2-3 -- gate 2
+mints the run-bound SelectedExecutionAuthority (internal ctor) and the seam
+refuses any request/authority incoherence (run id, event id, declared start,
+canonical competition, operational date, client gamePk) before retrieval;
+F-B2-4 -- evidence freshness bounded (observedAtUtc future-skew 5min, max age
+24h, expiry strictly after observation, validity window capped 24h -- never
+effectively permanent; structured {artifact, reference} citations; runbook
+pattern updated); F-B2-5 -- deterministic SaveChanges failure injection
+(interceptor seam): no persisted row, no independent provenance, zero
+executions, gate released, following request clean; operational date --
+selected persistence uses selectedResolution.GameDate and the observation
+seam re-checks bracket membership (adjacent-date claim pinned refusing).
+Suites: full .NET 2011/2011 0 skipped (1977 + 34 correction tests); solution
+build 0 errors; activation disabled in tracked config; migration 20260727133845
+UNAPPLIED; no frontend/dependency change; accepted dispositions
+(PROVIDER_NAMESPACE_DURABLE, CLIENT_DATE_CROSSCHECK_ONLY) not reopened. Docs:
+b2 report corrections section + WI correction state + runbook update; ledger
+record 2026-07-27-wi-0037-slice-2-iii-b2-corrections.md executing -> outcome
+linked at close. The four-commit package 1311137..0b523a5 remains ONE atomic
+integration unit. Residuals unchanged (propagation OPEN/blocking; scale-out
+blocking; ledger deferred). dai main untouched at 1311137; vault main at
+21f532d; ops at 21f532d; wi/0035 hash 86aa8b74 intact.
+
+### Slice Synopsis
+
+**Change:** All six b2 review findings corrected local -- complete
+row/provenance candidate agreement, server-bound retrieval with a true
+pre-model identity gate, run-bound execution authority, bounded activation
+evidence, fault-injected atomicity proof, and the dual-binding cross-check
+(commits 8d2d064 + 0b523a5).
+**Reason:** Final independent review verdict CORRECTIONS_REQUIRED (F-B2-1..6).
+**Proof:** RED 12 failures captured pre-fix incl. both High admission paths;
+full .NET 2011/2011; build clean; activation off; migration unapplied.
+**State:** Local branches only; 1311137..0b523a5 is one atomic unit; nothing
+integrated or pushed.
+**Next:** Operator: authorize the delta re-review of b4734aa..0b523a5 (with
+the full-chain re-run) and integrate on PASS.

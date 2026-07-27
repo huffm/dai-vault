@@ -258,12 +258,76 @@ guard's legacy normalization migrated from its private normalizer to the single
 canonical `NormalizeTeamRef` authority -- equivalence for the screened-workflow name
 classes is pinned by the adapted guard suite and the full regression run.
 
+## b2 authority corrections -- 2026-07-27 (f-b2-1 .. f-b2-6)
+
+The final independent review returned CORRECTIONS_REQUIRED (two High, two Medium, two
+Low). All six findings are corrected by two new commits on the same branch (nothing
+amended): Commit C dai `8d2d0642cfd78cc5040c555fe000de195935d40d` ("fix(agent-runs):
+enforce selected identity consistency") and Commit D dai
+`0b523a562d5c1f1896ed613d2b4071176815d4e6` ("fix(agent-runs): harden selected
+execution activation"). Finding-to-fix-to-test traceability:
+
+- **F-B2-1 (High)** row/provenance agreement: candidate projection extended
+  (SourceProvider, ScheduledStartUtc, Season, GameDate) with a pk-widened tenant query
+  (rows persisting the request's known gamePk are seen even when their row GameDate or
+  Competition contradicts provenance; cost = one extra OR on a tenant-scoped equality);
+  `SelectedEventProvenance.ClassifyCandidateRow` compares the COMPLETE persisted row
+  bundle against the frozen document under canonical representations and refuses 409
+  `duplicate_candidate_identity_invalid` with bound internal detail
+  `row_provenance_identity_disagreement` on any missing/partial/contradictory pair;
+  the duplicate path consumes the classifier's AGREED identity (parsed authority is
+  never discarded for raw row fields); payload internal consistency extended (gamePk ==
+  externalGameId, readable start, competition/date/namespace/versions present).
+  RED first: null-row-identity and contradictory-pk seeds ADMITTED duplicates before
+  the fix (captured); now refused. Tests: SelectedEventCreationTests row-agreement
+  block + SelectedCandidateClassificationTests.
+- **F-B2-2 (High)** server-bound retrieval + last pre-model gate: gate 1 now freezes
+  the server's own canonical binding wire (`VerifiedSelectedEventResolution.
+  ServerBindingWire`, emitted through the complete content contract; fingerprint frozen
+  in the provenance payload); selected execution retrieves with a SEPARATE internal
+  authoritative input (observed provider names, canonical competition, verified date +
+  gamePk, server wire -- client home/away never select evidence; InputJson untouched);
+  after retrieval and BEFORE the analyzer the retrieved identity must exist and agree
+  with the complete frozen six-field bundle or `SelectedExecutionIntegrityException`
+  fails the run truthfully with zero model calls; bound-market verification is required
+  for every selected execution; the post-model check remains defense in depth. RED
+  first: client-name grounding and null-identity-reaches-analyzer captured failing.
+  Tests: AgentRunServiceSelectedExecutionTests.
+- **F-B2-3 (Medium)** run-bound execution authority: gate 2 now MINTS
+  `SelectedExecutionAuthority` (internal constructor; run-id-bound) and the execution
+  seam consumes it, refusing before retrieval on any incoherence: run identity,
+  selected-block absence, provider event id, declared start, canonical competition,
+  operational date, client gamePk. A gate-1 resolution alone cannot start execution.
+- **F-B2-4 (Medium)** bounded evidence freshness: observedAtUtc semantically enforced
+  (future beyond 5-minute skew refused; age > 24h refused), expiry strictly after
+  observation, validity window capped at MaxEvidenceLifetime = 24h (a longer window was
+  not needed for the single-operator deployment and is therefore not justified);
+  citations are structured {artifact, reference} with bounded members; runbook updated
+  ([[selected-event-activation-evidence-v1]]).
+- **F-B2-5 (Low)** deterministic save-failure proof: an EF SaveChanges interceptor
+  injects a first-save failure over the selected insert -- no persisted row, no
+  independent provenance, zero executions, gate released, following request succeeds
+  (SelectedEventInsertFailureTests). The production transaction boundary is unchanged.
+- **F-B2-6 (Low)** dual selected/binding cross-check: a client flight binding naming a
+  different provider event than the selected block refuses 422
+  `selection_binding_conflict` at the trust boundary; execution always uses the server
+  wire.
+- Operational-date clarity: selected persistence uses `selectedResolution.GameDate`
+  (server-confirmed; the observation seam additionally re-checks bracket membership of
+  the selected event, and an adjacent-bracket client date is pinned refusing).
+
+Suites after corrections: full .NET **2011/2011, 0 skipped** (b2 base 1977 + 34
+correction tests); solution build 0 errors; activation remains disabled in tracked
+configuration; the migration remains unapplied; no frontend/dependency change; the
+accepted review dispositions (PROVIDER_NAMESPACE_DURABLE, CLIENT_DATE_CROSSCHECK_ONLY)
+were not reopened.
+
 ## next step
 
-Exactly one: operator issues the independent review-and-integrate-on-PASS
-authorization for the b2 batch (attack Commit A, Commit B, and the combined activation
-path; integrate and push only on a clean PASS; production activation stays disabled;
-2-iii-c and 2-ii-c stay unauthorized).
+Exactly one: operator issues the delta re-review authorization over
+`b4734aa..0b523a5` (which must also re-run the complete end-to-end authority chain
+from `1311137..0b523a5`) and integrates on PASS; production activation stays disabled;
+2-iii-c and 2-ii-c stay unauthorized.
 
 ## related
 
