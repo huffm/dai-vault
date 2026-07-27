@@ -18746,3 +18746,45 @@ charter-based persistence decision; strict snapshot 26/0/0.
 **State:** Vault-only commit on the architecture branch; final independent
 delta review required; publication and implementation unauthorized.
 **Next:** Operator: authorize the final delta review of 30c7102..tip.
+
+---
+
+## WI-0037 Slice 2-iii -- ADR PART 4 BOUND (FR-1..FR-3), Closing Delta Review Pending
+
+**Date:** 2026-07-26 **Branch:** `wi/0037-selected-event-identity-continuity-architecture` (234d3f0 -> cbc5ccf -> 30c7102 -> 191402c -> this commit); dai untouched at af59853
+
+Part 4 binds the three closing-review findings. FR-1: split-key strategy
+REJECTED (would not serialize a legacy/selected race on one game); bound =
+SHARED_TENANT_COMPETITION_CREATION_GATE_V1 -- one shared process-local gate
+for every run-creation path, keyed by server tenant + server-canonical
+competition only (no client fields), coarser serialization accepted because
+only the db read/check/insert boundary is held (no network I/O under the
+gate); selected-path dedup uses the VERIFIED gamePk; seven named 2-iii-b2 RED
+scenarios incl. both arrival orders of the selected/legacy race. FR-2:
+2-iii-b2 DEFAULT-OFF until a cited deployment evidence record proves exactly
+one active run-creating process (Dockerfile = one process per container,
+topology otherwise unproven; compose.smoke non-production); stale/absent
+proof -> selection_identity_not_active, never accepted-and-ignored; scale-out
+residual extended (same-host multi-process, deployment overlap,
+multi-container, future workers). FR-3: ONE_IMMUTABLE_DOMAIN_DOCUMENT_PER_RUN
+-- zero-or-one single-assignment document, complete before atomic insert,
+never merged/appended/replaced; future evidence = new-run aggregates or a
+separate append-only surface. 2-iii-b2 owns all activation behavior;
+E-PRIME-PRECREATE remains selected after honest cost rescoring. Skills gate:
+dai-slice-runner / dai-docs-architect / dai-grill-with-vault /
+dai-agent-handoff unavailable this session -- tracked doctrine used as
+fallback. Nothing pushed; ops at 234d3f0 untouched; wi/0035 hash 86aa8b74
+intact; dai byte-identical.
+
+### Slice Synopsis
+
+**Change:** Part 4 replaces the rejected split-key gate with one shared
+server-keyed creation gate, makes activation evidence-gated default-off, and
+locks provenance to a single-assignment document per run.
+**Reason:** Closing review verdict CORRECTIONS_REQUIRED (FR-1 High + two
+Medium).
+**Proof:** Gate call-site and Dockerfile/compose citations; strict snapshot
+26/0/0; docs-only delta on the three allowlisted paths.
+**State:** Vault-only commit; closing delta review of 191402c..tip required;
+publication and implementation unauthorized.
+**Next:** Operator: authorize the closing delta review.

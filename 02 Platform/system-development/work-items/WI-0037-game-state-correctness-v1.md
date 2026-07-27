@@ -427,7 +427,33 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (ARCHITECTURE CONSTRAINTS BOUND LOCAL 2026-07-26; final delta review required; implementation NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (ADR PART 4 BOUND LOCAL 2026-07-26; closing delta review required; implementation NOT authorized)
+
+> Part-4 state (2026-07-26, superseding "constraints bound local"): the final
+> delta review returned CORRECTIONS_REQUIRED (FR-1 High: the creation gate is
+> keyed from raw client team strings, AgentRunsController.cs:129-131, so
+> client-varied spellings could defeat serialization; FR-2 Med activation
+> enforceability; FR-3 Med provenance cardinality). ADR part 4 (current
+> authority) binds: **SHARED_TENANT_COMPETITION_CREATION_GATE_V1** -- ONE
+> shared process-local gate for legacy AND selected paths keyed by
+> server-authenticated tenant + server-canonical competition (no client
+> fields; split-key strategy explicitly rejected because it would not
+> serialize a legacy/selected race on the same game; only the db
+> read/check/insert boundary is held, no network I/O under the gate; selected
+> path dedups with the VERIFIED gamePk; seven named 2-iii-b2 RED scenarios);
+> **enforceable activation gate** -- 2-iii-b2 DEFAULT-OFF until a deployment
+> evidence record proves exactly one active run-creating process (Dockerfile
+> is one-process-per-container but topology is otherwise unproven;
+> compose.smoke.yaml non-production); architecture publication = publishing
+> an obligation, not activation; residual
+> MULTI_INSTANCE_SELECTED_EVENT_ATOMICITY_REQUIRED_BEFORE_SCALE_OUT extended
+> to same-host multi-process, deployment overlap, multi-container, and future
+> workers; **ONE_IMMUTABLE_DOMAIN_DOCUMENT_PER_RUN** -- zero-or-one
+> single-assignment document, complete before insert, never merged/appended/
+> replaced; future evidence types = new-run aggregates or a separately
+> designed append-only surface, never in-place mutation. NOT published,
+> implementation NOT authorized; 2-ii-c unauthorized; WI-0037 in-progress.
+> Evidence: [[wi-0037-slice-2-iii-architecture-review-2026-07-26-v1]] part 4.
 
 > Part-3 state (2026-07-26, superseding "architecture corrected local"): the
 > delta review of part 2 returned CORRECTIONS_REQUIRED with seven bindable

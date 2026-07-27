@@ -835,3 +835,148 @@ MULTI_INSTANCE_SELECTED_EVENT_ATOMICITY_REQUIRED_BEFORE_SCALE_OUT; DEFERRED =
 DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_DEFERRED and future same-run
 retry; standing deployment assumption = single operator-host, controlled
 cutover, no mixed pool; queryability non-load-bearing.
+
+# part 4 -- shared creation gate, enforceable activation, and immutable provenance cardinality (fr-1..fr-3), 2026-07-26
+
+The closing review of part 3 returned CORRECTIONS_REQUIRED (FR-1 High gate-key
+authority; FR-2 Medium activation enforceability + residual scope; FR-3 Medium
+provenance cardinality). Parts 1-3 are preserved; PART 4 IS CURRENT AUTHORITY
+where it corrects part 3 sections 3.1 (process/deployment enforcement), 3.4
+(creation-gate and divergence), 3.5-3.6 (provenance cardinality/evolution),
+3.10 (2-iii-b2 obligations), and 3.11 (residual scope and scoring). All other
+part-3 decisions stand.
+
+## 4.1 fr-1 -- SHARED_TENANT_COMPETITION_CREATION_GATE_V1
+
+The interim split-key idea (legacy matchup key + selected gamePk key) is
+REJECTED: separate semaphores would not serialize a legacy request racing a
+selected request for the same physical game. Bound v1 strategy: EVERY
+run-creation path -- legacy and selected -- uses the SAME process-local gate
+namespace keyed by server-authenticated tenant key + server-canonical
+competition code (resolved and validated against the server competition
+catalog BEFORE acquisition). The key contains no raw client teams, game date,
+providerEventId, StartUtc, or client gamePk. The deliberately coarser
+per-competition serialization is accepted for the single-process
+single-operator product because only the database read/check/insert boundary
+is held -- no provider, StatsAPI, model, or other network I/O occurs under
+the gate. Gate 1 for selected requests still completes before acquisition
+(observe -> canonical matcher -> candidate gamePk -> staged verification ->
+immutable verified candidate). Inside the shared gate the selected path
+evaluates duplicates with the authoritative VERIFIED gamePk,
+server-observed/verified team references for any fallback comparison, and the
+verified operational date where the candidate query needs one; raw client
+team strings and client gamePk are validation/cross-check inputs only and
+never authorize the selected-path gate or duplicate result. The legacy path
+keeps its existing DuplicateRunGuard identity policy and externally visible
+behavior, executing its read/check/insert boundary inside the same shared
+gate. The gate is held through candidate read, conflict evaluation, atomic
+run/provenance insert, and successful save. Distinct doubleheader gamePks
+remain separate decisions (their short creation sections serialize); the same
+authoritative gamePk follows existing duplicate policy. Selection-level
+idempotency and multi-process safety remain explicitly unclaimed.
+
+Mandatory 2-iii-b2 RED scenarios: (1) same selected event, two client team
+spellings, concurrent -> exactly one run; (2) two provider events -> same
+verified gamePk -> existing duplicate outcome; (3) two DH selections ->
+distinct verified gamePks -> two runs; (4) selected racing legacy for the
+same game, BOTH arrival orders -> exactly one active run; (5) selected-path
+duplicate evaluation receives verified gamePk/server identity, never raw
+client matchup identity; (6) tenants never block, disclose, or confuse one
+another; (7) no provider/StatsAPI/model/network call under the shared gate.
+Illustrative .NET names are PascalCase, JSON camelCase; WI/slice identifiers
+remain traceability labels, never production type names.
+
+## 4.2 fr-2 -- enforceable activation/publication gate
+
+Verified deployment truth (cited): `platform/dotnet/Dockerfile` launches one
+API process per container (single entrypoint) but does not constrain the
+number of containers, revisions, or overlapping replacements;
+`compose.smoke.yaml` is explicitly non-production and proves no production
+topology; no production pipeline or checked-in configuration currently proves
+one active process, one worker, max-replicas-one, or non-overlapping cutover.
+Bound: ARCHITECTURE publication may proceed after the closing review (it
+publishes an OBLIGATION, not a claim that activation exists); 2-iii-b2
+remains DEFAULT-OFF and may not activate SelectedEventIntent until a
+deployment evidence record proves: exactly one active run-creating API
+process; one worker per process; no web garden; no overlapping app-pool
+recycle; no old/new revision overlap able to receive run-creation requests;
+no blue/green or mixed-version pool; no second manually started API process;
+no background worker or alternate service capable of creating runs. The old
+process must be stopped or unable to accept run creation before the new
+enforcement-capable process accepts selected-event requests. Absent or stale
+topology proof -> activation stays disabled and a complete selected block
+returns `selection_identity_not_active`; never accepted-and-ignored. The
+evidence record must cite the actual configuration and process/revision
+observation at activation time; prose alone is insufficient. No claim is
+made that application code can self-prove external topology unless a later
+implementation supplies such a mechanism. Residual
+MULTI_INSTANCE_SELECTED_EVENT_ATOMICITY_REQUIRED_BEFORE_SCALE_OUT is
+EXTENDED to cover: multiple processes on one host; overlapping
+deployment/recycle processes; multiple containers or revisions; future
+background workers/services capable of run creation; horizontal scale-out.
+Ownerless disclosure retained; ownership assignment required before any such
+topology is authorized.
+
+## 4.3 fr-3 -- ONE_IMMUTABLE_DOMAIN_DOCUMENT_PER_RUN
+
+DomainExecutionProvenanceJson cardinality is zero-or-one document per run; a
+selected-event run has exactly one. The owning domain constructs the COMPLETE
+document before run creation; the platform persists it opaquely in the same
+atomic insert as the run. The field is SINGLE-ASSIGNMENT: no later merge,
+append, replacement, or last-writer-wins update to the persisted JSON.
+Selected-event binding evidence can never be removed or replaced. For a
+sports run only the sports domain constructs the payload; generic platform
+code stores, retrieves, associates, and enforces single-assignment, never
+authoring or interpreting sports fields. Another niche constructs its own
+document for its own runs and may not write or replace the sports document on
+a sports run. v1 document type = selected_event_binding; schemaVersion is the
+sports-owned domain-document schema version, independent of
+bindingRuleVersion. No separate platform envelopeVersion in v1 (generic
+metadata shape fixed; changing it later is a separately reviewed contract
+change). Future evidence types never mutate existing rows: a future schema
+may define a versioned aggregate for NEWLY CREATED runs, fully assembled
+before insert; existing documents remain byte-preserved and readable;
+evidence discovered after run creation requires a separately designed
+append-only child/event surface and cannot be forced into this field.
+Part 3's "versioned append-only envelope extension" wording is SUPERSEDED
+insofar as it suggested in-place extension of an existing document. Unknown
+versions stay displayable as opaque history and fail closed for
+authoritative reuse.
+
+## 4.4 decomposition and scoring updates
+
+2-iii-b2 owns ALL load-bearing activation behavior together:
+SelectedEventIntent contract; all-or-none validation; Gate-1 translation and
+verification; the shared creation gate; verified-gamePk duplicate evaluation;
+atomic run/provenance persistence; Gate-2 execution verification; refusal
+behavior; and the deployment activation proof. No intermediate state accepts
+and ignores selected identity. Scoring updated honestly: deliberately coarser
+tenant+competition serialization in single-process v1; no distributed or
+multi-process safety; activation dependent on external deployment evidence;
+single-assignment provenance limits; later execution-time evidence requires a
+separate future surface. E-PRIME-PRECREATE remains selected: even with these
+costs it is the only candidate that adds no new authority, no registry, no
+token lifecycle, and no client-trusted identity while completing the
+selection -> gamePk -> settlement chain.
+
+## 4.5 documentation and semantic dispositions
+
+Documentation: architecture report versioned additively via part 4; WI state
+and link updated; rolling handoff appended; no new standalone document
+required. Terminology: added SHARED_TENANT_COMPETITION_CREATION_GATE_V1,
+ONE_IMMUTABLE_DOMAIN_DOCUMENT_PER_RUN, and the activation-evidence record;
+deprecated the split-key wording (rejected) and part 3's in-place append
+phrasing; "architecture publication" (this vault decision record on main) is
+distinct from "2-iii-b2 implementation activation/publication" (default-off,
+evidence-gated); "creation gate" (serialization mechanism) is distinct from
+"duplicate identity authority" (verified gamePk policy);
+"single-assignment immutable document" is distinct from an append-only
+evidence store (a possible FUTURE separate surface). The central DAI glossary
+is outside this slice's allowlist; no cross-cutting glossary edit is required
+now -- these terms are WI-scoped; revisit at WI-0037 close.
+
+## 4.6 state
+
+Slice 2-iii: part 4 bound locally; CLOSING delta review of 191402c..tip
+required; architecture publication and implementation remain unauthorized;
+2-ii-c unauthorized; WI-0037 in-progress.
