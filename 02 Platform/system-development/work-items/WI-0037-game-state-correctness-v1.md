@@ -427,7 +427,35 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (ADR PART 8 BOUND LOCAL 2026-07-27; closing delta review required; implementation NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (ARCHITECTURE PUBLISHED 2026-07-27; implementation NOT authorized)
+
+> Publication state (2026-07-27, superseding "ADR part 8 bound local;
+> closing delta review required"): the final independent closing review
+> returned **WI0037_SLICE2III_ADR8_CLOSING_REVIEW_PASSED_PUBLICATION_READY**
+> with no findings, authorizing publication of the complete reviewed
+> nine-commit architecture package 234d3f0d25ac462f4acdd3e62842995d7f72aae0
+> .. `d78545c9f23aabcc4f161fef542f25d1a31e8dad` (eight
+> architecture/ADR commits through part 8 plus one
+> record-conformance commit). The package tip was integrated into vault main
+> by verified fast-forward only and the ARCHITECTURE IS PUBLISHED by the
+> documentation-only publication-closeout commit containing this update
+> (its full SHA is recorded in the post-commit operator report and the
+> external prompt ledger; publication is claimed only after direct remote
+> verification). Publication publishes obligations, not activation: no dai
+> source changed (dai main remains `af59853`), implementation remains NOT
+> authorized, 2-ii-c remains unauthorized, and every implementation slice
+> (2-iii-a matcher, 2-iii-b1 inert provenance migration, 2-iii-b2 atomic
+> activation, 2-iii-c frontend/consumers) is separately gated. Publication
+> does NOT resolve the propagation residual:
+> SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE stays
+> OPEN and blocking until full 2-iii implementation and verification;
+> MULTI_INSTANCE_SELECTED_EVENT_ATOMICITY_REQUIRED_BEFORE_SCALE_OUT stays
+> blocking before any scale-out authorization;
+> DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_DEFERRED stays deferred and
+> nonblocking. Published architecture evidence:
+> [[wi-0037-slice-2-iii-architecture-review-2026-07-26-v1]] (publication
+> closeout section). Next governed action = a separate operator
+> authorization for Slice 2-iii-a; WI-0037 stays `in-progress`.
 
 > Part-8 state (2026-07-27, superseding "part 7 bound"): closing review found
 > CR-1 Med -- part 7 section 7.1's third arm ("without selected-event

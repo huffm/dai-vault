@@ -18980,3 +18980,60 @@ ledger validated; strict snapshot 26/0/0.
 closing review of 9b7ccdd..tip required; publication and implementation
 unauthorized.
 **Next:** Operator: authorize the corrected closing independent review.
+
+---
+
+## WI-0037 Slice 2-iii -- Selected-Event Architecture PUBLISHED (Publication Closeout)
+
+**Date:** 2026-07-27 **Governing WI:** WI-0037 (`02 Platform/system-development/work-items/WI-0037-game-state-correctness-v1.md`) **Branch:** vault `main` (publication-closeout commit on top of the fast-forwarded reviewed package); dai untouched at af59853
+
+The final independent closing review returned
+WI0037_SLICE2III_ADR8_CLOSING_REVIEW_PASSED_PUBLICATION_READY with no
+architecture or record/process findings, authorizing publication of the
+complete reviewed nine-commit package 234d3f0..d78545c9f23aabcc4f161fef542f25d1a31e8dad
+(eight architecture/ADR commits through part 8 + one record-conformance
+commit d78545c). Local vault main was moved 234d3f0 -> d78545c by verified
+fast-forward only (no merge/squash/rebase/force; no other ref moved; no
+worktree had main checked out), and this publication-closeout commit -- the
+documentation-only commit containing this handoff -- adds exactly three
+paths: the WI-0037 work item (Slice 2-iii state -> architecture published;
+front-matter status stays in-progress), the architecture evidence report
+(OKF status in-progress -> complete + appended publication-closeout
+section; parts 1-8 byte-preserved), and this rolling handoff (append-only).
+The closeout commit's own SHA is deliberately not embedded here (a commit
+cannot contain its own hash); it is recorded post-commit in the external
+prompt ledger and the operator report. Remote publication verification is
+reported post-commit/post-push in the operator report: the architecture
+counts as PUBLISHED only after the single plain non-force push of vault
+main and direct remote verification succeed. No dai source change;
+implementation NOT authorized; 2-ii-c unauthorized; every implementation
+slice separately gated (2-iii-a matcher -> 2-iii-b1 inert provenance
+migration -> 2-iii-b2 atomic activation -> 2-iii-c consumers -> 2-ii-c
+parity/hardening). Residuals exactly:
+SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE
+OPEN/blocking (publication does NOT resolve it);
+MULTI_INSTANCE_SELECTED_EVENT_ATOMICITY_REQUIRED_BEFORE_SCALE_OUT blocking
+before scale-out; DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_DEFERRED
+deferred/nonblocking. Prompt-ledger: separate pre-execution publication
+record created at the resolved root (dai/prompts/2026/07/
+2026-07-27-wi-0037-slice-2-iii-architecture-publication.md, status
+executing); part-8 record outcome-link and publication-record closure
+follow successful remote verification. Skills gate: dai-skill-router,
+dai-slice-runner, dai-docs-architect, dai-grill-with-vault,
+dai-agent-handoff, and verification-before-completion all callable and
+invoked this session. Ops branch at 234d3f0 pending conditional post-push
+realignment; wi/0035 preservation hash 86aa8b74 intact; dai byte-identical.
+Next governed action = a separate operator authorization for Slice 2-iii-a.
+
+### Slice Synopsis
+
+**Change:** The reviewed nine-commit Slice 2-iii selected-event architecture
+package was fast-forwarded into vault main and closed out with one
+documentation-only publication commit (three paths).
+**Reason:** Closing review passed publication-ready with zero findings.
+**Proof:** Verified fast-forward 234d3f0 -> d78545c; docs-only three-path
+delta; strict snapshot and remote verification recorded in the operator
+report.
+**State:** Vault main = closeout commit, pushed main-only after
+verification; architecture branch local-only; dai untouched at af59853.
+**Next:** Operator: authorize Slice 2-iii-a (canonical matcher) separately.

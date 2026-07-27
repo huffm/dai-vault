@@ -2,7 +2,7 @@
 title: "WI-0037 Slice 2-iii Architecture Review: Selected-Event Identity Continuity 2026-07-26 v1"
 type: "evidence-report"
 date: "2026-07-26"
-status: "in-progress"
+status: "complete"
 project: "DAI"
 slice: "WI-0037 Slice 2-iii: selected-event identity continuity"
 repos:
@@ -1479,3 +1479,46 @@ Slice 2-iii: ADR part 8 bound locally; total provenance-classification
 matrix and OKF record alignment complete; closing independent delta review
 of 9b7ccdd..tip required; architecture NOT published; implementation NOT
 authorized; 2-ii-c unauthorized; WI-0037 in-progress.
+
+# publication closeout -- 2026-07-27
+
+This section supersedes the historical state stamps in sections 2.6, 7.6,
+and 8.7 for publication status only; every architectural decision in parts
+1-8 stands verbatim.
+
+The final independent closing review of the complete package returned
+**WI0037_SLICE2III_ADR8_CLOSING_REVIEW_PASSED_PUBLICATION_READY** with no
+architecture or record/process findings. The reviewed package is the nine
+vault commits 234d3f0d25ac462f4acdd3e62842995d7f72aae0 ..
+**d78545c9f23aabcc4f161fef542f25d1a31e8dad** (eight additive
+architecture/ADR commits through part 8, plus one record-conformance
+commit). That package tip was integrated into vault main by verified
+fast-forward only, and the architecture is published by the
+documentation-only publication-closeout commit containing this section; the
+resulting full SHA is recorded in the post-commit operator report and the
+external prompt ledger, and publication is claimed only after direct remote
+verification of vault main.
+
+Publication state:
+
+- reviewed package tip: d78545c9f23aabcc4f161fef542f25d1a31e8dad;
+- publication scope: vault main only; the architecture working branch is
+  never pushed; dai is unchanged at
+  af598530217bf2558a7323fc301b20237eb62cee;
+- implementation remains NOT authorized; publication publishes obligations,
+  not activation;
+- every implementation slice is separately gated: 2-iii-a (canonical
+  matcher), 2-iii-b1 (inert provenance migration), 2-iii-b2 (atomic
+  activation), 2-iii-c (frontend/consumers), then 2-ii-c parity/hardening;
+- residual states, exactly as bound:
+  SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE remains
+  OPEN and blocking until full 2-iii implementation and verification --
+  architecture publication does NOT resolve it;
+  MULTI_INSTANCE_SELECTED_EVENT_ATOMICITY_REQUIRED_BEFORE_SCALE_OUT remains
+  blocking before any scale-out authorization;
+  DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_DEFERRED remains deferred
+  and nonblocking;
+- the operator-owned glossary/dictionary disposition for every reusable
+  term from parts 1-8 remains mandatory at WI-0037 completion;
+- next action: only a separately authorized Slice 2-iii-a implementation
+  slice; WI-0037 stays in-progress.
