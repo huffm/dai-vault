@@ -427,7 +427,28 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (ADR PART 6 BOUND LOCAL 2026-07-26; closing delta review required; implementation NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (ADR PART 7 BOUND LOCAL 2026-07-27; closing delta review required; implementation NOT authorized)
+
+> Part-7 state (2026-07-27, superseding "part 6 bound"): staff review found
+> FR-9 Med -- part 6 section 6.5's "durably explain"/failure-mechanism wording
+> conflicted with the part-3 pre-create durability bound, and eligibility
+> ordering vs the guard's exclusion/failed doctrine was unbound. ADR part 7
+> binds **PRECREATE_DUPLICATE_CANDIDATE_INTEGRITY_REFUSAL_V1**: eligibility
+> BEFORE identity parsing (excluded/failed candidates nonblocking by status
+> doctrine, never by tolerating malformed identity); every potentially
+> blocking candidate safely classified before any duplicate verdict; an
+> active malformed selected candidate is NEVER skipped; typed 409
+> `duplicate_candidate_identity_invalid` with NO incoming run, NO provenance
+> for the refused attempt, no candidate mutation, no external/paid work,
+> gate always released; internal detail reasons (incomplete_identity_bundle /
+> malformed_provenance_envelope / unknown_provenance_schema_version) in
+> correlation-linked observability only; durability = response + log exactly
+> per PRECREATE_REFUSAL_DURABILITY_LIMITED_TO_RESPONSE_AND_OBSERVABILITY
+> (part 6's "durably explain" wording superseded); eleven mandatory b2 RED
+> scenarios. All part-6 identity decisions and all three residual states
+> preserved. NOT published; implementation NOT authorized; 2-ii-c
+> unauthorized; WI-0037 in-progress. Evidence:
+> [[wi-0037-slice-2-iii-architecture-review-2026-07-26-v1]] part 7.
 
 > Part-6 state (2026-07-26, superseding "part 5 bound"): staff review found
 > FR-6 High (part 5 persisted ExternalGameId + team refs WITHOUT

@@ -18862,3 +18862,36 @@ paths.
 **State:** Vault-only commit; closing delta review of c6d8aac..tip required;
 publication and implementation unauthorized.
 **Next:** Operator: authorize the closing delta review.
+
+---
+
+## WI-0037 Slice 2-iii -- ADR PART 7 BOUND (FR-9), Closing Delta Review Pending
+
+**Date:** 2026-07-27 **Branch:** `wi/0037-selected-event-identity-continuity-architecture` (... -> 41da4d7 -> this commit); dai untouched at af59853
+
+FR-9 Med: part 6 section 6.5's "durably explain"/reuse-failure-mechanism
+wording conflicted with the part-3 pre-create durability bound, and
+eligibility ordering against the guard's exclusion/failed doctrine was
+unbound. Part 7 binds PRECREATE_DUPLICATE_CANDIDATE_INTEGRITY_REFUSAL_V1:
+eligibility before identity parsing; every potentially blocking candidate
+classified before any duplicate verdict; active malformed selected
+candidates never skipped; typed 409 duplicate_candidate_identity_invalid
+with no incoming run, no refused-attempt provenance, no candidate mutation,
+no external/paid work, gate always released; internal detail reasons in
+correlation-linked observability only; durability reconciled exactly to
+response + log (part-6 wording superseded); eleven mandatory b2 RED
+scenarios. All part-6 identity decisions and residual states preserved.
+Skills gate: four named skills unavailable -- tracked doctrine fallback.
+Nothing pushed; ops at 234d3f0 untouched; wi/0035 hash 86aa8b74 intact; dai
+byte-identical.
+
+### Slice Synopsis
+
+**Change:** Part 7 reconciles pre-create candidate-integrity refusals with
+the bound durability doctrine and pins eligibility-before-identity ordering.
+**Reason:** Staff review verdict (FR-9 Medium).
+**Proof:** Guard status-doctrine citations; exact refusal contract; strict
+snapshot 26/0/0; docs-only delta on the three allowlisted paths.
+**State:** Vault-only commit; closing delta review of 41da4d7..tip required;
+publication and implementation unauthorized.
+**Next:** Operator: authorize the closing delta review.

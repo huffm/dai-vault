@@ -1250,3 +1250,98 @@ MUTATION (legacy retrieve-time write).
 Slice 2-iii: ADR part 6 bound locally; closing delta review of c6d8aac..tip
 required; publication and implementation unauthorized; 2-ii-c unauthorized;
 WI-0037 in-progress.
+
+# part 7 -- pre-create candidate-integrity refusal (fr-9), 2026-07-27
+
+Staff review of part 6 found FR-9 (Medium): section 6.5's "durably explain"
+and reuse-a-failure-mechanism wording conflicts with the part-3 pre-create
+durability bound (typed response + structured observability; no run, no
+durable decision record), and the eligibility ordering against the guard's
+existing exclusion/failed doctrine was unbound. Parts 1-6 preserved; PART 7
+IS CURRENT AUTHORITY, superseding ONLY part 6 section 6.5's ambiguous
+durability/failure-surface wording and completing its eligibility ordering.
+Every part-6 identity decision stands: the complete atomic
+GameIdentityContext bundle, (SourceProvider, ExternalGameId) settlement
+authority, namespace separation, gate-2 compare-not-replace, canonical
+normalization authority, selected-candidate classification, the concurrency
+truth table, the shared gate and one-process activation constraint,
+provenance immutability, all three residual states, and the four-slice
+decomposition.
+
+## 7.1 PRECREATE_DUPLICATE_CANDIDATE_INTEGRITY_REFUSAL_V1
+
+Candidate evaluation inside the shared creation gate follows this exact
+order: (1) query only the tenant + canonical competition + applicable
+operational date scope; (2) apply existing candidate ELIGIBILITY doctrine
+BEFORE any identity parsing -- any excluded candidate is nonblocking;
+status=failed is nonblocking; pending, completed, and other nonexcluded
+statuses remain potentially blocking; (3) for each potentially blocking
+candidate the sports-owned identity builder runs -- recognized
+selected_event_binding + known schema + complete identity bundle ->
+construct the typed authoritative candidate; recognized selected_event_
+binding + incomplete bundle, malformed envelope, or unknown schema version
+-> candidate-integrity refusal; legacy/historical row without selected
+provenance -> existing request-gamePk/InputJson fallback; (4) only after
+EVERY potentially blocking candidate is safely classified may the duplicate
+verdict be evaluated; (5) an active malformed selected candidate may NEVER
+be skipped to continue searching or permit insertion. Excluded or failed
+rows are skipped because existing status doctrine makes them ineligible --
+not because malformed identity was tolerated.
+
+## 7.2 outward refusal contract
+
+Typed duplicate-run-domain reason: `duplicate_candidate_identity_invalid`,
+bound to HTTP 409 Conflict on the current API surface. The refusal is:
+detected before the incoming run exists; non-client-correctable; fail
+closed; NO incoming AgentRun row; NO provenance document for the refused
+attempt; no model, provider, StatsAPI, or paid call; no mutation of the
+offending candidate; no settlement effect; the shared gate is always
+released. The response may carry tenant-safe correlation information and the
+existing candidate AgentRunId under the same authorization boundary as the
+current duplicate response; it never exposes raw provenance, provider
+payloads, cross-tenant identity, or secrets. Internal structured reason
+details -- incomplete_identity_bundle, malformed_provenance_envelope,
+unknown_provenance_schema_version -- live in correlation-linked structured
+observability only; they are not a durable decision ledger or learning
+record.
+
+## 7.3 durability reconciliation (supersedes part 6 section 6.5 wording)
+
+Durable facts: the pre-existing offending candidate ROW remains unchanged;
+its already-persisted intent/provenance remains available to authorized
+audit where readable; the NEW refusal is represented by the typed HTTP
+response and structured log only. No new run and no durable refusal record
+is created; no failed incoming run is manufactured to record the refusal.
+Retained: PRECREATE_REFUSAL_DURABILITY_LIMITED_TO_RESPONSE_AND_OBSERVABILITY;
+DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_DEFERRED (deferred,
+nonblocking).
+
+## 7.4 mandatory 2-iii-b2 red scenarios
+
+(1) active selected candidate + complete bundle + same gamePk -> ordinary
+duplicate response; (2) active selected candidate + incomplete bundle ->
+409 duplicate_candidate_identity_invalid, no new row; (3) + malformed
+envelope -> same fail-closed result; (4) + unknown schema version -> same;
+(5) malformed active candidate followed by an otherwise nonmatching
+candidate STILL refuses -- never skipped; (6) excluded malformed candidate
+remains nonblocking; (7) failed malformed candidate remains nonblocking;
+(8) legacy candidate without selected provenance retains current fallback;
+(9) refusal never invokes model/provider/StatsAPI work; (10) gate releases
+after every refusal; (11) response and logs disclose no cross-tenant or raw
+provenance data.
+
+## 7.5 naming and semantics
+
+Carried forward: PascalCase .NET / camelCase JSON; labels never production
+names; comments lowercase ascii on authority/failure behavior; report linked
+from WI-0037; glossary disposition mandatory at WI-0037 completion. Added
+distinctions: candidate ELIGIBILITY (may a row block) vs candidate IDENTITY
+VALIDITY (can an eligible row be compared) vs DUPLICATE VERDICT (are two
+valid identities the same game) vs PRE-CREATE REFUSAL OBSERVABILITY
+(response/log, never a durable run outcome).
+
+## 7.6 state
+
+Slice 2-iii: ADR part 7 bound locally; closing delta review of 41da4d7..tip
+required; publication and implementation unauthorized; 2-ii-c unauthorized;
+WI-0037 in-progress.
