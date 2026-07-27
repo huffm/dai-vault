@@ -19409,3 +19409,60 @@ pins green.
 off; migration unapplied; nothing pushed.
 **Next:** Operator: authorize the final independent b2 re-review and
 integrate-on-PASS over the complete package.
+
+---
+
+## WI-0037 Slice 2-iii-b2 -- FINAL REVIEW PASSED, INTEGRATED + PUBLISHED (Closeout)
+
+**Date:** 2026-07-27 **Governing WI:** WI-0037 (`02 Platform/system-development/work-items/WI-0037-game-state-correctness-v1.md`) **Branches:** dai main ff 1311137 -> aee1ade (published); vault main ff over the four records commits + this closeout commit
+
+The final independent review of the complete six-commit b2 package returned
+WI0037_SLICE2III_B2_FINAL_REREVIEW_PASSED_INTEGRATED_PUBLISHED. All sixteen
+mandatory attacks held: package integrity (six linear text commits, zero
+merges, all platform/dotnet, no dependency/frontend/schema drift); the
+F-B2-8 provider-qualified comparison matrix (same source id-equality decides,
+different ids distinct with no team fallback, cross-source incomparable ->
+canonical-pair fallback, opaque ids valid, zero parsing in the guard); caller
+ownership (all five ProviderGameIdentity construction sites blank-guarded and
+server/domain-prepared); both arrival orders + the concurrency matrix;
+F-B2-7 provider-scoped discovery (exact verified pair widening only; no
+client-GamePk widening; honest discoverability boundary); F-B2-1
+row/provenance agreement; F-B2-2 server-bound pre-model execution (zero model
+calls on refusal); F-B2-3 run-bound gate-2 authority; F-B2-4 bounded
+activation evidence; F-B2-5 fault-injected atomic insert; F-B2-6 dual-binding
+conflict; input/refusal/lifecycle contracts; platform/domain opacity;
+operating envelope. Full .NET reproduced 2025/2025 0 skipped; solution build
+0 errors. ONE finding, LOW (record accuracy, non-behavioral): earlier report
+claims of uniformly lowercase, label-free changed comments were inaccurate
+(seventeen comment lines across three production files carry wi/finding
+labels; some uppercase emphasis); conceals no authority; recorded accurately
+in the WI and report; hygiene cleanup deferred. INTEGRATED + PUBLISHED after
+the pre-integration race gate: dai main = aee1ade8a27da45d845510baffaabca7068be974
+(local = origin = direct remote, plain non-force main-only push, verified);
+vault main advances over 5e4c3a9 / a9c700f / 49d238f / 84104b8 plus this
+documentation-only closeout commit (its own SHA recorded post-commit in the
+operator report and external ledger; vault publication claimed only after
+direct remote verification). Production selected-event activation remains
+DISABLED everywhere; migration 20260727133845 remains UNAPPLIED (deployment
+separately gated); ops deliberately NOT realigned this slice; working and
+architecture branches stay local. Ledger records closed with final SHAs.
+Residuals exact: propagation OPEN/blocking until 2-iii-c completes and
+verifies; scale-out blocking; decision ledger deferred. wi/0035 preservation
+hash 86aa8b74 intact. Next governed action = a separately authorized Slice
+2-iii-c (frontend/consumer selected-event continuity), then 2-ii-c.
+
+### Slice Synopsis
+
+**Change:** The complete verified selected-event backend (six commits:
+authority, activation, identity-consistency, hardening, provider-scoped
+discovery, provider-qualified duplicate identity) passed the sixteen-attack
+final review and was atomically integrated and published: dai main = aee1ade;
+vault main = this closeout.
+**Reason:** Final review-and-integrate authorization; sole finding was a Low
+record-accuracy comment-style observation, recorded not corrected.
+**Proof:** Full .NET 2025/2025 reproduced; build clean; race gate passed;
+direct remotes verified; activation off; migration unapplied.
+**State:** Both mains published main-only; branches local; ops untouched;
+residuals unchanged.
+**Next:** Operator: authorize Slice 2-iii-c (frontend/consumer continuity)
+separately.

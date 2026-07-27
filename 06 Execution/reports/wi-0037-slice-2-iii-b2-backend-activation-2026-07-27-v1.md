@@ -2,11 +2,11 @@
 title: "WI-0037 Slice 2-iii-b2 Backend Activation: Verified Selected-Event Creation 2026-07-27 v1"
 type: "evidence-report"
 date: "2026-07-27"
-status: "complete (implementation) -- independent review pending"
+status: "complete"
 project: "DAI"
 slice: "WI-0037 Slice 2-iii-b2: verified selected-event backend activation"
 repos:
-  dai: "code (local branch wi/0037-selected-event-backend-activation, 1311137 -> 9f12d2d -> b4734aa; NOT integrated, NOT pushed)"
+  dai: "code (INTEGRATED + PUBLISHED: main 1311137 -> aee1ade, six commits 9f12d2d/b4734aa/8d2d064/0b523a5/b6aae1c/aee1ade)"
   dai-vault: "docs-only"
 tags:
   - system-development
@@ -411,12 +411,34 @@ rows); solution build 0 errors; activation disabled; migration unapplied.
 candidate identity" vocabulary as one WI-local concept (discovery scope + comparison
 contract over the same governing pair), retained for the WI-completion glossary pass.
 
+## integration closeout -- 2026-07-27
+
+The final independent review of the complete package returned
+**WI0037_SLICE2III_B2_FINAL_REREVIEW_PASSED_INTEGRATED_PUBLISHED** (sixteen attacks;
+full .NET reproduced 2025/2025, 0 skipped; build clean). One finding, LOW
+(record accuracy, non-behavioral): this report's earlier claims that changed
+production comments were uniformly lowercase and label-free were inaccurate --
+seventeen comment lines across three production files carry wi/finding labels and
+some comments use uppercase emphasis; the observation conceals no authority,
+violates no enforced check, and its cleanup is deferred to a future hygiene slice.
+That earlier conformance wording is superseded by this accurate statement.
+
+INTEGRATED + PUBLISHED: dai main fast-forwarded 1311137 ->
+`aee1ade8a27da45d845510baffaabca7068be974` (all six commits atomically: 9f12d2d,
+b4734aa, 8d2d064, 0b523a5, b6aae1c, aee1ade; plain non-force main-only push; direct
+remote verified). Vault main advanced over the four records commits plus the
+documentation-only closeout commit containing this section (its full SHA lives in
+the operator report and the external prompt ledger; vault publication is claimed
+only after direct remote verification). Production activation remains DISABLED;
+migration 20260727133845 remains UNAPPLIED (deployment separately gated); ops was
+deliberately not realigned this slice; residual states unchanged.
+
 ## next step
 
-Exactly one: operator issues the final independent b2 re-review over the complete
-package `1311137..aee1ade` (reproducing the provider-qualified comparison matrix and
-all F-B2-1..8 corrections) and integrates on PASS; production activation stays
-disabled; 2-iii-c and 2-ii-c stay unauthorized.
+Exactly one: operator authorizes Slice 2-iii-c (frontend/consumer selected-event
+continuity -- propagate the verified selection through the sports app and remaining
+consumers without reopening the backend architecture); 2-ii-c follows; the
+propagation residual closes only after 2-iii-c completes and verifies.
 
 ## related
 

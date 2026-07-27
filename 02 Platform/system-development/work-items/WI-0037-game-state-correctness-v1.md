@@ -427,7 +427,46 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (2-iii-b2 CORRECTED LOCAL incl. F-B2-8 2026-07-27; final re-review required; activation DEFAULT-OFF; 2-iii-c and 2-ii-c NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (2-iii-b2 REVIEWED + INTEGRATED + PUBLISHED 2026-07-27; activation DEFAULT-OFF; 2-iii-c and 2-ii-c NOT authorized)
+
+> 2-iii-b2 closeout state (2026-07-27, superseding "corrected local incl.
+> f-b2-8; final re-review required"): the final independent review of the
+> complete six-commit package PASSED --
+> **WI0037_SLICE2III_B2_FINAL_REREVIEW_PASSED_INTEGRATED_PUBLISHED** -- with
+> all sixteen mandatory attacks holding: package integrity (six linear text
+> commits, no merges, all platform/dotnet), the F-B2-8 provider-qualified
+> comparison matrix reproduced, caller ownership (all five
+> ProviderGameIdentity construction sites blank-guarded and server-prepared;
+> the guard code parse-free), both arrival orders and the concurrency
+> matrix, F-B2-7 provider-scoped discovery, F-B2-1 row/provenance
+> agreement, F-B2-2 server-bound pre-model execution, F-B2-3 run-bound
+> gate-2 authority, F-B2-4 bounded activation evidence, F-B2-5 atomic-save
+> fault injection, F-B2-6 dual-binding conflict, input/refusal/lifecycle
+> contracts, platform/domain boundary, and the operating envelope. Full
+> .NET reproduced **2025/2025, 0 skipped**; solution build 0 errors. ONE
+> finding: LOW (record accuracy, non-behavioral) -- earlier report claims
+> that changed production comments were uniformly lowercase and label-free
+> were inaccurate: seventeen comment lines across three production files
+> carry wi/finding labels and some comments use uppercase emphasis; this
+> conceals no authority and violates no enforced check; disposition =
+> recorded here accurately, hygiene cleanup deferred to a future slice.
+> INTEGRATED + PUBLISHED: dai main fast-forwarded 1311137 ->
+> **aee1ade8a27da45d845510baffaabca7068be974** (all six commits atomically;
+> plain non-force main-only push; direct remote verified); vault main
+> advanced over the four records commits plus the documentation-only
+> closeout commit containing this update (full SHA recorded in the operator
+> report and external ledger; the vault publication is claimed only after
+> direct remote verification). Production selected-event activation remains
+> DISABLED everywhere; migration 20260727133845 remains UNAPPLIED
+> (deployment separately gated); ops deliberately NOT realigned this slice.
+> Residuals exact: SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_
+> WI0037_CLOSE stays OPEN/blocking until 2-iii-c completes and verifies;
+> MULTI_INSTANCE_SELECTED_EVENT_ATOMICITY_REQUIRED_BEFORE_SCALE_OUT stays
+> blocking; DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_DEFERRED stays
+> deferred/nonblocking. The operator-owned glossary disposition for all
+> WI-local terms remains mandatory at WI-0037 completion. Next: a
+> separately authorized Slice 2-iii-c (frontend/consumer continuity); then
+> 2-ii-c; WI-0037 stays `in-progress`.
 
 > F-B2-8 correction state (2026-07-27, superseding "corrected incl. f-b2-7;
 > final re-review required" for the duplicate-comparison contract only):
