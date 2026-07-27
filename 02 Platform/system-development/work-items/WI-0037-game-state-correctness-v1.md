@@ -427,7 +427,47 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (2-iii-c IMPLEMENTED LOCAL, review-required 2026-07-27; 2-iii-b2 REVIEWED + INTEGRATED + PUBLISHED; activation DEFAULT-OFF; 2-ii-c NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (2-iii-c + correction 2-iii-c1 IMPLEMENTED LOCAL, review-required 2026-07-27; 2-iii-b2 REVIEWED + INTEGRATED + PUBLISHED; activation DEFAULT-OFF; 2-ii-c NOT authorized)
+
+> 2-iii-c1 correction state (2026-07-27, on top of 2-iii-c): a narrow
+> correction/evidence-hardening pass, IMPLEMENTED LOCAL and review-required, on
+> the same branches (dai `wi/0037-selected-event-frontend-continuity` correction
+> commit `baf5e9088aff2a23453dbdc4f3a33d5ced2b9188` on top of d5d093c; vault records
+> `wi/0037-selected-event-frontend-continuity-records` new commit on top of 9cee53b). Disclosed defect (not erased): the 2-iii-c commit d5d093c added
+> production and test comments carrying work-item/slice/finding labels and
+> uppercase symbol names in prose, violating the lowercase-ascii code-comment
+> standard (the same low-severity comment-hygiene class the 2-iii-b2 final review
+> flagged). Correction: every comment added by the branch delta was rewritten to
+> lowercase ascii prose with no labels and no uppercase type/symbol names;
+> pre-existing comments outside the delta were untouched; an end-of-slice audit
+> confirms zero labels and zero uppercase or non-ascii characters in added
+> comments; no runtime semantics changed. Added evidence: consumer-boundary
+> analyzer refusal tests (identity_not_active safe message; server detail never
+> surfaced; exactly one selected request never retried; generic fallback for a
+> non-selection error; short run id on a post-create refusal), rendered dev
+> identity-panel tests (complete/partial/not-recorded; label stays "server-recorded
+> game identity", never selected-event provenance; the panel never renders an
+> out-of-contract raw provenance value), and non-baseball (nba) propagation on both
+> paths (exact provider event id and start utc still emitted; intent not dropped by
+> sport; unsupported competition refuses with no retry). Operational envelope stated
+> clearly: activation off means selected requests refuse with the inactive contract
+> and no legacy substitution; after activation, competitions outside the staged
+> baseball-only backend still refuse as unsupported; this deliberate fail-closed
+> posture requires deployment/release review before publication and is not
+> authorization to add fallback or broaden backend support. Suites: focused frontend
+> 50/50; full frontend 207/207 (24 files) + build clean; full .NET 2025/2025, 0
+> skipped (no backend diff); git diff --check clean; comment audit clean. NO C#
+> change; NO backend contract change; activation DISABLED; migration UNAPPLIED; NOT
+> reviewed, NOT integrated, NOT pushed. Corrected publication sequence recorded: (1)
+> independent review; (2) publish/verify source first on pass; (3) NEW docs-only
+> vault closeout commit atop the records branch reflecting the verified published
+> source; (4) publish/verify vault second; (5) move the propagation residual only to
+> an existing canonical resolved state -- do not invent a new state name. Residual
+> SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE stays
+> RESOLUTION-PENDING-VERIFICATION; scale-out blocking; decision ledger deferred;
+> 2-ii-c unauthorized; WI-0037 in-progress. Evidence:
+> [[wi-0037-slice-2-iii-c-frontend-consumer-continuity-2026-07-27-v1]]
+> (slice 2-iii-c1 correction section).
 
 > 2-iii-c state (2026-07-27, superseding "2-iii-c NOT authorized"): the operator
 > authorized frontend/consumer selected-event continuity and it is IMPLEMENTED

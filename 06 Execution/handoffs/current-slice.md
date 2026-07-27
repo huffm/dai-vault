@@ -19519,3 +19519,65 @@ full .NET 2025/2025 (no backend diff), solution 0 errors, snapshot 26/0.
 migration UNAPPLIED; wi/0035 preservation intact; residual now RESOLUTION-PENDING-VERIFICATION.
 **Next:** Operator: authorize one independent adversarial review + integrate-on-PASS of the
 2-iii-c source+records package; do not begin 2-ii-c yet.
+
+---
+
+## WI-0037 Slice 2-iii-c1 -- Frontend Continuity Correction and Evidence Hardening (2026-07-27, IMPLEMENTED LOCAL, review-required)
+
+A narrow correction/evidence-hardening pass on top of the Slice 2-iii-c commits (dai
+`wi/0037-selected-event-frontend-continuity` correction commit
+`baf5e9088aff2a23453dbdc4f3a33d5ced2b9188` on top of d5d093c; vault records
+`wi/0037-selected-event-frontend-continuity-records` new commit on top of 9cee53b). No
+runtime semantics changed.
+
+Disclosed defect (not erased): the 2-iii-c commit d5d093c added production and test
+comments carrying work-item/slice/finding labels and uppercase symbol names in prose,
+violating the standing "keep code comments lowercase and ascii only" standard. Correction:
+every comment added by the branch delta was rewritten to lowercase ascii prose with no
+labels and no uppercase type/symbol names; pre-existing comments outside the delta were
+untouched; an end-of-slice audit confirms zero labels and zero uppercase or non-ascii
+characters in added comments.
+
+Added evidence: a new analyzer refusal-boundary spec (identity_not_active safe message;
+server detail never surfaced; exactly one selected request, never retried; generic fallback
+for a non-selection error; short run id on a post-create refusal), a new rendered dev
+identity-panel spec (complete/partial/not-recorded states; label stays "server-recorded
+game identity", never selected-event provenance; the panel never renders an out-of-contract
+raw provenance value), and non-baseball (nba) propagation on both run-creation paths (exact
+provider event id and start utc still emitted; intent not dropped by sport; unsupported
+competition refuses with no retry). Operational envelope recorded: activation off means
+selected requests refuse with the inactive contract and no legacy substitution; after
+activation, competitions outside the staged baseball-only backend still refuse as
+unsupported; this fail-closed posture requires deployment/release review before publication.
+
+Corrected publication sequence recorded (supersedes any same-commit fast-forward): (1)
+independent review; (2) publish/verify source first on pass; (3) NEW docs-only vault
+closeout commit atop the records branch reflecting the verified published source; (4)
+publish/verify vault second; (5) move the propagation residual only to an existing canonical
+resolved state -- do not invent a new state name.
+
+Suites: focused frontend 50/50; full frontend 207/207 (24 files) + build clean; full .NET
+2025/2025, 0 skipped (no backend diff); git diff --check clean; comment audit clean. NO C#
+change; NO backend contract change; activation DISABLED; migration UNAPPLIED; NOT reviewed,
+NOT integrated, NOT pushed. Preserved wi/0035 checkout unchanged (HEAD de5791f, fingerprint
+86aa8b74). Residual SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE stays
+RESOLUTION-PENDING-VERIFICATION; scale-out blocking; decision ledger deferred; 2-ii-c
+unauthorized; WI-0037 in-progress. Evidence:
+[[wi-0037-slice-2-iii-c-frontend-consumer-continuity-2026-07-27-v1]] (2-iii-c1 section).
+
+### Slice Synopsis
+
+**Change:** Corrected the 2-iii-c comment-rule violation (removed work-item/slice/finding
+labels and uppercase symbol names from every added comment) and hardened evidence with
+consumer-boundary analyzer refusal tests, rendered identity-panel tests, and non-baseball
+(nba) propagation coverage. No runtime change.
+**Reason:** The 2-iii-c commit's comments violated the lowercase-ascii code-comment
+standard, and the request/error and template behavior needed consumer-boundary proof; the
+non-baseball fail-closed envelope needed explicit characterization.
+**Proof:** Comment audit clean (zero labels/uppercase/non-ascii in added comments); focused
+50/50; full frontend 207/207 + build; full .NET 2025/2025 (no backend diff); diff --check clean.
+**State:** Correction commit local on top of d5d093c (dai) and 9cee53b (vault records);
+mains not moved; branches not pushed; activation DISABLED; migration UNAPPLIED; residual
+stays RESOLUTION-PENDING-VERIFICATION.
+**Next:** Independent review, then source-first publication followed by a NEW vault closeout
+commit and vault publication; do not begin 2-ii-c yet.

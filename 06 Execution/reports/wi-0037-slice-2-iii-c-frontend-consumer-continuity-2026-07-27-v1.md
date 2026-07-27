@@ -273,3 +273,94 @@ worktrees were not touched.
 - MULTI_INSTANCE_SELECTED_EVENT_ATOMICITY_REQUIRED_BEFORE_SCALE_OUT: unchanged, blocking.
 - DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_DEFERRED: unchanged, nonblocking.
 - 2-ii-c remains unauthorized; WI-0037 stays `in-progress`.
+
+## slice 2-iii-c1 correction and evidence hardening (2026-07-27)
+
+This section records a narrow correction/evidence-hardening pass on top of the Slice
+2-iii-c source commit d5d093c and vault records commit 9cee53b. The correction is source
+commit `baf5e9088aff2a23453dbdc4f3a33d5ced2b9188` on top of d5d093c; this records update is
+a new vault commit on top of 9cee53b. It preserves all accepted 2-iii-c behavior and settled
+decisions; no runtime semantics changed.
+
+### disclosed defect: comment-rule violation in the 2-iii-c delta
+
+The original 2-iii-c commit d5d093c added production and test comments that carried
+work-item/slice/finding labels (for example "wi-0037 2-iii-c:", "(RED-first)") and
+uppercase symbol names in prose (for example matchup-event, request-input, and refusal
+type names written in their code casing). This violates the standing code standard "keep
+code comments lowercase and ascii only" and repeats the low-severity comment-hygiene class
+the 2-iii-b2 final review already flagged. The miss is disclosed here rather than erased
+from history.
+
+Correction: every comment added by the branch delta (aee1ade through the 2-iii-c1
+correction commit) was rewritten to lowercase ascii prose with no work-item, slice,
+architecture, or finding labels, and with uppercase type/symbol names rewritten as ordinary
+lowercase prose. pre-existing comments outside the branch delta were left untouched. an
+end-of-slice audit confirms zero labels and zero uppercase or non-ascii characters in
+comments added by the branch. no executable behavior was altered by the comment rewrite;
+the focused frontend suite stayed green across the change.
+
+### added consumer-boundary and template evidence
+
+New focused tests pin the actual consumer behavior that the first pass proved only at the
+request-body level:
+
+- analyzer/selected-event-refusal-boundary.spec.ts (new): the analyzer's real
+  request/error path renders the safe message for selection_identity_not_active, never
+  surfaces the server detail string, sends exactly one selected request and never retries
+  it, keeps the existing generic fallback for a non-selection error, presents the short run
+  identifier for a post-create refusal, and (non-baseball) shows the unsupported-competition
+  message with no retry.
+- dev-artifact-review/server-recorded-identity-panel.spec.ts (new): the rendered dev
+  inspection panel produces the complete, partial (incomplete-record warning, no invented
+  values), and not-recorded states; the visible label stays "server-recorded game
+  identity"; the surface never labels the data as selected-event provenance; and the
+  identity panel never renders an out-of-contract raw provenance value placed on the row.
+- non-baseball propagation was added to both propagation specs: an nba selection still emits
+  the exact provider event id and start utc on both run-creation paths, and intent is not
+  silently dropped by sport.
+
+Note on the raw-artifact debug dump: the dev page also has a pre-existing "raw artifact"
+json section that renders the whole artifact dto verbatim. the artifact contract carries no
+raw execution provenance envelope field (only the six stable identity fields were mirrored
+in this slice), so a real row never presents one there; the panel test scopes its
+"not rendered" assertion to the identity panel element specifically.
+
+### activation-off and non-baseball operational envelope
+
+The staged backend execution envelope is baseball-only and settled for this slice; the
+frontend adds no sport allowlist, no fallback, and no backend support. The deliberate
+fail-closed posture is:
+
+- with activation off (the default, including current production and dev), any selected
+  request refuses with selection_identity_not_active and no legacy analysis is substituted;
+- after activation, a competition outside the staged baseball backend still refuses as
+  unsupported (selection_competition_unsupported);
+- this posture is intentional and requires deployment/release review before any publication
+  or activation. it is not authorization to add fallback or broaden backend support.
+
+### corrected publication sequence (supersedes any same-commit fast-forward instruction)
+
+Publication must NOT fast-forward the current vault records commit unchanged after source
+publication. The required later sequence is:
+
+1. one independent read-only review of the complete source and records package;
+2. if review passes, publish and verify the SOURCE first;
+3. create a NEW docs-only closeout commit atop the vault topic branch that reflects the
+   verified published source (its integrated main sha);
+4. publish and verify the VAULT second;
+5. update the propagation residual only to an existing canonical resolved state supported
+   by the work-item lifecycle -- do not invent a new state name.
+
+Until then the package stays local, unintegrated, and unpushed; WI-0037 stays in progress;
+the propagation residual stays RESOLUTION-PENDING-VERIFICATION; the scale-out and
+durable-ledger residuals are unchanged.
+
+### 2-iii-c1 verification
+
+Frontend focused selected-event/identity specs 50/50; full frontend 207/207 (24 files) +
+build clean; full .NET 2025/2025, 0 skipped (no backend diff); git diff --check clean;
+branch-delta comment audit clean (zero labels, zero uppercase/non-ascii in added comments).
+Source production changes remain confined to apps/sports-app; no platform/dotnet, lockfile,
+manifest, appsettings, or migration change. activation remains disabled; migration remains
+unapplied; nothing pushed or integrated.
