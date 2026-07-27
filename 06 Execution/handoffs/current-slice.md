@@ -18630,3 +18630,42 @@ and atomic batch validation are live on both mains.
 unauthorized; WI-0037 in-progress.
 **Next:** Operator: authorize the Slice 2-iii architecture-and-contract-binding
 review (selected-event identity continuity).
+
+---
+
+## WI-0037 Slice 2-iii -- ARCHITECTURE REVIEW COMPLETE LOCAL, Independent Review Pending
+
+**Date:** 2026-07-26 **Branch:** `wi/0037-selected-event-identity-continuity-architecture` (vault base `234d3f0`; dai read-only at published `af59853`, ZERO source changes)
+
+Architecture review for SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE.
+Archaeology: the request contract ALREADY carries optional WI-0009 GamePk
+(null-suppressed, server-verified via the 2-ii-a staged resolver with terminal
+DH ambiguity); DuplicateRunGuard is already gamePk-aware; the run row already
+persists the canonical settlement key (SourceProvider, ExternalGameId);
+WI-0035/36 already provide the frozen binding wire + fail-closed trust
+boundary + retrieve-time verification. Identity is lost at exactly
+analyzer.component.ts:649 / dev-artifact-review.component.ts:463 (payload
+construction drops ev.providerEventId). RECOMMENDED E-prime: additive
+null-suppressed SelectedEvent{providerEventId, startUtc} intent fields +
+server-owned translation to gamePk during retrieval (WI-0035 rule reuse) +
+new closed selection-refusal vocabulary; zero migrations; legacy clients
+unchanged (WI-0006 fail-closed, never guess). Rejected: B token service, C
+binding registry (none exists), D new command endpoint. Slices proposed:
+2-iii-a contract/trust boundary, 2-iii-b translation/authority, 2-iii-c
+frontend propagation/provenance. Nothing pushed; ops branch untouched at
+234d3f0; wi/0035 hash 86aa8b74 intact; zero live/paid/db/model calls.
+
+### Slice Synopsis
+
+**Change:** Slice 2-iii architecture decided locally -- selected-event
+continuity reuses the existing WI-0009 gamePk authority with additive intent
+fields and server-owned odds-to-gamePk translation.
+**Reason:** Published residual requires selection to become server-verified
+execution identity before WI-0037 closes.
+**Proof:** File:line archaeology across contract, resolver, guard, run row,
+binding wire; candidate scoring matrix; zero source changes.
+**State:** Vault-only local commit on the architecture branch; independent
+architecture review required; implementation unauthorized; 2-ii-c
+unauthorized.
+**Next:** Operator: authorize the independent adversarial architecture review
+of 234d3f0..<tip>.

@@ -427,7 +427,30 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (DEFINED 2026-07-26; NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (ARCHITECTURE REVIEWED LOCAL 2026-07-26; independent review required; implementation NOT authorized)
+
+> Architecture-review state (2026-07-26, superseding "defined, unauthorized"):
+> the architecture review is COMPLETE LOCALLY on branch
+> `wi/0037-selected-event-identity-continuity-architecture` (base `234d3f0`).
+> Key finding: the platform already owns every load-bearing mechanism -- the
+> request contract's optional WI-0009 `GamePk` (server-verified via the 2-ii-a
+> staged resolver with terminal DH ambiguity), the gamePk-aware
+> DuplicateRunGuard, the run row's canonical settlement identity
+> (SourceProvider, ExternalGameId), and the WI-0035/36 frozen binding wire +
+> trust boundary. The sole gap is frontend selection -> request (identity-loss
+> line `analyzer.component.ts:649` / `dev-artifact-review.component.ts:463`).
+> RECOMMENDED (Candidate E-prime): reuse the existing gamePk execution
+> authority; add additive null-suppressed SelectedEvent intent fields
+> (providerEventId + StartUtc); translate intent -> gamePk SERVER-SIDE during
+> retrieval using the WI-0035 rule family; new closed selection-refusal
+> vocabulary (never overloading game-status-resolution codes); zero migrations;
+> legacy clients keep WI-0006 fail-closed DH ambiguity (never guess).
+> Decomposition: 2-iii-a contract+trust boundary, 2-iii-b server translation,
+> 2-iii-c frontend propagation + provenance surfacing. Candidates B (selection
+> token) and C (binding registry) rejected -- no registry exists and no
+> correctness gain; D (new command) duplicates the pipeline. Evidence:
+> [[wi-0037-slice-2-iii-architecture-review-2026-07-26-v1]]. NOT independently
+> reviewed, NOT published, implementation NOT authorized; WI-0037 in-progress.
 
 > Defined during the 2-ii-b correction pass (F-F); architecture work, NOT
 > implementation-ready. Purpose: bind the provider event the operator selected to
