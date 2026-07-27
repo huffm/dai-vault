@@ -427,7 +427,58 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (FOUNDATION 2-iii-a + 2-iii-b1 REVIEWED + INTEGRATED 2026-07-27; 2-iii-b2/c and 2-ii-c NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (2-iii-b2 IMPLEMENTED LOCAL 2026-07-27; independent review required; activation DEFAULT-OFF; 2-iii-c and 2-ii-c NOT authorized)
+
+> 2-iii-b2 state (2026-07-27, superseding "foundation integrated; b2 not
+> authorized" for the b2 portion only): the operator authorized the verified
+> selected-event backend activation batch and it is IMPLEMENTED LOCAL on
+> branch `wi/0037-selected-event-backend-activation` (dai, from published
+> `1311137`), two commits forming one atomic publication unit: Commit A
+> `9f12d2dce012bc5dc44ffa1c7751372a0e527954` ("feat(sports): add verified
+> selected event resolution") -- server-owned provider observation seam
+> (full-bracket, catalog-derived namespace, opaque ordinal event id, typed
+> missing/malformed/conflict/transport outcomes over one shared
+> normalization core), canonical translation through ProviderEventQualifier,
+> staged GameStatusResolver verification, immutable
+> VerifiedSelectedEventResolution (complete six-field bundle; selection
+> namespace never conflated with identity SourceProvider), sports-owned
+> validated provenance builder proving every document through the generic
+> TryRead gate (SELECTED_RUN_PROVENANCE_VALIDATED_WRITER_CONTRACT_V1
+> fulfilled), and the gate-2 compare-not-replace seam; Commit B
+> `b4734aa10cd631bcf905c678fcb5028c09f1d654` ("feat(agent-runs): enforce
+> verified selected event creation") -- nullable null-suppressed
+> SelectedEvent intent on CompetitionMatchupInput (legacy byte-identical,
+> malformed never falls to legacy), typed DEFAULT-OFF activation gate
+> requiring current external deployment evidence with ten individually
+> required topology assertions ([[selected-event-activation-evidence-v1]]),
+> gate-1 fully before the shared process-local tenant+competition creation
+> gate (SHARED_TENANT_COMPETITION_CREATION_GATE_V1; no client field in the
+> key; no network under the gate), part-8 four-arm candidate classification
+> at the creation boundary (database NULL sole legacy route; active
+> malformed candidates never skipped; typed 409
+> duplicate_candidate_identity_invalid, no mutation/no new run),
+> CROSS_PATH_CANONICAL_DUPLICATE_IDENTITY_V1 (verified-pk-first,
+> NormalizeTeamRef-single-sourced canonical pair, selected candidates read
+> authoritative persisted refs), ATOMIC_VERIFIED_GAME_IDENTITY_BUNDLE_V1
+> insert (six fields + gamePk + provenance in ONE SaveChanges under the
+> gate; AssignDomainExecutionProvenance exactly once), gate-2 before any
+> model call with truthful failed-run outcomes, the ApplyGameIdentity split
+> (selected runs never overwrite creation-time identity), and the
+> IVerifiedSelectedExecution seam (the ordinary execution path throws on
+> selected requests -- direct callers cannot bypass verification). Suites:
+> full .NET **1977/1977, 0 skipped** (baseline 1896 + 81 new incl. the
+> mandatory concurrency/branch matrix); solution build clean; no frontend/
+> migration/dependency change; the foundation migration remains UNAPPLIED;
+> production activation remains DISABLED everywhere. Code review: zero
+> blocking; two recorded notes (atomicity fault-injection limitation;
+> guard normalization migrated to the canonical authority). NOT reviewed,
+> NOT integrated, NOT pushed; the A+B package is the atomic b2 publication
+> unit. Evidence: [[wi-0037-slice-2-iii-b2-backend-activation-2026-07-27-v1]].
+> Residuals unchanged (propagation OPEN/blocking -- b2 alone does not close
+> it, 2-iii-c frontend propagation remains; scale-out blocking; decision
+> ledger deferred). Next: independent review-and-integrate-on-PASS of the
+> b2 batch; then 2-iii-c as the next separately authorized slice; WI-0037
+> stays `in-progress`.
 
 > Foundation review/integration state (2026-07-27, superseding "implemented
 > local; independent review required"): the independent adversarial review of

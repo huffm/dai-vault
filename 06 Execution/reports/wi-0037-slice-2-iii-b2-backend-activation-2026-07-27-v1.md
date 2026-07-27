@@ -1,0 +1,275 @@
+---
+title: "WI-0037 Slice 2-iii-b2 Backend Activation: Verified Selected-Event Creation 2026-07-27 v1"
+type: "evidence-report"
+date: "2026-07-27"
+status: "complete (implementation) -- independent review pending"
+project: "DAI"
+slice: "WI-0037 Slice 2-iii-b2: verified selected-event backend activation"
+repos:
+  dai: "code (local branch wi/0037-selected-event-backend-activation, 1311137 -> 9f12d2d -> b4734aa; NOT integrated, NOT pushed)"
+  dai-vault: "docs-only"
+tags:
+  - system-development
+  - sports-v1
+  - identity
+  - persistence
+related:
+  - "02 Platform/system-development/work-items/WI-0037-game-state-correctness-v1.md"
+  - "06 Execution/reports/wi-0037-slice-2-iii-architecture-review-2026-07-26-v1.md"
+  - "06 Execution/reports/wi-0037-slice-2-iii-foundation-implementation-2026-07-27-v1.md"
+  - "06 Execution/patterns/selected-event-activation-evidence-v1.md"
+---
+
+# wi-0037 slice 2-iii-b2 backend activation: verified selected-event creation
+
+## purpose
+
+Implement the complete fail-closed selected-event backend path bound by the published
+Part-8 architecture, as one atomic two-commit batch: Commit A = the internal
+selected-event authority (server-owned provider observation, canonical matcher
+translation, staged statsapi verification, immutable verified resolution, validated
+sports provenance builder); Commit B = atomic request activation (public intent
+contract, default-off activation gate, gate-1 placement, shared creation gate,
+four-arm candidate classification, cross-path duplicate identity, atomic persistence,
+gate-2 compare-not-replace, refusal matrix, concurrency proofs). Production activation
+is DEFAULT-OFF; neither commit may integrate independently.
+
+## user and system goal
+
+The operator's selected provider event -- the thing they clicked -- and the verified
+gamePk, persisted game identity, model execution identity, reconciliation identity, and
+settlement identity always refer to the same physical game. Client data is intent or
+cross-check input only; no client field authorizes execution.
+
+## 1. commit a -- internal selected-event authority
+
+**Commit A:** dai `9f12d2dce012bc5dc44ffa1c7751372a0e527954`
+"feat(sports): add verified selected event resolution" (5 files, 980/14).
+
+- **Provider observation** (`OddsScheduleClient.ObserveSelectedEventAsync`): namespace
+  and sport key derive from the server-owned CompetitionCatalog registration, never the
+  client; the FULL eastern-day-bracket observation is fetched (no client team filters);
+  the selected id is opaque -- exact ordinal match, never case-folded, blank/oversized
+  rejected, bounded-safe logging; outcomes distinguish event_missing,
+  response_malformed, identity_conflict (integrity-excluded id), and source_failure.
+  The existing normalization pipeline was refactored into one shared typed core
+  (`NormalizeCore`) so the observation seam and the discovery projection consume the
+  SAME identity/integrity rules -- no second copy.
+- **Canonical translation** (`SelectedEventResolutionService.ResolveAsync`): for every
+  describable in-bracket statsapi game, `ProviderEventQualifier` (the one authority)
+  decides unique binding to the selected event; zero binders refuse identity-mismatch
+  (or ambiguity when the event is admissible elsewhere); multiple binders refuse
+  ambiguity. Depends only on the matcher, the binding evidence, and sports-owned typed
+  inputs -- no gate, adapter, filesystem, capture, model, or run dependency (pinned by
+  reflection + namespace tests).
+- **Staged verification**: `MlbStarterClient.FetchVerificationScheduleAsync` (uncached,
+  evidence-grade) + `GameStatusResolver.Resolve` (explicit bracket, exact pk,
+  uniqueness, required status, reschedule context retained). Client GamePk is
+  cross-check only -> `selection_gamepk_conflict` before any run.
+- **`VerifiedSelectedEventResolution`** (immutable): selection namespace (odds_api),
+  observed event facts + observation instant, verified gamePk, operational GameDate,
+  server-canonical competition, the COMPLETE six-field `GameIdentityContext`, matcher
+  policy/schema versions, bracket, verified status, reschedule-context count, frozen
+  timestamp. Selection namespace and identity SourceProvider are asserted distinct.
+- **Provenance builder** (`SelectedEventProvenance.BuildEnvelopeJson`): sports-owned;
+  validates its complete payload (all-or-none identity), emits the generic envelope
+  (domain `sports`, type `selected_event_binding`, schemaVersion `1.0`), and proves it
+  through `DomainExecutionProvenanceEnvelope.TryRead` before returning -- generic code
+  can never author a sports payload (no such API exists).
+- **Gate-2 seam** (`VerifyForExecutionAsync`): independent staged re-resolution, fresh
+  six-field bundle COMPARED to the frozen bundle memberwise -- compare, never replace.
+
+## 2. commit b -- atomic contract activation and enforcement
+
+**Commit B:** dai `b4734aa10cd631bcf905c678fcb5028c09f1d654`
+"feat(agent-runs): enforce verified selected event creation" (15 files, 1543/100).
+
+- **Request contract**: nullable null-suppressed `CompetitionMatchupInput.SelectedEvent`
+  (`SelectedEventIntent { providerEventId, startUtc }`, both nullable strings so a
+  partial/blank/malformed member is precisely detectable -- never a silently accepted
+  default instant). Absent or json-null block -> unchanged legacy path; present block
+  validates strictly (canonical explicit-utc instant forms) -> 400
+  `selection_intent_malformed`; malformed intent NEVER falls through to legacy. Legacy
+  serialization byte-identical (pinned by exact-string test); historical InputJson
+  deserializes with null.
+- **Default-off activation** (`SelectedEventActivation*`): typed options
+  (`Enabled=false` shipped in configuration with blank identity/path), pure evidence
+  evaluator requiring a current external deployment-evidence record -- deployment
+  identity match, observation + expiry instants, configuration and process citations,
+  and TEN individually-required topology assertions (single run-creating process, one
+  worker, no web garden, no overlapping recycle, no revision overlap, no mixed pool,
+  no second manual process, no alternate run creator, old-process-stopped-first,
+  migration present). Anything missing/false/expired/mismatched keeps activation off.
+  Application code claims nothing about topology; the evidence is operator-supplied
+  (see [[selected-event-activation-evidence-v1]]). An inactive gate refuses
+  `selection_identity_not_active` BEFORE any provider or database work.
+- **Gate-1 placement**: intent validation -> activation -> full resolution +
+  provenance assembly complete BEFORE the creation gate; no run exists yet.
+- **Shared creation gate**: `DuplicateRunGuard.GateFor(tenantKey, canonicalCompetition)`
+  -- one process-local namespace for legacy AND selected paths, keyed by
+  server-authenticated tenant + server-canonical competition (CompetitionCatalog code);
+  no client team/date/eventId/start/gamePk in the key. Held only across candidate read
+  -> classification -> duplicate verdict -> run construction -> atomic insert ->
+  SaveChanges; no network under the gate; explicitly documented process-local-only.
+- **Eligibility + four-arm classification**: excluded and failed rows are nonblocking
+  by status doctrine BEFORE provenance inspection; every remaining potentially blocking
+  candidate is classified by the sports-owned
+  `SelectedEventProvenance.ClassifyCandidate`: (a) database NULL -> legacy fallback
+  (the ONLY legacy route); (b) recognized exact-ordinal sports/selected_event_binding,
+  known schemaVersion, complete bundle -> typed selected candidate; (c) recognized but
+  invalid -> 409 `duplicate_candidate_identity_invalid` (internal details
+  incomplete_identity_bundle / malformed_provenance_envelope /
+  unknown_provenance_schema_version); (d) EVERY other non-null value (empty,
+  whitespace, json null, empty object, malformed, missing metadata, extra members,
+  wrong-case, foreign domain/type) -> 409 with internal detail
+  `unrecognized_provenance_document`, never legacy. An active malformed candidate is
+  never skipped; the refusal mutates nothing, creates no run/provenance, and returns
+  only the tenant-safe existing AgentRunId.
+- **Cross-path duplicate identity** (`DuplicateRunIdentity`): known-gamePk equality
+  first (selected requests use the VERIFIED pk, never the client's); otherwise one
+  canonical unordered team-reference pair, single-sourced through
+  `GameIdentityDerivation.NormalizeTeamRef` and prepared by the caller -- selected
+  candidates read authoritative persisted refs (never selected InputJson teams, never
+  provenance parsed in the guard); legacy candidates convert their persisted request
+  through the same authority. No alias resolution introduced; unknown-pk doubleheader
+  identity fails closed; selection-level idempotency is NOT claimed.
+- **Atomic insert**: one row, one SaveChanges inside the gate: tenant, run id, pending
+  status, correlation, InputJson = original client intent, server-canonical
+  Competition, verified GameDate, the complete six-field identity bundle (all or
+  nothing), the authoritative gamePk in ExternalGameId, and
+  `AssignDomainExecutionProvenance` exactly once (envelope + payload pre-validated).
+  No model call can begin before this save succeeds. Legacy creation unchanged except
+  the shared gate.
+- **Gate-2 + execution split**: after persistence, before any model work, the frozen
+  resolution re-verifies; any refusal leaves the run + input + provenance + frozen
+  bundle untouched, sets truthful failed status with the typed reason on ErrorMessage,
+  makes no model call, creates no outcome, cannot settle, and permits a later NEW
+  resubmission. `ApplyGameIdentity` is split: legacy runs keep retrieve-time capture;
+  selected runs NEVER overwrite creation-time identity -- a disagreeing statsapi
+  execution identity fails the run truthfully. Model-capable execution for a selected
+  run exists ONLY through the internal `IVerifiedSelectedExecution` seam carrying the
+  frozen authority; the ordinary `IAgentRunService.ExecuteAsync` throws on a selected
+  request, so direct service callers cannot bypass gate 1/2.
+
+## 3. refusal matrix (pinned)
+
+- 400 `selection_intent_malformed` (partial/blank/malformed/oversized block; no
+  resolution call, no row);
+- 422 `selection_identity_not_active` (before provider/database work);
+- 422 gate-1 refusals: `selection_event_not_in_schedule`,
+  `selection_provider_identity_conflict`, `selection_provider_source_failure`,
+  `selection_start_mismatch`, `selection_identity_mismatch`,
+  `selection_ambiguous_candidates`, `selection_gamepk_conflict`,
+  `selection_game_status_refused` (staged reason carried),
+  `selection_verification_source_failure`, `selection_competition_unsupported`,
+  `selection_provenance_invalid` -- typed response + correlation-linked logs, no run,
+  no provenance, no durable refusal ledger, no model;
+- 409 duplicate-run refusal (existing shape) and 409
+  `duplicate_candidate_identity_invalid` (four-arm integrity);
+- 422 post-create gate-2 refusals (`selection_execution_identity_mismatch`,
+  `selection_execution_verification_failed`): run + frozen evidence persist, failed
+  status + typed reason, no model, no settlement.
+
+## 4. test evidence (all offline; visible counts)
+
+- Phase A RED: compile-absence of the authority captured; GREEN
+  `SelectedEventResolutionTests` 27/27 (opaque/ordinal id, blank/oversized, absent
+  event, conflicting records, transport/malformed source, stale start, doubleheader
+  separation, no-bind, ambiguity, gamePk agree/conflict, staged refusals incl. missing
+  status + malformed container, unsupported competition, gate-2 exact/drift/refusal,
+  envelope build/refuse/round-trip, namespace separation, purity). Focused + adjacent
+  480/480 (provider-event, market-join, odds schedule, starters, retriever,
+  market-contrast).
+- Phase B RED: guard signature migration compile break captured; GREEN new suites:
+  `SelectedEventActivationTests` (default-off, per-assertion requirement matrix,
+  expiry, revision mismatch, malformed), `SelectedCandidateClassificationTests` (all
+  four arms incl. builder/classifier agreement, wrong-case, foreign, unknown schema,
+  structural garbage never legacy), `SelectedEventCreationTests` (atomic bundle +
+  provenance persisted together; gate-2 truthful failure with zero model calls; gate-1
+  refusal no-row; intent matrix never falls to legacy; byte-identical legacy
+  serialization; same-event duplicate; CONCURRENT two-spelling requests -> exactly one
+  run; re-resolved pk = versioned decision, not idempotency; two events -> one pk
+  duplicate; doubleheader two pks -> two runs; selected/legacy races in both orders;
+  legacy known-pk blocks selected; tenant isolation; malformed active candidate refuses
+  both paths and is never skipped; excluded/failed malformed nonblocking; gate releases
+  after every refusal; ordinary-path selected refusal; mismatched-authority refusal).
+- Cumulative: full `dotnet test DevCore.Api.Tests` **1977/1977, 0 skipped**
+  (foundation baseline 1896 + 81 new); full solution build 0 errors; `git diff
+  --check` clean per phase.
+
+## 5. migration, rollback, and deployment
+
+No new migration in b2; the foundation migration
+`20260727133845_AddAgentRunDomainExecutionProvenance` remains REQUIRED and UNAPPLIED to
+every database (deployment separately gated; the activation evidence asserts its
+presence in the target database). Rollback: disable activation (config or evidence
+removal, effective next request); the additive column and any persisted provenance
+retain their bytes. b2 changes no legacy accepted input, response shape, duplicate
+behavior for known-identity classes, execution behavior, model path, settlement path,
+or frontend behavior.
+
+## 6. platform/domain boundary
+
+The guard consumes sports-PREPARED typed identity and never parses provenance or
+InputJson; classification and provenance authoring are sports-owned
+(`SelectedEventProvenance`); the platform transports the opaque envelope and enforces
+storage/cardinality/single-assignment only; the matcher dependency bound note holds
+(the authority depends on matcher + evidence + strict validator only -- pinned).
+
+## 7. current limitations and explicitly unauthorized behavior
+
+- Production activation remains DISABLED everywhere; no evidence record exists.
+- Process-local gate only; scale-out blocked
+  (MULTI_INSTANCE_SELECTED_EVENT_ATOMICITY_REQUIRED_BEFORE_SCALE_OUT).
+- Atomic-insert failure atomicity is enforced by construction (single SaveChanges; all
+  members set before Add) and pinned observationally; it is not fault-injected under
+  the in-memory provider (documented limitation for the reviewer).
+- Frontend propagation (2-iii-c) and 2-ii-c are unauthorized; the frontend cannot yet
+  send SelectedEvent.
+- Staged verification supports baseball (statsapi) competitions only; others refuse
+  `selection_competition_unsupported`.
+- Pre-create refusals are response + observability only
+  (DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_DEFERRED).
+
+## 8. semantic dispositions
+
+- **selected event intent** / **verified selected-event resolution** /
+  **activation deployment evidence** / **validated writer**: RETAINED WI-local
+  (implementation vocabulary; the operator-owned glossary already carries "domain
+  execution provenance", which these implement; promotion deferred to WI-0037
+  completion's mandatory glossary disposition pass).
+- SELECTED_RUN_PROVENANCE_VALIDATED_WRITER_CONTRACT_V1: FULFILLED by
+  `SelectedEventProvenance.BuildEnvelopeJson` + the pre-assignment validation path
+  (its six RED contracts pinned across builder/classifier/endpoint tests).
+
+## safety / non-actions
+
+No push; no integration; no migration applied; no live Odds API, StatsAPI, model,
+paid, capture, reconciliation, or settlement call (fake transports only); no database
+beyond in-memory test stores; no dependency change; no frontend change; production
+activation off; preserved WI-0035 worktree, ops branch, architecture branch, and
+foundation branches untouched.
+
+## review findings and dispositions
+
+`dai-code-reviewer` over Commit A, Commit B, and the combined delta: zero blocking
+findings. Notes recorded: (1) the atomicity fault-injection limitation above; (2) the
+guard's legacy normalization migrated from its private normalizer to the single
+canonical `NormalizeTeamRef` authority -- equivalence for the screened-workflow name
+classes is pinned by the adapted guard suite and the full regression run.
+
+## next step
+
+Exactly one: operator issues the independent review-and-integrate-on-PASS
+authorization for the b2 batch (attack Commit A, Commit B, and the combined activation
+path; integrate and push only on a clean PASS; production activation stays disabled;
+2-iii-c and 2-ii-c stay unauthorized).
+
+## related
+
+- [[WI-0037-game-state-correctness-v1]] -- governing work item.
+- [[wi-0037-slice-2-iii-architecture-review-2026-07-26-v1]] -- the published
+  architecture (parts 1-8) this batch implements.
+- [[wi-0037-slice-2-iii-foundation-implementation-2026-07-27-v1]] -- the integrated
+  foundation this builds on.
+- [[selected-event-activation-evidence-v1]] -- the operator activation runbook.

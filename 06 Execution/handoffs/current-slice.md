@@ -19150,3 +19150,70 @@ WriteTo semantics empirically tested; emitter diff-scan zero.
 **State:** Both mains pushed main-only after verification; branches local;
 migration unapplied; no runtime activation.
 **Next:** Operator: authorize the 2-iii-b2 implementation batch separately.
+
+---
+
+## WI-0037 Slice 2-iii-b2 -- Verified Selected-Event Backend Activation IMPLEMENTED LOCAL, Independent Review Required
+
+**Date:** 2026-07-27 **Governing WI:** WI-0037 (`02 Platform/system-development/work-items/WI-0037-game-state-correctness-v1.md`) **Branches:** dai `wi/0037-selected-event-backend-activation` (1311137 -> 9f12d2d -> b4734aa), vault `wi/0037-selected-event-backend-activation-records` (21f532d -> this commit)
+
+One continuous authorized batch, two source commits forming one atomic b2
+publication unit, nothing pushed, production activation DEFAULT-OFF. Commit A
+9f12d2dce012bc5dc44ffa1c7751372a0e527954 ("feat(sports): add verified selected
+event resolution"): server-owned full-bracket provider observation
+(catalog-derived namespace, opaque ordinal id, typed
+missing/malformed/conflict/transport outcomes, one shared normalization core),
+canonical ProviderEventQualifier translation, staged GameStatusResolver
+verification, immutable VerifiedSelectedEventResolution with the complete
+six-field identity bundle, sports-owned validated provenance builder (every
+document proven through DomainExecutionProvenanceEnvelope.TryRead; validated
+writer contract fulfilled), gate-2 compare-not-replace seam. RED =
+compile-absence captured; 27/27 focused + 480/480 adjacent. Commit B
+b4734aa10cd631bcf905c678fcb5028c09f1d654 ("feat(agent-runs): enforce verified
+selected event creation"): SelectedEventIntent on CompetitionMatchupInput
+(null-suppressed; legacy byte-identical pinned; malformed never falls to
+legacy; 400 selection_intent_malformed), typed default-off activation gate
+(external deployment evidence, ten individually required topology assertions;
+runbook = 06 Execution/patterns/selected-event-activation-evidence-v1.md; 422
+selection_identity_not_active before any provider/database work), gate-1 fully
+before the shared process-local tenant+competition creation gate, four-arm
+candidate classification at creation (NULL sole legacy route; active malformed
+never skipped; 409 duplicate_candidate_identity_invalid, no mutation),
+cross-path duplicate identity (verified-pk-first; NormalizeTeamRef
+single-sourced canonical pair; selected candidates read authoritative persisted
+refs; guard parses nothing), atomic insert (six fields + gamePk + provenance in
+one SaveChanges under the gate; Assign exactly once), gate-2 before any model
+call with truthful failed runs (frozen evidence untouched; zero model calls
+proven by spy), ApplyGameIdentity split (selected never overwritten),
+IVerifiedSelectedExecution seam (ordinary path throws on selected requests).
+Suites: full .NET 1977/1977 0 skipped (baseline 1896 + 81 new incl. the
+mandatory concurrency matrix: concurrent two-spelling -> exactly one run;
+re-resolved pk = versioned decision; two events one pk = duplicate;
+doubleheader two pks = two runs; selected/legacy races both orders; tenant
+isolation; gate releases after every refusal); solution build 0 errors; no
+frontend/migration/dependency change; migration 20260727133845 remains
+UNAPPLIED. Review: zero blocking; notes = atomicity fault-injection limitation
+(enforced by construction, pinned observationally) + guard normalization
+migrated to the canonical authority. Docs: b2 implementation report + activation
+evidence runbook created, WI b2 state bound; ledger record
+2026-07-27-wi-0037-slice-2-iii-b2-backend-activation.md executing -> outcome
+linked at close. NOT reviewed, NOT integrated, NOT pushed; A+B integrate only
+together. Residuals: propagation OPEN/blocking (2-iii-c remains); scale-out
+blocking; decision ledger deferred. dai main untouched at 1311137; vault main
+untouched at 21f532d; ops at 21f532d; wi/0035 hash 86aa8b74 intact.
+
+### Slice Synopsis
+
+**Change:** The complete fail-closed selected-event backend exists local --
+verified resolution authority (9f12d2d) plus atomic default-off contract
+activation with the shared gate, four-arm classification, atomic
+identity+provenance insert, and gate-2 (b4734aa).
+**Reason:** Slice 2-iii-b2 of the published architecture: bind the operator's
+selected event to one verified game identity end to end, without activation.
+**Proof:** RED-first both phases; full .NET 1977/1977; build clean; concurrency
+matrix green; migration unapplied; activation off; zero blocking review
+findings.
+**State:** Local branches only (dai two commits ahead of 1311137; vault records
+branch on 21f532d); nothing integrated or pushed.
+**Next:** Operator: authorize the independent review-and-integrate-on-PASS of
+the b2 batch.
