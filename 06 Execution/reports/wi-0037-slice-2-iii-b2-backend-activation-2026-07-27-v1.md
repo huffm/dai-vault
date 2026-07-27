@@ -322,12 +322,52 @@ configuration; the migration remains unapplied; no frontend/dependency change; t
 accepted review dispositions (PROVIDER_NAMESPACE_DURABLE, CLIENT_DATE_CROSSCHECK_ONLY)
 were not reopened.
 
+## f-b2-7 provider-scoped candidate identity -- 2026-07-27
+
+A staff review of the correction batch found F-B2-7 (Medium): the f-b2-1 candidate
+query widened on `ExternalGameId` ALONE although the governing game and settlement
+identity is the pair `(SourceProvider, ExternalGameId)`, and the widening key fell
+back to the CLIENT-supplied legacy GamePk. Impact demonstrated RED-first: an active
+same-tenant row for another competition/provider with a colliding numeric external id
+was pulled into the candidate set, falsely blocked valid creation, and disclosed its
+AgentRunId; a legacy client GamePk could deliberately steer the widening. Corrected by
+dai `b6aae1c84726995f19751d7b888e5b446bb49ea0` ("fix(agent-runs): scope duplicate
+candidates by provider identity"):
+
+- normal candidate scope = authenticated tenant + operational date
+  (selectedResolution.GameDate when available) + server-canonical competition,
+  compared in memory;
+- widening exists ONLY for a selected request after gate 1 and its key is the EXACT
+  verified pair (SourceProvider AND ExternalGameId) in both the database predicate and
+  the in-memory competition-filter bypass;
+- a client-supplied legacy GamePk never widens discovery (legacy scope unchanged; no
+  new legacy authority);
+- classification, complete row/provenance agreement, agreed-identity consumption,
+  status doctrine, doubleheader behavior, tenant isolation, and every completed b2
+  behavior preserved (pinned).
+
+Honest discoverability boundary (supersedes the earlier "cannot hide" wording in the
+f-b2-1 entry above): a candidate is found through normal tenant/competition/date
+scope, or -- for selected requests -- through the exact verified provider-identity
+pair. A row whose normal-scope fields AND provider-identity pair have all been
+corrupted is not discoverable here; the atomic selected insert prevents that state
+during normal creation, and historical/manual data repair is outside this slice.
+
+RED: three genuine failures pre-fix (cross-provider collision blocked+disclosed;
+same-date cross-competition collision blocked; client-GamePk widening disclosed an
+unrelated row); GREEN: those plus exact-pair discovery of a contradictory selected
+row (still 409 row/provenance disagreement), same-pair other-tenant isolation, and
+pair-matched excluded/failed nonblocking pins. Suites: full .NET **2017/2017, 0
+skipped** (2011 + 6); solution build 0 errors; scan proves no client-GamePk query
+widening remains. "provider-scoped candidate identity" is RETAINED WI-local pending
+the WI-completion glossary pass.
+
 ## next step
 
-Exactly one: operator issues the delta re-review authorization over
-`b4734aa..0b523a5` (which must also re-run the complete end-to-end authority chain
-from `1311137..0b523a5`) and integrates on PASS; production activation stays disabled;
-2-iii-c and 2-ii-c stay unauthorized.
+Exactly one: operator issues the final independent b2 re-review over the complete
+package `1311137..b6aae1c` (delta emphasis on the exact provider-identity widening
+pair, no client-controlled widening, and every prior correction) and integrates on
+PASS; production activation stays disabled; 2-iii-c and 2-ii-c stay unauthorized.
 
 ## related
 

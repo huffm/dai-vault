@@ -427,7 +427,37 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (2-iii-b2 CORRECTED LOCAL 2026-07-27; delta re-review required; activation DEFAULT-OFF; 2-iii-c and 2-ii-c NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (2-iii-b2 CORRECTED LOCAL incl. F-B2-7 2026-07-27; final re-review required; activation DEFAULT-OFF; 2-iii-c and 2-ii-c NOT authorized)
+
+> F-B2-7 correction state (2026-07-27, superseding "corrections applied;
+> delta re-review required" for the candidate-scope rule only): staff review
+> found F-B2-7 Medium -- the f-b2-1 candidate-query widening keyed on
+> ExternalGameId ALONE (although the governing game/settlement identity is
+> the pair (SourceProvider, ExternalGameId)) and fell back to the CLIENT
+> legacy GamePk, so a same-tenant row from another competition/provider with
+> a colliding numeric id could be pulled in, falsely block creation, and
+> disclose its AgentRunId, and a client value could steer the widening.
+> CORRECTED by dai `b6aae1c84726995f19751d7b888e5b446bb49ea0`
+> ("fix(agent-runs): scope duplicate candidates by provider identity"):
+> widening exists ONLY for a selected request after gate 1 and its key is
+> the EXACT verified (SourceProvider, ExternalGameId) pair in both the
+> query predicate and the competition-filter bypass; a client legacy GamePk
+> never widens discovery (legacy scope and policy unchanged); the selected
+> path uses selectedResolution.GameDate/.Competition as the authoritative
+> values; every completed b2 behavior preserved and pinned. Honest
+> discoverability boundary bound: normal tenant/competition/date scope OR
+> the exact verified pair -- a row corrupted in BOTH is not discoverable
+> here (atomic insert prevents that state in normal creation;
+> historical/manual repair out of scope). RED-first: three genuine
+> failures pre-fix (cross-provider and cross-competition numeric collisions
+> blocked/disclosed; client-GamePk widening). Suites: full .NET
+> **2017/2017, 0 skipped** (2011 + 6); build clean; activation disabled;
+> migration unapplied. NOT re-reviewed, NOT integrated, NOT pushed; the
+> five-commit package 1311137..b6aae1c is ONE atomic integration unit.
+> Evidence: [[wi-0037-slice-2-iii-b2-backend-activation-2026-07-27-v1]]
+> (f-b2-7 section). Residuals unchanged. Next: final independent b2
+> re-review over 1311137..b6aae1c, integrate-on-PASS; WI-0037 stays
+> `in-progress`.
 
 > 2-iii-b2 correction state (2026-07-27, superseding "implemented local;
 > independent review required"): the final independent review returned

@@ -19287,3 +19287,61 @@ full .NET 2011/2011; build clean; activation off; migration unapplied.
 integrated or pushed.
 **Next:** Operator: authorize the delta re-review of b4734aa..0b523a5 (with
 the full-chain re-run) and integrate on PASS.
+
+---
+
+## WI-0037 Slice 2-iii-b2 -- Provider-Scoped Candidate Identity (F-B2-7) CORRECTED LOCAL, Final Re-Review Required
+
+**Date:** 2026-07-27 **Governing WI:** WI-0037 (`02 Platform/system-development/work-items/WI-0037-game-state-correctness-v1.md`) **Branches:** dai `wi/0037-selected-event-backend-activation` (0b523a5 -> b6aae1c), vault `wi/0037-selected-event-backend-activation-records` (a9c700f -> this commit)
+
+Staff finding F-B2-7 (Medium): the f-b2-1 candidate-query widening keyed on
+ExternalGameId alone -- not the governing (SourceProvider, ExternalGameId)
+pair -- and fell back to the CLIENT legacy GamePk, so a same-tenant row from
+another competition/provider with a colliding numeric external id could be
+pulled into the candidate set, falsely block a valid creation, disclose its
+AgentRunId, and a client value could deliberately steer the widening.
+CORRECTED with one narrow commit dai b6aae1c84726995f19751d7b888e5b446bb49ea0
+("fix(agent-runs): scope duplicate candidates by provider identity"): normal
+scope = tenant + operational date (selectedResolution.GameDate) +
+server-canonical competition; widening exists ONLY for a selected request
+after gate 1, keyed by the EXACT verified (SourceProvider, ExternalGameId)
+pair in BOTH the database predicate and the in-memory competition-filter
+bypass; a client legacy GamePk never widens discovery (legacy scope and
+duplicate policy unchanged, no new legacy authority); classification, full
+row/provenance agreement, agreed-identity duplicate path, status doctrine,
+doubleheader separation, tenant isolation, and every completed b2 behavior
+preserved and pinned. Honest discoverability boundary recorded: normal scope
+OR the exact verified pair; a row corrupted in both is not discoverable here
+(atomic insert prevents that state during normal creation; historical/manual
+repair out of scope). RED-first: three genuine failures pre-fix
+(cross-provider collision blocked + disclosed; same-date cross-competition
+collision blocked; client-GamePk widening disclosed an unrelated row); GREEN
+plus preservation pins (exact-pair discovery of a contradictory selected row
+still refuses 409 row_provenance_identity_disagreement; other-tenant same
+pair never blocks or leaks; pair-matched excluded/failed rows nonblocking).
+Suites: full .NET 2017/2017 0 skipped (2011 + 6); solution build 0 errors;
+scan proves no client-GamePk query widening remains; activation disabled;
+migration 20260727133845 UNAPPLIED. Semantic disposition:
+"provider-scoped candidate identity" RETAINED WI-local pending the
+WI-completion glossary pass. NOT re-reviewed, NOT integrated, NOT pushed;
+the five-commit package 1311137..b6aae1c (9f12d2d, b4734aa, 8d2d064,
+0b523a5, b6aae1c) is ONE atomic integration unit. Ledger record
+2026-07-27-wi-0037-slice-2-iii-b2-provider-scope-correction.md executing ->
+outcome linked at close. Residuals unchanged (propagation OPEN/blocking;
+scale-out blocking; ledger deferred). dai main untouched at 1311137; vault
+main at 21f532d; ops at 21f532d; wi/0035 hash 86aa8b74 intact.
+
+### Slice Synopsis
+
+**Change:** Duplicate-candidate discovery is now provider-scoped -- widening
+only for verified selected requests, keyed by the exact
+(SourceProvider, ExternalGameId) pair; client GamePk can no longer widen the
+query (commit b6aae1c).
+**Reason:** Staff finding F-B2-7 (Medium): ExternalGameId-only widening
+admitted cross-provider/competition numeric collisions and client steering.
+**Proof:** Three genuine RED failures pre-fix; full .NET 2017/2017; build
+clean; no-client-widening scan; preservation pins green.
+**State:** Local branches only; 1311137..b6aae1c one atomic unit; nothing
+integrated or pushed; activation off; migration unapplied.
+**Next:** Operator: authorize the final independent b2 re-review and
+integrate-on-PASS over the complete package.
