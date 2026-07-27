@@ -346,3 +346,62 @@ remains deliberately OUT of scope (recorded hardening appetite, 2-iii-adjacent).
 af59853` (local only). Slice 2-ii-b: DR-2 corrected locally; INDEPENDENT DR-2
 DELTA REVIEW REQUIRED before any integration claim. 2-ii-c unauthorized; 2-iii
 defined/unauthorized; WI-0037 in-progress.
+
+## part 5 -- closeout (integrated, published, post-publication verified, 2026-07-26)
+
+The independent DR-2 delta review returned
+**WI0037_SLICE2IIB_DR2_DELTA_REVIEW_PASSED_INTEGRATION_READY** with zero
+findings, completing the review chain: initial adversarial review (F-A..F-G,
+CORRECTIONS_REQUIRED) -> correction pass -> correction delta review (DR-1) ->
+DR-1 correction -> DR-1 delta review (DR-2) -> DR-2 correction -> DR-2 delta
+review (PASSED).
+
+**Reviewed chains and publication.** Source: `841ae26 -> 5a11a2c -> c5ab834 ->
+c545117 -> b8d0c0b -> af59853` (five commits, linear, no merges), fast-forwarded
+into dai main and published by plain non-force push of refs/heads/main only:
+published dai main = **`af598530217bf2558a7323fc301b20237eb62cee`**, verified on
+origin AND the direct remote; implementation branch never pushed (zero remote
+0037 refs). Vault: `664cd4a -> fd2d20b -> 3f31c84 -> a727c63 -> dad6095` (four
+commits, linear), fast-forwarded into vault main (ref-only local update; the
+preserved wi/0035 checkout untouched) and published the same way: vault main =
+**`dad6095a95eee3305797ecba2e1c6214d89ea98e`**, origin + direct remote verified.
+
+**Post-publication verification (run FROM published dai main).** Full .NET
+**1853 passed / 0 failed / 0 skipped**; operator harness **187/187** (corpus
+validation confirms contract game-status-resolution/1.1, 25 fixtures, six-reason
+vocabulary); finals guard **40/40**; frontend **157 passed (17 files)** after a
+lockfile-only install, production build SUCCESS; git diff --check clean; tree
+clean; dependency and lockfile diffs empty.
+
+**Slice 2-ii-b final guarantees (published).** Provider event id is preserved as
+the authoritative odds-surface discovery identity; legitimate same-day games
+remain distinct end to end through discovery, the dto, and frontend selection;
+same-id provider conflicts exclude the whole id fail-closed on BOTH discovery
+paths (integrity decided before any business filtering); malformed-commence
+groups fail closed (a valid member of a malformed same-id group never survives;
+the year-one sentinel is unreachable); StartUtc is fixed-width utc at .net tick
+precision (STARTUTC_FIXED_WIDTH_UTC_100NS) with typed-instant ordering and
+excess-precision/offset-less fail-closed parsing; frontend selection identity is
+providerEventId everywhere (analyzer and dev-artifact-review); one selected
+provider event equals exactly one frontend execution entry (cap and count
+parity); duplicate gamePk batch input is rejected atomically
+(duplicate_gamepk_batch_input, zero requests, zero ledger) before any work;
+presentation grouping uses the unambiguous ordered-string-tuple JSON encoding
+(injectivity probe-verified across 676 deterministic tuples); analysis-request
+identity continuity is NOT yet complete.
+
+**Mandatory residual (unresolved, carried forward).**
+SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE -- provider
+identity is preserved through discovery and frontend selection but terminates
+before analysis-request serialization (payload = date + teams); distinct
+selected provider events may still serialize into equivalent analysis requests;
+count parity is not semantic execution identity; Slice 2-iii must resolve the
+contract and provenance boundary before WI-0037 closes.
+
+**Final state.** Slice 2-ii-b: implemented, adversarially reviewed, corrected
+(F-A..F-G, DR-1, DR-2), delta-reviewed to PASS, integrated, published,
+post-publication verified, **CLOSED**. Slice 2-ii-c: unauthorized; obligations
+unchanged (F3, F4, requireStatus guarantee hardening, normalization
+consolidation, cross-runtime parity). Slice 2-iii: defined, unauthorized,
+REQUIRED before WI-0037 closure. WI-0037: in-progress. Zero live/paid/model/db/
+capture/reconciliation/settlement activity across the entire slice.

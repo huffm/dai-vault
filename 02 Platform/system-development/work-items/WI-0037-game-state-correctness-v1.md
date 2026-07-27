@@ -160,7 +160,32 @@ future question but must not alter behavior); date-bucket resolver work (Slice 2
 schedule-adapter automation; operating-skill integration; provider-binding changes;
 planner schema changes; paid validation calls.
 
-### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a CLOSED; 2-ii-b DR-2 CORRECTED LOCAL 2026-07-26, DR-2 delta review required; 2-ii-c NOT authorized)
+### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a CLOSED; 2-ii-b CLOSED 2026-07-26: INTEGRATED + PUBLISHED + VERIFIED; 2-ii-c NOT authorized)
+
+> Slice 2-ii-b closeout (2026-07-26, superseding "DR-2 corrected, delta review
+> required"): the DR-2 delta review returned
+> **WI0037_SLICE2IIB_DR2_DELTA_REVIEW_PASSED_INTEGRATION_READY** (zero findings),
+> and the complete reviewed chains were INTEGRATED by coordinated fast-forward
+> and PUBLISHED: dai main `841ae26` -> **`af598530217bf2558a7323fc301b20237eb62cee`**
+> (five commits: 5a11a2c implementation, c5ab834 + c545117 F-A..F-G corrections,
+> b8d0c0b DR-1, af59853 DR-2; remote verified, main-only push); vault main
+> `664cd4a` -> **`dad6095a95eee3305797ecba2e1c6214d89ea98e`** (four docs commits;
+> remote verified) plus this closeout commit on top. Post-publication on
+> published dai main: .NET **1853/1853, 0 skipped**; operator **187/187**
+> (contract 1.1, 25 fixtures, six-reason vocabulary); guard **40/40**; frontend
+> **157/157 (17 files)** + build. Published guarantees: provider-id-authoritative
+> doubleheader-safe discovery with whole-id fail-closed integrity before any
+> filtering; STARTUTC_FIXED_WIDTH_UTC_100NS; providerEventId selection identity
+> with one-selected-event = one-execution-entry parity; atomic
+> duplicate_gamepk_batch_input rejection; collision-safe JSON-tuple label
+> grouping. Mandatory unresolved residual:
+> SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE (see Slice
+> 2-iii). Slice 2-ii-b is CLOSED. Evidence:
+> [[wi-0037-slice-2-ii-b-adversarial-review-and-corrections-2026-07-26-v1]]
+> part 5 and [[wi-0037-slice-2-ii-b-discovery-identity-2026-07-26-v1]]. 2-ii-c
+> remains unauthorized (F3, F4, requireStatus hardening, normalization
+> consolidation, cross-runtime parity); 2-iii remains defined/unauthorized and
+> REQUIRED before WI-0037 closure; WI-0037 stays `in-progress`.
 
 > Slice 2-ii-b DR-2 state (2026-07-26, superseding "DR-1 corrected, DR-1 delta
 > review required"): the independent DR-1 delta review CLOSED DR-1 (blob purity,

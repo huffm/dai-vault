@@ -18591,3 +18591,42 @@ DR-2, reachable NUL-boundary aliasing + overstated claim).
 DR-2 delta review required; 2-ii-c and 2-iii unauthorized.
 **Next:** Operator: authorize the DR-2 delta review of b8d0c0b..af59853
 + a727c63..vault-tip.
+
+---
+
+## WI-0037 Slice 2-ii-b -- CLOSED: Integrated, Published, Post-Publication Verified
+
+**Date:** 2026-07-26 **Published:** dai main `af59853` (841ae26 + five reviewed commits), vault main `dad6095` (+ this closeout)
+
+DR-2 delta review PASSED with zero findings, closing the full review chain
+(initial review CORRECTIONS_REQUIRED F-A..F-G -> corrections c5ab834+c545117 ->
+delta review -> DR-1 b8d0c0b -> DR-1 review -> DR-2 af59853 -> DR-2 review
+PASS). Coordinated ff-only integration and main-only plain publication, both
+remotes directly verified; implementation branches never pushed. Post-
+publication on published dai main: .NET 1853/1853, operator 187/187 (contract
+1.1, 25 fixtures, six reasons), guard 40/40, frontend 157/157 (17 files) +
+build. Published guarantees: provider-event-id authoritative discovery
+(doubleheaders survive end to end through selection), whole-id fail-closed
+provider integrity BEFORE filtering, group-level malformed-commence exclusion,
+STARTUTC_FIXED_WIDTH_UTC_100NS with typed ordering, providerEventId selection
+identity + one-selected = one-execution-entry parity, atomic
+duplicate_gamepk_batch_input rejection, collision-safe JSON-tuple label
+grouping. Residual carried: SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE
+(Slice 2-iii, defined/unauthorized/required). 2-ii-c unauthorized (F3, F4,
+requireStatus hardening, normalization consolidation, parity). WI-0037
+in-progress. Zero live/paid/db/model calls all slice; wi/0035 preserved
+worktree byte-identical throughout.
+
+### Slice Synopsis
+
+**Change:** Slice 2-ii-b is closed -- provider game identity is now published
+platform behavior: doubleheader-safe discovery, fail-closed provider integrity,
+tick-precision StartUtc, id-keyed selection with paid-run cardinality parity,
+and atomic batch validation are live on both mains.
+**Reason:** DR-2 delta review PASSED (zero findings) authorized integration.
+**Proof:** Post-publication on published main: 1853/1853, 187/187, 40/40,
+157/157 + build; both remotes verified at af59853/dad6095.
+**State:** dai main af59853; vault main = this closeout tip; 2-ii-c and 2-iii
+unauthorized; WI-0037 in-progress.
+**Next:** Operator: authorize the Slice 2-iii architecture-and-contract-binding
+review (selected-event identity continuity).
