@@ -1,13 +1,13 @@
 ---
 title: "WI-0037 Slice 2-iii Architecture Review: Selected-Event Identity Continuity 2026-07-26 v1"
-type: "architecture-review"
+type: "evidence-report"
 date: "2026-07-26"
-status: "architecture review complete LOCAL -- independent architecture review required; implementation NOT authorized"
+status: "in-progress"
 project: "DAI"
 slice: "WI-0037 Slice 2-iii: selected-event identity continuity"
 repos:
   dai: "read-only inspection of published main af59853; ZERO source changes"
-  dai-vault: "this record on local branch wi/0037-selected-event-identity-continuity-architecture (base 234d3f0); NOT pushed"
+  dai-vault: "docs-only"
 tags:
   - system-development
   - sports-v1
@@ -1345,3 +1345,137 @@ valid identities the same game) vs PRE-CREATE REFUSAL OBSERVABILITY
 Slice 2-iii: ADR part 7 bound locally; closing delta review of 41da4d7..tip
 required; publication and implementation unauthorized; 2-ii-c unauthorized;
 WI-0037 in-progress.
+
+# part 8 -- total provenance classification closure (cr-1), 2026-07-27
+
+The closing review of part 7 found CR-1 (Medium): section 7.1's third arm
+("legacy/historical row without selected-event provenance -> existing
+fallback") did not unambiguously distinguish a database NULL provenance field
+from a non-null document that cannot be recognized as the authorized sports
+selected-event document -- a non-null foreign or unrecognized envelope could
+be read as "without selected provenance" and silently reach the legacy
+fallback. Parts 1-7 remain historical and readable; PART 8 IS CURRENT
+AUTHORITY only for part 7 section 7.1's candidate-provenance classification
+arms and the corresponding RED-scenario set. Explicitly preserved unchanged:
+the part-7 eligibility-before-classification rule (excluded and failed
+candidates nonblocking before provenance is inspected); the part-7 refusal
+surface, durability, disclosure, no-mutation, no-external-work, and
+gate-release rules; and all part-6 identity, gate-2, provenance, deployment,
+lifecycle, and residual decisions.
+
+## 8.1 total classification contract (four arms, exhaustive)
+
+For every POTENTIALLY BLOCKING candidate, after eligibility is decided:
+
+**arm a -- database null only.** DomainExecutionProvenanceJson is database
+NULL -> legacy/historical classification, existing request-gamePk/InputJson
+fallback. This is the ONLY route into legacy classification. Non-null values
+that MUST NOT be treated as legacy: empty string; whitespace; the serialized
+json literal null; empty json object; malformed json; missing
+domain/type/schema metadata. Legacy is never defined with
+IsNullOrWhiteSpace-equivalent semantics.
+
+**arm b -- recognized authorized selected document.** Non-null; well-formed
+generic envelope; domain exactly equals sports; type exactly equals
+selected_event_binding (canonical exact/ordinal identifier comparison, no
+case folding, no identity-changing normalization); known schemaVersion;
+complete authoritative selected-run identity bundle -> construct the typed
+authoritative selected candidate; never fall back to InputJson descriptors.
+
+**arm c -- recognized selected document with invalid content.** Non-null and
+identifies the selected-event document, but with an incomplete authoritative
+bundle, malformed selected-event payload, unknown schemaVersion, or another
+selected-document integrity failure -> http 409, outward reason
+duplicate_candidate_identity_invalid, internal detail from the bound set
+(incomplete_identity_bundle, malformed_provenance_envelope,
+unknown_provenance_schema_version); never legacy fallback.
+
+**arm d -- every other non-null value.** Unparseable envelope metadata;
+missing required generic metadata; wrong-case or otherwise unrecognized
+domain/type identifiers; well-formed foreign domain; well-formed foreign
+type; any document not safely establishable as the recognized
+sports/selected_event_binding document for this candidate -> http 409,
+outward reason duplicate_candidate_identity_invalid, internal detail
+`unrecognized_provenance_document`; never legacy fallback.
+
+## 8.2 ownership boundary and forward compatibility
+
+Generic platform persistence transports the opaque field and enforces atomic
+storage, association, immutability, and single assignment; the SPORTS-OWNED
+candidate builder performs the classification above; generic code never
+parses providerEventId, gamePk, sports payloads, sports failure reasons, or
+sports binding rules; no sports-specific platform column; no new generic
+discriminator or schema field; CR-1 is NOT solved via an unreviewed RunType
+or query-scope filter; DuplicateRunGuard never parses provenance -- it
+receives sports-prepared typed candidate identity. Forward-compatibility
+consequence (deliberate fail-closed behavior, not a claim that the generic
+field is sports-only): if a future niche or evidence type legitimately shares
+this candidate query scope, its non-null envelope refuses selected-event
+creation until a separately reviewed sports candidate-classification
+extension authorizes how it participates.
+
+## 8.3 eligibility order (complete restatement)
+
+(1) tenant/competition/date candidate scope; (2) status/exclusion
+eligibility; (3) provenance classification only for potentially blocking
+candidates; (4) refuse immediately if any potentially blocking candidate has
+invalid or unrecognized non-null provenance; (5) evaluate duplicate identity
+only after every potentially blocking candidate has been classified safely;
+(6) insert only after the duplicate verdict permits it. A failed or excluded
+row with malformed, foreign, or unrecognized provenance remains nonblocking
+because of status doctrine, not because its provenance is accepted.
+
+## 8.4 mandatory 2-iii-b2 red contracts (future obligations only)
+
+(1) database NULL provenance on an eligible legacy candidate reaches the
+existing legacy fallback; (2) non-null empty string, whitespace, json null,
+empty object, malformed json, or missing generic metadata never reaches
+legacy fallback; (3) recognized selected document with complete identity
+follows authoritative selected-candidate comparison; (4) recognized selected
+document with incomplete identity refuses 409; (5) recognized selected
+document with unknown schemaVersion refuses 409; (6) active potentially
+blocking candidate with a well-formed foreign domain/type envelope refuses
+409 with internal unrecognized_provenance_document; (7) wrong-case or
+otherwise unrecognized domain/type refuses identically; (8) an invalid or
+foreign active candidate followed by a valid nonmatching candidate still
+refuses -- ordering cannot admit insertion; (9) excluded and failed
+candidates with those same documents remain nonblocking because eligibility
+is decided first; (10) every refusal creates no incoming run or provenance,
+performs no candidate mutation, makes no external/provider/statsapi/model/
+paid call, and releases the gate; (11) outward responses never expose
+internal detail reasons, raw provenance, provider payloads, cross-tenant
+identity, or secrets. No test or runtime behavior is claimed to exist today.
+
+## 8.5 documentation, semantic, and dictionary disposition
+
+Database NULL provenance = the sole v1 legacy discriminator.
+unrecognized_provenance_document = a sports-owned internal observability
+detail for a non-null provenance value that cannot participate in the
+authorized selected-event candidate contract; it is not a client correction
+code, not a platform interpretation rule, not a durable refusal ledger, and
+does not make the generic field sports-specific. Conventions carried:
+PascalCase illustrative .NET names; camelCase json; snake_case api/internal
+reason values; WI/ADR/FR/CR labels out of production names; lowercase ascii
+implementation comments limited to authority, invariants, and failure
+behavior. Dictionary loop: the new term and meaning are recorded here now;
+the operator-owned reusable glossary/dictionary disposition remains mandatory
+at WI-0037 completion, where every reusable term from parts 1-8 receives an
+explicit promote / merge / distinguish / deprecate / retain-wi-local choice;
+no dictionary path is invented; model memory is never durable terminology
+authority.
+
+## 8.6 okf alignment
+
+This materially edited report's existing nine-field front matter is aligned
+to the current registry profile: type evidence-report; status in-progress;
+repos.dai unchanged; repos.dai-vault docs-only. Original 2026-07-26 report
+date, filename, title, tags, and related links preserved; no move or rename;
+the WI retains its existing work-item profile; current-slice.md remains an
+un-front-mattered append-only rolling log.
+
+## 8.7 state
+
+Slice 2-iii: ADR part 8 bound locally; total provenance-classification
+matrix and OKF record alignment complete; closing independent delta review
+of 9b7ccdd..tip required; architecture NOT published; implementation NOT
+authorized; 2-ii-c unauthorized; WI-0037 in-progress.

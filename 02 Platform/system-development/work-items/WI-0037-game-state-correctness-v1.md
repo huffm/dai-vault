@@ -427,7 +427,31 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (ADR PART 7 BOUND LOCAL 2026-07-27; closing delta review required; implementation NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (ADR PART 8 BOUND LOCAL 2026-07-27; closing delta review required; implementation NOT authorized)
+
+> Part-8 state (2026-07-27, superseding "part 7 bound"): closing review found
+> CR-1 Med -- part 7 section 7.1's third arm ("without selected-event
+> provenance -> legacy fallback") was ambiguous for non-null envelopes that
+> cannot be recognized as the authorized sports selected-event document. ADR
+> part 8 binds the exhaustive FOUR-ARM total classification: (a) database
+> NULL = the ONLY legacy route (empty/whitespace/json-null/empty-object/
+> malformed/missing-metadata are NOT legacy; no IsNullOrWhiteSpace
+> semantics); (b) recognized authorized selected document (exact/ordinal
+> domain=sports + type=selected_event_binding, known schemaVersion, complete
+> bundle) -> typed authoritative candidate; (c) recognized selected document
+> with invalid content -> 409 duplicate_candidate_identity_invalid (existing
+> internal detail reasons); (d) EVERY other non-null value incl. well-formed
+> foreign domain/type or unrecognized identifiers -> 409 with internal
+> `unrecognized_provenance_document`, never legacy. Eligibility-before-
+> classification, part-7 refusal/durability/disclosure rules, and all part-6
+> identity/deployment/lifecycle/residual decisions preserved; eleven-item b2
+> RED contract extended per part 8.4; forward-compatibility fail-closed
+> consequence recorded; report OKF front matter aligned (evidence-report /
+> in-progress / repos.dai-vault docs-only; date, filename, title preserved);
+> prompt-ledger pre-execution record created at the resolved
+> <OBSIDIAN_PROMPT_LEDGER_ROOT>. NOT published; implementation NOT
+> authorized; 2-ii-c unauthorized; WI-0037 in-progress. Evidence:
+> [[wi-0037-slice-2-iii-architecture-review-2026-07-26-v1]] part 8.
 
 > Part-7 state (2026-07-27, superseding "part 6 bound"): staff review found
 > FR-9 Med -- part 6 section 6.5's "durably explain"/failure-mechanism wording

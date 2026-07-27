@@ -18895,3 +18895,48 @@ snapshot 26/0/0; docs-only delta on the three allowlisted paths.
 **State:** Vault-only commit; closing delta review of 41da4d7..tip required;
 publication and implementation unauthorized.
 **Next:** Operator: authorize the closing delta review.
+
+---
+
+## WI-0037 Slice 2-iii -- ADR PART 8 BOUND (CR-1), Closing Delta Review Pending
+
+**Date:** 2026-07-27 **Governing WI:** WI-0037 (`02 Platform/system-development/work-items/WI-0037-game-state-correctness-v1.md`) **Branch:** `wi/0037-selected-event-identity-continuity-architecture` (... -> 9b7ccdd -> this commit); dai untouched at af59853
+
+CR-1 Med: part 7 section 7.1's third classification arm was ambiguous --
+non-null envelopes unrecognizable as the authorized sports selected-event
+document could be read as "without selected provenance" and silently reach
+the legacy InputJson fallback. Part 8 binds the exhaustive four-arm total
+classification: database NULL is the ONLY legacy route (empty/whitespace/
+json-null/empty-object/malformed/missing-metadata never legacy); recognized
+authorized selected document -> typed candidate; recognized-but-invalid ->
+409 with existing detail reasons; EVERY other non-null value (incl.
+well-formed foreign domain/type) -> 409 with internal
+unrecognized_provenance_document, never legacy. Eligibility-before-
+classification and all part-6/7 refusal, durability, disclosure, identity,
+deployment, lifecycle, and residual decisions preserved; eleven b2 RED
+contracts bound (future obligations only); forward-compatibility fail-closed
+consequence recorded; ownership boundary unchanged (sports-owned builder
+classifies; platform transports opaquely; guard never parses provenance).
+OKF alignment: report front matter -> evidence-report / in-progress /
+repos.dai-vault docs-only (date, filename, title preserved). Prompt-ledger:
+pre-execution record created at the resolved root (dai/prompts/2026/07/
+2026-07-27-wi-0037-slice-2-iii-adr-part-8-provenance-classification.md);
+outcome link at close. Skills gate: dai-skill-router and named skills not
+callable this session -- recorded; tracked doctrine from
+`<DAI_REPO_ROOT>/.claude/skills/` applied as reference (impact declaration +
+okf review guide patterns read and honored). Nothing pushed; ops at 234d3f0
+untouched; wi/0035 hash 86aa8b74 intact; dai byte-identical; residuals:
+propagation OPEN/blocking, scale-out blocking, ledger deferred.
+
+### Slice Synopsis
+
+**Change:** Part 8 closes CR-1 with the exhaustive four-arm provenance
+classification (database NULL = sole legacy route) and aligns the report's
+OKF front matter.
+**Reason:** Closing review verdict (CR-1 Medium classification ambiguity).
+**Proof:** Four-arm matrix + eleven RED contracts bound; strict snapshot
+26/0/0; docs-only delta on the three allowlisted paths; ledger record
+captured.
+**State:** Vault-only commit; closing delta review of 9b7ccdd..tip required;
+publication and implementation unauthorized.
+**Next:** Operator: authorize the closing independent delta review.
