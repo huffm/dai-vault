@@ -642,3 +642,196 @@ response + structured log (2.3), consistent with the dup-guard 409 precedent.
 Slice 2-iii: architecture CORRECTED locally; independent delta architecture
 review of this correction required; implementation unauthorized; publication
 not claimed. 2-ii-c unauthorized; WI-0037 in-progress.
+
+# part 3 -- bound deployment, persistence, and lifecycle constraints (df-1..df-7), 2026-07-26
+
+The delta review returned WI0037_SLICE2III_ADR_DELTA_REVIEW_CORRECTIONS_REQUIRED.
+Parts 1-2 are preserved as history; where part 3 conflicts, PART 3 IS CURRENT
+AUTHORITY. E-PRIME-PRECREATE remains canonical only under these bindings.
+
+## 3.1 df-1 -- single-host constraint: CREATION_GATE_PROCESS_LOCAL_SINGLE_INSTANCE_CONSTRAINT
+
+Source evidence: `CreationGates` is a static in-process
+`ConcurrentDictionary<string, SemaphoreSlim>` (`DuplicateRunGuard.cs:52`); its
+own contract states "the api runs as a single operator-host instance in v1...
+a db-level uniqueness constraint would need a schema migration...; that is the
+documented multi-instance follow-up" (`DuplicateRunGuard.cs:31-35`). Bound:
+(1) the gate serializes only within one API process; (2) it is not distributed
+authority; (3) E-PRIME-PRECREATE assumes exactly one active API process
+creating agent runs; (4) no multi-replica/scaled deployment may claim the
+selected-event atomicity guarantee; (5) no mixed-version rolling activation is
+permitted; (6) database-backed or distributed authority is required before
+scale-out. Named residual (retained here, in the spec, and the handoff):
+**MULTI_INSTANCE_SELECTED_EVENT_ATOMICITY_REQUIRED_BEFORE_SCALE_OUT**. No
+durable work item currently owns the db-level uniqueness follow-up beyond the
+source comment; ownership must be assigned before any scale-out authorization
+(no new work item minted in this turn). This residual does not block the
+single-host WI-0037 path (the single-host constraint is standing program
+posture).
+
+## 3.2 deployment and activation posture: SINGLE_CUTOVER_DEPLOYMENT_ASSUMED
+
+Phases: (1) inert nullable provenance migration; (2) canonical matcher +
+provenance-capable backend, public SelectedEventIntent inactive; (3) atomic
+contract + enforcement activation with exactly one enforcement-capable API
+process; (4) frontend/consumer propagation. Rollback bindings: migration-only
+rollback -> code ignores the nullable field, data intact; backend rollback
+after evidence exists -> old code tolerates the nullable field, historical
+evidence never deleted; frontend rollback -> legacy requests remain supported;
+no rollback state may accept-and-ignore a selected block. Rolling
+multi-replica activation is deferred with the 3.1 residual.
+
+## 3.3 df-2 -- freshness: VERIFIED_CANDIDATE_STALENESS_ACCEPTED_WITH_TWO_GATE_VERIFICATION
+
+Gate 1 (pre-create): observe -> canonical matcher -> candidate gamePk ->
+staged verification -> immutable verified-resolution candidate with
+providerObservationTimestampUtc. Gate 2 (execution): retrieval independently
+re-verifies the authoritative gamePk through the staged 2-ii-a resolver
+(bracket, in-bracket uniqueness, identity_mismatch) before any model call.
+Correctness: gamePk is stable statsapi identity; no bounded candidate age is
+required; provider/schedule changes between gates may FAIL the run but can
+never silently execute another game; after a Gate-2 refusal no model call
+occurs and the original frozen evidence remains immutable on the failed run.
+Flow bound: pre-create success -> run+evidence persisted -> Gate-2 detects
+changed authority -> run fails before execution -> evidence preserved. No
+provider or StatsAPI call occurs while the creation gate is held.
+
+## 3.4 df-3 -- divergence: CONCURRENT_SELECTION_DIVERGENCE_VERSIONED_WITHIN_SINGLE_HOST_BOUND
+
+The gate key (tenant|competition|matchup) serializes both DH games' creation
+in-process; concurrent requests may pre-translate before acquiring the gate;
+inside, each is evaluated with its own verified gamePk -- same pk follows the
+existing duplicate policy, different pks become separate versioned decisions
+with separate immutable evidence. This prevents wrong-game execution but IS
+NOT selected-event-level idempotency, and no claim is made across multiple
+API processes. Execution idempotency = authoritative gamePk under existing
+doctrine; selection-level history = one namespace+providerEventId may
+accumulate multiple verified decisions (permit-with-provenance); runtime
+cross-run lookup remains non-load-bearing; future audit/conflict features may
+project a fingerprint or index separately. The policy is NEVER described as
+"one provider event always creates one run."
+
+## 3.5 df-4 -- persistence form: GENERIC_OPAQUE_DOMAIN_PROVENANCE_EXTENSION_SELECTED
+
+Part 2's precedent-based sports column on generic AgentRun is SUPERSEDED
+(precedent is evidence, not authority). Selected form: one generic nullable
+platform field, conceptually `DomainExecutionProvenanceJson`, holding the
+envelope `{ domain: "sports", type: "selected_event_binding", schemaVersion,
+payload: { providerNamespace, observedProviderEventId, observedStartUtc,
+observedHomeTeam, observedAwayTeam, operationalDate, candidateGamePks,
+authorizedGamePk, bindingRuleVersion, bracketContext, translationOutcome,
+providerObservationTimestampUtc, frozenAtUtc } }` (sketch, not implementation
+authority). Charter rationale: the generic platform owns storage, retrieval,
+atomic persistence, immutability, tenant/run association, and generic
+type/version metadata ONLY -- it never interprets providerEventId, gamePk,
+matching rules, or sports refusals; the sports domain owns and interprets the
+payload; future niches reuse the same field without one-column-per-decision
+proliferation. Atomicity: same-row nullable column -> single insert with the
+run row. Query behavior: opaque, non-load-bearing (3.4). Migration: one
+additive nullable column -- migration REQUIRED (unchanged conclusion, new
+name). Rejected: sports-specific generic-row column (perpetuates schema-level
+niche coupling; precedent-only rationale disallowed); sports-owned child
+record (second record breaks single-insert atomicity or adds transaction and
+lifecycle overhead with no gain at current scale).
+
+## 3.6 df-5 -- evidence schema and evolution
+
+Every evidence record carries: domain discriminator, evidence type,
+schemaVersion, bindingRuleVersion, providerNamespace, provider
+adapter/normalization version where needed for reproduction, frozenAtUtc.
+Bound: sports domain owns payload-schema evolution; platform stores opaquely;
+readers support known historical versions; unknown versions FAIL CLOSED for
+authoritative reuse (displayable as opaque preserved material only); evidence
+is immutable after insert; corrected decisions create NEW decisions and new
+evidence -- history is never rewritten; any future same-run retry consumes
+the frozen version in place, never upgrades it. Evidence type/schemaVersion
+are versioned independently of bindingRuleVersion.
+
+## 3.7 atomic persistence (implementation obligation)
+
+Submitted intent snapshot + authoritative gamePk + verified provenance + run
+id + tenant + initial status persist atomically before execution: one
+transaction or one atomic ORM save; no run without provenance when selected
+intent is active; no provenance without its run; no model call before
+persistence succeeds; failed persistence creates no executable run; execution
+code cannot overwrite frozen provenance. Slice 2-iii-b2 must prove the save
+boundary.
+
+## 3.8 df-6 -- lifecycle: RESUBMISSION_ONLY_CURRENTLY
+
+No same-run retry/resume/rerun endpoint exists at published af59853; the
+platform pattern is retire/exclude then submit a NEW run
+(`AgentRunsController.cs:1349-1350`; guard doctrine "failed -> never blocks").
+Each resubmission independently observes, translates, verifies, and persists
+new evidence. Implementation slices must not claim same-run retry support.
+Future invariant (explicitly future-proofing, not current behavior): any
+future same-run retry must reuse frozen evidence + authoritative gamePk and
+never retranslate; it requires separate implementation and review authority.
+Historical audit replay: read-only, persisted evidence only, zero provider or
+StatsAPI calls, no mutation.
+
+## 3.9 df-7 -- refusal durability: PRECREATE_REFUSAL_DURABILITY_LIMITED_TO_RESPONSE_AND_OBSERVABILITY
+
+Pre-create refusals produce a typed HTTP response + correlation-linked
+structured log, create no AgentRun, and are NOT durable learning-loop data
+(no audit-event or failure-corpus store exists; that facility remains
+separately gated). WI-0037 traceability guarantees apply fully to accepted
+decisions and persisted runs; pre-run refusal learning completeness is
+deferred. Named nonblocking residual:
+**DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_DEFERRED** (a future generic
+decision-attempt surface or sports refusal ledger; never masquerading as an
+executed run; not authorized here). All traceability/learning claims in parts
+1-2 are scoped accordingly.
+
+Refusal durability matrix: PRE-CREATE (malformed intent, not-active, event
+not in schedule, ambiguity, start mismatch, pk conflict) -> typed response +
+log, no run row, no durable learning record. POST-CREATE (Gate-2 staged
+re-verification failure) -> run row exists with persisted intent + frozen
+evidence + failure status/reason; no model call after refusal. The two
+classes are never equivalent.
+
+## 3.10 final implementation decomposition (bound)
+
+**2-iii-a canonical matcher**: extract ProviderEventGameBindingMatcher (typed
+inputs/evidence/outcomes; single-source rules and tolerances; consumed by the
+existing binding workflow AND future translation); no public field, no
+persistence change, no frontend change; invariant: zero behavior drift in
+WI-0035/36 matching, no runs, no model calls.
+**2-iii-b1 inert provenance persistence**: DomainExecutionProvenanceJson
+column + envelope schema/type/version model + ownership boundary +
+historical-row compatibility; NO public SelectedEventIntent, no activation;
+invariant: the migration introduces no new accepted input or execution
+behavior; publication gate: old code tolerates the column, rollback leaves
+data intact, platform/domain boundary independently reviewed.
+**2-iii-b2 atomic contract activation and enforcement**: null-suppressed
+SelectedEventIntent, all-or-none validation, pre-create translation + staged
+verification, guard fed the verified pk, atomic persistence, namespace
+freeze, refusal handling, legacy byte-identity serialization,
+resubmission-only semantics; invariants: non-null block never
+accepted-and-ignored, no run/model before authority, second DH selection
+creates its distinct run; gate: one active API process, migration present,
+contract + enforcement together, no mixed pool.
+**2-iii-c frontend and consumer continuity**: analyzer + dev-artifact-review
+propagation, stubs/consumers, approved provenance presentation, offline
+end-to-end DH verification, reconciliation/settlement continuity; invariant:
+two selected events -> two verified pks -> two persisted decisions -> two
+runs -> two settlement identities. No slice authorized.
+
+## 3.11 rescoring and residuals
+
+E-PRIME-PRECREATE rescored WITH the bound costs (single-host constraint,
+migration, generic-provenance boundary, two-gate freshness, versioned
+divergence, resubmission-only lifecycle, non-durable pre-run refusals, four
+slices, scale-out follow-up): still strongest on authority correctness,
+doubleheader safety, compatibility, provenance, settlement continuity, and
+implementation containment. NOT scored as solved: distributed concurrency,
+same-run retry, durable refusal learning. Candidate C is not recreated: no
+server-minted binding reference, no registry lookup lifecycle, no request-
+carried durable binding id -- evidence is historical execution provenance.
+Residuals: BLOCKING before implementation = final independent delta review +
+persistence-form and evidence-schema approval (this part's decisions);
+BLOCKING before scale-out =
+MULTI_INSTANCE_SELECTED_EVENT_ATOMICITY_REQUIRED_BEFORE_SCALE_OUT; DEFERRED =
+DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_DEFERRED and future same-run
+retry; standing deployment assumption = single operator-host, controlled
+cutover, no mixed pool; queryability non-load-bearing.

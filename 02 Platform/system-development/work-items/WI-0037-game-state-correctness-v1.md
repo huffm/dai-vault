@@ -427,7 +427,35 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (ARCHITECTURE CORRECTED LOCAL 2026-07-26; delta architecture review required; implementation NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (ARCHITECTURE CONSTRAINTS BOUND LOCAL 2026-07-26; final delta review required; implementation NOT authorized)
+
+> Part-3 state (2026-07-26, superseding "architecture corrected local"): the
+> delta review of part 2 returned CORRECTIONS_REQUIRED with seven bindable
+> findings (DF-1..DF-7). ADR part 3 (current authority) binds:
+> CREATION_GATE_PROCESS_LOCAL_SINGLE_INSTANCE_CONSTRAINT with named residual
+> **MULTI_INSTANCE_SELECTED_EVENT_ATOMICITY_REQUIRED_BEFORE_SCALE_OUT** (no
+> durable owner yet; assignment required before any scale-out authorization);
+> SINGLE_CUTOVER_DEPLOYMENT_ASSUMED with four phases and rollback rules;
+> VERIFIED_CANDIDATE_STALENESS_ACCEPTED_WITH_TWO_GATE_VERIFICATION (Gate 2 =
+> retrieve-time staged re-verification; failures fail the run, never execute
+> another game); CONCURRENT_SELECTION_DIVERGENCE_VERSIONED_WITHIN_SINGLE_HOST_
+> BOUND (execution dedup = verified gamePk; selection-level idempotency NOT
+> claimed); persistence form DECIDED =
+> GENERIC_OPAQUE_DOMAIN_PROVENANCE_EXTENSION_SELECTED (generic nullable
+> `DomainExecutionProvenanceJson` envelope {domain, type, schemaVersion,
+> payload}; platform stores opaquely, sports owns the payload; one additive
+> migration; sports-column-on-generic-row and child-record rejected); evidence
+> schemaVersion/evolution/immutability bound (unknown versions fail closed for
+> authoritative reuse); lifecycle = RESUBMISSION_ONLY_CURRENTLY (no same-run
+> retry path exists; retry semantics are future-proofing only);
+> PRECREATE_REFUSAL_DURABILITY_LIMITED_TO_RESPONSE_AND_OBSERVABILITY with
+> nonblocking residual **DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_
+> DEFERRED**; final decomposition = 2-iii-a matcher / 2-iii-b1 inert
+> provenance migration / 2-iii-b2 atomic activation / 2-iii-c consumers. NOT
+> published, NOT approved, implementation NOT authorized, scale-out NOT safe,
+> pre-run refusal learning NOT complete; 2-ii-c unauthorized; WI-0037
+> in-progress. Evidence:
+> [[wi-0037-slice-2-iii-architecture-review-2026-07-26-v1]] part 3.
 
 > Architecture-correction state (2026-07-26, superseding "architecture reviewed
 > local"): the independent adversarial architecture review returned

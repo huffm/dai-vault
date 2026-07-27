@@ -18712,3 +18712,37 @@ dispositions; part-1 preserved as history.
 architecture review required; implementation and publication unauthorized.
 **Next:** Operator: authorize the independent delta architecture review of
 cbc5ccf..tip.
+
+---
+
+## WI-0037 Slice 2-iii -- ADR PART 3: CONSTRAINTS BOUND (DF-1..DF-7), Final Delta Review Pending
+
+**Date:** 2026-07-26 **Branch:** `wi/0037-selected-event-identity-continuity-architecture` (234d3f0 -> cbc5ccf -> 30c7102 -> this commit); dai untouched at af59853
+
+Part 3 binds the seven delta-review findings: single-host creation-gate
+constraint made explicit with residual MULTI_INSTANCE_SELECTED_EVENT_
+ATOMICITY_REQUIRED_BEFORE_SCALE_OUT; single-cutover deployment phases +
+rollback rules; two-gate freshness (Gate 2 = retrieve-time staged
+re-verification; stale authority fails the run, never executes another game);
+divergence versioned within the single-host bound (no selection-level
+idempotency claimed); persistence form DECIDED = generic opaque
+DomainExecutionProvenanceJson envelope (platform stores, sports interprets;
+one additive migration; alternatives rejected with reasons); evidence
+schemaVersion + evolution + immutable-after-insert bound; lifecycle =
+resubmission-only (no same-run retry exists; frozen evidence is
+future-proofing); pre-create refusal durability limited to response +
+observability with residual DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_
+DEFERRED; final decomposition 2-iii-a / b1 / b2 / c with per-slice safety
+invariants and gates. Nothing pushed; ops at 234d3f0 untouched; wi/0035 hash
+86aa8b74 intact; zero live/paid/db/model calls; dai byte-identical.
+
+### Slice Synopsis
+
+**Change:** Part 3 converts every open architecture assumption into a bound
+constraint, decided persistence form, and named residuals.
+**Reason:** Delta review verdict CORRECTIONS_REQUIRED (DF-1..DF-7).
+**Proof:** Source-cited gate topology, retire-then-rerun lifecycle evidence,
+charter-based persistence decision; strict snapshot 26/0/0.
+**State:** Vault-only commit on the architecture branch; final independent
+delta review required; publication and implementation unauthorized.
+**Next:** Operator: authorize the final delta review of 30c7102..tip.
