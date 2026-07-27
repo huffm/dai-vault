@@ -427,7 +427,52 @@ behavior.
 redesign; planner-board schema changes; broad StatsAPI client rewrite; automated
 schedule-adapter implementation; settlement of live data; paid calls.
 
-### Slice 2-iii -- selected-event identity continuity (2-iii-b2 REVIEWED + INTEGRATED + PUBLISHED 2026-07-27; activation DEFAULT-OFF; 2-iii-c and 2-ii-c NOT authorized)
+### Slice 2-iii -- selected-event identity continuity (2-iii-c IMPLEMENTED LOCAL, review-required 2026-07-27; 2-iii-b2 REVIEWED + INTEGRATED + PUBLISHED; activation DEFAULT-OFF; 2-ii-c NOT authorized)
+
+> 2-iii-c state (2026-07-27, superseding "2-iii-c NOT authorized"): the operator
+> authorized frontend/consumer selected-event continuity and it is IMPLEMENTED
+> LOCAL, review-required, on branch `wi/0037-selected-event-frontend-continuity`
+> (dai, from published `aee1ade`; vault records from published `e217a3f`).
+> Terminal state **WI0037_SLICE2IIIC_IMPLEMENTED_LOCAL_REVIEW_REQUIRED**. Both
+> sports-app run-creation paths (`AnalyzerComponent.analyze`,
+> `DevArtifactReviewComponent.runSelectedGames`) now carry the operator's selected
+> `MatchupEventDto.providerEventId` + `.startUtc` as the additive null-suppressed
+> `selectedEvent` intent on `CompetitionMatchupInput` (legacy requests without it
+> stay byte-identical); one shared typed refusal parser/presenter
+> (`core/selected-event-refusal.ts`) maps the published closed 16-code
+> selection_* vocabulary to safe operator messages (phase derived from agentRunId
+> presence; server detail never surfaced; unknown selection_* preserved, never a
+> silent success/legacy retry); the analyzer template renders the mapped message;
+> the batch retains per-entry refusal code/message and the returned agentRunId on a
+> post-create refusal, never retrying; and the internal dev-artifact-review surface
+> gains a read-only "Server-recorded game identity" panel over the six existing
+> AgentRunArtifactDto identity fields (complete/partial/not-recorded; never labelled
+> as selected-event provenance; raw provenance envelope never parsed in TS). Frontend
+> stays intent-only -- no verification, normalization, case-folding, or client gamePk
+> derivation. RED-first: 7 failing desired assertions pre-implementation (selectedEvent
+> absent on both paths; refusal fields/agentRunId not retained). Suites: focused
+> frontend **38/38** (5 new specs); full frontend **195/195** (22 files) + build clean;
+> focused backend regression **56/56** (SelectedEventCreationTests +
+> OutcomeReconciliationMatcherTests, no backend diff); full .NET **2025/2025, 0
+> skipped** (exact published baseline); solution build 0 errors; strict snapshot
+> against published vault main **26 items / 0 warnings**. NO C# production or test
+> change; NO backend contract change; activation remains DISABLED; migration
+> 20260727133845 remains UNAPPLIED; NOT reviewed, NOT integrated, NOT pushed. Code
+> review: 0 blocking; recorded note FC-1 (by-design, not a defect) -- once integrated,
+> both paths always send selectedEvent, so an activation-disabled environment (the
+> default) refuses with `selection_identity_not_active` and no legacy fallback; this is
+> the authorized fail-closed behavior, surfaced truthfully, and enabling it for buyers
+> is a separate activation + integration decision. Residuals:
+> SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE is now
+> **RESOLUTION-PENDING-VERIFICATION** (client identity-loss line closed locally;
+> resolution requires independent review, integration, publication, and verification --
+> NOT resolved); MULTI_INSTANCE_SELECTED_EVENT_ATOMICITY_REQUIRED_BEFORE_SCALE_OUT
+> unchanged/blocking; DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_DEFERRED
+> unchanged/nonblocking. The operator-owned WI-level glossary disposition remains
+> mandatory at WI-0037 completion and is NOT performed here. Next: a separately
+> authorized independent adversarial review + integrate-on-PASS of the complete
+> 2-iii-c source+records package; then 2-ii-c; WI-0037 stays `in-progress`. Evidence:
+> [[wi-0037-slice-2-iii-c-frontend-consumer-continuity-2026-07-27-v1]].
 
 > 2-iii-b2 closeout state (2026-07-27, superseding "corrected local incl.
 > f-b2-8; final re-review required"): the final independent review of the

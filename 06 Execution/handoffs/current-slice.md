@@ -19466,3 +19466,56 @@ direct remotes verified; activation off; migration unapplied.
 residuals unchanged.
 **Next:** Operator: authorize Slice 2-iii-c (frontend/consumer continuity)
 separately.
+
+---
+
+## WI-0037 Slice 2-iii-c -- Frontend and Consumer Selected-Event Continuity (2026-07-27, IMPLEMENTED LOCAL, review-required)
+
+Implemented the client-side close of the selected-event identity-loss line on branch
+`wi/0037-selected-event-frontend-continuity` (dai from published `aee1ade`; vault records
+from published `e217a3f`). Both sports-app run-creation paths now carry the operator's
+selected `MatchupEventDto.providerEventId` + `.startUtc` as the additive null-suppressed
+`selectedEvent` intent on `CompetitionMatchupInput`; legacy requests without it stay
+byte-identical. Added one shared typed refusal parser/presenter over the published closed
+16-code selection_* vocabulary (safe operator messages; phase derived from agentRunId
+presence; server detail never surfaced; unknown selection_* preserved, never silent
+success/legacy retry); the analyzer renders the mapped message; the batch retains per-entry
+refusal code/message + returned agentRunId, never retrying; and the internal
+dev-artifact-review surface gained a read-only "Server-recorded game identity" panel over
+the six existing artifact identity fields (complete/partial/not-recorded; never labelled as
+selected-event provenance; raw provenance envelope never parsed in TS). Frontend stays
+intent-only -- no verification, normalization, case-folding, or client gamePk derivation.
+
+RED-first: 7 failing desired assertions pre-implementation (selectedEvent absent on both
+paths; refusal fields/agentRunId not retained). Suites: focused frontend 38/38 (5 new
+specs); full frontend 195/195 (22 files) + build clean; focused backend regression 56/56
+(no backend diff); full .NET 2025/2025, 0 skipped (exact published baseline); solution
+build 0 errors; strict snapshot against published vault main 26 items / 0 warnings. NO C#
+production/test change; NO backend contract change; activation DISABLED; migration
+20260727133845 UNAPPLIED; NOT reviewed, NOT integrated, NOT pushed. Code review 0 blocking;
+recorded note FC-1 (by-design, not a defect): once integrated, both paths always send
+selectedEvent, so an activation-disabled environment (the default) refuses with
+selection_identity_not_active and no legacy fallback -- authorized fail-closed behavior,
+surfaced truthfully; enabling for buyers is a separate activation + integration decision.
+Preserved wi/0035 checkout unchanged (HEAD de5791f, fingerprint 86aa8b74). Residuals:
+SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE now
+RESOLUTION-PENDING-VERIFICATION (client line closed locally; resolution requires
+independent review + integration + publication + verification); scale-out blocking;
+decision ledger deferred; 2-ii-c unauthorized; WI-0037 in-progress. Evidence:
+[[wi-0037-slice-2-iii-c-frontend-consumer-continuity-2026-07-27-v1]].
+
+### Slice Synopsis
+
+**Change:** Carried the operator's selected event identity (providerEventId + startUtc)
+through both sports-app run-creation paths as the additive `selectedEvent` intent, added a
+shared typed selection_* refusal parser/presenter, and surfaced read-only server-recorded
+game identity on the dev inspection surface. No backend change.
+**Reason:** Close the client-side identity-loss line so the operator's selected event
+reaches the published server-owned selected-event authority; residual
+SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE.
+**Proof:** RED-first 7 failing assertions; focused 38/38, full frontend 195/195 + build,
+full .NET 2025/2025 (no backend diff), solution 0 errors, snapshot 26/0.
+**State:** Both branches local, committed, unpushed; mains not moved; activation DISABLED;
+migration UNAPPLIED; wi/0035 preservation intact; residual now RESOLUTION-PENDING-VERIFICATION.
+**Next:** Operator: authorize one independent adversarial review + integrate-on-PASS of the
+2-iii-c source+records package; do not begin 2-ii-c yet.
