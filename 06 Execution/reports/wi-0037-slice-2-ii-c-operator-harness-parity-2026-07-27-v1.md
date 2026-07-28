@@ -6,8 +6,8 @@ status: "complete"
 project: "DAI"
 slice: "WI-0037 Slice 2-ii-c: operator/harness and status-contract parity (local-only)"
 repos:
-  dai: "code (IMPLEMENTED LOCAL, review-required: branch wi/0037-game-state-correctness-slice-2-ii-c from baf5e90; NOT integrated, NOT pushed)"
-  dai-vault: "docs-only (this report, WI update, current-slice, recheck-discipline doctrine)"
+  dai: "code"
+  dai-vault: "docs-only"
 tags:
   - system-development
   - sports-v1
@@ -20,6 +20,19 @@ related:
 ---
 
 # wi-0037 slice 2-ii-c operator/harness and status-contract parity
+
+> **CURRENT STATE (2026-07-28): COMPLETE -- independently reviewed, locally integrated,
+> unpublished, undeployed.** Everything from "## purpose" down to (and including) the
+> "## slice 2-ii-c1 correction" section is the ORIGINAL 2026-07-27 record, preserved verbatim
+> as historical evidence: at that time the package was IMPLEMENTED LOCAL and REVIEW-REQUIRED,
+> NOT yet reviewed/integrated. Those "in-progress", "review-required", "NOT integrated", and
+> "NOT pushed" statements describe the 2026-07-27 snapshot only. They were resolved on
+> 2026-07-28: the package passed independent adversarial review
+> (WI0037_SLICE2IIC_C1_INDEPENDENT_REVIEW_PASSED_LOCAL_INTEGRATION_READY, zero findings) and
+> was integrated by pure local fast-forward to dai main `4c6cd98`; local vault main was
+> advanced to the closeout commit `74a8188`. The authoritative current state is the
+> "## closeout reconciliation (2026-07-28)" section at the end of this file. There is no live
+> contradiction: `status: complete` in the frontmatter reflects this current state.
 
 ## purpose
 

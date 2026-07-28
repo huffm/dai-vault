@@ -19810,3 +19810,37 @@ findings and authorized local integration + closeout. **Proof:** On main 4c6cd98
 **State:** WI-0037 complete; local-only, unpublished, undeployed, activation-disabled, migration-
 unapplied; origins unchanged (dai aee1ade, vault e217a3f). **Next:** Operator-selected next slice
 on the integrated local baseline; scale-out atomicity residual honored before any scale-out.
+
+---
+
+## WI-0037 closeout governance-metadata correction (2026-07-28)
+
+Bounded, local-only governance-correction pass on top of the closeout commit `74a8188`; NO
+source change, NO re-run of the source suite, NO reopening of the engineering verdict. Four
+authorized vault docs corrected in the clean records-topic worktree: (1)
+`WI-0037-game-state-correctness-v1.md` -- `repos` normalized to canonical OKF `dai: "code"` /
+`dai-vault: "docs-only"` (detailed integration/release facts stay in the body), and the
+eight-link "commits" wording corrected to record original closeout commit `74a8188` explicitly
+and refer to this correction commit symbolically; (2)
+`wi-0037-slice-2-ii-c-operator-harness-parity-2026-07-27-v1.md` -- `repos` canonicalized and a
+dated top banner added so the preserved 2026-07-27 "review-required / NOT integrated" body reads
+unambiguously as historical while the current state is complete/reviewed/integrated (no live
+contradiction with `status: complete`); (3)
+`wi-0037-local-integration-and-governance-closeout-2026-07-28-v1.md` -- `repos` canonicalized,
+H1 aligned to the frontmatter title, nine OKF fields retained, dated correction note added; (4)
+this entry. The prior terminal response's "ledger line-count off by one" observation was
+INCORRECT and is superseded: the prompt file and original ledger correctly report 688 lines and
+SHA-256 `ae7651a1...b25cd7`; the original ledger's accurate value was not altered.
+
+### Slice Synopsis
+**Change:** Corrected WI-0037 closeout governance metadata across four vault docs (canonical OKF
+`repos` values, resolved self-referential closeout-SHA wording recording `74a8188`, removed the
+complete-vs-review-required contradiction, aligned the closeout report H1 to its title) via one
+docs-only commit on top of `74a8188`, then advanced local vault main by atomic compare-and-swap.
+**Reason:** Metadata/status hygiene on the completed closeout; engineering integration stays
+complete and untouched. **Proof:** four authorized `.md` files changed; git diff --check clean;
+strict snapshot 26 items / 0 warnings with WI-0037 complete; source main unchanged at `4c6cd98`;
+protected wi/0035 fingerprint `86aa8b74` unchanged. **State:** WI-0037 complete; local-only,
+unpublished, undeployed, activation-disabled, migration-unapplied; origins unchanged (dai
+`aee1ade`, vault `e217a3f`). **Next:** Operator-selected next slice on the integrated local
+baseline; scale-out atomicity residual honored before any scale-out.

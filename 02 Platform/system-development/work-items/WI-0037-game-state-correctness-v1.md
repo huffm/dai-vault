@@ -6,8 +6,8 @@ status: "complete"
 project: "DAI"
 slice: "WI-0037 game-state correctness: all slices implemented, reviewed, and locally integrated; local-only, unpublished, undeployed, activation-disabled, migration-unapplied"
 repos:
-  dai: "code (game-state correctness across Slices 1/2-i/2-ii-a/2-ii-b/2-ii-c+c1/2-iii; integrated to local main 4c6cd98; unpublished, undeployed)"
-  dai-vault: "docs-only (this WI, MOC, current-slice, slice report, closeout report)"
+  dai: "code"
+  dai-vault: "docs-only"
 tags:
   - system-development
   - work-item
@@ -1316,8 +1316,10 @@ must keep the duplicate-DEFECT discipline pinned by its existing tests).
   `af59853`; 2-iii foundation/b2 dai `1311137`->`aee1ade`; 2-iii-c dai `baf5e90`; 2-ii-c
   dai `80e8d1a` (operator/harness + status parity) -> `4c6cd98` (blank-state + comment
   correction) = local main tip. Vault records for 2-ii-c: `d98d1a5` (report/WI/current-slice/
-  doctrine) -> `462d7a4` (c1 correction) -> the closeout commit containing this report (SHA
-  in the closeout report and the prompt ledger). Full per-slice SHA history:
+  doctrine) -> `462d7a4` (c1 correction) -> `74a8188` (original governance-closeout commit) ->
+  the governance-metadata correction commit that contains this correction (its resolved SHA is
+  recorded in the correction prompt ledger and the final response, since a commit cannot carry
+  its own hash inside itself). Full per-slice SHA history:
   [[wi-0037-local-integration-and-governance-closeout-2026-07-28-v1]]
 - tests: `platform/dotnet/DevCore.Api.Tests/Sports/GameStatusResolutionCorpusTests.cs`;
   `.../AgentRuns/MarketContrastSourceAdapterTests.cs`; `.../Sports/StarterClientBracketAuthorityTests.cs`;

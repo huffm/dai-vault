@@ -6,8 +6,8 @@ status: "complete"
 project: "DAI"
 slice: "WI-0037 local integration and governance closeout (Slice 2-ii-c + c1 fast-forward; WI-0037 close)"
 repos:
-  dai: "code (Slice 2-ii-c + c1 fast-forward to local main 4c6cd98; unpublished, undeployed)"
-  dai-vault: "docs-only (this report, WI, MOC, current-slice, slice report)"
+  dai: "code"
+  dai-vault: "docs-only"
 tags:
   - system-development
   - sports-v1
@@ -19,7 +19,18 @@ related:
   - "06 Execution/patterns/game-status-recheck-discipline-v1.md"
 ---
 
-# wi-0037 local integration and governance closeout
+# WI-0037 Local Integration and Governance Closeout 2026-07-28 v1
+
+> **Governance-correction note (2026-07-28).** A bounded, local-only governance-correction pass
+> refined this record's metadata after the closeout: frontmatter `repos` values were normalized
+> to the canonical OKF values (`dai: "code"`, `dai-vault: "docs-only"`), this H1 was aligned to
+> the frontmatter title, and the self-referential eight-link wording in the WI spec was corrected
+> to record the original governance-closeout commit `74a8188df5cc3e411954dbe6c6921b844b8ff372`
+> explicitly. The correction changed metadata, status wording, and traceability only; it did NOT
+> reopen source, alter the engineering verdict, or change any test/build result. The original
+> closeout commit is `74a8188`; the correction is a separate docs-only commit on top of it (its
+> resolved SHA is in the correction prompt ledger and the final response). Release state is
+> unchanged: local-only, unpublished, undeployed, activation-disabled, migration-unapplied.
 
 ## purpose and authorization boundary
 
