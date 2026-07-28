@@ -160,7 +160,44 @@ future question but must not alter behavior); date-bucket resolver work (Slice 2
 schedule-adapter automation; operating-skill integration; provider-binding changes;
 planner schema changes; paid validation calls.
 
-### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a CLOSED; 2-ii-b CLOSED 2026-07-26: INTEGRATED + PUBLISHED + VERIFIED; 2-ii-c NOT authorized)
+### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a CLOSED; 2-ii-b CLOSED; 2-ii-c IMPLEMENTED LOCAL, review-required 2026-07-27)
+
+> Slice 2-ii-c state (2026-07-27, superseding "2-ii-c NOT authorized"): the operator
+> authorized and this slice IMPLEMENTED LOCAL the final WI-0037 hardening obligations,
+> review-required, on branch `wi/0037-game-state-correctness-slice-2-ii-c` (dai, from
+> baf5e90; vault records from 849eb9d). Terminal state
+> **WI0037_SLICE2IIC_IMPLEMENTED_LOCAL_REVIEW_REQUIRED**. Delivered: F3 null-safe
+> finals-harness evidence (test-check-settlement-finals.ps1 only -- Get-FirstGameReason /
+> Get-ReasonDetail null-safe binding replaces the two inline `$j.games[0].reason` detail
+> dereferences; a self-contained `-Probe` mode proves the harness reaches its tally on
+> malformed/non-json output and exits nonzero; normal harness still green 40/40; no
+> production guard change); F4 authority-plus-context live query (check-game-status.ps1
+> fetches `schedule?sportId=1&gamePks=<pk>` with no `date=`, one GET, 30s timeout,
+> `-BracketDate` still the sole local bracket authority, offline path unchanged, truthful
+> sourceRef; harness statically proves the URI shape with no live call); a mandatory typed
+> `GameStatusDetailRequirement` (Required/NotRequired) replacing the defaulted boolean
+> requireStatus at every resolver call site (starter = NotRequired, corpus + selected-event
+> = Required; undefined enum value rejected; Resolved now accepts a truthful nullable
+> normalized status with the null! suppression removed); one c# `ScheduleStateNormalizer`
+> consolidating the resolver and adapter alias tables (both duplicates removed; PowerShell
+> keeps its separate runtime normalizer by design); and a top-level `normalizationVectors`
+> collection (31 vectors) in the canonical corpus consumed generically by both runners with
+> no-skip proof. Contract stays `game-status-resolution/1.1`; the 25 scenario fixtures and
+> six refusal reasons are unchanged; no runtime result shape, refusal, or normalized
+> vocabulary changed. Baselines: PS 187/40, .NET 2025. After: PS test-check-game-status
+> 195/0, test-check-settlement-finals normal 40/0 (probe 1/1 exit 1 by design); full .NET
+> **2059/2059, 0 skipped** (2025 + 34); solution build 0 errors. Warnings (accurate,
+> pre-existing, not introduced): NU1903 Microsoft.OpenApi 2.0.0 + System.Security.
+> Cryptography.Xml 10.0.7, plus compiler/nullability/xUnit analyzer warnings; not a
+> warning-free build; not remediated. NO frontend, database, migration, activation,
+> reconciliation, or settlement change; local-only, unpushed, undeployed; activation
+> disabled; migration 20260727133845 unapplied. Preserved wi/0035 checkout unchanged
+> (de5791f, fingerprint 86aa8b74). NOT reviewed, NOT integrated, NOT pushed. Residuals:
+> propagation RESOLVED (2-iii-c, unaffected); scale-out blocking; decision-ledger deferred.
+> Slice 2-ii-c is IMPLEMENTED LOCAL; independent review required. WI-0037 remains
+> in-progress. Next = one independent adversarial review of the complete source+vault
+> 2-ii-c package; integration + closeout only under a later authorization. Evidence:
+> [[wi-0037-slice-2-ii-c-operator-harness-parity-2026-07-27-v1]].
 
 > Slice 2-ii-b closeout (2026-07-26, superseding "DR-2 corrected, delta review
 > required"): the DR-2 delta review returned

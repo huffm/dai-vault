@@ -91,3 +91,20 @@ Contract and corpus: `<DAI_REPO_ROOT>/scripts/dev/sports/game-status-resolution-
 and `scripts/dev/sports/fixtures/game-status-resolution-v1.json` (24 vectors; the
 PowerShell harnesses consume them now; the C# Slice 2-ii runner consumes the SAME file
 so the runtimes cannot drift).
+
+## slice 2-ii-c hardening (2026-07-27)
+
+- Live query is authority plus context: `check-game-status.ps1` fetches broadly by exact
+  gamePk (`schedule?sportId=1&gamePks=<pk>`, no `date=` in the transport query) so a
+  postponed original plus its makeup are both returned; the frozen `-BracketDate` remains
+  the sole local bracket-selection authority. One GET, 30-second timeout, offline
+  `-ScheduleJsonPath` unchanged, fail-closed exit codes unchanged.
+- Normalization has one C# authority: `ScheduleStateNormalizer` (consumed by both
+  `GameStatusResolver` and `MarketContrastSourceAdapter`); the PowerShell operator runner
+  keeps its own `ConvertTo-NormalizedStatus` as a separate runtime implementation by design.
+  Cross-runtime parity is pinned by the corpus normalization vectors, not by shared code.
+- The corpus now carries a top-level `normalizationVectors` collection consumed generically
+  by both runners (no-skip proven). The 25 scenario fixtures and six refusal reasons are
+  unchanged; the contract stays `game-status-resolution/1.1`.
+- The detail-status decision is a mandatory typed `GameStatusDetailRequirement`
+  (Required / NotRequired) at every resolver call site; no defaulted boolean remains.

@@ -19630,3 +19630,52 @@ worktree byte-identical (86aa8b74).
 unapplied; propagation residual RESOLVED; scale-out blocking; decision ledger deferred.
 **Next:** Separate authorization for Slice 2-ii-c or an operator-selected evidence/capture slice,
 based on the integrated baseline.
+
+---
+
+## WI-0037 Slice 2-ii-c -- Operator/Harness and Status-Contract Parity (2026-07-27, IMPLEMENTED LOCAL, review-required)
+
+The final WI-0037 hardening slice, implemented local on branch
+`wi/0037-game-state-correctness-slice-2-ii-c` (dai from baf5e90; vault records from 849eb9d).
+Terminal state WI0037_SLICE2IIC_IMPLEMENTED_LOCAL_REVIEW_REQUIRED. Local-only: no push,
+deploy, activation, migration, live/paid call, capture, reconciliation, or settlement.
+
+Delivered: F3 null-safe finals harness (Get-FirstGameReason / Get-ReasonDetail replace the two
+inline reason dereferences; `-Probe` mode proves the harness reaches its tally on malformed
+output and exits nonzero; normal harness green 40/40; no production guard change). F4
+authority-plus-context live query (schedule?sportId=1&gamePks=<pk>, no date=; one GET, 30s
+timeout; -BracketDate still the sole local bracket authority; offline path unchanged; truthful
+sourceRef; static URI proof, no live call). Typed GameStatusDetailRequirement (Required/
+NotRequired) replacing the defaulted boolean at every resolver call site (undefined value
+rejected; Resolved accepts a truthful nullable status, null! removed). One c#
+ScheduleStateNormalizer consolidating the resolver + adapter alias tables (PowerShell keeps its
+own runtime normalizer by design). 31-vector normalizationVectors collection in the canonical
+corpus consumed generically by both runners (no-skip). Contract stays
+game-status-resolution/1.1; 25 scenario fixtures + six reasons unchanged.
+
+Verification: PS test-check-game-status 195/0 (baseline 187 + 8), test-check-settlement-finals
+normal 40/0 (probe 1/1 exit 1 by design); full .NET 2059/2059, 0 skipped (2025 + 34); solution
+build 0 errors; diff --check clean; comment audit lowercase-ascii; single alias table; both
+runners consume all vectors; live URL has gamePks and no date=; no test made a network call; 25
+fixtures + 6 reasons unchanged. Warnings (accurate, pre-existing, not introduced): NU1903
+Microsoft.OpenApi 2.0.0 + System.Security.Cryptography.Xml 10.0.7 + compiler/nullability/xUnit;
+not a warning-free build. Preserved wi/0035 checkout unchanged (de5791f, 86aa8b74). NOT
+reviewed/integrated/pushed. Residuals: propagation RESOLVED (2-iii-c); scale-out blocking;
+decision-ledger deferred. WI-0037 in-progress. Evidence:
+[[wi-0037-slice-2-ii-c-operator-harness-parity-2026-07-27-v1]].
+
+### Slice Synopsis
+
+**Change:** Implemented WI-0037's final hardening: F3 null-safe finals harness + probe, F4
+authority-plus-context gamePks live query (no date=), mandatory typed GameStatusDetailRequirement
+replacing the defaulted boolean, one c# ScheduleStateNormalizer consolidating the resolver +
+adapter alias tables, and a 31-vector cross-runtime normalization parity collection consumed by
+both runners. Contract 1.1 and the 25 fixtures + 6 reasons unchanged.
+**Reason:** Close the last 2-ii architecture obligations (F3/F4/requireStatus/normalizer
+consolidation/parity) before WI-0037 closure.
+**Proof:** RED-first (F3 probe throws on malformed output; F4 date= red; undefined-enum reject;
+vector no-skip). PS 195/40, full .NET 2059/2059 (2025+34), build 0 errors, diff/comment audits clean.
+**State:** Local-only, unpushed, undeployed; activation disabled; migration unapplied; branch on
+baf5e90/849eb9d; preserved wi/0035 checkout intact; propagation RESOLVED; scale-out + ledger residuals unchanged.
+**Next:** One independent adversarial review of the complete source+vault 2-ii-c package;
+integration + WI-0037 closeout only under a later authorization.
