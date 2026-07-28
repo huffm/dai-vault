@@ -369,9 +369,28 @@ extension, not a second dialect. A future hygiene audit should read this as inte
   bracket + exact gamePk + exactly-one-match across all consumers; doubleheader/makeup/
   duplicate handling; no positional bucket selection). Discovered by WI-0035 operational
   validation; corrects behavior exercised through WI-0034 and WI-0035; related to
-  WI-0036 flight/provenance consumers. WI-0035 is NOT reopened. **in-progress**
-  (planning only 2026-07-24; NEITHER slice authorized; no implementation).
-  **Backlog sequencing (2026-07-24 briefing + audit):** WI-0037 Slice 1 is the
+  WI-0036 flight/provenance consumers. WI-0035 is NOT reopened. **complete** (2026-07-28
+  local integration + governance closeout): all slices -- Slice 1 (caller-state
+  progression), 2-i (status contract 1.0 + corpus + finals-guard bracket), 2-ii-a (contract
+  1.1 + xunit corpus runner + typed GameStatusResolver), 2-ii-b (discovery identity), 2-iii
+  (selected-event identity continuity: foundation + backend activation + frontend
+  continuity), and 2-ii-c + c1 (operator/harness + status parity) -- are implemented,
+  independently reviewed, and integrated into the LOCAL baseline. The final 2-ii-c + c1
+  package passed independent review (WI0037_SLICE2IIC_C1_INDEPENDENT_REVIEW_PASSED_LOCAL_
+  INTEGRATION_READY, zero findings) and integrated by pure local fast-forward: dai local
+  main `baf5e90` -> `4c6cd98`; vault local main advanced by an atomic ref update to the
+  closeout commit. **NOT published, NOT deployed** (dai origin/main stays `aee1ade`, vault
+  origin/main stays `e217a3f`); selected-event activation DISABLED; migration
+  `20260727133845` UNAPPLIED. Post-integration on dai main `4c6cd98`: full DevCore.Api.Tests
+  2059/2059, 0 skipped; PS 195/0 + 40/0 + probe exit 1 by design; build 0 errors. Glossary
+  disposition pass complete (provider-scoped candidate identity MERGED into
+  provider-qualified duplicate identity; the latter, activation deployment evidence, and
+  validated writer RETAINED WI-local; `domain execution provenance` already promoted).
+  Residuals: propagation RESOLVED; scale-out atomicity blocking before scale-out; durable
+  ledger deferred/nonblocking. Completion is engineering/governance completion only -- not
+  scale-out, deployment, product, or production-activation readiness. Evidence:
+  [[wi-0037-local-integration-and-governance-closeout-2026-07-28-v1]].
+  **Backlog sequencing (2026-07-24 briefing + audit; historical, WI-0037 now complete):** WI-0037 Slice 1 is the
   recommended next implementation; Slice 2 follows Slice 1; WI-0034 Slice 4
   (operating/skill integration; its precondition is met) should follow the correctness
   slices; WI-0034 Slice 3 remains deferred; WI-0031 Slices 5-6 remain deferred; WI-0032

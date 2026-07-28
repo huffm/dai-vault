@@ -19732,3 +19732,81 @@ activation disabled; migration unapplied; preserved wi/0035 checkout intact.
 **Next:** One independent adversarial review of the complete corrected ranges (source
 baf5e90..corrected-tip, vault 849eb9d..corrected-tip); integration + WI-0037 closeout only under a
 later authorization.
+
+---
+
+## WI-0037 local integration and governance closeout (2026-07-28)
+
+**1. Purpose.** Integrate the independently reviewed Slice 2-ii-c + c1 source package onto local
+source main by fast-forward, verify, complete WI-0037 governance in the reviewed vault topic,
+create one vault closeout commit, atomically advance local vault main, and close WI-0037. Local-
+only; no push/deploy/activation/migration/service/db/provider action.
+
+**2. Skills/instruction gate.** dai-skill-router run; selected dai-test-discipline, dai-docs-
+architect, dai-agent-handoff, dai-grill-with-vault; prompt phase discipline drove the lifecycle.
+Read AGENTS.md + workspace/dai/dai-vault CLAUDE.md + agent-paths template/local map; both repo
+roots git-verified.
+
+**3. Opening authorities (re-established).** Source main baf5e90; origin/main aee1ade; reviewed
+topic tip 4c6cd98 (chain baf5e90->80e8d1a->4c6cd98, linear, clean, no upstream, main ancestor).
+Vault records tip 462d7a4 (chain 849eb9d->d98d1a5->462d7a4, clean, no upstream); vault main
+849eb9d; origin/main e217a3f. Source range 11 paths 329+/62-; vault range 4 paths 440+/4-; both
+diff --check clean; corpus byte-identical 80e8d1a..4c6cd98 (539f137). Protected wi/0035 de5791f,
+six dirty paths, fingerprint 86aa8b74 (before).
+
+**4. Source integration.** `git merge --ff-only` -> Updating baf5e90..4c6cd98, Fast-forward.
+Source main = 4c6cd98 (single parent 80e8d1a; no merge commit); origin/main unchanged aee1ade;
+reviewed topic retained; worktree clean.
+
+**5. Tests/build/static audits (on source main 4c6cd98).** PS test-check-game-status 195/0;
+test-check-settlement-finals 40/0; -Probe 1 pass/1 deliberate fail, tally reached, exit 1 by
+design; corpus 63; combined focused 189; full DevCore.Api.Tests 2059/2059, 0 skipped; build 0
+errors. Comment audit 69/0/0; one c# alias table; 4/4 typed Resolve call sites; live URI gamePks
+no date= one GET 30s; 25 fixtures/31 vectors/6 refusals; diff --check clean; no network.
+Warnings pre-existing (NU1903 + CS/nullability/xUnit, all in files outside the 11-path set), not
+introduced, not remediated.
+
+**6. Governance changes (vault topic dv-2iic).** WI-0037 -> complete (closeout block, glossary
+dispositions, 8-link block, acceptance/handoff); MOC entry -> complete local state; 2-ii-c slice
+report -> status complete + dated closeout reconciliation (findings/c1 disclosure preserved); new
+closeout report `wi-0037-local-integration-and-governance-closeout-2026-07-28-v1.md`; this
+current-slice entry. glossary.md unchanged (no term promoted); sports-v1-backlog.md unchanged
+(WI-0037 not registered there; not required).
+
+**7. Glossary dispositions.** provider-scoped candidate identity = MERGED into provider-qualified
+duplicate identity; provider-qualified duplicate identity = RETAINED WI-local; activation
+deployment evidence = RETAINED WI-local; validated writer = RETAINED WI-local. domain execution
+provenance already promoted (not duplicated).
+
+**8. Exact commits/refs.** Source main 4c6cd985662caebec686d4b96a12a4104440e857. Vault closeout
+commit created on top of 462d7a4 (SHA in the ledger + final response); local vault main advanced
+849eb9d -> closeout by atomic update-ref. Origins unchanged (dai aee1ade, vault e217a3f).
+
+**9. Protected-worktree preservation.** wi/0035 de5791f, six dirty paths, fingerprint 86aa8b74
+identical before and after every vault ref mutation; never checked out, edited, or normalized.
+
+**10. Release/non-action state.** LOCAL-ONLY; UNPUBLISHED; UNDEPLOYED; activation DISABLED;
+migration 20260727133845 UNAPPLIED. No push/fetch/PR/deploy/activation/migration/service/db/
+provider/capture/reconciliation/settlement/dependency action.
+
+**11. Residuals/blockers.** Propagation RESOLVED; scale-out atomicity blocking before scale-out;
+durable ledger deferred/nonblocking.
+
+**12. Cost/network ledger.** DAI application/provider spend $0.00; zero network calls. Coding-
+agent host/session billing outside repository observability (not represented as zero).
+
+**13. Next safe action.** Operator-selected next slice against the integrated local baseline (dai
+main 4c6cd98, vault main = closeout commit): a candidate evidence/capture slice, or a separately
+authorized release program (remote publication + deployment + activation review). None authorized
+here.
+
+### Slice Synopsis
+**Change:** Fast-forwarded the reviewed WI-0037 Slice 2-ii-c + c1 package onto dai local main
+(baf5e90 -> 4c6cd98) and completed WI-0037 governance closeout in the vault, then advanced local
+vault main by one atomic closeout commit. **Reason:** The independent review passed with zero
+findings and authorized local integration + closeout. **Proof:** On main 4c6cd98 -- full .NET
+2059/2059 (0 skipped), PS 195/0 + 40/0 + probe exit 1 by design, build 0 errors, comment audit
+69/0/0, strict snapshot 26 items/0 warnings; protected wi/0035 fingerprint 86aa8b74 unchanged.
+**State:** WI-0037 complete; local-only, unpublished, undeployed, activation-disabled, migration-
+unapplied; origins unchanged (dai aee1ade, vault e217a3f). **Next:** Operator-selected next slice
+on the integrated local baseline; scale-out atomicity residual honored before any scale-out.

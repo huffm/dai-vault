@@ -2,7 +2,7 @@
 title: "WI-0037 Slice 2-ii-c Operator/Harness and Status-Contract Parity 2026-07-27 v1"
 type: "evidence-report"
 date: "2026-07-27"
-status: "in-progress"
+status: "complete"
 project: "DAI"
 slice: "WI-0037 Slice 2-ii-c: operator/harness and status-contract parity (local-only)"
 repos:
@@ -246,3 +246,37 @@ still `gamePks` with no `date=`; no network call. Warnings unchanged and pre-exi
 Microsoft.OpenApi 2.0.0 + System.Security.Cryptography.Xml 10.0.7 + compiler/nullability/xUnit;
 not remediated). Original commits 80e8d1a / d98d1a5 preserved; correction commits on top;
 local-only, unpushed, undeployed; activation disabled; migration unapplied.
+
+## closeout reconciliation (2026-07-28)
+
+The "in-progress / review-required / next = one independent adversarial review" surfaces above
+are historical. They are now resolved and superseded by this dated section; the original
+review-finding disclosures and the c1 correction record above are preserved unchanged for
+history.
+
+- **Independent review.** The complete corrected 2-ii-c + c1 package (source
+  `baf5e90..4c6cd98`, vault records `849eb9d..462d7a4`) was independently adversarially
+  reviewed with verdict **WI0037_SLICE2IIC_C1_INDEPENDENT_REVIEW_PASSED_LOCAL_INTEGRATION_
+  READY** and **zero findings**.
+- **Source fast-forward.** dai local `main` was advanced by pure fast-forward
+  `baf5e90 -> 4c6cd98` (no merge commit, reviewed topic branch retained). dai `origin/main`
+  remains `aee1ade` (observational, deliberately not refreshed); nothing was pushed.
+- **Post-integration verification on source main `4c6cd98`.** PowerShell
+  `test-check-game-status.ps1` 195/0; `test-check-settlement-finals.ps1` 40/0 and `-Probe`
+  reaches its tally with one pass + one deliberate failure (exit 1 by design); focused
+  `GameStatusResolutionCorpusTests` 63; combined focused 189; full `DevCore.Api.Tests`
+  **2059/2059, 0 skipped**; solution build 0 errors; comment audit 69/0/0; one c# alias table;
+  live URI `gamePks` with no `date=`; no network call. Warnings pre-existing (NU1903 +
+  compiler/nullability/xUnit), not introduced, not remediated.
+- **Vault closeout transaction.** A single documentation-only vault closeout commit -- the
+  commit containing this closeout section, the new
+  [[wi-0037-local-integration-and-governance-closeout-2026-07-28-v1]] report, and the WI/MOC/
+  current-slice updates -- was created directly on top of `462d7a4`; local vault `main` was
+  then advanced to that closeout commit by an atomic ref update (the final transaction step),
+  without checking out or modifying the protected WI-0035 worktree. Vault `origin/main`
+  remains `e217a3f`; nothing was pushed.
+- **Retained release boundaries.** LOCAL-ONLY; UNPUBLISHED; UNDEPLOYED; selected-event
+  activation DISABLED; migration `20260727133845` UNAPPLIED. Residuals: propagation RESOLVED;
+  scale-out atomicity blocking before scale-out; durable ledger deferred/nonblocking. WI-0037
+  is now **complete** (engineering + governance completion only; not scale-out, deployment,
+  product, or production-activation readiness).

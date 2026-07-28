@@ -2,12 +2,12 @@
 title: "WI-0037 Game-State Correctness v1"
 type: "plan"
 date: "2026-07-24"
-status: "in-progress"
+status: "complete"
 project: "DAI"
-slice: "WI-0037 planning only: parent scope + Slice 1-2 definitions; NO implementation authorized"
+slice: "WI-0037 game-state correctness: all slices implemented, reviewed, and locally integrated; local-only, unpublished, undeployed, activation-disabled, migration-unapplied"
 repos:
-  dai: "unchanged (planning; implementation awaits separate slice authorizations)"
-  dai-vault: "docs-only (this WI, MOC registration, current-slice)"
+  dai: "code (game-state correctness across Slices 1/2-i/2-ii-a/2-ii-b/2-ii-c+c1/2-iii; integrated to local main 4c6cd98; unpublished, undeployed)"
+  dai-vault: "docs-only (this WI, MOC, current-slice, slice report, closeout report)"
 tags:
   - system-development
   - work-item
@@ -21,6 +21,69 @@ related:
 ---
 
 # wi-0037 game-state correctness v1
+
+> **WI-0037 CLOSEOUT -- COMPLETE (local integration + governance closeout, 2026-07-28).**
+> All WI-0037 slices are implemented, independently reviewed, and integrated into the
+> LOCAL engineering baseline: Slice 1 (caller-state progression), Slice 2-i (status
+> resolution contract 1.0 + corpus + finals-guard bracket), Slice 2-ii-a (contract 1.1 +
+> xunit corpus runner + typed GameStatusResolver), Slice 2-ii-b (discovery identity),
+> Slice 2-iii (selected-event identity continuity, foundation + backend activation +
+> frontend consumer continuity), and finally Slice 2-ii-c + c1 (operator/harness + status
+> contract parity). The Slice 2-ii-c + c1 package was independently adversarially reviewed
+> with verdict **WI0037_SLICE2IIC_C1_INDEPENDENT_REVIEW_PASSED_LOCAL_INTEGRATION_READY**
+> (zero findings) and integrated by a pure local fast-forward: dai local `main` advanced
+> `baf5e90` -> **`4c6cd985662caebec686d4b96a12a4104440e857`** (two reviewed commits 80e8d1a
+> operator/harness parity, 4c6cd98 blank-state + comment correction). dai `origin/main`
+> remains `aee1ade` (observational, deliberately not refreshed). This vault records branch
+> is advanced into local vault `main` by an atomic local ref update; vault `origin/main`
+> remains `e217a3f`. NOTHING was pushed and NOTHING was deployed.
+>
+> **Post-integration verification on source main at 4c6cd98:** PowerShell
+> `test-check-game-status.ps1` 195/0 (exit 0); `test-check-settlement-finals.ps1` 40/0
+> (exit 0) and `-Probe` reaches its tally with one pass + one deliberate failure (exit 1 by
+> design, not a regression); focused `GameStatusResolutionCorpusTests` 63; combined focused
+> .NET 189/0; full `DevCore.Api.Tests` **2059/2059, 0 skipped**; solution build 0 errors.
+> Static gates: 69 added C#/PowerShell comment lines with zero uppercase and zero non-ascii;
+> exactly one c# schedule-state alias table (`ScheduleStateNormalizer.cs`); every production
+> `GameStatusResolver.Resolve` supplies the typed `GameStatusDetailRequirement`; the live URI
+> uses `gamePks` with no `date=`, one GET, 30s timeout, local bracket selection; both runtimes
+> exercise all 31 normalization vectors; corpus = 25 fixtures / 31 vectors / 6 refusals / 8
+> normalized values. Warnings are pre-existing and NOT introduced by this package: NU1903
+> advisories (`Microsoft.OpenApi` 2.0.0, `System.Security.Cryptography.Xml` 10.0.7) plus
+> pre-existing compiler/nullability/xUnit warnings, every one located in files outside the
+> 11-path changed set; not a warning-free build, not remediated. No network call.
+>
+> **Mandatory WI-completion glossary disposition pass** (rules: promote only a durable concept
+> with demonstrated meaning beyond WI-0037; merge same-concept labels; otherwise retain
+> WI-local; never erase from WI history; do not add a glossary entry for a merged or
+> retained-WI-local term):
+>
+> | term | disposition | reason |
+> |---|---|---|
+> | provider-scoped candidate identity | **MERGED** into `provider-qualified duplicate identity` | Slice 2-iii-b2 F-B2-8 unified provider-scoped candidate discovery and provider-qualified duplicate identity as one WI-local concept over the governing `(SourceProvider, ExternalGameId)` pair; the surviving concept is `provider-qualified duplicate identity`. |
+> | provider-qualified duplicate identity | **RETAINED WI-local** | load-bearing selected-event duplicate-detection evidence within WI-0037, but an implementation-level identity rule with no demonstrated use beyond WI-0037/selected-event binding; promoting it would distort the shared glossary. Not added to `glossary.md`. |
+> | activation deployment evidence | **RETAINED WI-local** | the structured `{artifact, reference}` freshness-bounded evidence gating default-off `SelectedEventActivation` is specific to the selected-event activation runbook; no demonstrated platform-wide meaning. Not added to `glossary.md`. |
+> | validated writer | **RETAINED WI-local** | the validated-writer contract (a provenance builder proven readable via `TryRead` before commit) is a useful WI-0037 selected-event write-path pattern but has no demonstrated reuse beyond WI-0037; default retain. Not added to `glossary.md`. |
+>
+> `domain execution provenance` was already PROMOTED to `01 Operating System/glossary.md`
+> in a prior slice; it is confirmed present and NOT duplicated. Because no term was promoted,
+> `glossary.md` is unchanged by this closeout.
+>
+> **Residuals (exact, preserved):**
+> SELECTED_EVENT_IDENTITY_PROPAGATION_REQUIRED_BEFORE_WI0037_CLOSE = **RESOLVED** (Slice
+> 2-iii-c local integration; do not reopen or erase);
+> MULTI_INSTANCE_SELECTED_EVENT_ATOMICITY_REQUIRED_BEFORE_SCALE_OUT = **blocking before
+> scale-out**, not a blocker to this local WI closeout;
+> DURABLE_PREEXECUTION_SELECTION_DECISION_LEDGER_DEFERRED = **deferred/nonblocking**.
+>
+> **Release state (truthful):** LOCAL-ONLY; UNPUBLISHED; UNDEPLOYED; selected-event
+> activation DISABLED (`SelectedEventActivation.Enabled=false`, blank DeploymentId/
+> EvidencePath); migration `20260727133845_AddAgentRunDomainExecutionProvenance` present but
+> UNAPPLIED. WI-0037 completion means the scoped implementation, conformance, review, local
+> integration, and governance obligations are complete. It does NOT mean scale-out readiness,
+> deployment readiness, product readiness, or production activation. Evidence:
+> [[wi-0037-local-integration-and-governance-closeout-2026-07-28-v1]] and
+> [[wi-0037-slice-2-ii-c-operator-harness-parity-2026-07-27-v1]].
 
 ## problem  <!-- LITE -->
 
@@ -160,7 +223,7 @@ future question but must not alter behavior); date-bucket resolver work (Slice 2
 schedule-adapter automation; operating-skill integration; provider-binding changes;
 planner schema changes; paid validation calls.
 
-### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a CLOSED; 2-ii-b CLOSED; 2-ii-c + c1 correction IMPLEMENTED LOCAL, review-required 2026-07-27)
+### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a CLOSED; 2-ii-b CLOSED; 2-iii INTEGRATED LOCAL; 2-ii-c + c1 INDEPENDENTLY REVIEWED PASS + LOCALLY INTEGRATED 2026-07-28 -- see the WI-0037 CLOSEOUT block at the top of this file)
 
 > Slice 2-ii-c1 correction state (2026-07-27, on top of 2-ii-c): an independent review of
 > the 2-ii-c package (source 80e8d1a / vault d98d1a5) found three issues, corrected in place
@@ -1190,8 +1253,16 @@ Planning-slice criteria (this authorization only):
 - evidence basis cites the canonical July 23 chain records by full vault path;
 - no source file, test, schema, or runtime state changes in this slice.
 
-Parent-close criteria (future): both slices independently implemented, reviewed, and
-integrated under their own authorizations with the proofs above.
+Parent-close criteria: **SATISFIED 2026-07-28.** Both slices (and every sub-slice) were
+independently implemented, reviewed, and integrated under their own authorizations with the
+proofs above; the final Slice 2-ii-c + c1 package passed independent adversarial review
+(verdict WI0037_SLICE2IIC_C1_INDEPENDENT_REVIEW_PASSED_LOCAL_INTEGRATION_READY, zero
+findings) and was integrated by pure local fast-forward to dai main
+`4c6cd985662caebec686d4b96a12a4104440e857`; the mandatory glossary disposition pass is
+recorded in the WI-0037 CLOSEOUT block above; the selected-event propagation residual is
+resolved; scale-out atomicity and the durable ledger remain visible with their exact
+meanings; the state stays local-only, unpublished, undeployed, activation-disabled, and
+migration-unapplied.
 
 ## test plan  <!-- LITE, written BEFORE implementation -->
 
@@ -1227,32 +1298,58 @@ must keep the duplicate-DEFECT discipline pinned by its existing tests).
 
 ## links  <!-- LITE; all 8 required at close, per work-item-traceability -->
 
-- work item: WI-0037 (ADO: AB#- when wired; no ADO item created)
-- branch: planning `wi/0037-game-state-correctness` (from `af69725`, published via
-  `51b64f4`); Slice 1 `wi/0037-game-state-correctness-slice-1` (dai from `85af96d`,
-  vault from `51b64f4`; both retained locally per the branch-retained convention);
-  closeout `wi/0037-game-state-correctness-slice-1-closeout` (vault, from `3b66596`)
-- pr: merged direct: dai `85af96d..0a9129b`, vault `51b64f4..3b66596` (coordinated
-  fast-forward, plain non-force pushes, remote SHAs directly verified)
-- commits: planning vault `51b64f4`; Slice 1 dai `0a9129b` (adapter predicate + 20
-  tests), Slice 1 vault `3b66596` (execution record + spec + handoff); closeout commit
-  recorded at close of this closeout slice
-- tests: `platform/dotnet/DevCore.Api.Tests/AgentRuns/MarketContrastSourceAdapterTests.cs`
-  -- 18-row `caller_state_transition_matrix`, `scheduled_candidate_survives_natural_pregame_progression`,
-  `pregame_progression_does_not_weaken_start_instant_blocker`; suites at integration:
-  focused 47/47, related 343/343, full 1780/1780 pre- and post-publication
-- verification notes: independent adversarial review verdict
-  WI0037_SLICE1_INTEGRATION_READY (RED reproduced in a detached worktree: exactly 2
-  failures at base; direction, normalization, precedence, and unintended-acceptance
-  analyses all confirmed); post-integration full suite on published main 1780/1780
-- docs updated: this WI; [[wi-0037-slice-1-caller-state-progression-2026-07-24-v1]];
-  MOC (planning registration); current-slice (planning, implementation, closeout)
-- lessons: characterization-matrix-first made the one-line predicate change reviewable
-  and refutable; equivalence-class rows beat exhaustive cells when a single code path
-  owns all rejections
+- work item: WI-0037 (ADO: AB#- when wired; no ADO item created; local-spine mode per
+  [[work-item-traceability]])
+- branch: planning `wi/0037-game-state-correctness`; Slice 1
+  `wi/0037-game-state-correctness-slice-1`; 2-i `...-slice-2-i`; 2-ii-a `...-slice-2-ii-a`;
+  2-ii-b `...-slice-2-ii-b`; 2-iii `wi/0037-selected-event-foundation`,
+  `wi/0037-selected-event-backend-activation`, `wi/0037-selected-event-frontend-continuity`;
+  2-ii-c `wi/0037-game-state-correctness-slice-2-ii-c` (dai) and
+  `wi/0037-game-state-correctness-slice-2-ii-c-records` (vault records); all retained
+- pr: no GitHub PR. Published slices (through 2-iii-b2) merged direct by coordinated
+  fast-forward + plain non-force push: dai `origin/main` = `aee1ade`, vault `origin/main` =
+  `e217a3f`. Local-only slices merged direct by fast-forward, UNPUSHED: 2-iii-c dai
+  `aee1ade..baf5e90`; **this closeout: 2-ii-c + c1 dai `baf5e90..4c6cd98`** (source local
+  main fast-forward) and the vault records branch advanced into local vault `main` by an
+  atomic ref update ending at the closeout commit below
+- commits: Slice 1 dai `0a9129b`; 2-i dai `dd760f9`; 2-ii-a dai `841ae26`; 2-ii-b dai
+  `af59853`; 2-iii foundation/b2 dai `1311137`->`aee1ade`; 2-iii-c dai `baf5e90`; 2-ii-c
+  dai `80e8d1a` (operator/harness + status parity) -> `4c6cd98` (blank-state + comment
+  correction) = local main tip. Vault records for 2-ii-c: `d98d1a5` (report/WI/current-slice/
+  doctrine) -> `462d7a4` (c1 correction) -> the closeout commit containing this report (SHA
+  in the closeout report and the prompt ledger). Full per-slice SHA history:
+  [[wi-0037-local-integration-and-governance-closeout-2026-07-28-v1]]
+- tests: `platform/dotnet/DevCore.Api.Tests/Sports/GameStatusResolutionCorpusTests.cs`;
+  `.../AgentRuns/MarketContrastSourceAdapterTests.cs`; `.../Sports/StarterClientBracketAuthorityTests.cs`;
+  `.../Integration/SelectedEventResolutionTests.cs`, `.../SelectedEventCreationTests.cs`;
+  `scripts/dev/sports/test-check-game-status.ps1`, `.../test-check-settlement-finals.ps1`.
+  Post-integration on dai main `4c6cd98`: PS 195/0 + 40/0 + probe exit 1 by design; focused
+  corpus 63; combined focused 189; full `DevCore.Api.Tests` **2059/2059, 0 skipped**; build 0
+  errors
+- verification notes: independent adversarial review of the 2-ii-c + c1 package returned
+  **WI0037_SLICE2IIC_C1_INDEPENDENT_REVIEW_PASSED_LOCAL_INTEGRATION_READY** (zero findings);
+  local fast-forward re-verified all opening/preservation gates, both range allowlists (source
+  11 paths 329+/62-; vault 4 paths 440+/4-), corpus byte-identity `539f137`, comment audit
+  69/0/0, protected WI-0035 fingerprint `86aa8b74` unchanged before and after; full evidence
+  matrix in [[wi-0037-local-integration-and-governance-closeout-2026-07-28-v1]]
+- docs updated: this WI; MOC (completion state); `06 Execution/handoffs/current-slice.md`
+  (closeout entry + Slice Synopsis);
+  [[wi-0037-slice-2-ii-c-operator-harness-parity-2026-07-27-v1]] (dated closeout section);
+  [[wi-0037-local-integration-and-governance-closeout-2026-07-28-v1]] (new). `glossary.md`
+  unchanged (no term promoted); `sports-v1-backlog.md` unchanged (WI-0037 not registered
+  there and doctrine does not require adding completed items -- not required)
+- lessons: characterization-matrix-first made the one-line predicate change reviewable;
+  driving every normalization vector through STAGED resolution (not just direct normalization)
+  is what caught the cross-runtime whitespace divergence the direct-only tests hid; a warning
+  in a file outside the changed-path set cannot have been introduced by the change; governed
+  local fast-forward + atomic `update-ref` compare-and-swap advances main without checking out
+  or disturbing a protected dirty worktree
 
 ## final handoff requirements
 
-Planning handoff appended to `06 Execution/handoffs/current-slice.md`; status stays
-`in-progress` (no slice authorized); next governed action = a separate operator
-authorization for Slice 1 implementation.
+Closeout handoff appended to `06 Execution/handoffs/current-slice.md` with the mandatory
+Slice Synopsis; status is `complete` (all slices integrated into the local baseline). Next
+governed action = an operator-selected next slice against the integrated local baseline (dai
+main `4c6cd98`, vault main = this closeout commit): a candidate evidence/capture slice, or a
+future release program that would take remote publication + deployment + activation review
+(none of which are authorized or performed here).
