@@ -88,9 +88,9 @@ replay of that payload through the same script must reproduce the decision.
 ## conformance
 
 Contract and corpus: `<DAI_REPO_ROOT>/scripts/dev/sports/game-status-resolution-contract-v1.md`
-and `scripts/dev/sports/fixtures/game-status-resolution-v1.json` (24 vectors; the
-PowerShell harnesses consume them now; the C# Slice 2-ii runner consumes the SAME file
-so the runtimes cannot drift).
+and `scripts/dev/sports/fixtures/game-status-resolution-v1.json`. The corpus carries 25
+scenario fixtures, 31 normalization vectors, and six refusal reasons; the PowerShell harnesses
+and the C# runner both consume the same file so the runtimes cannot drift.
 
 ## slice 2-ii-c hardening (2026-07-27)
 

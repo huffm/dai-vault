@@ -160,7 +160,39 @@ future question but must not alter behavior); date-bucket resolver work (Slice 2
 schedule-adapter automation; operating-skill integration; provider-binding changes;
 planner schema changes; paid validation calls.
 
-### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a CLOSED; 2-ii-b CLOSED; 2-ii-c IMPLEMENTED LOCAL, review-required 2026-07-27)
+### Slice 2 -- canonical date-bracketed status resolution (2-i CLOSED; 2-ii-a CLOSED; 2-ii-b CLOSED; 2-ii-c + c1 correction IMPLEMENTED LOCAL, review-required 2026-07-27)
+
+> Slice 2-ii-c1 correction state (2026-07-27, on top of 2-ii-c): an independent review of
+> the 2-ii-c package (source 80e8d1a / vault d98d1a5) found three issues, corrected in place
+> (originals preserved; correction commits on top). Terminal state
+> **WI0037_SLICE2IIC_C1_CORRECTION_IMPLEMENTED_LOCAL_REVIEW_REQUIRED**.
+> F-1 (blocking): the PowerShell `Resolve-GameStatus` stage-5 check used truthiness, so a
+> whitespace-only authoritative detailedState resolved as resolved/unknown while c# `Required`
+> correctly refuses status_malformed. The original vector tests only exercised the direct
+> normalizer (both runtimes normalize whitespace to unknown), so the staged divergence was
+> invisible. Corrected RED-first: both runners now drive every vector through staged Required
+> resolution (blank -> refused/status_malformed/null, nonblank -> resolved/expected); against
+> 80e8d1a the strengthened PowerShell test failed for nv-31-whitespace-only only; the c# staged
+> assertion already passed. Production fix is PowerShell-only: stage-5 now uses
+> `[string]::IsNullOrWhiteSpace`; NO c# resolver/normalizer change (c# was the correct
+> fail-closed side). F-2 (hygiene): the 2-ii-c report/current-slice wrongly claimed the
+> added-comment audit was lowercase-ascii clean; the exact original audit over baf5e90..80e8d1a
+> was 55 added comment lines, 19 uppercase-bearing, 0 non-ascii. Corrected: every added comment
+> rewritten to generic lowercase prose (no code symbol/parameter/function/test/runtime-string
+> renamed); corrected full-range audit = 69 added comment lines, 0 uppercase, 0 non-ascii. F-3
+> (low): the contract md called the c# runner future work (corrected: it consumes the corpus
+> now); the doctrine said 24 vectors (corrected: 25 scenario fixtures, 31 normalization vectors,
+> six refusal reasons). Verification: PS test-check-game-status 195/0 (all vectors end-to-end),
+> test-check-settlement-finals normal 40/0 + `-probe` exit 1; full .NET 2059/2059, 0 skipped;
+> solution build 0 errors; 25 fixtures + 31 vectors + 6 reasons byte-for-byte unchanged; one c#
+> alias table; live URL gamePks no date=; no network call; contract stays
+> game-status-resolution/1.1. Warnings unchanged/pre-existing (NU1903 + compiler/nullability/
+> xUnit; not remediated). Preserved wi/0035 checkout unchanged (de5791f, 86aa8b74); local-only,
+> unpushed, undeployed; activation disabled; migration unapplied. Residuals: propagation RESOLVED
+> (2-iii-c); scale-out blocking; decision-ledger deferred. Slice 2-ii-c + c1 is IMPLEMENTED
+> LOCAL; independent review required over the corrected ranges; WI-0037 remains in-progress.
+> Evidence: [[wi-0037-slice-2-ii-c-operator-harness-parity-2026-07-27-v1]] (slice 2-ii-c1
+> correction section).
 
 > Slice 2-ii-c state (2026-07-27, superseding "2-ii-c NOT authorized"): the operator
 > authorized and this slice IMPLEMENTED LOCAL the final WI-0037 hardening obligations,

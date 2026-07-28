@@ -19679,3 +19679,56 @@ vector no-skip). PS 195/40, full .NET 2059/2059 (2025+34), build 0 errors, diff/
 baf5e90/849eb9d; preserved wi/0035 checkout intact; propagation RESOLVED; scale-out + ledger residuals unchanged.
 **Next:** One independent adversarial review of the complete source+vault 2-ii-c package;
 integration + WI-0037 closeout only under a later authorization.
+
+---
+
+## WI-0037 Slice 2-ii-c1 -- Cross-Runtime Blank-State and Comment-Audit Correction (2026-07-27, IMPLEMENTED LOCAL, review-required)
+
+An independent review of the 2-ii-c package (source 80e8d1a / vault d98d1a5) found three issues,
+corrected in place on top of the originals (originals preserved; correction commits on top).
+Terminal state WI0037_SLICE2IIC_C1_CORRECTION_IMPLEMENTED_LOCAL_REVIEW_REQUIRED.
+
+- F-1 (blocking): PowerShell Resolve-GameStatus stage-5 used truthiness, so a whitespace-only
+  authoritative detailedState resolved as resolved/unknown while c# Required refuses
+  status_malformed. Original vector tests only checked the direct normalizer (both normalize
+  whitespace to unknown), hiding the staged divergence. Corrected RED-first: both runners now
+  drive every vector through staged Required resolution (blank -> refused/status_malformed/null,
+  nonblank -> resolved/expected); against 80e8d1a only nv-31-whitespace-only failed; the c#
+  staged assertion already passed. PowerShell-only production fix: stage-5 uses
+  [string]::IsNullOrWhiteSpace. No c# resolver/normalizer change (c# was the correct side).
+- F-2 (hygiene): the 2-ii-c report/current-slice wrongly claimed the added-comment audit was
+  lowercase-ascii clean; exact original audit over baf5e90..80e8d1a = 55 added comment lines,
+  19 uppercase-bearing, 0 non-ascii. Corrected: every added comment rewritten to generic
+  lowercase prose (no symbol/parameter/function/test/runtime-string renamed); corrected
+  full-range audit = 69 added comment lines, 0 uppercase, 0 non-ascii.
+- F-3 (low): the contract md called the c# runner future work (corrected: consumes the corpus
+  now); the doctrine said 24 vectors (corrected: 25 scenario fixtures, 31 normalization vectors,
+  six refusal reasons).
+
+Verification: PS test-check-game-status 195/0 (all vectors end-to-end), test-check-settlement-finals
+normal 40/0 + `-probe` exit 1; full .NET 2059/2059, 0 skipped; solution build 0 errors; 25 fixtures
++ 31 vectors + 6 reasons unchanged; one c# alias table; live URL gamePks no date=; no network call.
+Warnings unchanged/pre-existing (NU1903 + compiler/nullability/xUnit; not remediated). Preserved
+wi/0035 checkout unchanged (de5791f, 86aa8b74); local-only, unpushed, undeployed; activation
+disabled; migration unapplied. Residuals: propagation RESOLVED (2-iii-c); scale-out blocking;
+decision-ledger deferred. WI-0037 in-progress. Evidence:
+[[wi-0037-slice-2-ii-c-operator-harness-parity-2026-07-27-v1]] (2-ii-c1 correction section).
+
+### Slice Synopsis
+
+**Change:** Corrected the reviewed 2-ii-c package: F-1 aligned the PowerShell operator runner's
+blank-detail validation with the c# fail-closed behavior (whitespace-only refuses status_malformed)
+and strengthened the vector tests to drive staged Required resolution in both runtimes; F-2
+rewrote all added comments to zero uppercase/non-ascii and corrected the false audit claim; F-3
+fixed the stale contract/doctrine statements.
+**Reason:** Independent review found a cross-runtime blank-state divergence, an inaccurate
+comment-audit claim, and stale docs in the 2-ii-c package.
+**Proof:** RED-first (strengthened PS test failed only nv-31-whitespace-only against 80e8d1a; c#
+already correct). PS 195/40 (probe exit 1); full .NET 2059/2059; build 0 errors; corrected comment
+audit 69/0/0; 25 fixtures + 31 vectors + 6 reasons unchanged.
+**State:** Correction commits on top of 80e8d1a (source) and d98d1a5 (vault); source local main
+baf5e90 and vault local main 849eb9d unchanged; origins unchanged; local-only/unpushed/undeployed;
+activation disabled; migration unapplied; preserved wi/0035 checkout intact.
+**Next:** One independent adversarial review of the complete corrected ranges (source
+baf5e90..corrected-tip, vault 849eb9d..corrected-tip); integration + WI-0037 closeout only under a
+later authorization.

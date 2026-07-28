@@ -183,3 +183,66 @@ Slice 2-ii-c is IMPLEMENTED LOCAL; INDEPENDENT REVIEW REQUIRED. WI-0037 remains 
 Next governed action = one independent adversarial review of the complete source+vault
 2-ii-c package; local integration and WI-0037 closeout occur only under a later authorization
 after that review passes.
+
+## slice 2-ii-c1 correction (2026-07-27, review findings)
+
+An independent review of the 2-ii-c package (source 80e8d1a / vault d98d1a5) found three
+issues, corrected in place on top of the originals (originals preserved as history; correction
+commits sit on top: source `4c6cd985662caebec686d4b96a12a4104440e857` on 80e8d1a, vault records
+commit on d98d1a5). Slice 2-ii-c and WI-0037 remain in-progress and review-required.
+
+### F-1 (blocking): cross-runtime blank-state divergence
+
+For a bracketed game whose authoritative `detailedState` is whitespace-only (e.g. three
+spaces), the PowerShell `Resolve-GameStatus` stage-5 check used truthiness
+(`-not "$($g.status.detailedState)"`), so a non-empty whitespace string was treated as present
+and the game resolved as `disposition=resolved`, `normalizedStatus=unknown`. The C# `Required`
+resolution correctly refuses `status_malformed` (it uses `IsNullOrWhiteSpace`). The original
+normalization-vector tests only exercised the direct normalizer, so both runtimes returned
+`unknown` at that level and the end-to-end divergence was invisible.
+
+Why the original green tests missed it: the vector loops asserted `Normalize(input) == expected`
+only; they never drove each vector through the staged resolver, where the blank-state refusal
+lives. Both runtimes normalize whitespace to `unknown`, so the direct-level assertion passed on
+both sides while the staged dispositions differed.
+
+Correction (test side, strengthened first as red): both runners now drive every vector through
+staged `Required` resolution over a minimal bracketed schedule -- blank inputs must refuse
+`status_malformed` with a null normalized status; nonblank inputs must resolve to the expected
+normalized value. Against 80e8d1a the strengthened PowerShell test failed for
+`nv-31-whitespace-only` only (resolved/unknown instead of refused/status_malformed); the C#
+staged assertion already passed. Correction (production side): `check-game-status.ps1` stage-5
+now uses `[string]::IsNullOrWhiteSpace([string]$g.status.detailedState)`, matching the platform
+fail-closed behavior. No C# resolver or normalizer change (C# was the correct side). All other
+behavior preserved: absent/null/empty/whitespace refuse `status_malformed`, nonempty
+unrecognized detail resolves as `unknown`, aliases normalize unchanged, bracket-first authority,
+refusal vocabulary, output shape, exit codes, and contract version unchanged.
+
+### F-2 (hygiene): inaccurate added-comment audit
+
+The original report and current-slice claimed the added-comment audit was lowercase-ascii clean.
+That was inaccurate. The exact original audit over `baf5e90..80e8d1a` added C#/PowerShell
+comments was: **55 added comment lines, 19 uppercase-bearing, 0 non-ascii**. Correction: every
+comment added across the branch was rewritten to generic lowercase prose (referring to concepts
+generically instead of reproducing mixed-case symbol names; no code symbol, parameter, function,
+test, or runtime string was renamed to lowercase). Corrected audit over the full corrected range:
+**69 added comment lines, 0 uppercase-bearing, 0 non-ascii**.
+
+### F-3 (low): stale documentation
+
+- `scripts/dev/sports/game-status-resolution-contract-v1.md` called the C# conformance runner
+  future work; corrected to state it currently consumes the corpus (25 scenario fixtures + 31
+  normalization vectors).
+- `game-status-recheck-discipline-v1.md` said the corpus has 24 vectors; corrected to
+  distinguish 25 scenario fixtures, 31 normalization vectors, and six refusal reasons.
+
+### corrected verification
+
+PowerShell: `test-check-game-status.ps1` 195/0 (all vectors end-to-end, including staged blank
+refusal); `test-check-settlement-finals.ps1` normal 40/0, `-probe` reaches its tally and exits
+nonzero. Full .NET 2059/2059, 0 skipped; solution build 0 errors. 25 scenario fixtures, 31
+normalization vectors, six refusal reasons byte-for-byte unchanged; one c# alias table; live URL
+still `gamePks` with no `date=`; no network call. Warnings unchanged and pre-existing (NU1903
+Microsoft.OpenApi 2.0.0 + System.Security.Cryptography.Xml 10.0.7 + compiler/nullability/xUnit;
+not remediated). Original commits 80e8d1a / d98d1a5 preserved; correction commits on top;
+local-only, unpushed, undeployed; activation disabled; migration unapplied.
